@@ -84,9 +84,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
-- object `nullable` field attribute is now recognized ([#44](https://git.tools.mia-platform.eu/platform/core/crud-service/-/issues/44))
-- array `nullable` field attribute is now recognized ([#34](https://git.tools.mia-platform.eu/platform/core/crud-service/-/issues/34))
-- export route works also when an array field is set to null ([#29](https://git.tools.mia-platform.eu/platform/core/crud-service/-/issues/29))
+- object `nullable` field attribute is now recognized
+- array `nullable` field attribute is now recognized
+- export route works also when an array field is set to null
 - failing tests on Mongo encryption lib
 
 ### Changed

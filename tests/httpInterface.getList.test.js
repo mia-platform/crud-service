@@ -594,11 +594,6 @@ tap.test('HTTP GET /', async t => {
     tests.push(...rawProjectionWithAggregationTests)
   }
 
-  /*
-    testsConfToExport tests have been separated because of the bug reported here
-    https://git.tools.mia-platform.eu/platform/core/crud-service/-/issues/29
-  */
-
   t.plan(tests.length + testsConfToExport.length)
   // it is safe to instantiate the test once, since all
   // the tests only perform reads on the collection
