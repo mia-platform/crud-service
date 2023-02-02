@@ -1,0 +1,161 @@
+{
+  "id": "pizza",
+  "description": "Collection of pizza",
+  "name": "pizza",
+  "fields": [
+    {
+      "name": "_id",
+      "description": "_id",
+      "type": "ObjectId",
+      "required": true,
+      "nullable": false
+    },
+    {
+      "name": "creatorId",
+      "description": "creatorId",
+      "type": "string",
+      "required": true,
+      "nullable": false
+    },
+    {
+      "name": "createdAt",
+      "description": "createdAt",
+      "type": "Date",
+      "required": true,
+      "nullable": false
+    },
+    {
+      "name": "updaterId",
+      "description": "updaterId",
+      "type": "string",
+      "required": true,
+      "nullable": false
+    },
+    {
+      "name": "updatedAt",
+      "description": "updatedAt",
+      "type": "Date",
+      "required": true,
+      "nullable": false
+    },
+    {
+      "name": "__STATE__",
+      "description": "__STATE__",
+      "type": "string",
+      "required": true,
+      "nullable": false
+    },
+    {
+      "name": "id",
+      "type": "string",
+      "required": true,
+      "nullable": false
+    },
+    {
+      "name": "name",
+      "type": "string",
+      "required": true,
+      "nullable": false
+    },
+    {
+      "name": "description",
+      "type": "string",
+      "required": false,
+      "nullable": false
+    },
+    {
+      "name": "price",
+      "type": "number",
+      "required": false,
+      "nullable": false
+    },
+    {
+      "name": "toppings",
+      "type": "Array",
+      "required": false,
+      "nullable": false,
+      "items": {
+        "type": "RawObject",
+        "schema": {
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "size": {
+              "type": "string",
+              "nullable": true
+            },
+            "producedIn": {
+              "type": "string"
+            }
+          },
+          "required": []
+        }
+      }
+    }
+  ],
+  "endpointBasePath": "/pizza",
+  "defaultState": "PUBLIC",
+  "indexes": [
+    {
+      "name": "_id",
+      "type": "normal",
+      "unique": true,
+      "fields": [
+        {
+          "name": "_id",
+          "order": 1
+        }
+      ]
+    },
+    {
+      "name": "primary_key",
+      "type": "normal",
+      "unique": true,
+      "fields": [
+        {
+          "name": "id",
+          "order": 1
+        }
+      ]
+    },
+    {
+      "name": "seek_filter",
+      "type": "normal",
+      "unique": false,
+      "fields": [
+        {
+          "name": "id",
+          "order": 1
+        },
+        {
+          "name": "__STATE__",
+          "order": 1
+        }
+      ]
+    },
+    {
+      "name": "name",
+      "type": "normal",
+      "unique": false,
+      "fields": [
+        {
+          "name": "name",
+          "order": 1
+        }
+      ]
+    },
+    {
+      "name": "updated_at",
+      "type": "normal",
+      "fields": [
+        {
+          "name": "updatedAt",
+          "order": 1
+        }
+      ],
+      "expireAfterSeconds": 600,
+      "unique": false
+    }
+  ]
+}
