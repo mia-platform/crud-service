@@ -20,7 +20,7 @@
     "postcoverage": "TAP_TIMEOUT=200 tap -b --timeout=200 --coverage-report=lcov --no-browser",
     "lint": "eslint . --ignore-path=.gitignore",
     "start": "lc39 index.js",
-    "start:local": "npm start -- --env-path ./.env",
+    "start:local": "npm start -- --env-path ./default.env",
     "pretest": "node tests/generatedJSONSchemasToFiles.js && eslint --fix tests/expectedSchemas/*.js",
     "test": "npm run lint && npm run unit && npm run checkonly",
     "unit": "TAP_TIMEOUT=200 MONGO_HOST=${MONGO_HOST_CI:-127.0.0.1} MONGO_VERSION=${MONGO_VERSION:-6.0.2} tap -b --timeout=200 -o tap.log 'tests/**/*.test.js'",

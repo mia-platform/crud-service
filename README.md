@@ -50,22 +50,22 @@ npm run start:local
 
 ### Use the Docker Image
 
-A Docker image for every version of the **CRUD Service** is deployed in the [Mia-Platform Nexus Repository](https://nexus.mia-platform.eu/).
+A Docker image for every version of the **CRUD Service** will be release on Github Registry.
 If you are interested in it, you can get one and run it locally with this commands:
 ```shell
-docker pull nexus.mia-platform.eu/core/crud-service:latest
-export LOCALHOST=192.168.x.x
+
+docker build -t crud-service .
 docker run --name crud-service \
            --detach \
            --env LOG_LEVEL=info \
-           --env MONGODB_URL=mongodb://${LOCALHOST}/crud \
+           --env MONGODB_URL=mongodb://<your-mongo-container-ip>/crud \
            --env COLLECTION_DEFINITION_FOLDER=/home/node/app/collections \
            --env USER_ID_HEADER_KEY=userid \
            --env CRUD_LIMIT_CONSTRAINT_ENABLED=true \
            --env CRUD_MAX_LIMIT=200 \
            --mount type=bind,source=$(pwd)/tests/collectionDefinitions,target=/home/node/app/collections \
            --publish 3000:3000 \
-           nexus.mia-platform.eu/core/crud-service:latest
+           crud-service:latest
 ```
 
 Please note that, in this case, the list of environment variables must be included when running the service.
