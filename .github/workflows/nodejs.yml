@@ -23,7 +23,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: install MongoDB encryption libraries (to support testing encryption features)
-        run: apt-get update && apt-get install curl -y \
+        run: sudo apt-get update && sudo apt-get install curl -y \
           && curl https://repo.mongodb.com/apt/debian/dists/bullseye/mongodb-enterprise/5.0/main/binary-amd64/mongodb-enterprise-cryptd_5.0.14_amd64.deb -o mongocryptd.deb \
           && curl https://libmongocrypt.s3.amazonaws.com/apt/debian/dists/buster/libmongocrypt/1.6/main/binary-amd64/libmongocrypt-dev_1.6.2-0_amd64.deb -o libmongocrypt-dev.deb \
           && curl https://libmongocrypt.s3.amazonaws.com/apt/debian/dists/buster/libmongocrypt/1.6/main/binary-amd64/libmongocrypt0_1.6.2-0_amd64.deb -o libmongocrypt0.deb \
