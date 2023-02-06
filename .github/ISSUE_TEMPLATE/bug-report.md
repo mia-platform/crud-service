@@ -6,7 +6,7 @@ labels: bug
 
 ---
 <!--
-Before to open a question, please be sure that you've already checked on:
+Before to open a new thread, please be sure that you've already checked on:
 - the list of Issues of the CRUD Service: https://github.com/mia-platform/crud-service/issues
 - the list of Discussion on the Mia Platform Community (search by the 'CRUD Service' tag): https://github.com/mia-platform/community/discussions?discussions_q=label%3A%22CRUD+Service%22
 
@@ -18,6 +18,7 @@ If you haven't found anything related to your problem, we'd ask you to kindly fo
 
 **Environment**
 <!-- Please include which version of the CRUD Service you're using, specifying if you're using a docker image or not -->
+
 I'm using CRUD Service version X.Y.Z
 
 **Minimal Reproduction**
