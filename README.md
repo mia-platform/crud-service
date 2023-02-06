@@ -4,7 +4,6 @@
   [![pipeline status][build-svg]][pipeline-link]
   [![license][license-svg]](./LICENSE)
   [![javascript style guide][standard-mia-svg]][standard-mia]  
-  <!-- [![coverage report][coverage]][pipeline-link] -->
 </div>
 
 ## Introduction
@@ -270,6 +269,13 @@ For example, for version 5.0.14, the final url of the `.deb` will be: https://re
 
 ## Contributing
 
+CRUD Service is an active project developed and maintained by [Mia Platform s.r.l.](https://mia-platform.eu/), it is distributed open source and it is [Apache 2 licensed](./LICENSE).
+You're more than welcome to partecipate by creating and/or partecipating to public discussion and actively partecipate to the development of the application.
+
+The two main communication channel are:
+- in the [issues tab](https://github.com/mia-platform/crud-service/issues);
+- in the [official Mia Platform Community Discussion page](https://github.com/mia-platform/community/discussions?discussions_q=label%3A%22CRUD+Service%22) (if you want to create a discussion here, please add the _CRUD Service_ tag);
+
 Please read [CONTRIBUTING.md](./CONTRIBUTING.md) for further details about the process for submitting pull requests.
 
 [nvm]: https://github.com/creationix/nvm
@@ -277,7 +283,6 @@ Please read [CONTRIBUTING.md](./CONTRIBUTING.md) for further details about the p
 
 [pipeline-link]: https://github.com/mia-platform/crud-service/actions
 [build-svg]: https://img.shields.io/github/actions/workflow/status/mia-platform/crud-service/nodejs.yml
-<!-- [coverage]: TODO: Find link for coverage -->
 [license-svg]: 	https://img.shields.io/github/license/mia-platform/crud-service
 
 [standard-mia-svg]: https://img.shields.io/badge/code_style-standard--mia-orange.svg

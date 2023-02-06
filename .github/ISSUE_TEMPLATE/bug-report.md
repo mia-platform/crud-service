@@ -8,7 +8,7 @@ labels: bug
 <!--
 Before to open a question, please be sure that you've already checked on:
 - the list of Issues of the CRUD Service: https://github.com/mia-platform/crud-service/issues
-- the list of Discussion on the Mia Platform Community (search by the 'CRUD Service' tag): https://github.com/mia-platform/community/discussions
+- the list of Discussion on the Mia Platform Community (search by the 'CRUD Service' tag): https://github.com/mia-platform/community/discussions?discussions_q=label%3A%22CRUD+Service%22
 
 If you haven't found anything related to your problem, we'd ask you to kindly follow this template when opening the bug.
 -->
