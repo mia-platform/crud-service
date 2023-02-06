@@ -15,7 +15,7 @@ before contributing. If you find someone that is not respecting it please report
 
 There are several ways to contribute. You can [fork the repository](#fork) and [propose a Pull Request](CONTRIBUTING.md#how-to-submit-a-pr), or you can start a discussion to report a bug, an indesired behavior of the application, or to simply suggest a feature.
 
-Before to open a new thread, verify if there's already a discussion about the topic of your interest. You can find them:
+Before opening a new thread, please verify whether there's already a discussion about the topic of your interest. You can find them:
 - in the [issues tab](https://github.com/mia-platform/crud-service/issues);
 - in the [official Mia Platform Community Discussion page](https://github.com/mia-platform/community/discussions?discussions_q=label%3A%22CRUD+Service%22);
 

@@ -1,4 +1,5 @@
 .git
+.github
 .idea
 .vscode
 .nyc_output
@@ -22,4 +23,4 @@ tests
 Dockerfile
 README.md
 CONTRIBUTING.md
-renovate.json
+CODE_OF_CONDUCT.md
