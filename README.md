@@ -1,8 +1,10 @@
 <div align="center">
-<h1>CRUD Service</h1>
-[![pipeline status][pipeline]][git-link]
-[![javascript style guide][standard-mia-svg]][standard-mia]  
-[![coverage report][coverage]][git-link]
+  <h1>CRUD Service</h1>
+
+  [![pipeline status][build-svg]][pipeline-link]
+  [![license][license-svg]](./LICENSE)
+  [![javascript style guide][standard-mia-svg]][standard-mia]  
+  <!-- [![coverage report][coverage]][pipeline-link] -->
 </div>
 
 ## Introduction
@@ -270,13 +272,13 @@ For example, for version 5.0.14, the final url of the `.deb` will be: https://re
 
 Please read [CONTRIBUTING.md](./CONTRIBUTING.md) for further details about the process for submitting pull requests.
 
-[pipeline]: /crud-service/badges/master/pipeline.svg
-[coverage]: /crud-service/badges/master/coverage.svg
-[git-link]: /crud-service/commits/master
+[nvm]: https://github.com/creationix/nvm
+[cryptd]: https://repo.mongodb.com/apt/debian/dists/bullseye/mongodb-enterprise/
+
+[pipeline-link]: https://github.com/mia-platform/crud-service/actions
+[build-svg]: https://img.shields.io/github/actions/workflow/status/mia-platform/crud-service/nodejs.yml
+<!-- [coverage]: TODO: Find link for coverage -->
+[license-svg]: 	https://img.shields.io/github/license/mia-platform/crud-service
 
 [standard-mia-svg]: https://img.shields.io/badge/code_style-standard--mia-orange.svg
 [standard-mia]: https://github.com/mia-platform/eslint-config-mia
-
-[nvm]: https://github.com/creationix/nvm
-[merge-request]: /crud-service/merge_requests
-[cryptd]: https://repo.mongodb.com/apt/debian/dists/bullseye/mongodb-enterprise/
