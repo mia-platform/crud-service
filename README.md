@@ -17,7 +17,7 @@ The **CRUD Service** can be launched with [lc39](https://github.com/mia-platform
 ### Local deployment
 
 To deploy the service in your local environment, you must have:
-- Node at version 14 or superior,
+- Node at version 18 or superior,
 - MongoDB instance at version 4.0 or superior
 
 To setup Node, we suggest you to install [nvm][nvm] to have multiple node versions in your computer, and use the version suggested in the `.nvmrc` file.
