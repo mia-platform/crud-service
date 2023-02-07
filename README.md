@@ -80,6 +80,7 @@ You can access the **Swagger User Interface**, generally available at http://loc
 ### Run tests
 
 We use [tap](https://github.com/tapjs/node-tap) to test the **CRUD Service**. Once you have all the dependency in place, you can simply launch it with:
+
 ```shell
 npm run coverage
 ```
