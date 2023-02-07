@@ -228,7 +228,7 @@ The HTTPInterface includes by default different API methods for every kind of op
 | Verb | API Method                   | Description                                    | 
 |------|------------------------------|------------------------------------------------|
 | GET  | {base URL}/{endpoint}/       | Returns a list of documents.                   |
-| GET  | {base URL}/{endpoint}/export | Export the collection.                         |
+| GET  | {base URL}/{endpoint}/export | Exlc39port the collection.                         |
 | GET  | {base URL}/{endpoint}/{id}   | Returns the item with specific _ID_.           |
 | GET  | {base URL}/{endpoint}/count  | Returns the number of items in the collection. |
 
@@ -285,7 +285,7 @@ Please read [CONTRIBUTING.md](./CONTRIBUTING.md) for further details about the p
 
 [pipeline-link]: https://github.com/mia-platform/crud-service/actions
 [build-svg]: https://img.shields.io/github/actions/workflow/status/mia-platform/crud-service/nodejs.yml
-[license-svg]: 	https://img.shields.io/github/license/mia-platform/crud-service
+[license-svg]: 	https://img.shields.io/github/license/mia-platform/CRUD-service
 
 [standard-mia-svg]: https://img.shields.io/badge/code_style-standard--mia-orange.svg
 [standard-mia]: https://github.com/mia-platform/eslint-config-mia
