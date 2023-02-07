@@ -1,0 +1,46 @@
+name: Node.js CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+        mongodb-version: ['4.2', '4.4', '5.0', '6.0']
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: update libraries and install curl
+        run: sudo apt-get update && sudo apt-get install curl -y
+
+      - name: download MongoDB encryption libraries (to support testing encryption features)
+        run: curl https://repo.mongodb.com/apt/debian/dists/bullseye/mongodb-enterprise/5.0/main/binary-amd64/mongodb-enterprise-cryptd_5.0.14_amd64.deb -o mongocryptd.deb && curl https://libmongocrypt.s3.amazonaws.com/apt/debian/dists/buster/libmongocrypt/1.6/main/binary-amd64/libmongocrypt-dev_1.6.2-0_amd64.deb -o libmongocrypt-dev.deb && curl https://libmongocrypt.s3.amazonaws.com/apt/debian/dists/buster/libmongocrypt/1.6/main/binary-amd64/libmongocrypt0_1.6.2-0_amd64.deb -o libmongocrypt0.deb
+
+      - name: install MongoDB encryption libraries
+        run: sudo apt-get install -f ./mongocryptd.deb ./libmongocrypt0.deb ./libmongocrypt-dev.deb -y
+
+      - name: start MongoDB instance
+        uses: supercharge/mongodb-github-action@1.8.0
+        with:
+          mongodb-version: ${{ matrix.mongodb-version }}
+
+      - run: npm ci
+
+      - run: npm run lint
+
+      - name: Execute tests
+        run: npm run coverage
+        env:
+          MONGO_VERSION: ${{ matrix.mongodb-version }}
