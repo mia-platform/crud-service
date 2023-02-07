@@ -74,7 +74,7 @@ Please note that, in this case, the list of environment variables must be includ
 
 ### How to use it
 
-You can access the **Swagger User Interface**, generally available at http://localhost:3000/documentation (it depends on which port you deployed the service). From there you can verify the list of Collections and Views defined and execute HTTP requests to effectively use the service.
+You can access the **Swagger User Interface**, generally available at `http://localhost:3000/documentation` (it depends on which port you deployed the service). From there you can verify the list of Collections and Views defined and execute HTTP requests to effectively use the service.
 
 ## Local development
 ### Run tests
