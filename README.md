@@ -51,12 +51,23 @@ npm run start:local
 
 ### Use the Docker Image
 
-A Docker image for every version of the **CRUD Service** will be release on Github Registry.
-If you are interested in it, you can get one and run it locally with this commands:
+Docker images of the **CRUD Service** are available on [GitHub Registry](https://github.com/orgs/mia-platform/packages/container/package/crud-service) and [DockerHub](https://hub.docker.com/r/miaplatform/crud-service). An image is released in those two registries for every tag created.
+
+If you instead prefer to create your image (e.g. from your fork), you can use the `Dockerfile` to generate your image:
 
 ```shell
-
 docker build -t crud-service .
+```
+
+Since the `Dockerfile` supports the new [Docker BuildKit](https://docs.docker.com/build/buildkit/) you can also decide to create an image of the CRUD Service without including the `mongocryptd` libraries:
+
+```shell
+DOCKER_BUILDKIT=1 docker build -t crud-service-no-encryption .
+```
+
+If you are interested in it, you can get one and run it locally with these commands:
+
+```shell
 docker run --name crud-service \
            --detach \
            --env LOG_LEVEL=info \
@@ -67,10 +78,10 @@ docker run --name crud-service \
            --env CRUD_MAX_LIMIT=200 \
            --mount type=bind,source=$(pwd)/tests/collectionDefinitions,target=/home/node/app/collections \
            --publish 3000:3000 \
-           crud-service:latest
+           <your-crud-service-image-name>:latest
 ```
 
-Please note that, in this case, the list of environment variables must be included when running the service.
+Please note that you can mount the `.env` file with your CRUD Service configuration instead of manually including the environment variables in the command.
 
 ### How to use it
 
