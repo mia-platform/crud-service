@@ -2,6 +2,7 @@
   <h1>CRUD Service</h1>
 
   [![pipeline status][build-svg]][pipeline-link]
+  [![Coverage Status][coverage-svg]][coverage-link]
   [![license][license-svg]](./LICENSE)
   [![javascript style guide][standard-mia-svg]][standard-mia]  
 </div>
@@ -308,7 +309,9 @@ Mia Platform s.r.l. does not respond to any improper use of the MongoDB Data Enc
 
 [pipeline-link]: https://github.com/mia-platform/crud-service/actions
 [build-svg]: https://img.shields.io/github/actions/workflow/status/mia-platform/crud-service/nodejs.yml
-[license-svg]: 	https://img.shields.io/github/license/mia-platform/CRUD-service
+[license-svg]: https://img.shields.io/github/license/mia-platform/CRUD-service
 
+[coverage-svg]: https://coveralls.io/repos/github/mia-platform/crud-service/badge.svg?branch=main
+[coverage-link]: https://coveralls.io/github/mia-platform/crud-service?branch=main
 [standard-mia-svg]: https://img.shields.io/badge/code_style-standard--mia-orange.svg
 [standard-mia]: https://github.com/mia-platform/eslint-config-mia
