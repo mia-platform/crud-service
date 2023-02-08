@@ -299,7 +299,7 @@ Please read [CONTRIBUTING.md](./CONTRIBUTING.md) for further details about the p
 
 The CRUD Service can be used along with the [MongoDB Data Encryption](https://www.mongodb.com/basics/mongodb-encryption) functionality, and the images available includes the libraries to use this feature.
 
-However, the MongoDB Data Encryption should be used along with [MongoDB Atlas](https://www.mongodb.com/atlas/database) or [MongoDB Enterprise Advanced](https://www.mongodb.com/products/mongodb-enterprise-advanced). When you use the CRUD Service, for personal projects or commercial applications, you are aware of that and you will comply with [MongoDB terms of use](https://www.mongodb.com/legal/terms-of-use).
+However, the MongoDB Data Encryption should be used along with [MongoDB Atlas](https://www.mongodb.com/atlas/database) or [MongoDB Enterprise Advanced](https://www.mongodb.com/products/mongodb-enterprise-advanced). When you use the CRUD Service, for personal projects or commercial applications, you should be aware of that and you will have to comply with [MongoDB terms of use](https://www.mongodb.com/legal/terms-of-use) accordingly.
 
 Mia Platform s.r.l. does not respond to any improper use of the MongoDB Data Encryption or any other MongoDB product.
 
