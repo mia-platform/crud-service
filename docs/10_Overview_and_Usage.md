@@ -246,7 +246,7 @@ Usually this is used by PRE/POST Orchestrator to manage concatenated request to 
 ### Expose a CRUD Service
 
 :::warning
-CRUD must **not** be exposed directly to the Internet. It must **always** be protected by the API Gateway or a BFF.
+CRUD must **not** be exposed directly to the Internet. It must **always** be protected by the API Gateway or a BFF.  We suggest that you protect the CRUD OSS service with an API Gateway even when it is used as a standalone component in your system and not to expose it directly to your front-end applications.
 :::
 
 ### API Key
