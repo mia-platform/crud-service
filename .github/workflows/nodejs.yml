@@ -48,6 +48,11 @@ jobs:
         run: npm run coverage
         env:
           MONGO_VERSION: ${{ matrix.mongodb-version }}
+      
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
   build:
     name: Build docker image
