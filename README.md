@@ -64,7 +64,7 @@ docker build -t crud-service .
 Thanks to the support of [Docker BuildKit](https://docs.docker.com/build/buildkit/), you can also decide to create an image of the CRUD Service without including the `mongocryptd` libraries:
 
 ```shell
-DOCKER_BUILDKIT=1 docker build -t crud-service-no-encryption .
+DOCKER_BUILDKIT=1 docker build -t crud-service-no-encryption --target=crud-service-no-encryption .
 ```
 
 If you are interested in it, you can get one and run it locally with these commands:
@@ -241,7 +241,7 @@ The HTTPInterface includes by default different API methods for every kind of op
 | Verb | API Method                   | Description                                    | 
 |------|------------------------------|------------------------------------------------|
 | GET  | {base URL}/{endpoint}/       | Returns a list of documents.                   |
-| GET  | {base URL}/{endpoint}/export | Exlc39port the collection.                         |
+| GET  | {base URL}/{endpoint}/export | Exlc39port the collection.                     |
 | GET  | {base URL}/{endpoint}/{id}   | Returns the item with specific _ID_.           |
 | GET  | {base URL}/{endpoint}/count  | Returns the number of items in the collection. |
 
