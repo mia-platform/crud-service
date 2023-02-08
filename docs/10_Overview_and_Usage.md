@@ -10,6 +10,8 @@ At the moment, you can have only one CRUD Service in your branch at a time.
 
 It's possible to configure CRUD Service with more than one collection and to scale it horizontally. In this section you will learn how to configure, deploy, and use Mia-Platform CRUD Service.
 
+CRUD Service is available also as an Open Source Software (OSS), you can find the official repository [here](https://github.com/mia-platform/crud-service).
+
 ## Introduction
 
 The CRUD Service is a microservice that exposes via Restful API a set of MongoDB Collection. CRUD Service is configured in the Console.
@@ -246,7 +248,7 @@ Usually this is used by PRE/POST Orchestrator to manage concatenated request to 
 ### Expose a CRUD Service
 
 :::warning
-CRUD must **not** be exposed directly to the Internet. It must **always** be protected by the API Gateway or a BFF.  We suggest that you protect the CRUD OSS service with an API Gateway even when it is used as a standalone component in your system and not to expose it directly to your front-end applications.
+CRUD must **not** be exposed directly to the Internet. It must **always** be protected by the API Gateway or a BFF. In [Mia-Platform Console](/development_suite/overview-dev-suite.md) these security measures are already in place and the service is protected. If you use the [CRUD Service OSS](https://github.com/mia-platform/crud-service) we suggest that you protect it with an API Gateway even when it is used as a standalone component in your system and not to expose it directly to your front-end applications.
 :::
 
 ### API Key
