@@ -25,7 +25,7 @@ const AjvCompiler = require('@fastify/ajv-compiler')
 const ajvFormats = require('ajv-formats')
 
 const { readdirSync } = require('fs')
-const { join } = require('path')
+const { isAbsolute, join } = require('path')
 const { omit } = require('ramda')
 
 const myPackage = require('./package')
@@ -185,12 +185,13 @@ function getCollectionNameFromEndpoint(endpointBasePath) {
   return endpointBasePath.replace('/', '').replace(/\//g, '-')
 }
 
+const joinPath = (folder, path) => (isAbsolute(folder) ? join(folder, path) : join(__dirname, folder, path))
 const validCrudFolder = path => !['.', '..'].includes(path) && /\.js(on)?$/.test(path)
 
 async function setupCruds(fastify) {
   const collections = readdirSync(fastify.config.COLLECTION_DEFINITION_FOLDER)
     .filter(validCrudFolder)
-    .map(path => join(fastify.config.COLLECTION_DEFINITION_FOLDER, path))
+    .map(path => joinPath(fastify.config.COLLECTION_DEFINITION_FOLDER, path))
     .map(require)
 
   fastify.decorate('collections', collections)
@@ -199,7 +200,7 @@ async function setupCruds(fastify) {
   if (viewsFolder) {
     const views = readdirSync(viewsFolder)
       .filter(validCrudFolder)
-      .map(path => join(viewsFolder, path))
+      .map(path => joinPath(viewsFolder, path))
       .map(require)
 
     fastify.decorate('views', views)

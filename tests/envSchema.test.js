@@ -32,7 +32,10 @@ tap.test('envSchema tests', async t => {
     fastify = await lc39('./index.js', {
       envVariables: {
         MONGODB_URL: mongoURL,
+        // Absolute path
         COLLECTION_DEFINITION_FOLDER: path.join(__dirname, 'emptyCollectionDefinitions'),
+        // Relative path
+        VIEWS_DEFINITION_FOLDER: 'tests/emptyViewsDefinitions',
         USER_ID_HEADER_KEY: 'userid',
         ...envs,
       },
