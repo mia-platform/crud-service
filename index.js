@@ -189,19 +189,29 @@ const joinPath = (folder, path) => (isAbsolute(folder) ? join(folder, path) : jo
 const validCrudFolder = path => !['.', '..'].includes(path) && /\.js(on)?$/.test(path)
 
 async function setupCruds(fastify) {
-  const collections = readdirSync(fastify.config.COLLECTION_DEFINITION_FOLDER)
-    .filter(validCrudFolder)
-    .map(path => joinPath(fastify.config.COLLECTION_DEFINITION_FOLDER, path))
-    .map(require)
+  let collections = []
+  try {
+    collections = readdirSync(fastify.config.COLLECTION_DEFINITION_FOLDER)
+      .filter(validCrudFolder)
+      .map(path => joinPath(fastify.config.COLLECTION_DEFINITION_FOLDER, path))
+      .map(require)
+  } catch (error) {
+    throw new Error('The folder defined in COLLECTION_DEFINITION_FOLDER is not found. Are you sure it exists?', error)
+  }
 
   fastify.decorate('collections', collections)
 
   const viewsFolder = fastify.config.VIEWS_DEFINITION_FOLDER
   if (viewsFolder) {
-    const views = readdirSync(viewsFolder)
-      .filter(validCrudFolder)
-      .map(path => joinPath(viewsFolder, path))
-      .map(require)
+    let views = []
+    try {
+      views = readdirSync(viewsFolder)
+        .filter(validCrudFolder)
+        .map(path => joinPath(viewsFolder, path))
+        .map(require)
+    } catch (error) {
+      throw new Error('The folder defined in VIEWS_DEFINITION_FOLDER is not found. Are you sure it exists?', error)
+    }
 
     fastify.decorate('views', views)
   }

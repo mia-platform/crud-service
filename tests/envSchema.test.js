@@ -32,10 +32,8 @@ tap.test('envSchema tests', async t => {
     fastify = await lc39('./index.js', {
       envVariables: {
         MONGODB_URL: mongoURL,
-        // Absolute path
         COLLECTION_DEFINITION_FOLDER: path.join(__dirname, 'emptyCollectionDefinitions'),
-        // Relative path
-        VIEWS_DEFINITION_FOLDER: 'tests/emptyViewsDefinitions',
+        VIEWS_DEFINITION_FOLDER: path.join(__dirname, 'emptyViewsDefinitions'),
         USER_ID_HEADER_KEY: 'userid',
         ...envs,
       },
@@ -53,6 +51,16 @@ tap.test('envSchema tests', async t => {
 
   t.test('Valid base schema with none provider', async t => {
     t.resolves(startFastify({ KMS_PROVIDER: 'none' }))
+  })
+
+  t.test('Valid base schema with relative paths', async t => {
+    t.resolves(
+      startFastify(
+        {
+          COLLECTION_DEFINITION_FOLDER: 'tests/emptyCollectionDefinitions',
+          VIEWS_DEFINITION_FOLDER: 'tests/emptyViewsDefinitions' }
+      )
+    )
   })
 
   t.test('Missing local master key path', async t => {
