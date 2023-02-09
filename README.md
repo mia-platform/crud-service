@@ -2,6 +2,7 @@
   <h1>CRUD Service</h1>
 
   [![pipeline status][build-svg]][pipeline-link]
+  [![Coverage Status][coverage-svg]][coverage-link]
   [![license][license-svg]](./LICENSE)
   [![javascript style guide][standard-mia-svg]][standard-mia]  
 </div>
@@ -11,6 +12,8 @@
 The **CRUD Service** is a lightweight application that exposes an HTTP Interface to perform CRUD operations on MongoDB collections defined via JSON Schema, to make sure to have consistent data in every operation. Moreover, your documents will includes some metadata regarding the creation and the latest update of the document, and a state that will come in handy to better manage draft documents and virtual delete.
 
 The **CRUD Service** can be launched with [lc39](https://github.com/mia-platform/lc39), that will start a [Fastify](https://fastify.io) instance that will include the functionalities. It also includes a Swagger User Interface to be used to perform any operation for each of the collections defined.
+
+Moreover, the **CRUD Service** can be configured used with the [MongoDB Data Encryption](https://www.mongodb.com/basics/mongodb-encryption) functionality to automatically encrypt data stored in the Database.
 
 ## How to run it
 
@@ -51,12 +54,23 @@ npm run start:local
 
 ### Use the Docker Image
 
-A Docker image for every version of the **CRUD Service** will be release on Github Registry.
-If you are interested in it, you can get one and run it locally with this commands:
+Docker images of the **CRUD Service** are available on [GitHub Registry](https://github.com/orgs/mia-platform/packages/container/package/crud-service) and [DockerHub](https://hub.docker.com/r/miaplatform/crud-service). An image is released in those two registries for every tag created.
+
+If you instead prefer to create your image (e.g. from your fork), you can use the [`Dockerfile`](./Dockerfile) to generate your image:
 
 ```shell
-
 docker build -t crud-service .
+```
+
+Thanks to the support of [Docker BuildKit](https://docs.docker.com/build/buildkit/), you can also decide to create an image of the CRUD Service without including the `mongocryptd` libraries:
+
+```shell
+DOCKER_BUILDKIT=1 docker build -t crud-service-no-encryption --target=crud-service-no-encryption .
+```
+
+If you are interested in it, you can get one and run it locally with these commands:
+
+```shell
 docker run --name crud-service \
            --detach \
            --env LOG_LEVEL=info \
@@ -67,10 +81,10 @@ docker run --name crud-service \
            --env CRUD_MAX_LIMIT=200 \
            --mount type=bind,source=$(pwd)/tests/collectionDefinitions,target=/home/node/app/collections \
            --publish 3000:3000 \
-           crud-service:latest
+           <your-crud-service-image-name>:latest
 ```
 
-Please note that, in this case, the list of environment variables must be included when running the service.
+Please note that you can mount the `.env` file with your CRUD Service configuration instead of manually including the environment variables in the command.
 
 ### How to use it
 
@@ -228,7 +242,7 @@ The HTTPInterface includes by default different API methods for every kind of op
 | Verb | API Method                   | Description                                    | 
 |------|------------------------------|------------------------------------------------|
 | GET  | {base URL}/{endpoint}/       | Returns a list of documents.                   |
-| GET  | {base URL}/{endpoint}/export | Export the collection.                         |
+| GET  | {base URL}/{endpoint}/export | Exlc39port the collection.                     |
 | GET  | {base URL}/{endpoint}/{id}   | Returns the item with specific _ID_.           |
 | GET  | {base URL}/{endpoint}/count  | Returns the number of items in the collection. |
 
@@ -271,7 +285,7 @@ For example, for version 5.0.14, the final url of the `.deb` will be: https://re
 
 ## Contributing
 
-CRUD Service is an active project developed and maintained by [Mia Platform s.r.l.](https://mia-platform.eu/), it is distributed open source and it is [Apache 2 licensed](./LICENSE).
+CRUD Service is an active project developed and maintained by [Mia Platform](https://mia-platform.eu/), it is distributed open source and it is [Apache 2 licensed](./LICENSE).
 You're more than welcome to partecipate by creating and/or partecipating to public discussion and actively partecipate to the development of the application.
 
 The two main communication channel are:
@@ -280,12 +294,24 @@ The two main communication channel are:
 
 Please read [CONTRIBUTING.md](./CONTRIBUTING.md) for further details about the process for submitting pull requests.
 
+## Disclaimer
+
+### Usage of MongoDB Data Encryption
+
+The CRUD Service can be used along with the [MongoDB Data Encryption](https://www.mongodb.com/basics/mongodb-encryption) functionality, and the images available includes the libraries to use this feature.
+
+However, the MongoDB Data Encryption should be used along with [MongoDB Atlas](https://www.mongodb.com/atlas/database) or [MongoDB Enterprise Advanced](https://www.mongodb.com/products/mongodb-enterprise-advanced). When you use the CRUD Service, for personal projects or commercial applications, you should be aware of that and you will have to comply with [MongoDB terms of use](https://www.mongodb.com/legal/terms-of-use) accordingly.
+
+Mia Platform s.r.l. does not respond to any improper use of the MongoDB Data Encryption or any other MongoDB product.
+
 [nvm]: https://github.com/creationix/nvm
 [cryptd]: https://repo.mongodb.com/apt/debian/dists/bullseye/mongodb-enterprise/
 
 [pipeline-link]: https://github.com/mia-platform/crud-service/actions
 [build-svg]: https://img.shields.io/github/actions/workflow/status/mia-platform/crud-service/nodejs.yml
-[license-svg]: 	https://img.shields.io/github/license/mia-platform/crud-service
+[license-svg]: https://img.shields.io/github/license/mia-platform/CRUD-service
 
+[coverage-svg]: https://coveralls.io/repos/github/mia-platform/crud-service/badge.svg?branch=main
+[coverage-link]: https://coveralls.io/github/mia-platform/crud-service?branch=main
 [standard-mia-svg]: https://img.shields.io/badge/code_style-standard--mia-orange.svg
 [standard-mia]: https://github.com/mia-platform/eslint-config-mia
