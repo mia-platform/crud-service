@@ -38,7 +38,7 @@ docker run --detach --name mongo -p 27017:27017 --mount source=mongo,target=/dat
 
 In case you want to use the MongoDB Encryption functionality, you must install in your machine the [MongoDB Enterprise Server](https://www.mongodb.com/try/download/enterprise?tck=docs_server) and run the `mongocryptd` file (its location may change based on the version you downloaded).
 
-To run the **CRUD Service**, a `*.env` file including the needed configuration is required. An example of this file is the [default.env](default.env) file. You want to copy the file in a different path to avoid having your configuration ignored by Git:
+To run the **CRUD Service**, a `*.env` file including the needed configuration is required. An example of this file is the [default.env](default.env) file. You want to copy the file in a different path to make sure your configuration is ignored by Git (we suggest the name `local.env`):
 ```shell
 cp ./default.env ./local.env
 ```
