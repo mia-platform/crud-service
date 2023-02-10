@@ -1,6 +1,8 @@
 <div align="center">
-  <h1>CRUD Service</h1>
 
+  <img width="152" alt="crud-service" src="https://user-images.githubusercontent.com/7142570/218051870-6007d81c-52c2-45e2-bc0b-747d79a5dfec.png">
+  <h1>CRUD Service</h1>
+ 
   [![pipeline status][build-svg]][pipeline-link]
   [![Coverage Status][coverage-svg]][coverage-link]
   [![license][license-svg]](./LICENSE)
