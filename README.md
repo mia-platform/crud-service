@@ -285,7 +285,7 @@ For example, for version 5.0.14, the final url of the `.deb` will be: https://re
 
 ## Contributing
 
-CRUD Service is an active project developed and maintained by [Mia Platform s.r.l.](https://mia-platform.eu/), it is distributed open source and it is [Apache 2 licensed](./LICENSE).
+CRUD Service is an active project developed and maintained by [Mia Platform](https://mia-platform.eu/), it is distributed open source and it is [Apache 2 licensed](./LICENSE).
 You're more than welcome to partecipate by creating and/or partecipating to public discussion and actively partecipate to the development of the application.
 
 The two main communication channel are:
