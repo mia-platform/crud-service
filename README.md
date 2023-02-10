@@ -45,9 +45,11 @@ To run the **CRUD Service**, a `*.env` file including the needed configuration i
 cp ./default.env ./local.env
 ```
 
-The `default.env` only lists the necessary environment variables to be added to successfully run the CRUD Service in your local machine. A complete list of the environment variables can be found [on the related](envSchema.js#L25) page](envSchema.js#L25). Once you have your environment variables file, feel free to update it the way you want.
+The `default.env` only lists the necessary environment variables to be added to successfully run the CRUD Service in your local machine. A complete list of the environment variables can be found [on the related page](envSchema.js#L25). 
 
-Then you can run the service:
+Once you have your _env_ file, you might want to update the `COLLECTION_DEFINITION_FOLDER` and `VIEWS_DEFINITION_FOLDER` environment variables, which represent the folders where the definition of collections and views are found. The CRUD Service accepts _absolute paths_ only, so please verify them. The default values are folders used in unit tests: if you plan to update the files inside for your needs, it's better to use another folder.
+
+When everything is ready, you can run the service:
 ```shell
 nvm use # <-- only if you use nvm
 npm i
