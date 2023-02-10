@@ -1,6 +1,8 @@
 <div align="center">
-  <h1>CRUD Service</h1>
 
+  <img width="152" alt="crud-service" src="https://user-images.githubusercontent.com/7142570/218051870-6007d81c-52c2-45e2-bc0b-747d79a5dfec.png">
+  <h1>CRUD Service</h1>
+ 
   [![pipeline status][build-svg]][pipeline-link]
   [![Coverage Status][coverage-svg]][coverage-link]
   [![license][license-svg]](./LICENSE)
@@ -38,9 +40,9 @@ docker run --detach --name mongo -p 27017:27017 --mount source=mongo,target=/dat
 
 In case you want to use the MongoDB Encryption functionality, you must install in your machine the [MongoDB Enterprise Server](https://www.mongodb.com/try/download/enterprise?tck=docs_server) and run the `mongocryptd` file (its location may change based on the version you downloaded).
 
-To run the **CRUD Service**, a `.env` file including the needed configuration is required. An example of this file is the [default.env](default.env) file. You want to copy the file in a different path to avoid to have your configuration ignored by Git:
+To run the **CRUD Service**, a `*.env` file including the needed configuration is required. An example of this file is the [default.env](default.env) file. You want to copy the file in a different path to make sure your configuration is ignored by Git (we suggest the name `local.env`):
 ```shell
-cp ./default.env ./.env
+cp ./default.env ./local.env
 ```
 
 The `default.env` only lists the necessary environment variables to be added to successfully run the CRUD Service in your local machine. A complete list of the environment variables can be found [on the related page](envSchema.js#L25). 
@@ -51,7 +53,7 @@ When everything is ready, you can run the service:
 ```shell
 nvm use # <-- only if you use nvm
 npm i
-npm run start:local
+npm run start:local # <-- run the service using the 'local.env' file
 ```
 
 ### Use the Docker Image

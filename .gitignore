@@ -9,7 +9,6 @@ node_modules
 *.log*
 .yarn-integrity
 !default.env
-!local.*.env
 .history
 mongocryptd.pid
 yarn.lock
