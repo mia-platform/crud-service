@@ -196,7 +196,10 @@ async function setupCruds(fastify) {
       .map(path => joinPath(fastify.config.COLLECTION_DEFINITION_FOLDER, path))
       .map(require)
   } catch (error) {
-    throw new Error('The folder defined in COLLECTION_DEFINITION_FOLDER is not found. Are you sure it exists?', error)
+    throw new Error(`An error occurred loading the Collections definitions. 
+Verify if the folder defined in COLLECTION_DEFINITION_FOLDER is valid and if the files includes valid definitions. 
+${error}
+      `)
   }
 
   fastify.decorate('collections', collections)
@@ -210,7 +213,10 @@ async function setupCruds(fastify) {
         .map(path => joinPath(viewsFolder, path))
         .map(require)
     } catch (error) {
-      throw new Error('The folder defined in VIEWS_DEFINITION_FOLDER is not found. Are you sure it exists?', error)
+      throw new Error(`An error occurred loading the Views definitions. 
+Verify if the folder defined in VIEWS_DEFINITION_FOLDER is valid and if the files includes valid definitions. 
+${error}
+      `)
     }
 
     fastify.decorate('views', views)
