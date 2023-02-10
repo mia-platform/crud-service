@@ -49,7 +49,7 @@ Then you can run the service:
 ```shell
 nvm use # <-- only if you use nvm
 npm i
-npm run start:local # <-- run the service using
+npm run start:local # <-- run the service using the 'local.env' file
 ```
 
 ### Use the Docker Image
