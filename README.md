@@ -246,7 +246,7 @@ The HTTPInterface includes by default different API methods for every kind of op
 | Verb | API Method                   | Description                                    | 
 |------|------------------------------|------------------------------------------------|
 | GET  | {base URL}/{endpoint}/       | Returns a list of documents.                   |
-| GET  | {base URL}/{endpoint}/export | Exlc39port the collection.                     |
+| GET  | {base URL}/{endpoint}/export | Export the collection.                         |
 | GET  | {base URL}/{endpoint}/{id}   | Returns the item with specific _ID_.           |
 | GET  | {base URL}/{endpoint}/count  | Returns the number of items in the collection. |
 
