@@ -88,7 +88,7 @@ Of all the requests fired to the service, the two tasks were distributed to be: 
 
 This scenario has been designed to measure the service behavior when the API requests pass through the API Gateway (and Authorization Service, even though no authorization has been set on the API itself). 
 
-The reason for this scenario is that passing through the API Gateway may cause a CPU overhead due the connections being reopened everytime, thus leading to higher resource requirements.
+The reason for this scenario is that passing through the API Gateway may cause a CPU overhead due the connections being reopened every time, thus leading to higher resource requirements.
 
 If you plan to avoid exposing the CRUD Service directly from the API Gateway this scenario can be ignored.
 
