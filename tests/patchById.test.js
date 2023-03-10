@@ -188,6 +188,16 @@ tap.test('patchById', async t => {
       cmd: { $push: { tags: 'new-tag' } },
       updatedFields: { tags: chosenDoc.tags.concat(['new-tag']), updatedAt: context.now, updaterId: newUpdaterId },
     },
+    {
+      name: 'addToSet',
+      cmd: { $push: { tags: 'new-tag' } },
+      updatedFields: { tags: chosenDoc.tags.concat(['new-tag']), updatedAt: context.now, updaterId: newUpdaterId },
+    },
+    {
+      name: 'addToSet no duplicates',
+      cmd: { $addToSet: { tags: chosenDoc.tags[0] } },
+      updatedFields: { tags: chosenDoc.tags, updatedAt: context.now, updaterId: newUpdaterId },
+    },
   ]
   t.test('all commands', t => {
     t.plan(testConf.length)

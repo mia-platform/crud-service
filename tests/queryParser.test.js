@@ -617,6 +617,18 @@ tap.test('queryParser', t => {
         expected: { $push: { tagIds: 33 } },
         editableFields: ALL_FIELDS,
       },
+      {
+        name: '$addToSet - Array string',
+        commands: { $addToSet: { tags: 'new-tag' } },
+        expected: { $addToSet: { tags: 'new-tag' } },
+        editableFields: ALL_FIELDS,
+      },
+      {
+        name: '$addToSet - Array integer',
+        commands: { $addToSet: { tagIds: 33 } },
+        expected: { $addToSet: { tagIds: 33 } },
+        editableFields: ALL_FIELDS,
+      },
     ]
       .concat([
         {
@@ -700,6 +712,11 @@ tap.test('queryParser', t => {
           commands: { $push: { 'attachments.0.neastedArr': 55 } },
           expected: { $push: { 'attachments.0.neastedArr': 55 } },
         },
+        {
+          name: '$addToSet - raw schema - on nested fields is allowed',
+          commands: { $addToSet: { 'attachments.0.neastedArr': 55 } },
+          expected: { $addToSet: { 'attachments.0.neastedArr': 55 } },
+        },
       ])
       .concat([
         {
@@ -711,6 +728,16 @@ tap.test('queryParser', t => {
           name: '$push - raw schema - array inside another array',
           commands: { $push: { 'attachments.0.neastedArr': 55 } },
           expected: { $push: { 'attachments.0.neastedArr': 55 } },
+        },
+        {
+          name: '$addToSet - raw schema - on nested object',
+          commands: { $addToSet: { 'metadata.somethingArrayOfNumbers': 7777 } },
+          expected: { $addToSet: { 'metadata.somethingArrayOfNumbers': 7777 } },
+        },
+        {
+          name: '$addToSet - raw schema - array inside another array',
+          commands: { $addToSet: { 'attachments.0.neastedArr': 55 } },
+          expected: { $addToSet: { 'attachments.0.neastedArr': 55 } },
         },
         {
           name: '$.replace simple array',
