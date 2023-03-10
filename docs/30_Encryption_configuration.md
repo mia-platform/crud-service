@@ -186,13 +186,19 @@ So your final schema would be:
       "type": "string"
     }
   },
-  "encryption": {"enabled": true, "searchable": false}
+  "encryption": {
+    "enabled": true,
+    "searchable": false
+  }
 }
 ```
 
 Instead, if you want to activate encryption only for the property `testProperty`, and **make it searchable**, you **must** add:
 ```json
-"encryption": {"enabled": true, "searchable": true}
+"encryption": {
+  "enabled": true, 
+  "searchable": true
+}
 ```
 
 inside the property definition.
@@ -205,7 +211,10 @@ So your final schema would be:
   "properties": {
     "testProperty": {
       "type": "string",
-      "encryption": {"enabled": true, "searchable": true}
+      "encryption": {
+        "enabled": true,
+        "searchable": true
+      }
     }
   }
 }

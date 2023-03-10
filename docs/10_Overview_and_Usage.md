@@ -96,7 +96,7 @@ For the `_id` field you can also change the `type`, choosing between:
 
 If you create a CRUD named `empty` without any configuration in the Console, you will create a schema with the predefined properties. When you POST on that CRUD you will obtain the following document.
 
-```bash
+```shell
 curl --request GET \
   --url https://your-url/v2/empty/ \
   --header 'accept: application/json' \
@@ -146,18 +146,18 @@ Only the following transitions are allowed in the publish workflow.
 
 To transit the STATE of an item of a CRUD you need to POST it via the following endpoint:
 
-```json
- POST /[COLLECTION_NAME]/{_id}/state
+```
+POST /[COLLECTION_NAME]/{_id}/state
 ```
 
 :::note
 It is not possible to change the STATE of an item via a PATCH endpoint.
 :::
 
-For example, the following request will update from DRAFT (default state) to PUBLISH the collection document with `_id=5e8a125eb74dbf0011444ed3`:
+For example, the following request will update from DRAFT (default state) to PUBLIC the collection document with `_id=5e8a125eb74dbf0011444ed3`:
 
-```bash
- curl --request POST \
+```shell
+curl --request POST \
   --url https://your-url/v2/empty/5e8a125eb74dbf0011444ed3/state \
   --header 'content-type: application/json' \
   --header 'client-key: client-key' \
@@ -174,8 +174,8 @@ When a new property is added to a collection, it is possible to specify the foll
 - GeoPoint (array of coordinates longitude, latitude)
 
 ```json
-{ "position":
-  [
+{
+  "position": [
     9.232457,
     45.443919
   ]
@@ -221,19 +221,19 @@ The CRUD service accepts the following header:
 
 - ***acl_rows***: an array of MongoDB queries that limits the documents that a request can return. The value of acl_rows is a stringified JSON, which is in AND with the query string. Example:
 
-```json
+```js
 acl_rows: JSON.stringify([{ price: { $gt: MATCHING_PRICE } }])
 ```
 
 - ***acl_read_columns***: the list of properties to return in the result (projection). It is an array of strings. Example:
 
-```json
+```js
 acl_read_columns: JSON.stringify(['name', 'author', 'isbn'])
 ```
 
 - ***json-query-params-encoding***: the encoding in which the json query params are sent. This feature is only made to support HTTP clients like [OCI](https://docs.oracle.com/middleware/12211/odi/concepts/intro.htm) which have problems with special characters in the query params of the request, if you don't have such problems you most likely don't need to declare this header. Right now the only option is `base64` and any other value will be treated as if the params are URL encoded. Example:
 
-```bash
+```shell
 curl --request GET \
   --url 'https://your-url/v2/plates/?_q=base64encodedjson' \
   --header 'json-query-params-encoding: base64'
@@ -257,7 +257,7 @@ If a CRUD is exposed under an [API Key](../../development_suite/api-console/api-
 
 Example:
 
-```bash
+```shell
 curl --request GET \
   --url 'https://your-url/v2/your-crud-name/' \
   --header 'accept: */*' \
@@ -280,9 +280,9 @@ All of these examples can be tested using the API Portal of Mia-Platform. The Po
 
 Let's see how to perform C-R-U-D operations.
 
-All examples are sent to <https://your-url> Mia-Platfrom instance. We assume that the endpoints are only protected by API Key.
+All examples are sent to <https://your-url> Mia-Platform instance. We assume that the endpoints are only protected by API Key.
 
-```json
+```
 client-key: client-key
 ```
 
@@ -306,14 +306,14 @@ For example, if you want to store a new document in the exposed collection `plat
 
 ```json
 {
- "name": "Spaghetti with tomato sauce",
- "description": "The classic italian dish"
+  "name": "Spaghetti with tomato sauce",
+  "description": "The classic italian dish"
 }
 ```
 
 Then you have to insert it in the collection using a POST request, like the following one:
 
-```bash
+```shell
 curl --request POST \
   --url https://your-url/v2/plates/ \
   --header 'accept: application/json' \
@@ -326,7 +326,7 @@ In response, you will get a JSON object like the one below, where **_id** is the
 
 ```json
 {
- "_id":"5e8ae13bb74dbf0011444ed5"
+  "_id":"5e8ae13bb74dbf0011444ed5"
 }
 ```
 
@@ -334,7 +334,7 @@ In response, you will get a JSON object like the one below, where **_id** is the
 
 If you are not sure if the document is already present in the collection, you can use the Insert or Update feature calling the `upsert-one` endpoint. You need to specify in query parameters all data to match eventually the existent document and in request body the JSON document you want to insert or update.
 
-```bash
+```shell
 curl --request POST \
   --url 'https://your-url/v2/plates/upsert-one?name=Spaghetti%20allo%20Scoglio' \
   --header 'accept: application/json' \
@@ -364,22 +364,22 @@ If you want to unset an item value when you update it, just use `$unset`. For ex
 ```json
 [
   {
-    "_id":"5e9482ed0fb46200115f9231"
-    "name":"Rice"
-    "description":"The description"
-    "price":"20"
-    "__STATE__":"PUBLIC"
-    "creatorId":"public"
-    "updaterId":"public"
-    "updatedAt":"2020-04-13T15:19:09.465Z"
-    "createdAt":"2020-04-13T15:19:09.465Z"
+    "_id": "5e9482ed0fb46200115f9231",
+    "name": "Rice",
+    "description":  "The description",
+    "price": "20",
+    "__STATE__": "PUBLIC",
+    "creatorId": "public",
+    "updaterId": "public",
+    "updatedAt": "2020-04-13T15:19:09.465Z",
+    "createdAt": "2020-04-13T15:19:09.465Z"
   }
 ]
 ```
 
 Just perform the call:
 
-```bash
+```shell
 curl --request POST \
   --url 'https://your-url/v2/plates/upsert-one?name=Rice' \
   --header 'accept: application/json' \
@@ -393,14 +393,14 @@ The document will become the following, without the price property and with the 
 ```json
 [
   {
-    "_id":"5e9482ed0fb46200115f9231"
-    "name":"Rice"
-    "description":"The correct description"
-    "__STATE__":"PUBLIC"
-    "creatorId":"public"
-    "updaterId":"public"
-    "updatedAt":"2020-04-13T15:26:51.611Z"
-    "createdAt":"2020-04-13T15:19:09.465Z"
+    "_id": "5e9482ed0fb46200115f9231",
+    "name": "Rice",
+    "description": "The correct description",
+    "__STATE__": "PUBLIC",
+    "creatorId": "public",
+    "updaterId": "public",
+    "updatedAt": "2020-04-13T15:26:51.611Z",
+    "createdAt": "2020-04-13T15:19:09.465Z"
   }
 ]
 ```
@@ -409,7 +409,7 @@ The document will become the following, without the price property and with the 
 
 The bulk insert can be performed POST on CRUD a JSON **array** of documents. For example, to add three dishes to plates collection you have to POST the `/bulk` on the resource.
 
-```bash
+```shell
 curl --request POST \
   --url https://your-url/v2/plates/bulk \
   --header 'accept: application/json' \
@@ -420,9 +420,15 @@ curl --request POST \
 
 ```json
 [
- {"_id":"5e8af37ab74dbf0011444ed6"},
- {"_id":"5e8af37ab74dbf0011444ed7"},
- {"_id":"5e8af37ab74dbf0011444ed8"}
+  {
+    "_id": "5e8af37ab74dbf0011444ed6"
+  },
+  {
+    "_id": "5e8af37ab74dbf0011444ed7"
+  },
+  {
+    "_id": "5e8af37ab74dbf0011444ed8"
+  }
 ]
 ```
 
@@ -434,7 +440,7 @@ In this section you will learn how to query a collection.
 
 To list a collection, simply call the endpoint with a **GET**.
 
-```bash
+```shell
 curl -X GET https://your-url/v2/plates/ \
 -H  "accept: application/json"  \
 -H  "content-type: application/json" \
@@ -449,38 +455,38 @@ In response of this request, you will get a JSON array that contains all the doc
 
 ```json
 [
-   {
-      "__STATE__" : "PUBLIC",
-      "_id" : "5df78b5287393f00114e0f20",
-      "createdAt" : "2019-12-16T13:49:06.759Z",
-      "creatorId" : "5c4fd1d2-c6d8-4c65-8885-0b74f0309d0f",
-      "description" : "The correct description",
-      "image" : [],
-      "ingredient" : [
-         "5e8200fa2e9dde00112b6853",
-         "5e81feaf2e9dde00112b684f",
-         "5e81fd882e9dde00112b6849",
-         "5e8202892e9dde00112b685c"
-      ],
-      "name" : "Smoked salmon",
-      "updatedAt" : "2020-04-13T15:26:19.819Z",
-      "updaterId" : "public"
-   },
-   {
-      "__STATE__" : "PUBLIC",
-      "_id" : "5df8aff66498d30011b19e4d",
-      "createdAt" : "2019-12-17T10:37:42.551Z",
-      "creatorId" : "5c4fd1d2-c6d8-4c65-8885-0b74f0309d0f",
-      "description" : "",
-      "image" : [],
-      "ingredient" : [
-         "5e81fddd2e9dde00112b684c"
-      ],
-      "name" : "FRIED VEGGIE NOODLE",
-      "price" : "10",
-      "updatedAt" : "2020-03-30T14:29:31.791Z",
-      "updaterId" : "auth0|5e81fb3565a28c0c5dbaa8c7"
-   }
+  {
+    "__STATE__": "PUBLIC",
+    "_id": "5df78b5287393f00114e0f20",
+    "createdAt": "2019-12-16T13:49:06.759Z",
+    "creatorId": "5c4fd1d2-c6d8-4c65-8885-0b74f0309d0f",
+    "description": "The correct description",
+    "image": [],
+    "ingredient": [
+      "5e8200fa2e9dde00112b6853",
+      "5e81feaf2e9dde00112b684f",
+      "5e81fd882e9dde00112b6849",
+      "5e8202892e9dde00112b685c"
+    ],
+    "name": "Smoked salmon",
+    "updatedAt": "2020-04-13T15:26:19.819Z",
+    "updaterId": "public"
+  },
+  {
+    "__STATE__": "PUBLIC",
+    "_id": "5df8aff66498d30011b19e4d",
+    "createdAt": "2019-12-17T10:37:42.551Z",
+    "creatorId": "5c4fd1d2-c6d8-4c65-8885-0b74f0309d0f",
+    "description": "",
+    "image": [],
+    "ingredient": [
+      "5e81fddd2e9dde00112b684c"
+    ],
+    "name": "FRIED VEGGIE NOODLE",
+    "price": "10",
+    "updatedAt": "2020-03-30T14:29:31.791Z",
+    "updaterId": "auth0|5e81fb3565a28c0c5dbaa8c7"
+  }
 ]
 ```
 
@@ -492,7 +498,7 @@ The maximum number of documents returned are configurable through the variable *
 
 To read just one document, simply pass the *_id* of the document as path parameter.
 
-```bash
+```shell
 curl -X GET https://your-url/v2/plates/5df8aff66498d30011b19e4d \
 -H  "accept: application/json"  \
 -H  "content-type: application/json" \
@@ -503,30 +509,30 @@ In response to this request, you get a JSON Object like the following.
 
 ```json
 {
-   "__STATE__" : "PUBLIC",
-   "_id" : "5df8aff66498d30011b19e4d",
-   "createdAt" : "2019-12-17T10:37:42.551Z",
-   "creatorId" : "5c4fd1d2-c6d8-4c65-8885-0b74f0309d0f",
-   "description" : "",
-   "image" : [
-      {
-         "_id" : "5df8bb3295a2a500117fc8d2",
-         "file" : "5df8bb328fa0c0000fb334e3.jpg",
-         "location" : "https://your-url/files/download/5df8bb328fa0c0000fb334e3.jpg",
-         "name" : "close-up-photo-of-cooked-pasta-2456435.jpg",
-         "size" : 94274,
-         "type" : "image/jpeg"
-      }
-   ],
-   "ingredient" : [
-      "5e81fddd2e9dde00112b684c",
-      "5e81feaf2e9dde00112b684f",
-      "5e81fd882e9dde00112b6849"
-   ],
-   "name" : "FRIED VEGGIE NOODLE",
-   "price" : "10",
-   "updatedAt" : "2020-03-30T14:29:31.791Z",
-   "updaterId" : "auth0|5e81fb3565a28c0c5dbaa8c7"
+  "__STATE__": "PUBLIC",
+  "_id": "5df8aff66498d30011b19e4d",
+  "createdAt": "2019-12-17T10:37:42.551Z",
+  "creatorId": "5c4fd1d2-c6d8-4c65-8885-0b74f0309d0f",
+  "description": "",
+  "image": [
+    {
+      "_id": "5df8bb3295a2a500117fc8d2",
+      "file": "5df8bb328fa0c0000fb334e3.jpg",
+      "location": "https://your-url/files/download/5df8bb328fa0c0000fb334e3.jpg",
+      "name": "close-up-photo-of-cooked-pasta-2456435.jpg",
+      "size": 94274,
+      "type": "image/jpeg"
+    }
+  ],
+  "ingredient": [
+    "5e81fddd2e9dde00112b684c",
+    "5e81feaf2e9dde00112b684f",
+    "5e81fd882e9dde00112b6849"
+  ],
+  "name": "FRIED VEGGIE NOODLE",
+  "price": "10",
+  "updatedAt": "2020-03-30T14:29:31.791Z",
+  "updaterId": "auth0|5e81fb3565a28c0c5dbaa8c7"
 }
 ```
 
@@ -538,13 +544,13 @@ The query will return only PUBLIC documents. To retrieve a DRAFT document add to
 
 It is possible to sort the list of documents returned by a GET passing to the query string the **_s** parameter. The value of the parameter is the following:
 
-```bash
+```shell
 [-|empty]<property name>
 ```
 
 By default, the sorting is ascending; use `-` for descending. The following call sorts plates by names in alphabetical order.
 
-```bash
+```shell
 curl --request GET \
   --url 'https://your-url/v2/plates/?_s=name' \
   --header 'accept: application/json' \
@@ -553,7 +559,7 @@ curl --request GET \
 
 Sorting for multiple values is made possible by passing multiple times the **_s** query parameter with the desired property, or by passing a comma separated list of values to the **_s**, as done in the examples below.
 
-```bash
+```shell
 curl --request GET \
   --url 'https://your-url/v2/plates/?_s=name&_s=surname' \
   --header 'accept: application/json' \
@@ -562,7 +568,7 @@ curl --request GET \
 
 It's possible to sort nested values, too.
 
-```bash
+```shell
 curl --request GET \
   --url 'https://your-url/v2/plates/?_s=name,registry.surname' \
   --header 'accept: application/json' \
@@ -584,7 +590,7 @@ If you pass such limit, the CRUD Service truncate to *CRUD_MAX_LIMIT* the result
 
 This is an example of a request that gets *two documents per page*, and you want to ask for the *third page* (skip 4 documents).
 
-```bash
+```shell
 curl --request GET \
   --url 'https://your-url/v2/plates/?_l=2&_sk=4' \
   --header 'accept: application/json' \
@@ -597,7 +603,7 @@ Combining `_l` and `_sk`, you can paginate the request. If you want to visualize
 
 You can return just some document properties (like GraphQL sub-selection or SQL select) using `_p` parameter. You can select multiple properties separated by commas.
 
-```bash
+```shell
 curl --request GET \
   --url 'https://your-url/v2/plates/?_p=name,price' \
   --header 'accept: application/json' \
@@ -608,16 +614,16 @@ Returns an array of documents with only the properties requested.
 
 ```json
 [
-   {
-      "_id" : "5df8aff66498d30011b19e4d",
-      "name" : "FRIED VEGGIE NOODLE",
-      "price" : "10"
-   },
-   {
-      "_id" : "5df8b8546498d30011b19e4e",
-      "name" : "SPINACH CHICKEN SALAD",
-      "price" : "12"
-   }
+  {
+    "_id": "5df8aff66498d30011b19e4d",
+    "name": "FRIED VEGGIE NOODLE",
+    "price": "10"
+  },
+  {
+    "_id": "5df8b8546498d30011b19e4e",
+    "name": "SPINACH CHICKEN SALAD",
+    "price": "12"
+  }
 ]
 ```
 
@@ -627,21 +633,21 @@ This allows an improved expressibility and let the user get advantage of some Mo
 
 Here follow some examples of its usage:
 
-```bash title="Simple projection of some fields"
+```shell title="Simple projection of some fields"
 curl --request GET \
   --url 'https://your-url/v2/plates/?_rawp={"someField":1,"someOtherField":1}' \
   --header 'accept: application/json' \
   --header 'client-key: client-key'
 ```
 
-```bash title="Exclude some fields"
+```shell title="Exclude some fields"
 curl --request GET \
   --url 'https://your-url/v2/plates/?_rawp={"excludedField":0,"someOtherExcludedField":0}' \
   --header 'accept: application/json' \
   --header 'client-key: client-key'
 ```
 
-```bash title="Use a $filter operator to get only the objects with someSubfield=someValue of an array someArray"
+```shell title="Use a $filter operator to get only the objects with someSubfield=someValue of an array someArray"
 curl --request GET \
   --url 'https://your-url/v2/plates/?_rawp={"result":{"$filter":{"input":"$someArray","as":"item","cond":{"$$item.someSubfield":"someValue"}}}}' \
   --header 'accept: application/json' \
@@ -670,7 +676,7 @@ If you have problems with the special characters in the URL encoding, you can tr
 
 You can combine all together. For example to get the first 2 plates, sorted by name with just name and ingredients, do the following request.
 
-```bash
+```shell
 curl --request GET \
   --url 'https://your-url/v2/plates/?_s=name&_l=2&_sk=0&_p=name,ingredient' \
   --header 'accept: application/json' \
@@ -683,18 +689,32 @@ Documents can be filtered using MongoDB queries. It is possible to filter in and
 
 For example, we can look for plates that have a name that begins with V, that have price and two ingredients.
 
-```bash
-{"$and":[
-    {"price":{"$exists":true}},
-    {"ingredient":{"$size": 2}},
-    {"name":{"$regex":"^V","$options":"i"}}
+```json
+{
+  "$and": [
+    {
+      "price": {
+        "$exists": true
+      }
+    },
+    {
+      "ingredient": {
+        "$size": 2
+      }
+    },
+    {
+      "name": {
+        "$regex": "^V",
+        "$options": "i"
+      }
+    }
   ]
 }
 ```
 
 The query must be URL encoded and passed to `_q` parameter:
 
-```bash
+```shell
 curl --request GET \
   --url 'https://your-url/v2/plates/?_q=%7B%22%24and%22%3A%5B%20%20%20%20%20%7B%22ingredient%22%3A%7B%22%24size%22%3A%202%7D%7D%2C%20%7B%22price%22%3A%7B%22%24exists%22%3Atrue%7D%7D%2C%7B%22name%22%3A%7B%22%24regex%22%3A%22%5EV%22%2C%22%24options%22%3A%22i%22%7D%7D%20%5D%20%7D' \
   --header 'accept: application/json' \
@@ -728,7 +748,7 @@ If you have problems with the special characters in the URL encoding, you can tr
 
 It may be helpful to know how many documents contains a list of documents. For this purpose it is sufficient to invoke a GET on the `/count` of the resource:
 
-```bash
+```shell
 curl -X GET https://your-url/v2/plates/count -H  "accept: application/json" -H  "content-type: application/json" -H  "client-key: client-key"
 ```
 
@@ -753,9 +773,16 @@ To enable this feature, you need to create a Position index on Console.
 When the index is created, you can use the `$nearSphere` parameter. For example, to search a plate near you, between 0 meters and 1200 meters from your position longitude: 9.18 and latitude: 45.46 (Milan, Italy), you can use this MongoDB query.
 
 ```json
-{"position":
-  {"$nearSphere":
-     {"from": [9.18,45.43], "minDistance": 0, "maxDistance": 1200}
+{
+  "position": {
+    "$nearSphere": {
+      "from": [
+        9.18,
+        45.43
+      ],
+      "minDistance": 0,
+      "maxDistance": 1200
+    }
   }
 }
 ```
@@ -766,7 +793,7 @@ This query is not supported on count API due to MongoDB restrictions.
 
 To get the list of plates, just encode the query and use `_q`.
 
-```bash
+```shell
 curl --request GET \
   --url 'https://your-url/v2/plates/?_q=%20%7B%22position%22%3A%7B%22%24nearSphere%22%3A%7B%22from%22%3A%5B9.18%2C45.43%5D%2C%22minDistance%22%3A0%2C%22maxDistance%22%3A1200%7D%7D%7D' \
   --header 'accept: application/json' \
@@ -790,14 +817,17 @@ To enable this feature, you need to create a Text index on Console. No more than
 For example, to search a plate with a `name` matching the word "FRIED" (by default the `$caseSensitive` is set to `false`), after creating a Text index on the field `name`, you can use this `$text` MongoDB query.
 
 ```json
-{ "$text":
-    { "$search": "FRIED", "$caseSensitive": true }
+{
+  "$text": {
+    "$search": "FRIED",
+    "$caseSensitive": true
+  }
 }
 ```
 
 To get the list of plates, just encode the query and use `_q`.
 
-```bash
+```shell
 curl --request GET \
   --url 'https://your-url/v2/plates/?_q=%7B%20%22%24text%22%3A%7B%20%22%24search%22%3A%20%22FRIED%22%2C%20%22%24caseSensitive%22%3A%20true%20%7D%7D' \
   --header 'accept: application/json' \
@@ -854,7 +884,7 @@ The route to call is the following:
 
 Below you can see an example:
 
-```curl
+```shell
 curl --location --request PATCH 'your-url.mia-platform.eu/v2/books/1f11d444830aaz0011526361' \
 --header 'Content-Type: application/json' \
 --data-raw '{
@@ -874,7 +904,7 @@ You have to filter the field by object/value. The value of the filter must be UR
 
 The following example replaces the element of the property `arrayOfAuthors` containing the value `{"name:"wrongName"}` with the object `{"name":"author correct name"}`. The not encoded `_q` is `arrayOfAuthors={"name":"wrongName"}`:
 
-```curl
+```shell
 curl --location --request PATCH 'your-url.mia-platform.eu/v2/books/1f11d444830aaz0011526361?_q=%7B%arrayOfAuthors%22%3A%7B%22name%22%3A%2222wrongName%22%7D%7D' \
 --header 'Content-Type: application/json' \
 --data-raw '{
@@ -902,7 +932,7 @@ To update multiple documents, you have two possibilities:
 
   Below you can see an example:
 
-  ```curl
+  ```shell
   curl --location --request PATCH 'url.mia-platform.eu/v2/books/?category=sci-fi&_st=PUBLIC' \
   --header 'Content-Type: application/json' \
   --data-raw '{
@@ -926,7 +956,7 @@ To update multiple documents, you have two possibilities:
 
   Below you can see an example:
 
-  ```curl
+  ```shell
   curl --location --request PATCH 'url.mia-platform.eu/v2/books/bulk' \
   --header 'Content-Type: application/json' \
   --data-raw '[
@@ -964,7 +994,7 @@ The route to call is the following:
 
 Below you can see an example:
 
-```curl
+```shell
 curl --location --request DELETE 'url.mia-platform.eu/v2/books/1f11d444830aaz0011526361'
 ```
 
@@ -981,7 +1011,7 @@ The route to call is the following:
 
 Below you can see an example:
 
-```curl
+```shell
 curl --location --request DELETE 'url.mia-platform.eu/v2/books/?category=sci-fi&_st=DRAFT'
 ```
 
@@ -992,7 +1022,7 @@ The response is 200 also when no documents are found, in that case the count wil
 
 Nested properties of a field of type `RawObject` and `Array_RawObject` can be used in REST APIs with object notation or dot notation.
 
-```curl title="Example of PATCH with dot notation"
+```shell title="Example of PATCH with dot notation"
 curl --location --request PATCH 'your-url.mia-platform.eu/v2/books/111111111111111111111111' \
 --header 'Content-Type: application/json' \
 --data-raw '{
@@ -1003,7 +1033,7 @@ curl --location --request PATCH 'your-url.mia-platform.eu/v2/books/1111111111111
 }'
 ```
 
-```curl title="Example of PATCH with object notation"
+```shell title="Example of PATCH with object notation"
 curl --location --request PATCH 'your-url.mia-platform.eu/v2/books/111111111111111111111111' \
 --header 'Content-Type: application/json' \
 --data-raw '{
@@ -1026,10 +1056,12 @@ The two operations above have different effect.
 In the "Example with object notation" you are setting a value to the field *metadata*.  
 So the field *metadata* will be exactly:
 
-```js
+```json
 {
   "somethingArrayObject": [
-    {"anotherNumber": "3"}
+    {
+      "anotherNumber": "3"
+    }
   ],
   "somethingObject": {
     "childNumber": "9"
@@ -1054,7 +1086,7 @@ The operators **.$.merge** and **.$.replace** can also be used on nested arrays.
 
 Example of **$.replace** with a **PATCH bulk**:
 
-```json
+```shell
 curl --location --request PATCH 'demo.mia-platform.eu/v2/books/bulk' \
 --header 'Content-Type: application/json' \
 --data-raw '{
@@ -1073,7 +1105,7 @@ It will be set to 5 the item of *somethingArrayOfNumbers* equals to 3.
 
 In case of array of objects, you can also use **$.merge** operators.
 
-```json
+```shell
 curl --location --request PATCH 'demo.mia-platform.eu/v2/books/bulk' \
 --header 'Content-Type: application/json' \
 --data-raw '{
