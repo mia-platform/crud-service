@@ -169,6 +169,11 @@ module.exports = {
         'properties': {},
         'additionalProperties': false,
       },
+      '$addToSet': {
+        'type': 'object',
+        'properties': {},
+        'additionalProperties': false,
+      },
       '$setOnInsert': {
         'type': 'object',
         'properties': {
