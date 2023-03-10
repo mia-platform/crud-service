@@ -504,6 +504,103 @@ tap.test('HTTP PATCH / - nested object', async t => {
     t.end()
   })
 
+  t.test('$addToSet', async t => {
+    const matchingQuery = JSON.stringify({ author: 'James Joyce' })
+
+    t.test('ok with casting', async t => {
+      const [duplicateValue] = DOC_TEST1.metadata.somethingArrayOfNumbers
+      const UPDATE_COMMAND = {
+        $addToSet: {
+          attachments: { detail: { size: VALUE_AS_STRING }, name: 'pushed' },
+          'metadata.somethingArrayObject': { arrayItemObjectChildNumber: VALUE_AS_STRING },
+          'metadata.somethingArrayOfNumbers': duplicateValue,
+        },
+      }
+
+      const { fastify, collection } = await setUpTest(t, [DOC_TEST1, DOC_TEST2, DOC_TEST3])
+
+      const response = await fastify.inject({
+        method: 'PATCH',
+        url: `${prefix}/?_q=${matchingQuery}`,
+        payload: UPDATE_COMMAND,
+        headers: {
+          userId: newUpdaterId,
+        },
+      })
+
+      const EXPECTED_DOCUMENTS_TO_UPDATE = [DOC_TEST1, DOC_TEST2]
+      t.equal(JSON.parse(response.payload), EXPECTED_DOCUMENTS_TO_UPDATE.length)
+
+      const docsOnDb = await collection.find({ author: 'James Joyce' }).toArray()
+      t.equal(docsOnDb.length, EXPECTED_DOCUMENTS_TO_UPDATE.length)
+
+      for (const itemOnDb of docsOnDb) {
+        const originalDoc = EXPECTED_DOCUMENTS_TO_UPDATE.find(doc => doc._id.toString() === itemOnDb._id.toString())
+        t.strictSame(
+          itemOnDb.attachments,
+          originalDoc.attachments.concat({ detail: { size: VALUE_AS_NUMBER }, name: 'pushed' })
+        )
+
+        const originalMetadata = originalDoc.metadata
+        const metadataOnDb = itemOnDb.metadata
+        t.strictSame(
+          metadataOnDb.somethingArrayObject,
+          originalMetadata.somethingArrayObject.concat({ arrayItemObjectChildNumber: VALUE_AS_NUMBER })
+        )
+
+        const uniqueArray = [...new Set(originalMetadata.somethingArrayOfNumbers.concat(duplicateValue))]
+        t.strictSame(
+          metadataOnDb.somethingArrayOfNumbers,
+          uniqueArray
+        )
+      }
+
+      const unchanged = await collection.find({ author: { $ne: 'James Joyce' } }).toArray()
+      t.equal(unchanged.length, 1)
+      t.strictSame(unchanged, [DOC_TEST3])
+    })
+
+    t.test('ok with casting of array in array', async t => {
+      const UPDATE_COMMAND = {
+        $addToSet: {
+          'attachments.0.neastedArr': VALUE_AS_STRING,
+        },
+      }
+
+      const { fastify, collection } = await setUpTest(t, [DOC_TEST1, DOC_TEST2, DOC_TEST3])
+
+      const response = await fastify.inject({
+        method: 'PATCH',
+        url: `${prefix}/?_q=${matchingQuery}`,
+        payload: UPDATE_COMMAND,
+        headers: {
+          userId: newUpdaterId,
+        },
+      })
+
+      const EXPECTED_DOCUMENTS_TO_UPDATE = [DOC_TEST1, DOC_TEST2]
+
+      t.equal(JSON.parse(response.payload), EXPECTED_DOCUMENTS_TO_UPDATE.length)
+
+      const docsOnDb = await collection.find({ author: 'James Joyce' }).toArray()
+      t.equal(docsOnDb.length, EXPECTED_DOCUMENTS_TO_UPDATE.length)
+
+      for (const itemOnDb of docsOnDb) {
+        const originalDoc = EXPECTED_DOCUMENTS_TO_UPDATE.find(doc => doc._id.toString() === itemOnDb._id.toString())
+        t.strictSame(itemOnDb.attachments, [{
+          ...originalDoc.attachments[0],
+          neastedArr: originalDoc.attachments[0].neastedArr.concat(VALUE_AS_NUMBER),
+        }])
+      }
+
+      const unchanged = await collection.find({ author: { $ne: 'James Joyce' } }).toArray()
+      t.equal(unchanged.length, 1)
+      t.strictSame(unchanged, [DOC_TEST3])
+    })
+
+    t.end()
+  })
+
   t.end()
 })
 
