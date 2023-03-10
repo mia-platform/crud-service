@@ -211,6 +211,15 @@ module.exports = {
               },
               'additionalProperties': false,
             },
+            '$addToSet': {
+              'type': 'object',
+              'properties': {
+                'Direttrici': {
+                  'type': 'string',
+                },
+              },
+              'additionalProperties': false,
+            },
           },
           'additionalProperties': false,
         },
