@@ -177,6 +177,11 @@ module.exports = {
         'properties': {},
         'additionalProperties': false,
       },
+      '$addToSet': {
+        'type': 'object',
+        'properties': {},
+        'additionalProperties': false,
+      },
     },
     'additionalProperties': false,
   },
