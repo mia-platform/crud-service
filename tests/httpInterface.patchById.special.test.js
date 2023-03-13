@@ -889,6 +889,31 @@ tap.test('HTTP PATCH /<id> - nested object', async t => {
       })
       t.end()
     })
+
+    t.test('fails if addToSet if field is not an array', async t => {
+      const { fastify } = await setUpTest(t)
+      const UPDATE_COMMAND = {
+        $addToSet: {
+          name: 'foo',
+        },
+      }
+      const response = await fastify.inject({
+        method: 'PATCH',
+        url: `${prefix}/${DOC_TEST._id.toHexString()}`,
+        payload: UPDATE_COMMAND,
+        headers: {
+          userId: newUpdaterId,
+        },
+      })
+
+      t.equal(response.statusCode, 400)
+      t.strictSame(JSON.parse(response.payload), {
+        statusCode: 400,
+        error: 'Bad Request',
+        message: 'body must NOT have additional properties',
+      })
+      t.end()
+    })
     t.end()
   })
 
