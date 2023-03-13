@@ -770,7 +770,7 @@ tap.test('HTTP PATCH /<id> - nested object', async t => {
         },
       }
 
-      t.test('push to parent array', async t => {
+      t.test('addToSet to parent array', async t => {
         const { fastify, collection } = await setUpTest(t, [DOC_TESTING_ARRAY])
         const UPDATE_COMMAND = {
           $addToSet: {
@@ -802,7 +802,7 @@ tap.test('HTTP PATCH /<id> - nested object', async t => {
         t.end()
       })
 
-      t.test('push to child array', async t => {
+      t.test('addToSet to child array', async t => {
         const { fastify, collection } = await setUpTest(t, [DOC_TESTING_ARRAY])
         const UPDATE_COMMAND = {
           $addToSet: {
@@ -835,7 +835,7 @@ tap.test('HTTP PATCH /<id> - nested object', async t => {
       t.end()
     })
 
-    t.test('fails if missing to push a required field of an object', async t => {
+    t.test('fails if missing to addToSet a required field of an object', async t => {
       const { fastify } = await setUpTest(t)
       const UPDATE_COMMAND = {
         $addToSet: {
@@ -862,7 +862,7 @@ tap.test('HTTP PATCH /<id> - nested object', async t => {
       t.end()
     })
 
-    t.test('fails if push is not compliant to additionalProperties of the field', async t => {
+    t.test('fails if addToSet is not compliant to additionalProperties of the field', async t => {
       const { fastify } = await setUpTest(t)
       const UPDATE_COMMAND = {
         $addToSet: {
