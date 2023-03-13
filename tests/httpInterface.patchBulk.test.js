@@ -574,6 +574,64 @@ tap.test('HTTP PATCH /bulk', t => {
       t.end()
     })
 
+    t.test('$addToSet', async t => {
+      const DOC_TEST = {
+        ...fixtures[0],
+        metadata: {
+          somethingString: 'the-saved-string',
+          somethingArrayOfNumbers: [VALUE_AS_NUMBER],
+        },
+        attachments: [{
+          name: 'note',
+          neastedArr: [123, VALUE_AS_NUMBER],
+        }],
+      }
+      const UPDATE_COMMAND = {
+        $addToSet: {
+          'attachments.0.neastedArr': VALUE_AS_STRING,
+          'metadata.somethingArrayOfNumbers': VALUE_AS_STRING,
+        },
+      }
+
+      const { fastify, collection } = await setUpTest(t, [DOC_TEST])
+
+      const response = await fastify.inject({
+        method: 'PATCH',
+        url: `${prefix}/bulk`,
+        payload: [
+          {
+            filter: {
+              _id: DOC_TEST._id,
+            },
+            update: UPDATE_COMMAND,
+          },
+        ],
+      })
+
+      t.test('should update one document', t => {
+        t.plan(1)
+        t.equal(JSON.parse(response.payload), 1)
+      })
+
+      t.test('should update the document without duplicates', async t => {
+        const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
+
+        t.strictSame(docOnDb.metadata, {
+          somethingString: 'the-saved-string',
+          somethingArrayOfNumbers: [VALUE_AS_NUMBER],
+        })
+
+        t.strictSame(docOnDb.attachments, [{
+          name: 'note',
+          neastedArr: [123, VALUE_AS_NUMBER],
+        }])
+
+        t.end()
+      })
+
+      t.end()
+    })
+
     t.test('$unset', async t => {
       const DOC_TO_UNSET = {
         ...fixtures[0],
