@@ -869,6 +869,10 @@ The field must be of type `Date`. The format of dates it's **ISO-8601**: YYYY-MM
   This operator appends a specified value to an array field:  
   `{ $push: { <field1>: {<prop1>: <value1>, <prop2>: <value2>, ...}, ... } }`
 
+- `$addToSet`
+  This operator appends a specified value to an array field unless the value is already present:  
+  `{ $addToSet: { <field1>: <value1>, ...} }`
+
 :::tip
 The syntax is [MongoDB Field Update Operators](https://docs.mongodb.com/manual/reference/operator/update-field/) like.
 :::
