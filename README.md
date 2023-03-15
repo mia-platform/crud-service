@@ -147,7 +147,7 @@ env MONGO_HOST=127.0.0.1 TAP_BAIL=1 node tests/createIndexes.test.js
 +----------------------------------------------------------------------------------------------------+
 ```
 
-The CRUD Service application uses Fastify to connect to a MongoDB instance (thanks to the @fastify/mongodb plugin) and execute CRUD operations. At startup, it requires several details, such as the MongoDB URL to communicate with, but also the folders where the definitions of the collections and the views can be found. A complete and comprehensive list of the environment variables needed can be found in the [Configuration page](./docs/20_Configuration.md).
+The CRUD Service application uses Fastify to connect to a MongoDB instance (thanks to the @fastify/mongodb plugin) and execute CRUD operations. At startup, it requires several details, such as the MongoDB URL to communicate with, but also the folders where the definitions of the collections and the views can be found. A complete and comprehensive list of the environment variables needed can be found on the [Configuration page](./docs/20_Configuration.md).
 
 The collections and the views available in the service are the ones with Model definitions stored in the folders defined in, respectively, `COLLECTION_DEFINITION_FOLDER` and `VIEWS_DEFINITION_FOLDER`. In each folder, there will be one file per collection/view. Each file should be a JSON or a javascript file.
 
