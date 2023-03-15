@@ -174,7 +174,7 @@ The collections should be included in separate JSON or JavaScript files in the f
 
 **WARNING:** every index that is not specified in the collection definition wil be **dropped** at startup of the application, unless its _name_ starts with the `preserve_` prefix.
 
-Several examples of collections can be found in the [CollectionDefinitions folder](./tests/collectionDefinitions/),
+Several examples of collections can be found in the [Collections Definitions folder](./tests/collectionDefinitions/),
 whereas the schema that defines and validate the data model definition can be found [here](./lib/model.jsonschema.js).
 
 ### Define your views
@@ -188,9 +188,12 @@ The MongoDB Views should be included in separate JSON or JavaScript files in the
 | type     | `view` | Required | -             | The type of MongoDB element, which is required by CRUD Service to understand which operations might be performed. It should be the value `view`.                  |
 | pipeline | Object | Required | -             | The pipeline to aggregate the MongoDB View. It uses the same syntax of the [Aggregation Pipeline](https://www.mongodb.com/docs/manual/core/aggregation-pipeline/) |
 
-Several examples of collections can be found in the [CollectionDefinitions folder](./tests/viewsDefinitions/),
+Several examples of collections can be found in the [Views Definitions folder](./tests/viewsDefinitions/),
 whereas the schema that defines and validate the data model definition can be found [here](./lib/model.jsonschema.js) (it is the same schema of the collection definition).
 
+**Note:** `__STATE__` field **must** be returned in each record eventually produced by the view aggregation pipeline.
+On the contrary, records without the `__STATE__` field would always be filtered out by the CRUD Service operations
+(e.g. listing records via `GET /<collection-name>` API method would not consider them in the result set).
 
 ### Headers
 

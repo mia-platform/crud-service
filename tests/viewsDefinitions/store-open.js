@@ -35,7 +35,7 @@ module.exports = {
 
         /*
           NOTE: __STATE__ field MUST be returned in the final record produced by the pipeline
-                On the contrary, records without the __STATE__ field would always filtered out
+                On the contrary, records without the __STATE__ field would always be filtered out
                 by the CRUD Service operations
                 (e.g. listing records via GET method would not consider them in the result set)
         */
