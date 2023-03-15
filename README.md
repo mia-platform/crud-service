@@ -147,7 +147,7 @@ env MONGO_HOST=127.0.0.1 TAP_BAIL=1 node tests/createIndexes.test.js
 +----------------------------------------------------------------------------------------------------+
 ```
 
-The CRUD Service application uses Fastify to connect to a MongoDB instance (thanks to the @fastify/mongodb plugin) and execute CRUD operations. At startup, it requires several informations, such as the mongoDB URL to communicate with, but also the folders where there are included the definitions of the collections and the views. A complete and comprehensive list of the environment variables needed can be found in the [Configuration page](./docs/20_Configuration.md).
+The CRUD Service application uses Fastify to connect to a MongoDB instance (thanks to the @fastify/mongodb plugin) and execute CRUD operations. At startup, it requires several details, such as the MongoDB URL to communicate with, but also the folders where the definitions of the collections and the views can be found. A complete and comprehensive list of the environment variables needed can be found on the [Configuration page](./docs/20_Configuration.md).
 
 The collections and the views available in the service are the ones with Model definitions stored in the folders defined in, respectively, `COLLECTION_DEFINITION_FOLDER` and `VIEWS_DEFINITION_FOLDER`. In each folder, there will be one file per collection/view. Each file should be a JSON or a javascript file.
 
@@ -166,7 +166,7 @@ The collections should be included in separate JSON or JavaScript files in the f
 | name             | String           | Required | -             | The name of the collection, used as identifier                                                                                                                                                                                               |
 | endpointBasePath | String           | Required | -             | The endpoint path, used as entry point to CRUD operations                                                                                                                                                                                    |
 | defaultState     | String           | Required | -             | The MongoDB connection string.                                                                                                                                                                                                               |
-| name             | String           | Required | 'DRAFT'       | The default state assigned to a document when inserted. Can be one of the [\_\_STATE__ available values](#metadata-fields)                                                                                                                   |
+| name             | String           | Required | `DRAFT`       | The default state assigned to a document when inserted. Can be one of the [\_\_STATE__ available values](#metadata-fields)                                                                                                                   |
 | fields           | Array of objects | Required | -             | The list of fields to be included in the collection object. A complete description of its fields can be found [in the _fields_ section of the collection JSON Schema](./lib/model.jsonschema.js#L42).                                        |
 | indexes          | Array of objects | Required | -             | The list of indexes to be created when starting the service and initializing all the collections. A complete description of its fields can be found [in the _indexes_ section of the collection JSON Schema](./lib/model.jsonschema.js#L204) |
 
@@ -174,7 +174,8 @@ The collections should be included in separate JSON or JavaScript files in the f
 
 **WARNING:** every index that is not specified in the collection definition wil be **dropped** at startup of the application, unless its _name_ starts with the `preserve_` prefix.
 
-Several examples of collections can be found in the [CollectionDefinitions folder](./tests/collectionDefinitions/).
+Several examples of collections can be found in the [Collections Definitions folder](./tests/collectionDefinitions/),
+whereas the schema that defines and validate the data model definition can be found [here](./lib/model.jsonschema.js).
 
 ### Define your views
 
@@ -187,7 +188,12 @@ The MongoDB Views should be included in separate JSON or JavaScript files in the
 | type     | `view` | Required | -             | The type of MongoDB element, which is required by CRUD Service to understand which operations might be performed. It should be the value `view`.                  |
 | pipeline | Object | Required | -             | The pipeline to aggregate the MongoDB View. It uses the same syntax of the [Aggregation Pipeline](https://www.mongodb.com/docs/manual/core/aggregation-pipeline/) |
 
-Several examples of collections can be found in the [CollectionDefinitions folder](./tests/viewsDefinitions/).
+Several examples of collections can be found in the [Views Definitions folder](./tests/viewsDefinitions/),
+whereas the schema that defines and validate the data model definition can be found [here](./lib/model.jsonschema.js) (it is the same schema of the collection definition).
+
+**Note:** `__STATE__` field **must** be returned in each record eventually produced by the view aggregation pipeline.
+On the contrary, records without the `__STATE__` field would always be filtered out by the CRUD Service operations
+(e.g. listing records via `GET /<collection-name>` API method would not consider them in the result set).
 
 ### Headers
 
