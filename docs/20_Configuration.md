@@ -40,7 +40,7 @@ Below you can find all the environment variables that you can edit.
 Using `ALLOW_DISK_USE_IN_QUERIES` (either with `true` or `false` values) with a MongoDB version lower than 4.4 will make all the GET calls unusable since the MongoDB cluster will raise an error for the unrecognized option `allowDiskUse`.
 
 It is also important to notice that starting from MongoDB v6.0 new server property [`allowDiskUseByDefault`](https://www.mongodb.com/docs/manual/reference/parameters/#mongodb-parameter-param.allowDiskUseByDefault)
-is introduced with its value set to `true` by default. Consequently, the default behaviour for that MongoDB version
+is introduced with its value set to `true` by default. Consequently, the default behavior for that MongoDB version
 is that for queries with pipeline stages using more than 100 MB of memory to execute, the database automatically
 write temporary files on disk to support those queries.  
 This default behavior can be disabled for _all_ queries by setting `ALLOW_DISK_USE_IN_QUERIES` to `false`.  
