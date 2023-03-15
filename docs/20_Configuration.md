@@ -37,7 +37,7 @@ Below you can find all the environment variables that you can edit.
 | ALLOW_DISK_USE_IN_QUERIES     | Boolean | Optional | -                                         | Sets the `allowDiskUse` option in the MongoDB queries. It is useful when working with MongoDB Views requiring heavy aggregations (added in v6.0.2, works with MongoDB >= 4.4). |
 
 :::warning
-Using `ALLOW_DISK_USE_IN_QUERIES` (either with `true` or `false` values) with a MongoDB version lower than 4.4 will make all the GET calls unusable, since the MongoDB cluster will raise an error for the unrecognized option `allowDiskUse`.
+Using `ALLOW_DISK_USE_IN_QUERIES` (either with `true` or `false` values) with a MongoDB version lower than 4.4 will make all the GET calls unusable since the MongoDB cluster will raise an error for the unrecognized option `allowDiskUse`.
 
 It is also important to notice that starting from MongoDB v6.0 new server property [`allowDiskUseByDefault`](https://www.mongodb.com/docs/manual/reference/parameters/#mongodb-parameter-param.allowDiskUseByDefault)
 is introduced with its value set to `true` by default. Consequently, the default behaviour for that MongoDB version
