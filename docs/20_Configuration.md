@@ -22,22 +22,30 @@ However, you will find a link that will redirect you to **MongoDB CRUD** dedicat
 
 Below you can find all the environment variables that you can edit.
 
-| Variable                      | Type    | Required | Default value                             | Description |
-|-------------------------------|---------|----------|-------------------------------------------|----------------------------------------------------------------------------------|
-| MONGODB_URL                   | String  | Required | -                                         | The MongoDB connection string. |
-| COLLECTION_DEFINITION_FOLDER  | String  | Required | `/home/node/app/collections`              | The path to the folder where all collections are defined.|
-| VIEWS_DEFINITION_FOLDER       | String  | Required | `/home/node/app/collections`              | The path to the folder where all views are defined.|
-| USER_ID_HEADER_KEY            | String  | Required | -                                         | Header key used to know which user makes the request. User id is useful to add `creatorId` and `updaterId` field in collection document.|
-| CRUD_MAX_LIMIT                | Integer | Optional | 200                                       | Configures the maximum limit of objects returned by a MongoDB query.|
-| CRUD_LIMIT_CONSTRAINT_ENABLED | Boolean | Optional | `true`                                    | Enables the query limit constraint feature. If set to `false`, the `CRUD_MAX_LIMIT` environment variable won't be used. |
-| TRUSTED_PROXIES               | String  | Optional | `10.0.0.0/8,172.16.0.0/12,192.168.0.0/16` | Contains the trusted proxies values.|
-| HTTP_PORT                     | String  | Optional | -                                         | The port exposed by the service.|
-| LOG_LEVEL                     | String  | Optional | `'info'`                                      | Level of the log. It can be one of the following: `'trace'`, `'debug'`, `'info'`, `'warn'`, `'error'`, `'fatal'`.|
-| EXPOSE_METRICS                | Boolean | Optional | `false`                                   | Specifies if Prometheus metrics should be exposed or not.|
+| Variable                      | Type    | Required | Default value                             | Description                                                                                                                                                                    |
+|-------------------------------|---------|----------|-------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| MONGODB_URL                   | String  | Required | -                                         | The MongoDB connection string.                                                                                                                                                 |
+| COLLECTION_DEFINITION_FOLDER  | String  | Required | `/home/node/app/collections`              | The path to the folder where all collections are defined.                                                                                                                      |
+| VIEWS_DEFINITION_FOLDER       | String  | Required | `/home/node/app/collections`              | The path to the folder where all views are defined.                                                                                                                            |
+| USER_ID_HEADER_KEY            | String  | Required | -                                         | Header key used to know which user makes the request. User id is useful to add `creatorId` and `updaterId` field in collection document.                                       |
+| CRUD_MAX_LIMIT                | Integer | Optional | 200                                       | Configures the maximum limit of objects returned by a MongoDB query.                                                                                                           |
+| CRUD_LIMIT_CONSTRAINT_ENABLED | Boolean | Optional | `true`                                    | Enables the query limit constraint feature. If set to `false`, the `CRUD_MAX_LIMIT` environment variable won't be used.                                                        |
+| TRUSTED_PROXIES               | String  | Optional | `10.0.0.0/8,172.16.0.0/12,192.168.0.0/16` | Contains the trusted proxies values.                                                                                                                                           |
+| HTTP_PORT                     | String  | Optional | -                                         | The port exposed by the service.                                                                                                                                               |
+| LOG_LEVEL                     | String  | Optional | `info`                                    | Level of the log. It can be one of the following: `trace`, `debug`, `info`, `warn`, `error`, `fatal`.                                                                          |
+| EXPOSE_METRICS                | Boolean | Optional | `false`                                   | Specifies if Prometheus metrics should be exposed or not.                                                                                                                      |
 | ALLOW_DISK_USE_IN_QUERIES     | Boolean | Optional | -                                         | Sets the `allowDiskUse` option in the MongoDB queries. It is useful when working with MongoDB Views requiring heavy aggregations (added in v6.0.2, works with MongoDB >= 4.4). |
 
 :::warning
-Using `ALLOW_DISK_USE_IN_QUERIES` (either with `true` or `false` values) with a MongoDB version lower than 4.4 will make all the GET calls unusable, since the MongoDB cluster will raise an error for the unrecognized option `allowDiskUse`.
+Using `ALLOW_DISK_USE_IN_QUERIES` (either with `true` or `false` values) with a MongoDB version lower than 4.4 will make all the GET calls unusable, since the MongoDB cluster will raise an error for the unrecognized option `allowDiskUse`.
+
+It is also important to notice that starting from MongoDB v6.0 new server property [`allowDiskUseByDefault`](https://www.mongodb.com/docs/manual/reference/parameters/#mongodb-parameter-param.allowDiskUseByDefault)
+is introduced with its value set to `true` by default. Consequently, the default behaviour for that MongoDB version
+is that for queries with pipeline stages using more than 100 MB of memory to execute, the database automatically
+write temporary files on disk to support those queries.  
+This default behavior can be disabled for _all_ queries by setting `ALLOW_DISK_USE_IN_QUERIES` to `false`.  
 :::
 
-In case you want to use [Client Side Field Level Encryption](https://docs.mongodb.com/manual/core/security-client-side-encryption/), you should also include several specific Environment Variables, either you are using the [encryption with Google Platform Cloud](./30_Encryption_configuration.md#configure-csfle-with-the-google-cloud-platform-gcp) or a [local key](./30_Encryption_configuration.md#configure-csfle-with-local-key).
+In case you want to use [Client Side Field Level Encryption](https://docs.mongodb.com/manual/core/security-client-side-encryption/),
+you should also include several specific Environment Variables, either you are using the [encryption with Google Platform Cloud](./30_Encryption_configuration.md#configure-csfle-with-the-google-cloud-platform-gcp)
+or a [local key](./30_Encryption_configuration.md#configure-csfle-with-local-key).
