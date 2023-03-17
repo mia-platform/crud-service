@@ -25,7 +25,7 @@ const CrudService = require('../lib/CrudService')
 
 const {
   fixtures,
-  dropCollectionAndInsertFixtures,
+  clearCollectionAndInsertFixtures,
   checkDocumentsInDatabase,
   getMongoDatabaseName,
   getMongoURL,
@@ -74,7 +74,7 @@ tap.test('patchMany', async t => {
   t.test('with only doc', async t => {
     t.plan(3)
 
-    await dropCollectionAndInsertFixtures(collection)
+    await clearCollectionAndInsertFixtures(collection)
     const ret = await crudService.patchMany(
       context,
       updateCommand(),
@@ -104,7 +104,7 @@ tap.test('patchMany', async t => {
   t.test('with two docs', async t => {
     t.plan(3)
 
-    await dropCollectionAndInsertFixtures(collection)
+    await clearCollectionAndInsertFixtures(collection)
 
     const newDoc2 = {
       ...fixtures[secondDocIndex],
@@ -147,7 +147,7 @@ tap.test('patchMany', async t => {
   t.test('matching query but modification doesn\'t change the documents -> returns 0', async t => {
     t.plan(2)
 
-    await dropCollectionAndInsertFixtures(collection)
+    await clearCollectionAndInsertFixtures(collection)
 
     const name = 'Ulysses'
     const matchingQuery = { name }
@@ -180,7 +180,7 @@ tap.test('patchMany', async t => {
   t.test('non-matching query', async t => {
     t.plan(2)
 
-    await dropCollectionAndInsertFixtures(collection)
+    await clearCollectionAndInsertFixtures(collection)
 
     const ret = await crudService.patchMany(
       context,
@@ -200,7 +200,7 @@ tap.test('patchMany', async t => {
   t.test('matching query but no states', async t => {
     t.plan(2)
 
-    await dropCollectionAndInsertFixtures(collection)
+    await clearCollectionAndInsertFixtures(collection)
 
     const ret = await crudService.patchMany(
       context,
@@ -230,7 +230,7 @@ tap.test('patchMany', async t => {
   t.test('Cannot change the standardFields', async t => {
     t.plan(veryBadCommands.length)
 
-    await dropCollectionAndInsertFixtures(collection)
+    await clearCollectionAndInsertFixtures(collection)
 
     veryBadCommands.forEach((testConf) => {
       t.test(JSON.stringify(testConf.cmd), async t => {
@@ -269,7 +269,7 @@ tap.test('patchMany', async t => {
   t.test('update nested object in array', async t => {
     t.plan(3)
 
-    await dropCollectionAndInsertFixtures(collection)
+    await clearCollectionAndInsertFixtures(collection)
     const ret = await crudService.patchMany(context, updateArrayNestedObject(), arrayQuery, [STATES.PUBLIC])
 
     t.test('should return ok and one modification', t => {
@@ -306,7 +306,7 @@ tap.test('patchMany', async t => {
   t.test('update many objects nested fields in array', async t => {
     t.plan(4)
 
-    await dropCollectionAndInsertFixtures(collection)
+    await clearCollectionAndInsertFixtures(collection)
     const ret = await crudService.patchMany(context, updateArrayNestedObject(), arrayOrQuery, [STATES.PUBLIC])
 
     t.test('should return ok and one modification', t => {

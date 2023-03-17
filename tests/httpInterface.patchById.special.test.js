@@ -65,10 +65,13 @@ tap.test('HTTP PATCH /<id> - nested object', async t => {
   const VALUE_AS_NUMBER = 5555
   const VALUE_AS_STRING = `${VALUE_AS_NUMBER}`
 
-  t.test('$set', t => {
+  t.test('$set', async t => {
+    const { fastify, collection, resetCollection } = await setUpTest(t)
+
     t.test('with dot notation in $set', async t => {
       t.test('ok', async t => {
-        const { fastify, collection } = await setUpTest(t)
+        await resetCollection()
+
         const UPDATE_COMMAND = {
           $set: {
             'metadata.somethingNumber': VALUE_AS_NUMBER,
@@ -92,7 +95,8 @@ tap.test('HTTP PATCH /<id> - nested object', async t => {
       })
 
       t.test('number as string is casted', async t => {
-        const { fastify, collection } = await setUpTest(t)
+        await resetCollection()
+
         const UPDATE_COMMAND = {
           $set: {
             'metadata.somethingNumber': VALUE_AS_STRING,
@@ -127,7 +131,8 @@ tap.test('HTTP PATCH /<id> - nested object', async t => {
       })
 
       t.test('cast with middle path', async t => {
-        const { fastify, collection } = await setUpTest(t)
+        await resetCollection()
+
         const UPDATE_COMMAND = {
           $set: {
             'metadata.somethingArrayObject.0': { arrayItemObjectChildNumber: VALUE_AS_STRING },
@@ -166,7 +171,8 @@ tap.test('HTTP PATCH /<id> - nested object', async t => {
       })
 
       t.test('support additionalProperties true', async t => {
-        const { fastify, collection } = await setUpTest(t)
+        await resetCollection()
+
         const UPDATE_COMMAND = {
           $set: {
             'metadata.somethingArrayObject.0.additionalItem.leaf': '3',
@@ -211,7 +217,7 @@ tap.test('HTTP PATCH /<id> - nested object', async t => {
 
     t.test('with object in $set', async t => {
       t.test('ok', async t => {
-        const { fastify, collection } = await setUpTest(t)
+        await resetCollection()
         const UPDATE_COMMAND = {
           $set: {
             metadata: {
@@ -237,7 +243,7 @@ tap.test('HTTP PATCH /<id> - nested object', async t => {
       })
 
       t.test('number as string is casted', async t => {
-        const { fastify, collection } = await setUpTest(t)
+        await resetCollection()
         const UPDATE_COMMAND = {
           $set: {
             metadata: {
@@ -280,7 +286,8 @@ tap.test('HTTP PATCH /<id> - nested object', async t => {
             }],
           },
         }
-        const { fastify, collection } = await setUpTest(t, [DOC_REPLACE_TEST])
+        await resetCollection([DOC_REPLACE_TEST])
+
         const UPDATE_COMMAND = {
           $set: {
             'metadata.somethingArrayOfNumbers.$.replace': `${NEW_VALUE}`,
@@ -326,7 +333,8 @@ tap.test('HTTP PATCH /<id> - nested object', async t => {
             }],
           },
         }
-        const { fastify, collection } = await setUpTest(t, [DOC_REPLACE_TEST])
+
+        await resetCollection([DOC_REPLACE_TEST])
         const UPDATE_COMMAND = {
           $set: {
             'metadata.somethingArrayObject.$.merge': { anotherNumber: `${NEW_VALUE}` },
@@ -396,7 +404,8 @@ tap.test('HTTP PATCH /<id> - nested object', async t => {
           [UPDATEDAT]: updatedAtDate,
           [__STATE__]: STATES.PUBLIC,
         }
-        const { fastify, collection } = await setUpTest(t, [DOC_TEST], 'projects')
+
+        const { fastify: projectsInstance, collection } = await setUpTest(t, [DOC_TEST], 'projects')
         const UPDATE_COMMAND = {
           $set: {
             'environments.0.dashboards.$.merge': {
@@ -405,7 +414,7 @@ tap.test('HTTP PATCH /<id> - nested object', async t => {
             },
           },
         }
-        const response = await fastify.inject({
+        const response = await projectsInstance.inject({
           method: 'PATCH',
           url: `projects/${DOC_TEST._id.toHexString()}`,
           query: {
@@ -462,9 +471,10 @@ tap.test('HTTP PATCH /<id> - nested object', async t => {
     t.end()
   })
 
-  t.test('$push', t => {
+  t.test('$push', async t => {
+    const { fastify, collection, resetCollection } = await setUpTest(t)
+
     t.test('ok with casting', async t => {
-      const { fastify, collection } = await setUpTest(t)
       const UPDATE_COMMAND = {
         $push: {
           attachments: { detail: { size: '9999' }, name: 'pushed' },
@@ -512,6 +522,7 @@ tap.test('HTTP PATCH /<id> - nested object', async t => {
 
       t.end()
     })
+
     t.test('ok with casting of array in array', async t => {
       const DOC_TESTING_ARRAY = {
         ...fixtures[0],
@@ -520,7 +531,8 @@ tap.test('HTTP PATCH /<id> - nested object', async t => {
           neastedArr: [2],
         }],
       }
-      const { fastify, collection } = await setUpTest(t, [DOC_TESTING_ARRAY])
+
+      await resetCollection([DOC_TESTING_ARRAY])
       const UPDATE_COMMAND = {
         $push: {
           'attachments.0.neastedArr': '55',
@@ -544,6 +556,7 @@ tap.test('HTTP PATCH /<id> - nested object', async t => {
 
       t.end()
     })
+
     t.test('ok with array of array', async t => {
       const DOC_TESTING_ARRAY = {
         ...fixtures[0],
@@ -556,7 +569,7 @@ tap.test('HTTP PATCH /<id> - nested object', async t => {
       }
 
       t.test('push to parent array', async t => {
-        const { fastify, collection } = await setUpTest(t, [DOC_TESTING_ARRAY])
+        await resetCollection([DOC_TESTING_ARRAY])
         const UPDATE_COMMAND = {
           $push: {
             'metadata.exampleArrayOfArray': ['new-item'],
@@ -588,12 +601,14 @@ tap.test('HTTP PATCH /<id> - nested object', async t => {
       })
 
       t.test('push to child array', async t => {
-        const { fastify, collection } = await setUpTest(t, [DOC_TESTING_ARRAY])
+        await resetCollection([DOC_TESTING_ARRAY])
+
         const UPDATE_COMMAND = {
           $push: {
             'metadata.exampleArrayOfArray.0': 'new-item',
           },
         }
+
         const response = await fastify.inject({
           method: 'PATCH',
           url: `${prefix}/${DOC_TESTING_ARRAY._id.toHexString()}`,
@@ -621,7 +636,8 @@ tap.test('HTTP PATCH /<id> - nested object', async t => {
     })
 
     t.test('fails if missing to push a required field of an object', async t => {
-      const { fastify } = await setUpTest(t)
+      await resetCollection()
+
       const UPDATE_COMMAND = {
         $push: {
           attachments: {
@@ -638,17 +654,20 @@ tap.test('HTTP PATCH /<id> - nested object', async t => {
           userId: newUpdaterId,
         },
       })
+
       t.equal(response.statusCode, 400)
       t.strictSame(JSON.parse(response.payload), {
         statusCode: 400,
         error: 'Bad Request',
         message: "body must have required property 'name'",
       })
+
       t.end()
     })
 
     t.test('fails if push is not compliant to additionalProperties of the field', async t => {
-      const { fastify } = await setUpTest(t)
+      await resetCollection()
+
       const UPDATE_COMMAND = {
         $push: {
           attachments: {
@@ -666,20 +685,26 @@ tap.test('HTTP PATCH /<id> - nested object', async t => {
           userId: newUpdaterId,
         },
       })
+
       t.equal(response.statusCode, 400)
       t.strictSame(JSON.parse(response.payload), {
         statusCode: 400,
         error: 'Bad Request',
         message: 'body must NOT have additional properties',
       })
+
       t.end()
     })
+
     t.end()
   })
 
-  t.test('$addToSet', t => {
+  t.test('$addToSet', async t => {
+    const { fastify, collection, resetCollection } = await setUpTest(t)
+
     t.test('ok with casting', async t => {
-      const { fastify, collection } = await setUpTest(t)
+      await resetCollection()
+
       const UPDATE_COMMAND = {
         $addToSet: {
           attachments: { detail: { size: '9999' }, name: 'addedToSet' },
@@ -687,6 +712,7 @@ tap.test('HTTP PATCH /<id> - nested object', async t => {
           'metadata.somethingArrayOfNumbers': '7777',
         },
       }
+
       const response = await fastify.inject({
         method: 'PATCH',
         url: `${prefix}/${DOC_TEST._id.toHexString()}`,
@@ -727,6 +753,7 @@ tap.test('HTTP PATCH /<id> - nested object', async t => {
 
       t.end()
     })
+
     t.test('ok with casting of array in array', async t => {
       const DOC_TESTING_ARRAY = {
         ...fixtures[0],
@@ -735,12 +762,14 @@ tap.test('HTTP PATCH /<id> - nested object', async t => {
           neastedArr: [2],
         }],
       }
-      const { fastify, collection } = await setUpTest(t, [DOC_TESTING_ARRAY])
+
+      await resetCollection([DOC_TESTING_ARRAY])
       const UPDATE_COMMAND = {
         $addToSet: {
           'attachments.0.neastedArr': '55',
         },
       }
+
       const response = await fastify.inject({
         method: 'PATCH',
         url: `${prefix}/${DOC_TESTING_ARRAY._id.toHexString()}`,
@@ -759,6 +788,7 @@ tap.test('HTTP PATCH /<id> - nested object', async t => {
 
       t.end()
     })
+
     t.test('ok with array of array', async t => {
       const DOC_TESTING_ARRAY = {
         ...fixtures[0],
@@ -771,7 +801,8 @@ tap.test('HTTP PATCH /<id> - nested object', async t => {
       }
 
       t.test('addToSet to parent array', async t => {
-        const { fastify, collection } = await setUpTest(t, [DOC_TESTING_ARRAY])
+        await resetCollection([DOC_TESTING_ARRAY])
+
         const UPDATE_COMMAND = {
           $addToSet: {
             'metadata.exampleArrayOfArray': ['new-item'],
@@ -803,7 +834,8 @@ tap.test('HTTP PATCH /<id> - nested object', async t => {
       })
 
       t.test('addToSet to child array', async t => {
-        const { fastify, collection } = await setUpTest(t, [DOC_TESTING_ARRAY])
+        await resetCollection([DOC_TESTING_ARRAY])
+
         const UPDATE_COMMAND = {
           $addToSet: {
             'metadata.exampleArrayOfArray.0': 'new-item',
@@ -836,7 +868,8 @@ tap.test('HTTP PATCH /<id> - nested object', async t => {
     })
 
     t.test('fails if missing to addToSet a required field of an object', async t => {
-      const { fastify } = await setUpTest(t)
+      await resetCollection()
+
       const UPDATE_COMMAND = {
         $addToSet: {
           attachments: {
@@ -863,7 +896,8 @@ tap.test('HTTP PATCH /<id> - nested object', async t => {
     })
 
     t.test('fails if addToSet is not compliant to additionalProperties of the field', async t => {
-      const { fastify } = await setUpTest(t)
+      await resetCollection()
+
       const UPDATE_COMMAND = {
         $addToSet: {
           attachments: {
@@ -891,7 +925,7 @@ tap.test('HTTP PATCH /<id> - nested object', async t => {
     })
 
     t.test('fails if addToSet if field is not an array', async t => {
-      const { fastify } = await setUpTest(t)
+      await resetCollection()
       const UPDATE_COMMAND = {
         $addToSet: {
           name: 'foo',
@@ -917,7 +951,9 @@ tap.test('HTTP PATCH /<id> - nested object', async t => {
     t.end()
   })
 
-  t.test('$unset', t => {
+  t.test('$unset', async t => {
+    const { fastify, collection, resetCollection } = await setUpTest(t, [])
+
     const DOC_TO_UNSET = {
       ...fixtures[0],
       metadata: {
@@ -934,7 +970,8 @@ tap.test('HTTP PATCH /<id> - nested object', async t => {
     }
 
     t.test('can unset a nested property', async t => {
-      const { fastify, collection } = await setUpTest(t, [DOC_TO_UNSET])
+      await resetCollection([DOC_TO_UNSET])
+
       const UPDATE_COMMAND = {
         $unset: {
           'metadata.somethingString': true,
@@ -969,8 +1006,8 @@ tap.test('HTTP PATCH /<id> - nested object', async t => {
 
     t.test('there is NO validation to prevent unset of required properties', async t => {
       // Documentation purpose
+      await resetCollection([DOC_TO_UNSET])
 
-      const { fastify, collection } = await setUpTest(t, [DOC_TO_UNSET])
       const UPDATE_COMMAND = {
         $unset: {
           'metadata.somethingNumber': true,
@@ -1001,194 +1038,210 @@ tap.test('HTTP PATCH /<id> - nested object', async t => {
   t.end()
 })
 
-tap.test('HTTP PATCH /<id> - standard fields', async t => {
-  const requiredFieldNames = collectionDefinition
-    .fields
-    .filter(field => field.required)
-    .map(field => field.name)
-  t.plan(STANDARD_FIELDS.length + 1 + requiredFieldNames.length)
+tap.test('HTTP PATCH /<id> - ', async t => {
+  const { fastify, collection, resetCollection } = await setUpTest(t)
 
-  const { fastify, collection } = await setUpTest(t)
+  t.test('standard fields', async t => {
+    await resetCollection()
 
-  function makeCheck(t, standardField, update) {
-    t.test(`${standardField} cannot be updated`, async t => {
-      t.plan(3)
+    const requiredFieldNames = collectionDefinition
+      .fields
+      .filter(field => field.required)
+      .map(field => field.name)
 
-      const response = await fastify.inject({
-        method: 'PATCH',
-        url: `${prefix}/${DOC._id}`,
-        payload: update,
+
+    function makeCheck(t, standardField, update) {
+      t.test(`${standardField} cannot be updated`, async t => {
+        const response = await fastify.inject({
+          method: 'PATCH',
+          url: `${prefix}/${DOC._id}`,
+          payload: update,
+        })
+
+        t.test('should return 400', t => {
+          t.strictSame(response.statusCode, 400)
+          t.end()
+        })
+        t.test('should return JSON', t => {
+          t.ok(/application\/json/.test(response.headers['content-type']))
+          t.end()
+        })
+        checkDocumentsInDatabase(t, collection, [], fixtures)
+
+        t.end()
       })
+    }
 
-      t.test('should return 400', t => {
-        t.plan(1)
-        t.strictSame(response.statusCode, 400)
-      })
-      t.test('should return JSON', t => {
-        t.plan(1)
-        t.ok(/application\/json/.test(response.headers['content-type']))
-      })
-      checkDocumentsInDatabase(t, collection, [], fixtures)
+    STANDARD_FIELDS.forEach(
+      standardField => makeCheck(t, standardField, { $set: { [standardField]: 'gg' } })
+    )
+    makeCheck(t, __STATE__, { $set: { [__STATE__]: 'gg' } })
+    requiredFieldNames.map(
+      name => makeCheck(t, name, { $unset: { [name]: true } })
+    )
+
+    t.end()
+  })
+
+  t.test('allow nullable field', async t => {
+    await resetCollection()
+
+    const nowDate = new Date()
+    const DOC = {
+      name: 'Name',
+      isbn: 'aaaaa',
+      price: 10.0,
+      publishDate: nowDate,
+      __STATE__: 'PUBLIC',
+      position: [0, 0], /* [ lon, lat ] */
+    }
+
+    const postResponse = await fastify.inject({
+      method: 'POST',
+      url: `${prefix}/`,
+      payload: DOC,
+      headers: {
+        userId: newUpdaterId,
+      },
     })
-  }
-
-  STANDARD_FIELDS.forEach(
-    standardField => makeCheck(t, standardField, { $set: { [standardField]: 'gg' } })
-  )
-  makeCheck(t, __STATE__, { $set: { [__STATE__]: 'gg' } })
-  requiredFieldNames.map(
-    name => makeCheck(t, name, { $unset: { [name]: true } })
-  )
-})
-
-tap.test('HTTP PATCH /<id> - allow nullable field', async t => {
-  t.plan(4)
-
-  const nowDate = new Date()
-  const DOC = {
-    name: 'Name',
-    isbn: 'aaaaa',
-    price: 10.0,
-    publishDate: nowDate,
-    __STATE__: 'PUBLIC',
-    position: [0, 0], /* [ lon, lat ] */
-  }
-  const { fastify } = await setUpTest(t)
-  const postResponse = await fastify.inject({
-    method: 'POST',
-    url: `${prefix}/`,
-    payload: DOC,
-    headers: {
-      userId: newUpdaterId,
-    },
-  })
-  t.test('should return 200', t => {
-    t.plan(1)
-    t.strictSame(postResponse.statusCode, 200)
-  })
-  t.test('should return application/json', t => {
-    t.plan(1)
-    t.ok(/application\/json/.test(postResponse.headers['content-type']))
-  })
-  t.test('should return the inserted id', t => {
-    t.plan(1)
-    const body = JSON.parse(postResponse.payload)
-
-    t.ok(body._id)
-  })
-  t.test('PATCH', async t => {
-    t.plan(4)
-
-    const body = JSON.parse(postResponse.payload)
-    const update = { $set: { name: null } }
-    const patchResponse = await fastify.inject({
-      method: 'PATCH',
-      url: `${prefix}/${body._id}`,
-      payload: update,
-    })
-    const patchBody = JSON.parse(patchResponse.payload)
 
     t.test('should return 200', t => {
-      t.plan(1)
-      t.strictSame(patchResponse.statusCode, 200)
+      t.strictSame(postResponse.statusCode, 200)
+      t.end()
     })
     t.test('should return application/json', t => {
-      t.plan(1)
-      t.ok(/application\/json/.test(patchResponse.headers['content-type']))
+      t.ok(/application\/json/.test(postResponse.headers['content-type']))
+      t.end()
     })
     t.test('should return the inserted id', t => {
-      t.plan(1)
-      t.ok(patchBody._id)
+      const body = JSON.parse(postResponse.payload)
+
+      t.ok(body._id)
+      t.end()
     })
-    t.test('should have null name', async t => {
-      t.plan(2)
+
+    t.test('PATCH', async t => {
+      const body = JSON.parse(postResponse.payload)
+      const update = { $set: { name: null } }
       const patchResponse = await fastify.inject({
-        method: 'GET',
-        url: `${prefix}/${patchBody._id}`,
-        headers: {
-          userId: newUpdaterId,
-        },
+        method: 'PATCH',
+        url: `${prefix}/${body._id}`,
+        payload: update,
       })
-      t.strictSame(patchResponse.statusCode, 200)
-      const result = JSON.parse(patchResponse.payload)
-      t.equal(result.name, null)
+      const patchBody = JSON.parse(patchResponse.payload)
+
+      t.test('should return 200', t => {
+        t.strictSame(patchResponse.statusCode, 200)
+        t.end()
+      })
+      t.test('should return application/json', t => {
+        t.ok(/application\/json/.test(patchResponse.headers['content-type']))
+        t.end()
+      })
+      t.test('should return the inserted id', t => {
+        t.ok(patchBody._id)
+        t.end()
+      })
+      t.test('should have null name', async t => {
+        const patchResponse = await fastify.inject({
+          method: 'GET',
+          url: `${prefix}/${patchBody._id}`,
+          headers: {
+            userId: newUpdaterId,
+          },
+        })
+
+        t.strictSame(patchResponse.statusCode, 200)
+        const result = JSON.parse(patchResponse.payload)
+        t.equal(result.name, null)
+        t.end()
+      })
+
+      t.end()
+    })
+
+    t.end()
+  })
+
+  t.test('trying to merge an array of non-object elements', async t => {
+    await resetCollection()
+
+    const response = await fastify.inject({
+      method: 'PATCH',
+      url: `${prefix}/${DOC._id}?_q=${JSON.stringify(MATCHING_TAGIDS_QUERY)}`,
+      payload: { $set: { 'tagIds.$.merge': { value: 12 } } },
+    })
+
+    t.test('should return 400', t => {
+      t.strictSame(response.statusCode, 400)
+      t.end()
+    })
+    t.test('should return JSON', t => {
+      t.ok(/application\/json/.test(response.headers['content-type']))
+      t.end()
+    })
+    t.test('body should be "Bad Request" error message', t => {
+      const expectedBody = '{"statusCode":400,"error":"Bad Request","message":"body must NOT have additional properties"}'
+      t.strictSame(response.body, expectedBody)
+      t.end()
+    })
+
+    t.end()
+  })
+
+  t.test('trying to replace an array without specifying an element matching query', async t => {
+    await resetCollection()
+
+    const response = await fastify.inject({
+      method: 'PATCH',
+      url: `${prefix}/${DOC._id}`,
+      payload: UPDATE_REPLACE_ARRAY_ELEMENT_COMMAND,
+    })
+    t.test('should return 500', t => {
+      t.strictSame(response.statusCode, 500)
+      t.end()
+    })
+    t.test('should return JSON', t => {
+      t.ok(/application\/json/.test(response.headers['content-type']))
+      t.end()
+    })
+    t.test('should return error message should be "Internal Server Error" error message', t => {
+      const expectedErrorMessage = 'The positional operator did not find the match needed from the query.'
+      t.match(response.body, expectedErrorMessage)
+      t.end()
     })
   })
+
+  t.test('trying to replace array number element with string by matching query', async t => {
+    await resetCollection()
+
+    const response = await fastify.inject({
+      method: 'PATCH',
+      url: `${prefix}/${DOC._id}?_q=${JSON.stringify(MATCHING_TAGIDS_QUERY)}`,
+      payload: { $set: { 'tagIds.$.replace': 'string' } },
+    })
+
+    t.test('should return 400', t => {
+      t.strictSame(response.statusCode, 400)
+      t.end()
+    })
+    t.test('should return JSON', t => {
+      t.ok(/application\/json/.test(response.headers['content-type']))
+      t.end()
+    })
+    t.test('body.$set["tagIds.$.replace"] should be number', t => {
+      const expectedErrorMessage = 'body must be number'
+      t.strictSame(JSON.parse(response.body)?.message, expectedErrorMessage)
+      t.end()
+    })
+
+    t.end()
+  })
+
+  t.end()
 })
 
-tap.test('HTTP PATCH /<id> - trying to merge an array of non-object elements', async t => {
-  t.plan(3)
-  const { fastify } = await setUpTest(t)
-  const response = await fastify.inject({
-    method: 'PATCH',
-    url: `${prefix}/${DOC._id}?_q=${JSON.stringify(MATCHING_TAGIDS_QUERY)}`,
-    payload: { $set: { 'tagIds.$.merge': { value: 12 } } },
-  })
-
-  t.test('should return 400', t => {
-    t.plan(1)
-    t.strictSame(response.statusCode, 400)
-  })
-  t.test('should return JSON', t => {
-    t.plan(1)
-    t.ok(/application\/json/.test(response.headers['content-type']))
-  })
-  t.test('body should be "Bad Request" error message', t => {
-    t.plan(1)
-    const expectedBody = '{"statusCode":400,"error":"Bad Request","message":"body must NOT have additional properties"}'
-    t.strictSame(response.body, expectedBody)
-  })
-})
-
-tap.test('HTTP PATCH /<id> - trying to replace an array without specifing an element matching query', async t => {
-  t.plan(3)
-
-  const { fastify } = await setUpTest(t)
-  const response = await fastify.inject({
-    method: 'PATCH',
-    url: `${prefix}/${DOC._id}`,
-    payload: UPDATE_REPLACE_ARRAY_ELEMENT_COMMAND,
-  })
-  t.test('should return 500', t => {
-    t.plan(1)
-    t.strictSame(response.statusCode, 500)
-  })
-  t.test('should return JSON', t => {
-    t.plan(1)
-    t.ok(/application\/json/.test(response.headers['content-type']))
-  })
-  t.test('should return error message should be "Internal Server Error" error message', t => {
-    t.plan(1)
-    const expectedErrorMessage = 'The positional operator did not find the match needed from the query.'
-    t.match(response.body, expectedErrorMessage)
-  })
-})
-
-tap.test('HTTP PATCH /<id> - trying to replace array number element with string by matching query', async t => {
-  t.plan(3)
-
-  const { fastify } = await setUpTest(t)
-  const response = await fastify.inject({
-    method: 'PATCH',
-    url: `${prefix}/${DOC._id}?_q=${JSON.stringify(MATCHING_TAGIDS_QUERY)}`,
-    payload: { $set: { 'tagIds.$.replace': 'string' } },
-  })
-  t.test('should return 400', t => {
-    t.plan(1)
-    t.strictSame(response.statusCode, 400)
-  })
-  t.test('should return JSON', t => {
-    t.plan(1)
-    t.ok(/application\/json/.test(response.headers['content-type']))
-  })
-  t.test('body.$set["tagIds.$.replace"] should be number', t => {
-    t.plan(1)
-    const expectedErrorMessage = 'body must be number'
-    t.strictSame(JSON.parse(response.body)?.message, expectedErrorMessage)
-  })
-})
-
-tap.test('HTTP PATCH /<id> with string id', t => {
+tap.test('HTTP PATCH /<id> with string id', async t => {
   const tests = [
     {
       name: 'on document found',
@@ -1219,13 +1272,13 @@ tap.test('HTTP PATCH /<id> with string id', t => {
   ]
 
   t.plan(tests.length)
+  const { fastify, collection, resetCollection } = await setUpTest(t, stationFixtures, 'stations')
 
   tests.forEach(testConf => {
     const { name, found, ...conf } = testConf
 
     t.test(name, async t => {
-      t.plan(4)
-      const { fastify, collection } = await setUpTest(t, stationFixtures, 'stations')
+      await resetCollection(stationFixtures)
 
       const response = await fastify.inject({
         method: 'PATCH',
@@ -1238,17 +1291,16 @@ tap.test('HTTP PATCH /<id> with string id', t => {
       })
 
       t.test(`should return ${found ? 200 : 404}`, t => {
-        t.plan(1)
         t.strictSame(response.statusCode, found ? 200 : 404, response.payload)
+        t.end()
       })
 
       t.test('should return "application/json"', t => {
-        t.plan(1)
         t.ok(/application\/json/.test(response.headers['content-type']))
+        t.end()
       })
 
       t.test(`should return ${found ? 'the id' : 'the not NOT_FOUND_BODY'}`, t => {
-        t.plan(1 + (conf.returnDoc ? 1 : 0))
         if (conf.returnDoc) {
           const expected = { ...conf.returnDoc }
           delete expected.updatedAt
@@ -1259,15 +1311,13 @@ tap.test('HTTP PATCH /<id> with string id', t => {
         } else {
           t.strictSame(JSON.parse(response.payload), found ? { _id: conf.id.toString() } : NOT_FOUND_BODY)
         }
+
+        t.end()
       })
 
       t.test('on database', t => {
-        t.plan(1 + !conf.command)
-
         if (!conf.command) {
           t.test(`should ${found ? '' : 'not'} update the document`, async t => {
-            t.plan(3)
-
             const doc = await collection.findOne({ _id: conf.id })
             if (found) {
               t.strictSame(doc.Comune, NEW_COMUNE)
@@ -1278,15 +1328,20 @@ tap.test('HTTP PATCH /<id> with string id', t => {
               t.strictSame(doc.updaterId, oldUpdaterId)
               t.ok(Math.abs(Date.now() - doc.updatedAt.getTime()) > 5000, '`updatedAt` should not be updated')
             }
+            t.end()
           })
         }
 
         t.test('should keep the other documents as is', async t => {
-          t.plan(1)
           const documents = await collection.find({ _id: { $ne: conf.id } }).toArray()
           t.strictSame(documents, stationFixtures.filter(d => d._id.toString() !== conf.id.toString()))
+          t.end()
         })
+
+        t.end()
       })
+
+      t.end()
     })
   })
 })

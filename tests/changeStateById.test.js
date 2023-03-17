@@ -29,7 +29,7 @@ const {
   draftFixture,
   trashFixture,
   deletedFixture,
-  dropCollectionAndInsertFixtures,
+  clearCollectionAndInsertFixtures,
   checkDocumentsInDatabase,
   getMongoDatabaseName,
   getMongoURL,
@@ -165,7 +165,7 @@ tap.test('changeState', async t => {
     t.test(conf.name, async t => {
       if (ok) {
         t.plan(3)
-        await dropCollectionAndInsertFixtures(collection)
+        await clearCollectionAndInsertFixtures(collection)
 
         const ret = await crudService.changeStateById(context, chosenDoc._id, conf.stateTo)
 
@@ -189,7 +189,7 @@ tap.test('changeState', async t => {
         checkDocumentsInDatabase(t, collection, [chosenDoc._id], fixtures.filter(d => d._id !== chosenDoc._id))
       } else {
         t.plan(2)
-        await dropCollectionAndInsertFixtures(collection)
+        await clearCollectionAndInsertFixtures(collection)
 
         const ret = await crudService.changeStateById(context, chosenDoc._id, conf.stateTo)
 

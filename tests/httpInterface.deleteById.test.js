@@ -31,7 +31,8 @@ const NON_MATCHING_PRICE = DOC.price + 1
 const [STATION_DOC] = stationFixtures
 const STATION_ID = STATION_DOC._id.toString()
 const MATCHING_MIR_CODE = STATION_DOC.CodiceMIR
-tap.test('HTTP DELETE /<id>', t => {
+
+tap.test('HTTP DELETE /<id>', async t => {
   const tests = [
     {
       name: 'without filter',
@@ -113,14 +114,13 @@ tap.test('HTTP DELETE /<id>', t => {
     },
   ]
 
-  t.plan(tests.length)
+  const { fastify, collection, resetCollection } = await setUpTest(t)
 
   tests.forEach(testConf => {
     const { name, deleted, ...conf } = testConf
 
     t.test(name, async t => {
-      t.plan(5)
-      const { fastify, collection } = await setUpTest(t)
+      await resetCollection()
 
       const response = await fastify.inject({
         method: 'DELETE',
@@ -129,31 +129,31 @@ tap.test('HTTP DELETE /<id>', t => {
       })
 
       t.test(`should return ${deleted ? '204' : '404'}`, t => {
-        t.plan(1)
         t.strictSame(response.statusCode, (deleted ? 204 : 404))
+        t.end()
       })
 
       t.test('should return the right content-type', t => {
-        t.plan(1)
         if (deleted) {
           t.strictSame(response.headers['content-type'], undefined)
         } else {
           t.ok(/application\/json/.test(response.headers['content-type']))
         }
+
+        t.end()
       })
 
       t.test(`should return ${deleted ? 'undefined' : 'NOT_FOUND_BODY'}`, t => {
-        t.plan(1)
         if (deleted) {
           t.strictSame(response.payload, '')
         } else {
           t.strictSame(JSON.parse(response.payload), NOT_FOUND_BODY)
         }
+
+        t.end()
       })
 
       t.test('on GET /<id>', async t => {
-        t.plan(2)
-
         const response = await fastify.inject({
           method: 'GET',
           url: `${prefix}/${ID}`,
@@ -161,100 +161,105 @@ tap.test('HTTP DELETE /<id>', t => {
 
         if (deleted) {
           t.test('should return 404', t => {
-            t.plan(1)
             t.strictSame(response.statusCode, 404)
+            t.end()
           })
           t.test('should return the right id', t => {
-            t.plan(1)
             t.strictSame(JSON.parse(response.payload), NOT_FOUND_BODY)
+            t.end()
           })
         } else {
           t.test('should return 200', t => {
-            t.plan(1)
             t.strictSame(response.statusCode, 200)
+            t.end()
           })
           t.test('should return the right id', t => {
-            t.plan(1)
             t.strictSame(JSON.parse(response.payload)._id, ID)
+            t.end()
           })
         }
+
+        t.end()
       })
 
       t.test('on database', async t => {
-        t.plan(1)
-
         const document = await collection.findOne({ _id: DOC._id })
 
         if (deleted) {
           t.test('should not be there', t => {
-            t.plan(1)
             t.strictSame(document, null)
+            t.end()
           })
         } else {
           t.test('should be there', t => {
-            t.plan(1)
             t.strictSame(document, DOC)
+            t.end()
           })
         }
+
+        t.end()
       })
+
+      t.end()
     })
   })
-})
 
-tap.test('query filter on nested object with dot notation', async t => {
-  const ID = '411111111111111111111111'
-  const DOC = {
-    ...fixtures[0],
-    _id: ObjectId.createFromHexString(ID),
-    metadata: {
-      somethingNumber: 2,
-      somethingString: 'the-saved-string',
-      somethingArrayObject: [{
-        arrayItemObjectChildNumber: 4,
-      }],
-      somethingArrayOfNumbers: [5],
-    },
-  }
-  const { fastify, collection } = await setUpTest(t, [DOC])
+  t.test('query filter on nested object with dot notation', async t => {
+    const ID = '411111111111111111111111'
+    const DOC = {
+      ...fixtures[0],
+      _id: ObjectId.createFromHexString(ID),
+      metadata: {
+        somethingNumber: 2,
+        somethingString: 'the-saved-string',
+        somethingArrayObject: [{
+          arrayItemObjectChildNumber: 4,
+        }],
+        somethingArrayOfNumbers: [5],
+      },
+    }
+    await resetCollection([DOC])
 
-  let docOnDb = await collection.findOne({ _id: DOC._id })
+    let docOnDb = await collection.findOne({ _id: DOC._id })
+    t.ok(docOnDb)
 
-  t.ok(docOnDb)
+    const failingDelete = await fastify.inject({
+      method: 'DELETE',
+      url: `${prefix}/${ID}`,
+      query: {
+        'metadata.somethingNumber': '999999',
+      },
+      headers: {},
+    })
 
-  const failingDelete = await fastify.inject({
-    method: 'DELETE',
-    url: `${prefix}/${ID}`,
-    query: {
-      'metadata.somethingNumber': '999999',
-    },
-    headers: {},
+    t.strictSame(failingDelete.statusCode, 404)
+    docOnDb = await collection.findOne({ _id: DOC._id })
+    t.ok(docOnDb)
+
+    const response = await fastify.inject({
+      method: 'DELETE',
+      url: `${prefix}/${ID}`,
+      query: {
+        'metadata.somethingNumber': '2',
+        'metadata.somethingString': 'the-saved-string',
+        'metadata.somethingArrayObject.0.arrayItemObjectChildNumber': '4',
+        'metadata.somethingArrayOfNumbers.0': '5',
+      },
+      headers: {},
+    })
+
+    t.strictSame(response.statusCode, 204)
+
+    docOnDb = await collection.findOne({ _id: DOC._id })
+    t.notOk(docOnDb)
+
+    t.end()
   })
-
-  t.strictSame(failingDelete.statusCode, 404)
-  docOnDb = await collection.findOne({ _id: DOC._id })
-  t.ok(docOnDb)
-
-  const response = await fastify.inject({
-    method: 'DELETE',
-    url: `${prefix}/${ID}`,
-    query: {
-      'metadata.somethingNumber': '2',
-      'metadata.somethingString': 'the-saved-string',
-      'metadata.somethingArrayObject.0.arrayItemObjectChildNumber': '4',
-      'metadata.somethingArrayOfNumbers.0': '5',
-    },
-    headers: {},
-  })
-
-  t.strictSame(response.statusCode, 204)
-
-  docOnDb = await collection.findOne({ _id: DOC._id })
-  t.notOk(docOnDb)
 
   t.end()
 })
 
-tap.test('HTTP DELETE /<id> with string id', t => {
+tap.test('HTTP DELETE /<id> with string id', async t => {
   const tests = [
     {
       name: 'without filter',
@@ -271,13 +276,13 @@ tap.test('HTTP DELETE /<id> with string id', t => {
   ]
 
   t.plan(tests.length)
+  const { fastify, collection, resetCollection } = await setUpTest(t, stationFixtures, 'stations')
 
   tests.forEach(testConf => {
     const { name, deleted, ...conf } = testConf
 
     t.test(name, async t => {
-      t.plan(5)
-      const { fastify, collection } = await setUpTest(t, stationFixtures, 'stations')
+      await resetCollection()
 
       const response = await fastify.inject({
         method: 'DELETE',
@@ -286,31 +291,31 @@ tap.test('HTTP DELETE /<id> with string id', t => {
       })
 
       t.test(`should return ${deleted ? '204' : '404'}`, t => {
-        t.plan(1)
         t.strictSame(response.statusCode, (deleted ? 204 : 404))
+        t.end()
       })
 
       t.test('should return the right content-type', t => {
-        t.plan(1)
         if (deleted) {
           t.strictSame(response.headers['content-type'], undefined)
         } else {
           t.ok(/application\/json/.test(response.headers['content-type']))
         }
+
+        t.end()
       })
 
       t.test(`should return ${deleted ? 'undefined' : 'NOT_FOUND_BODY'}`, t => {
-        t.plan(1)
         if (deleted) {
           t.strictSame(response.payload, '')
         } else {
           t.strictSame(JSON.parse(response.payload), NOT_FOUND_BODY)
         }
+
+        t.end()
       })
 
       t.test('on GET /<id>', async t => {
-        t.plan(2)
-
         const response = await fastify.inject({
           method: 'GET',
           url: `${stationsPrefix}/${STATION_ID}`,
@@ -318,42 +323,46 @@ tap.test('HTTP DELETE /<id> with string id', t => {
 
         if (deleted) {
           t.test('should return 404', t => {
-            t.plan(1)
             t.strictSame(response.statusCode, 404)
+            t.end()
           })
           t.test('should return the right id', t => {
-            t.plan(1)
             t.strictSame(JSON.parse(response.payload), NOT_FOUND_BODY)
+            t.end()
           })
         } else {
           t.test('should return 200', t => {
-            t.plan(1)
             t.strictSame(response.statusCode, 200)
+            t.end()
           })
           t.test('should return the right id', t => {
-            t.plan(1)
             t.strictSame(JSON.parse(response.payload)._id, STATION_ID)
+            t.end()
           })
         }
+
+        t.end()
       })
 
       t.test('on database', async t => {
-        t.plan(1)
-
         const document = await collection.findOne({ _id: STATION_DOC._id })
 
         if (deleted) {
           t.test('should not be there', t => {
-            t.plan(1)
             t.strictSame(document, null)
+            t.end()
           })
         } else {
           t.test('should be there', t => {
-            t.plan(1)
             t.strictSame(document, DOC)
+            t.end()
           })
         }
+
+        t.end()
       })
+
+      t.end()
     })
   })
 })

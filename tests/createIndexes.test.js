@@ -31,7 +31,7 @@ const {
 } = require('../lib/consts')
 
 const {
-  dropCollectionAndInsertFixtures,
+  clearCollectionAndInsertFixtures,
   getMongoDatabaseName,
   getMongoURL,
   BOOKS_COLLECTION_NAME,
@@ -44,7 +44,7 @@ tap.test('createIndexes', async t => {
   const client = await MongoClient.connect(mongoURL)
   const database = client.db(databaseName)
   const collection = database.collection(BOOKS_COLLECTION_NAME)
-  await dropCollectionAndInsertFixtures(collection)
+  await clearCollectionAndInsertFixtures(collection)
 
   t.teardown(async() => {
     await database.dropDatabase()

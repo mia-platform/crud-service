@@ -36,7 +36,7 @@ const MATCHING_PRICE = DOC.price - 1
 
 const MATCHING_QUERY = { price: { $gt: MATCHING_PRICE } }
 
-tap.test('HTTP POST /state', t => {
+tap.test('HTTP POST /state', async t => {
   const tests = [
     {
       name: 'filter by _id',
@@ -413,13 +413,13 @@ tap.test('HTTP POST /state', t => {
   ]
 
   t.plan(tests.length + 1)
+  const { fastify, collection, resetCollection } = await setUpTest(t)
 
   tests.forEach(testConf => {
     const { name, count, payload, url, editedDocumentIds } = testConf
 
     t.test(name, async t => {
-      t.plan(4)
-      const { fastify, collection } = await setUpTest(t)
+      await resetCollection()
 
       const response = await fastify.inject({
         method: 'POST',
@@ -432,49 +432,52 @@ tap.test('HTTP POST /state', t => {
       })
 
       t.test('should return 200', t => {
-        t.plan(1)
         t.strictSame(response.statusCode, 200)
+        t.end()
       })
       t.test('should return application/json', t => {
-        t.plan(1)
         t.ok(/application\/json/.test(response.headers['content-type']))
+        t.end()
       })
       t.test('should return the right count', t => {
-        t.plan(1)
         t.strictSame(JSON.parse(response.payload), count)
+        t.end()
       })
 
       t.test('on database', t => {
-        t.plan(2)
-
         t.test('should update the documents', async t => {
-          t.plan(editedDocumentIds.length)
-
           const docs = await collection.find({ _id: { $in: editedDocumentIds.map(d => d._id) } }).toArray()
+
           docs.forEach((doc, index) => {
             t.test(`doc${index}`, t => {
-              t.plan(2 + (editedDocumentIds[index].updaterId !== oldUpdaterId))
               t.strictSame(doc[__STATE__], editedDocumentIds[index].state)
               t.strictSame(doc.updaterId, editedDocumentIds[index].updaterId)
               if (editedDocumentIds[index].updaterId !== oldUpdaterId) {
                 t.ok(Math.abs(Date.now() - doc.updatedAt.getTime()) < 5000, '`updatedAt` should be updated')
               }
+              t.end()
             })
           })
+
+          t.end()
         })
 
         t.test('should keep the other documents as is', async t => {
-          t.plan(1)
           const documents = await collection.find({ _id: { $nin: editedDocumentIds.map(d => d._id) } }).toArray()
           t.strictSame(documents, fixtures.filter(f => !editedDocumentIds.some(d => d._id === f._id)))
+          t.end()
         })
+
+        t.end()
       })
+
+      t.end()
     })
   })
 
   t.test('filter on RawObject', t => {
     t.test('should have required fields if set', async t => {
-      const { fastify } = await setUpTest(t)
+      await resetCollection()
 
       const response = await fastify.inject({
         method: 'POST',
@@ -504,8 +507,8 @@ tap.test('HTTP POST /state', t => {
       t.end()
     })
 
-    t.test('should have additionalPropeties false if set', async t => {
-      const { fastify } = await setUpTest(t)
+    t.test('should have additionalProperties false if set', async t => {
+      await resetCollection()
 
       const response = await fastify.inject({
         method: 'POST',

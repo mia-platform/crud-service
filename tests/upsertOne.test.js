@@ -26,7 +26,7 @@ const CrudService = require('../lib/CrudService')
 
 const {
   fixtures,
-  dropCollectionAndInsertFixtures,
+  clearCollectionAndInsertFixtures,
   checkDocumentsInDatabase,
   newUpdaterId,
   getMongoDatabaseName,
@@ -77,7 +77,7 @@ tap.test('upsertOne', async t => {
   t.test('one matching doc', async t => {
     t.plan(3)
 
-    await dropCollectionAndInsertFixtures(collection)
+    await clearCollectionAndInsertFixtures(collection)
 
     const ret = await crudService.upsertOne(context, updateCommand(), { name: 'The Odyssey' }, updatedDocProjection)
 
@@ -98,7 +98,7 @@ tap.test('upsertOne', async t => {
   t.test('not found doc', async t => {
     t.plan(2)
 
-    await dropCollectionAndInsertFixtures(collection)
+    await clearCollectionAndInsertFixtures(collection)
 
     const ret = await crudService.upsertOne(context, updateCommand(), { name: 'Strange Book' }, ['name', 'price'])
     t.test('should return the new object', t => {
@@ -127,7 +127,7 @@ tap.test('upsertOne', async t => {
   t.test('setOnInsert on new document', async t => {
     t.plan(2)
 
-    await dropCollectionAndInsertFixtures(collection)
+    await clearCollectionAndInsertFixtures(collection)
 
     const ret = await crudService.upsertOne(context, {
       $setOnInsert: {
@@ -161,7 +161,7 @@ tap.test('upsertOne', async t => {
   t.test('setOnInsert on matching doc (ignored)', async t => {
     t.plan(3)
 
-    await dropCollectionAndInsertFixtures(collection)
+    await clearCollectionAndInsertFixtures(collection)
 
     const ret = await crudService.upsertOne(
       context, {
@@ -205,7 +205,7 @@ tap.test('upsertOne', async t => {
       t.test(conf.name, async t => {
         t.plan(3)
 
-        await dropCollectionAndInsertFixtures(collection)
+        await clearCollectionAndInsertFixtures(collection)
 
         const ret = await crudService.upsertOne(context, conf.cmd, { name: 'The Odyssey' }, updatedDocProjection)
 
@@ -242,7 +242,7 @@ tap.test('upsertOne', async t => {
   t.test('Cannot change the standardFields', async t => {
     t.plan(veryBadCommands.length)
 
-    await dropCollectionAndInsertFixtures(collection)
+    await clearCollectionAndInsertFixtures(collection)
 
     veryBadCommands.forEach((testConf) => {
       t.test(JSON.stringify(testConf.cmd), async t => {

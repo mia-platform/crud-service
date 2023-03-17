@@ -25,7 +25,7 @@ const CrudService = require('../lib/CrudService')
 
 const {
   fixtures,
-  dropCollectionAndInsertFixtures,
+  clearCollectionAndInsertFixtures,
   checkDocumentsInDatabase,
   getMongoDatabaseName,
   getMongoURL,
@@ -72,7 +72,7 @@ t.test('patchBulk', async t => {
   t.test('with only doc', async t => {
     t.plan(3)
 
-    await dropCollectionAndInsertFixtures(collection)
+    await clearCollectionAndInsertFixtures(collection)
 
     const filterUpdateCommands = [{
       _id: fixtures[firstDocIndex]._id,
@@ -103,7 +103,7 @@ t.test('patchBulk', async t => {
   t.test('with two docs', async t => {
     t.plan(3)
 
-    await dropCollectionAndInsertFixtures(collection)
+    await clearCollectionAndInsertFixtures(collection)
 
     const newDoc2 = {
       ...fixtures[secondDocIndex],
@@ -150,7 +150,7 @@ t.test('patchBulk', async t => {
   t.test('with only doc and a matching query', async t => {
     t.plan(3)
 
-    await dropCollectionAndInsertFixtures(collection)
+    await clearCollectionAndInsertFixtures(collection)
 
     const matchingQuery = { price: { $gt: 0 } }
     const filterUpdateCommands = [{
@@ -183,7 +183,7 @@ t.test('patchBulk', async t => {
   t.test('with only doc and a non-matching query', async t => {
     t.plan(2)
 
-    await dropCollectionAndInsertFixtures(collection)
+    await clearCollectionAndInsertFixtures(collection)
 
     const filterUpdateCommands = [{
       _id: fixtures[firstDocIndex]._id,
@@ -209,7 +209,7 @@ t.test('patchBulk', async t => {
   t.test('with two docs, the second not matching', async t => {
     t.plan(3)
 
-    await dropCollectionAndInsertFixtures(collection)
+    await clearCollectionAndInsertFixtures(collection)
 
     const filterUpdateCommands = [
       {
@@ -250,7 +250,7 @@ t.test('patchBulk', async t => {
   t.test('without _id', async t => {
     t.plan(3)
 
-    await dropCollectionAndInsertFixtures(collection)
+    await clearCollectionAndInsertFixtures(collection)
 
     const filterUpdateCommands = [
       {
@@ -287,7 +287,7 @@ t.test('patchBulk', async t => {
   t.test('with no docs', async t => {
     t.plan(1)
 
-    await dropCollectionAndInsertFixtures(collection)
+    await clearCollectionAndInsertFixtures(collection)
 
     t.rejects(crudService.patchBulk(context, []), 'should throw an AssertionError')
   })
@@ -315,7 +315,7 @@ t.test('patchBulk', async t => {
   t.test('Cannot change the standardFields', async t => {
     t.plan(veryBadCommands.length)
 
-    await dropCollectionAndInsertFixtures(collection)
+    await clearCollectionAndInsertFixtures(collection)
 
     veryBadCommands.forEach((testConf) => {
       t.test(JSON.stringify(testConf.cmd), async t => {
@@ -364,7 +364,7 @@ t.test('patchBulk', async t => {
   t.test('update nested object in array', async t => {
     t.plan(4)
 
-    await dropCollectionAndInsertFixtures(collection)
+    await clearCollectionAndInsertFixtures(collection)
 
     const filterUpdateCommands = [{
       query: { 'attachments.name': 'note' },

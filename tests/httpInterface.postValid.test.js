@@ -23,190 +23,180 @@ const { __STATE__ } = require('../lib/consts')
 const { newUpdaterId, fixtures } = require('./utils')
 const { setUpTest, prefix } = require('./httpInterface.utils')
 
-tap.test('HTTP POST /validate', t => {
-  t.plan(1)
+tap.test('HTTP POST /validate', async t => {
+  const { fastify, collection, resetCollection } = await setUpTest(t)
 
-  const nowDate = new Date()
-  const DOC = {
-    name: 'foo',
-    isbn: 'aaaaa',
-    price: 33.33,
-    publishDate: nowDate,
-    additionalInfo: {
-      stuff: [2, 3, 4, 5, 'hei'],
-      morestuff: {
-        hi: 'ciao',
+  t.test('valid value', async t => {
+    await resetCollection()
+
+    const nowDate = new Date()
+    const DOC = {
+      name: 'foo',
+      isbn: 'aaaaa',
+      price: 33.33,
+      publishDate: nowDate,
+      additionalInfo: {
+        stuff: [2, 3, 4, 5, 'hei'],
+        morestuff: {
+          hi: 'ciao',
+        },
       },
-    },
-    attachments: [
-      {
-        name: 'me',
-      },
-      {
-        name: 'another',
-        other: 'stuff',
-      },
-    ],
-    position: [0, 0], /* [ lon, lat ] */
-  }
+      attachments: [
+        {
+          name: 'me',
+        },
+        {
+          name: 'another',
+          other: 'stuff',
+        },
+      ],
+      position: [0, 0], /* [ lon, lat ] */
+    }
 
-  t.test('ok', async t => {
-    t.plan(2)
+    t.test('ok', async t => {
+      const response = await fastify.inject({
+        method: 'POST',
+        url: `${prefix}/validate`,
+        payload: DOC,
+        headers: {
+          userId: newUpdaterId,
+        },
+      })
 
-    const { fastify, collection } = await setUpTest(t)
-
-    const response = await fastify.inject({
-      method: 'POST',
-      url: `${prefix}/validate`,
-      payload: DOC,
-      headers: {
-        userId: newUpdaterId,
-      },
-    })
-
-    t.test('should return 200', t => {
-      t.plan(1)
-      t.strictSame(response.statusCode, 200)
-    })
-    t.test('should not insert the document in the database', async t => {
-      t.plan(1)
-      const count = await collection.countDocuments()
-      t.strictSame(count, fixtures.length)
+      t.test('should return 200', t => {
+        t.strictSame(response.statusCode, 200)
+        t.end()
+      })
+      t.test('should not insert the document in the database', async t => {
+        const count = await collection.countDocuments()
+        t.strictSame(count, fixtures.length)
+        t.end()
+      })
     })
   })
-})
 
-tap.test('HTTP POST /validate additionalProperty', t => {
-  t.plan(1)
 
-  const DOC = {
-    name: 'foo',
-    isbn: 'aaaaa',
-    anAdditionalProperty: 'notInTheModelDefinition',
-  }
+  t.test('additionalProperty', async t => {
+    const DOC = {
+      name: 'foo',
+      isbn: 'aaaaa',
+      anAdditionalProperty: 'notInTheModelDefinition',
+    }
 
-  t.test('not ok', async t => {
-    t.plan(3)
-
-    const { fastify, collection } = await setUpTest(t)
-
-    const response = await fastify.inject({
-      method: 'POST',
-      url: `${prefix}/validate`,
-      payload: DOC,
-      headers: {
-        userId: newUpdaterId,
-      },
-    })
-
-    t.test('should return 400', t => {
-      t.plan(1)
-      t.strictSame(response.statusCode, 400)
-    })
-    t.test('should return application/json', t => {
-      t.plan(1)
-      t.ok(/application\/json/.test(response.headers['content-type']))
-    })
-    t.test('should not insert the document in the database', async t => {
-      t.plan(1)
-      const count = await collection.countDocuments()
-      t.strictSame(count, fixtures.length)
-    })
-  })
-})
-
-tap.test('violate required constraints (no isbn)', async t => {
-  t.plan(3)
-  const { fastify, collection } = await setUpTest(t)
-
-  const response = await fastify.inject({
-    method: 'POST',
-    url: `${prefix}/validate`,
-    payload: {
-      name: 'name1',
-      price: 23.1,
-    },
-    headers: {
-      userId: newUpdaterId,
-    },
-  })
-  t.strictSame(response.statusCode, 400)
-  t.ok(/application\/json/.test(response.headers['content-type']))
-  t.equal(await collection.countDocuments(), fixtures.length, 'the document was not inserted in the database')
-})
-
-tap.test('HTTP POST /validate invalid position', t => {
-  t.plan(1)
-
-  const nowDate = new Date()
-  const DOC = {
-    name: 'foo',
-    price: 33.33,
-    publishDate: nowDate,
-    additionalInfo: {
-      stuff: [2, 3, 4, 5, 'hei'],
-      morestuff: {
-        hi: 'ciao',
-      },
-    },
-    position: [0], /* [ lon, lat ] */
-  }
-
-  t.test('not ok', async t => {
-    t.plan(3)
-
-    const { fastify, collection } = await setUpTest(t)
-
-    const response = await fastify.inject({
-      method: 'POST',
-      url: `${prefix}/validate`,
-      payload: DOC,
-      headers: {
-        userId: newUpdaterId,
-      },
-    })
-
-    t.test('should return 400', async t => {
-      t.plan(1)
-      t.strictSame(response.statusCode, 400)
-    })
-    t.test('should return application/json', t => {
-      t.plan(1)
-      t.ok(/application\/json/.test(response.headers['content-type']))
-    })
-    t.test('should not insert the document in the database', async t => {
-      t.plan(1)
-      const count = await collection.countDocuments()
-      t.strictSame(count, fixtures.length)
-    })
-  })
-})
-
-tap.test('HTTP POST / - standard fields', t => {
-  t.plan(STANDARD_FIELDS.length + 1)
-
-  function makeCheck(t, standardField) {
-    t.test(`${standardField} cannot be updated`, async t => {
-      t.plan(2)
-      const { fastify } = await setUpTest(t)
+    t.test('not ok', async t => {
+      await resetCollection()
 
       const response = await fastify.inject({
         method: 'POST',
         url: `${prefix}/validate`,
-        payload: { [standardField]: 'gg' },
+        payload: DOC,
+        headers: {
+          userId: newUpdaterId,
+        },
       })
 
       t.test('should return 400', t => {
-        t.plan(1)
         t.strictSame(response.statusCode, 400)
+        t.end()
       })
-      t.test('should return JSON', t => {
-        t.plan(1)
+      t.test('should return application/json', t => {
         t.ok(/application\/json/.test(response.headers['content-type']))
+        t.end()
+      })
+      t.test('should not insert the document in the database', async t => {
+        const count = await collection.countDocuments()
+        t.strictSame(count, fixtures.length)
+        t.end()
       })
     })
-  }
+  })
 
-  STANDARD_FIELDS.forEach(standardField => makeCheck(t, standardField))
-  makeCheck(t, __STATE__)
+  t.test('violate required constraints (no isbn)', async t => {
+    await resetCollection()
+
+    const response = await fastify.inject({
+      method: 'POST',
+      url: `${prefix}/validate`,
+      payload: {
+        name: 'name1',
+        price: 23.1,
+      },
+      headers: {
+        userId: newUpdaterId,
+      },
+    })
+    t.strictSame(response.statusCode, 400)
+    t.ok(/application\/json/.test(response.headers['content-type']))
+    t.equal(await collection.countDocuments(), fixtures.length, 'the document was not inserted in the database')
+  })
+
+  t.test('invalid position', async t => {
+    const nowDate = new Date()
+    const DOC = {
+      name: 'foo',
+      price: 33.33,
+      publishDate: nowDate,
+      additionalInfo: {
+        stuff: [2, 3, 4, 5, 'hei'],
+        morestuff: {
+          hi: 'ciao',
+        },
+      },
+      position: [0], /* [ lon, lat ] */
+    }
+
+    t.test('not ok', async t => {
+      await resetCollection()
+
+      const response = await fastify.inject({
+        method: 'POST',
+        url: `${prefix}/validate`,
+        payload: DOC,
+        headers: {
+          userId: newUpdaterId,
+        },
+      })
+
+      t.test('should return 400', async t => {
+        t.strictSame(response.statusCode, 400)
+        t.end()
+      })
+      t.test('should return application/json', t => {
+        t.ok(/application\/json/.test(response.headers['content-type']))
+        t.end()
+      })
+      t.test('should not insert the document in the database', async t => {
+        const count = await collection.countDocuments()
+        t.strictSame(count, fixtures.length)
+        t.end()
+      })
+    })
+  })
+
+  t.test('standard fields', async t => {
+    function makeCheck(t, standardField) {
+      t.test(`${standardField} cannot be updated`, async t => {
+        await resetCollection()
+
+        const response = await fastify.inject({
+          method: 'POST',
+          url: `${prefix}/validate`,
+          payload: { [standardField]: 'gg' },
+        })
+
+        t.test('should return 400', t => {
+          t.strictSame(response.statusCode, 400)
+          t.end()
+        })
+        t.test('should return JSON', t => {
+          t.ok(/application\/json/.test(response.headers['content-type']))
+          t.end()
+        })
+      })
+    }
+
+    STANDARD_FIELDS.forEach(standardField => makeCheck(t, standardField))
+    makeCheck(t, __STATE__)
+    t.end()
+  })
 })

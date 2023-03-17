@@ -24,7 +24,7 @@ const { STATES, __STATE__ } = require('../lib/consts')
 const CrudService = require('../lib/CrudService')
 
 const {
-  dropCollectionAndInsertFixtures,
+  clearCollectionAndInsertFixtures,
   fixtures,
   publicFixtures,
   getMongoDatabaseName,
@@ -51,7 +51,7 @@ tap.test('count', async t => {
     await client.close()
   })
 
-  await dropCollectionAndInsertFixtures(collection)
+  await clearCollectionAndInsertFixtures(collection)
 
   const crudService = new CrudService(collection, STATES.PUBLIC)
 

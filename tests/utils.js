@@ -18,6 +18,8 @@
 
 const mock = require('mock-require')
 const { ObjectId } = require('mongodb')
+const { randomUUID } = require('crypto')
+
 const {
   __STATE__,
   STATES,
@@ -389,28 +391,27 @@ const stationFixtures = [
   },
 ]
 
-async function dropCollectionAndInsertFixtures(collection, testFixtures = fixtures) {
+async function clearCollectionAndInsertFixtures(collection, testFixtures = fixtures) {
   // In case of error, we do nothing here.
   // We don't want to raise error if a collection can't be dropped because it doesn't exist yet
   try {
-    await collection.s.db.dropCollection('cars')
+    await collection.s.db.collection('cars').deleteMany({})
   } catch (error) { /* NOOP*/ }
   try {
-    await collection.drop()
+    await collection.deleteMany({})
   } catch (error) { /* NOOP*/ }
-  if (testFixtures !== null) {
+  if (testFixtures !== null && testFixtures.length > 0) {
     await collection.insertMany(testFixtures)
   }
 }
 
 function checkDocumentsInDatabase(tap, collection, idsToExclude, documents) {
   tap.test('documents in database', async t => {
-    t.plan(2)
-
     const docs = await collection.find({ _id: { $nin: idsToExclude } }).toArray()
 
     t.equal(docs.length, documents.length)
     t.strictSame(docs, documents)
+    t.end()
   })
 }
 
@@ -484,8 +485,7 @@ const mongoHost = process.env.MONGO_HOST ?? 'mongodb://localhost:27017'
  *
  * @returns {string} the name of the database
  */
-const getMongoDatabaseName = () => `Crud-${Math.random().toString()
-  .substring(2)}`
+const getMongoDatabaseName = () => `crud-${randomUUID()}`
 
 /**
  * Given the name of a database, returnes the complete MongoDB URL to connect with. The base path will be either
@@ -528,7 +528,7 @@ module.exports = {
   BAD_RAW_PROJECTIONS_USAGE,
   getMongoDatabaseName,
   getMongoURL,
-  dropCollectionAndInsertFixtures,
+  clearCollectionAndInsertFixtures,
   checkDocumentsInDatabase,
   newUpdaterId: userId,
   oldUpdaterId: updaterId,

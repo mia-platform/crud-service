@@ -25,9 +25,7 @@ const { STATES, __STATE__ } = require('../lib/consts')
 const { newUpdaterId, fixtures } = require('./utils')
 const { setUpTest, prefix } = require('./httpInterface.utils')
 
-tap.test('HTTP POST /bulk', t => {
-  t.plan(4)
-
+tap.test('HTTP POST /bulk', async t => {
   const nowDate = new Date()
   const DOCS = [
     {
@@ -67,10 +65,10 @@ tap.test('HTTP POST /bulk', t => {
     },
   ]
 
-  t.test('ok', async t => {
-    t.plan(5)
+  const { fastify, collection, resetCollection } = await setUpTest(t)
 
-    const { fastify, collection } = await setUpTest(t)
+  t.test('ok', async t => {
+    await resetCollection()
 
     const response = await fastify.inject({
       method: 'POST',
@@ -82,23 +80,22 @@ tap.test('HTTP POST /bulk', t => {
     })
 
     t.test('should return 200', t => {
-      t.plan(1)
       t.strictSame(response.statusCode, 200, response.payload)
+      t.end()
     })
     t.test('should return application/json', t => {
-      t.plan(1)
       t.ok(/application\/json/.test(response.headers['content-type']))
+      t.end()
     })
     t.test('should return the inserted ids', t => {
-      t.plan(DOCS.length + 1)
       const body = JSON.parse(response.payload)
       t.strictSame(body.length, DOCS.length)
       body.forEach(el => t.ok(el._id))
+      t.end()
     })
 
     t.test('GET /<id>', t => {
       const body = JSON.parse(response.payload)
-      t.plan(body.length)
 
       body.forEach((doc, index) => {
         t.test(`GET /doc${index}`, async t => {
@@ -108,15 +105,16 @@ tap.test('HTTP POST /bulk', t => {
           })
 
           t.test('should return 200', t => {
-            t.plan(1)
             t.strictSame(response.statusCode, 200)
+            t.end()
           })
         })
       })
+
+      t.end()
     })
 
     t.test('on database', async t => {
-      t.plan(2)
       const body = JSON.parse(response.payload)
 
       const doc1 = await collection.findOne({ _id: new ObjectId(body[0]._id) })
@@ -126,48 +124,47 @@ tap.test('HTTP POST /bulk', t => {
       docs.forEach((doc, index) => {
         t.test(`doc${index}`, t => {
           const docKeys = Object.keys(DOCS[index])
-          t.plan(docKeys.length + 5)
 
           docKeys.forEach(k => {
             t.test(`should have ${k}`, t => {
-              t.plan(1)
               if (k === 'position') {
                 t.strictSame(doc[k], { type: 'Point', coordinates: DOCS[index][k] })
               } else {
                 t.strictSame(doc[k], DOCS[index][k])
               }
+              t.end()
             })
           })
 
           t.test('should have creatorId', t => {
-            t.plan(1)
             t.strictSame(doc.creatorId, newUpdaterId)
+            t.end()
           })
           t.test('should have updaterId', t => {
-            t.plan(1)
             t.strictSame(doc.updaterId, newUpdaterId)
+            t.end()
           })
           t.test('should have createdAt', t => {
-            t.plan(1)
             t.ok(Date.now() - doc.createdAt < 5000, '`createdAt` should be set')
+            t.end()
           })
           t.test('should have updatedAt', t => {
-            t.plan(1)
             t.ok(Date.now() - doc.updatedAt < 5000, '`updatedAt` should be set')
+            t.end()
           })
           t.test('should have __STATE__ in DRAFT', t => {
-            t.plan(1)
             t.strictSame(doc[__STATE__], STATES.DRAFT)
+            t.end()
           })
+
+          t.end()
         })
       })
     })
   })
 
   t.test('violate index uniqueness', async t => {
-    t.plan(3)
-
-    const { fastify, collection } = await setUpTest(t)
+    await resetCollection()
 
     const response = await fastify.inject({
       method: 'POST',
@@ -191,15 +188,12 @@ tap.test('HTTP POST /bulk', t => {
     t.ok(/application\/json/.test(response.headers['content-type']))
 
     t.test('on database', async t => {
-      t.plan(1)
       const count = await collection.countDocuments({})
       t.strictSame(count, fixtures.length + 1, 'only the first was inserted')
     })
   })
 
   t.test('bulk bigger than 1 MB', async t => {
-    t.plan(3)
-
     function dummyBulk(n) {
       return Array.from({ length: n }, (v, k) => ({
         name: k.toString(),
@@ -207,7 +201,7 @@ tap.test('HTTP POST /bulk', t => {
       }))
     }
 
-    const { fastify, collection } = await setUpTest(t)
+    await resetCollection()
     const n = 50000
 
     const response = await fastify.inject({
@@ -223,16 +217,13 @@ tap.test('HTTP POST /bulk', t => {
     t.ok(/application\/json/.test(response.headers['content-type']))
 
     t.test('on database', async t => {
-      t.plan(1)
       const count = await collection.countDocuments({})
       t.strictSame(count, fixtures.length + n)
     })
   })
 
   t.test('violate required constraints (no isbn)', async t => {
-    t.plan(3)
-
-    const { fastify, collection } = await setUpTest(t)
+    await resetCollection()
 
     const response = await fastify.inject({
       method: 'POST',
@@ -251,369 +242,356 @@ tap.test('HTTP POST /bulk', t => {
     t.ok(/application\/json/.test(response.headers['content-type']))
 
     t.test('on database', async t => {
-      t.plan(1)
       const count = await collection.countDocuments({})
       t.strictSame(count, fixtures.length, 'no insertions on database')
     })
   })
-})
 
-tap.test('HTTP POST /bulk allow nullable field', t => {
-  t.plan(1)
+  t.test('allow nullable field', async t => {
+    const nowDate = new Date()
+    const DOCS = [
+      {
+        name: null,
+        isbn: 'aaaaaa',
+        price: null,
+        publishDate: nowDate,
+        position: [4.1, 4.3, 2.1],
+        additionalInfo: {
+          footnotePages: [2, 3, 5, 23, 3],
+          notes: {
+            mynote: 'good',
+          },
+        },
+        attachments: [
+          {
+            name: 'me',
+          },
+          {
+            name: 'another',
+            size: 50,
+            more: ['stuff'],
+          },
+        ],
+        __STATE__: 'PUBLIC',
+      },
+      {
+        name: null,
+        isbn: 'bbbbbb',
+        price: 20.0,
+        position: [2.1, 8.5],
+        isPromoted: true,
+        __STATE__: 'PUBLIC',
+      },
+      {
+        name: null,
+        isbn: 'cccccc',
+        price: 10.0,
+        __STATE__: 'PUBLIC',
+      },
+    ]
 
-  const nowDate = new Date()
-  const DOCS = [
-    {
-      name: null,
-      isbn: 'aaaaaa',
-      price: null,
-      publishDate: nowDate,
-      position: [4.1, 4.3, 2.1],
-      additionalInfo: {
-        footnotePages: [2, 3, 5, 23, 3],
-        notes: {
-          mynote: 'good',
+    t.test('ok', async t => {
+      await resetCollection()
+
+      const response = await fastify.inject({
+        method: 'POST',
+        url: `${prefix}/bulk`,
+        payload: DOCS,
+        headers: {
+          userId: newUpdaterId,
+        },
+      })
+
+      t.test('should return 200', t => {
+        t.strictSame(response.statusCode, 200, response.payload)
+        t.end()
+      })
+
+      t.test('should return application/json', t => {
+        t.ok(/application\/json/.test(response.headers['content-type']))
+        t.end()
+      })
+
+      t.test('should return the inserted ids', t => {
+        const body = JSON.parse(response.payload)
+        t.strictSame(body.length, DOCS.length)
+        body.forEach(el => t.ok(el._id))
+        t.end()
+      })
+
+      t.test('GET /<id>', t => {
+        const body = JSON.parse(response.payload)
+
+        body.forEach((doc, index) => {
+          t.test(`GET /doc${index}`, async t => {
+            const response = await fastify.inject({
+              method: 'GET',
+              url: `${prefix}/${doc._id}`,
+            })
+
+            t.test('should return 200', t => {
+              t.strictSame(response.statusCode, 200, response.payload)
+              t.end()
+            })
+
+            t.test('should have null name', async t => {
+              const result = JSON.parse(response.payload)
+              t.equal(result.name, null)
+              t.end()
+            })
+
+            if (index === 0) {
+              t.test(`doc ${index} should have 0.0 price`, async t => {
+                const result = JSON.parse(response.payload)
+                t.equal(result.price, 0.0)
+                t.end()
+              })
+            } else {
+              t.test(`doc ${index} should have not null price`, async t => {
+                const result = JSON.parse(response.payload)
+                t.not(result.price, null)
+                t.end()
+              })
+            }
+          })
+        })
+
+        t.end()
+      })
+
+      t.test('on database', async t => {
+        const body = JSON.parse(response.payload)
+
+        const doc1 = await collection.findOne({ _id: new ObjectId(body[0]._id) })
+        const doc2 = await collection.findOne({ _id: new ObjectId(body[1]._id) })
+
+        const docs = [doc1, doc2]
+        docs.forEach((doc, index) => {
+          t.test(`doc${index}`, t => {
+            const docKeys = Object.keys(DOCS[index])
+
+            docKeys.forEach(k => {
+              t.test(`should have ${k}`, t => {
+                if (k === 'position') {
+                  t.strictSame(doc[k], { type: 'Point', coordinates: DOCS[index][k] })
+                } else if (k === 'price' && index === 0) {
+                  t.equal(doc[k], 0.0)
+                } else {
+                  t.strictSame(doc[k], DOCS[index][k])
+                }
+                t.end()
+              })
+            })
+
+            t.test('should have creatorId', t => {
+              t.strictSame(doc.creatorId, newUpdaterId)
+              t.end()
+            })
+            t.test('should have updaterId', t => {
+              t.strictSame(doc.updaterId, newUpdaterId)
+              t.end()
+            })
+            t.test('should have createdAt', t => {
+              t.ok(Date.now() - doc.createdAt < 5000, '`createdAt` should be set')
+              t.end()
+            })
+            t.test('should have updatedAt', t => {
+              t.ok(Date.now() - doc.updatedAt < 5000, '`updatedAt` should be set')
+              t.end()
+            })
+            t.test('should have __STATE__ in PUBLIC', t => {
+              t.strictSame(doc[__STATE__], STATES.PUBLIC)
+              t.end()
+            })
+
+            t.end()
+          })
+        })
+      })
+    })
+  })
+
+  t.test('PUBLIC as defaultState', async t => {
+    const DOCS = [
+      {
+        name: 'foo',
+        price: 33.33,
+        position: [4.1, 4.3, 2.1],
+        additionalInfo: {
+          footnotePages: [2, 3, 5, 23, 3],
+          notes: {
+            mynote: 'good',
+          },
         },
       },
-      attachments: [
-        {
-          name: 'me',
+    ]
+
+    t.test('ok', async t => {
+      await resetCollection()
+
+      const prefix = '/cars-endpoint'
+
+      const response = await fastify.inject({
+        method: 'POST',
+        url: `${prefix}/bulk`,
+        payload: DOCS,
+        headers: {
+          userId: newUpdaterId,
         },
+      })
+
+      t.test('should return 200', t => {
+        t.strictSame(response.statusCode, 200)
+        t.end()
+      })
+
+      t.test('should return application/json', t => {
+        t.ok(/application\/json/.test(response.headers['content-type']))
+        t.end()
+      })
+
+      t.test('should return the inserted ids', t => {
+        const body = JSON.parse(response.payload)
+        t.strictSame(body.length, DOCS.length)
+        body.forEach(el => t.ok(el._id))
+        t.end()
+      })
+
+      t.test('GET /<id>', t => {
+        const body = JSON.parse(response.payload)
+
+        body.forEach((doc, index) => {
+          t.test(`GET /doc${index}`, async t => {
+            const response = await fastify.inject({
+              method: 'GET',
+              url: `${prefix}/${doc._id}`,
+            })
+
+            t.test('should return 200', t => {
+              t.strictSame(response.statusCode, 200)
+              t.end()
+            })
+
+            t.test('should have __STATE__ in PUBLIC', t => {
+              const body = JSON.parse(response.payload)
+              t.strictSame(body[__STATE__], STATES.PUBLIC)
+              t.end()
+            })
+          })
+        })
+
+        t.end()
+      })
+    })
+  })
+
+  t.test('PUBLIC as defaultState, specifying DRAFT', async t => {
+    const DOCS = [
+      {
+        name: 'foo',
+        price: 33.33,
+        position: [4.1, 4.3, 2.1],
+        additionalInfo: {
+          footnotePages: [2, 3, 5, 23, 3],
+          notes: {
+            mynote: 'good',
+          },
+        },
+        __STATE__: STATES.DRAFT,
+      },
+    ]
+
+    t.test('ok', async t => {
+      await resetCollection()
+
+      const prefix = '/cars-endpoint'
+
+      const response = await fastify.inject({
+        method: 'POST',
+        url: `${prefix}/bulk`,
+        payload: DOCS,
+        headers: {
+          userId: newUpdaterId,
+        },
+      })
+
+      t.test('should return 200', t => {
+        t.strictSame(response.statusCode, 200)
+        t.end()
+      })
+      t.test('should return application/json', t => {
+        t.ok(/application\/json/.test(response.headers['content-type']))
+        t.end()
+      })
+      t.test('should return the inserted ids', t => {
+        const body = JSON.parse(response.payload)
+        t.strictSame(body.length, DOCS.length)
+        body.forEach(el => t.ok(el._id))
+        t.end()
+      })
+
+      t.test('GET /<id>', t => {
+        const body = JSON.parse(response.payload)
+
+        body.forEach((doc, index) => {
+          t.test(`GET /doc${index}`, async t => {
+            const response = await fastify.inject({
+              method: 'GET',
+              url: `${prefix}/${doc._id}?_st=${STATES.DRAFT}`,
+            })
+
+            t.test('should return 200', t => {
+              t.strictSame(response.statusCode, 200)
+              t.end()
+            })
+
+            t.test('should have __STATE__ in DRAFT', t => {
+              const body = JSON.parse(response.payload)
+              t.strictSame(body[__STATE__], STATES.DRAFT)
+              t.end()
+            })
+          })
+        })
+
+        t.end()
+      })
+    })
+  })
+
+  t.test('MP4-523: invalid date should return 400', async t => {
+    await resetCollection()
+
+    const response = await fastify.inject({
+      method: 'POST',
+      url: `${prefix}/bulk`,
+      payload: [
         {
-          name: 'another',
-          size: 50,
-          more: ['stuff'],
+          name: 'New Book',
+          isbn: 'new-book-isbn1',
+          publishDate: 'AA2018-10-10',
         },
       ],
-      __STATE__: 'PUBLIC',
-    },
-    {
-      name: null,
-      isbn: 'bbbbbb',
-      price: 20.0,
-      position: [2.1, 8.5],
-      isPromoted: true,
-      __STATE__: 'PUBLIC',
-    },
-    {
-      name: null,
-      isbn: 'cccccc',
-      price: 10.0,
-      __STATE__: 'PUBLIC',
-    },
-  ]
-
-  t.test('ok', async t => {
-    t.plan(5)
-
-    const { fastify, collection } = await setUpTest(t)
-
-    const response = await fastify.inject({
-      method: 'POST',
-      url: `${prefix}/bulk`,
-      payload: DOCS,
       headers: {
         userId: newUpdaterId,
       },
     })
 
     t.test('should return 200', t => {
-      t.plan(1)
-      t.strictSame(response.statusCode, 200, response.payload)
-    })
-
-    t.test('should return application/json', t => {
-      t.plan(1)
-      t.ok(/application\/json/.test(response.headers['content-type']))
-    })
-
-    t.test('should return the inserted ids', t => {
-      t.plan(DOCS.length + 1)
-      const body = JSON.parse(response.payload)
-      t.strictSame(body.length, DOCS.length)
-      body.forEach(el => t.ok(el._id))
-    })
-
-    t.test('GET /<id>', t => {
-      const body = JSON.parse(response.payload)
-      t.plan(body.length)
-
-      body.forEach((doc, index) => {
-        t.test(`GET /doc${index}`, async t => {
-          t.plan(3)
-          const response = await fastify.inject({
-            method: 'GET',
-            url: `${prefix}/${doc._id}`,
-          })
-
-          t.test('should return 200', t => {
-            t.plan(1)
-            t.strictSame(response.statusCode, 200, response.payload)
-          })
-
-          t.test('should have null name', async t => {
-            t.plan(1)
-            const result = JSON.parse(response.payload)
-            t.equal(result.name, null)
-          })
-
-          if (index === 0) {
-            t.test(`doc ${index} should have 0.0 price`, async t => {
-              t.plan(1)
-              const result = JSON.parse(response.payload)
-              t.equal(result.price, 0.0)
-            })
-          } else {
-            t.test(`doc ${index} should have not null price`, async t => {
-              t.plan(1)
-              const result = JSON.parse(response.payload)
-              t.not(result.price, null)
-            })
-          }
-        })
-      })
-    })
-
-    t.test('on database', async t => {
-      t.plan(2)
-      const body = JSON.parse(response.payload)
-
-      const doc1 = await collection.findOne({ _id: new ObjectId(body[0]._id) })
-      const doc2 = await collection.findOne({ _id: new ObjectId(body[1]._id) })
-
-      const docs = [doc1, doc2]
-      docs.forEach((doc, index) => {
-        t.test(`doc${index}`, t => {
-          const docKeys = Object.keys(DOCS[index])
-          t.plan(docKeys.length + 5)
-
-          docKeys.forEach(k => {
-            t.test(`should have ${k}`, t => {
-              t.plan(1)
-              if (k === 'position') {
-                t.strictSame(doc[k], { type: 'Point', coordinates: DOCS[index][k] })
-              } else if (k === 'price' && index === 0) {
-                t.equal(doc[k], 0.0)
-              } else {
-                t.strictSame(doc[k], DOCS[index][k])
-              }
-            })
-          })
-
-          t.test('should have creatorId', t => {
-            t.plan(1)
-            t.strictSame(doc.creatorId, newUpdaterId)
-          })
-          t.test('should have updaterId', t => {
-            t.plan(1)
-            t.strictSame(doc.updaterId, newUpdaterId)
-          })
-          t.test('should have createdAt', t => {
-            t.plan(1)
-            t.ok(Date.now() - doc.createdAt < 5000, '`createdAt` should be set')
-          })
-          t.test('should have updatedAt', t => {
-            t.plan(1)
-            t.ok(Date.now() - doc.updatedAt < 5000, '`updatedAt` should be set')
-          })
-          t.test('should have __STATE__ in PUBLIC', t => {
-            t.plan(1)
-            t.strictSame(doc[__STATE__], STATES.PUBLIC)
-          })
-        })
-      })
-    })
-  })
-})
-
-tap.test('HTTP POST /bulk PUBLIC as defaultState', t => {
-  t.plan(1)
-
-  const DOCS = [
-    {
-      name: 'foo',
-      price: 33.33,
-      position: [4.1, 4.3, 2.1],
-      additionalInfo: {
-        footnotePages: [2, 3, 5, 23, 3],
-        notes: {
-          mynote: 'good',
-        },
-      },
-    },
-  ]
-
-  t.test('ok', async t => {
-    t.plan(4)
-
-    const { fastify } = await setUpTest(t)
-
-    const prefix = '/cars-endpoint'
-
-    const response = await fastify.inject({
-      method: 'POST',
-      url: `${prefix}/bulk`,
-      payload: DOCS,
-      headers: {
-        userId: newUpdaterId,
-      },
-    })
-
-    t.test('should return 200', t => {
-      t.plan(1)
-      t.strictSame(response.statusCode, 200)
+      t.strictSame(response.statusCode, 400)
+      t.end()
     })
     t.test('should return application/json', t => {
-      t.plan(1)
       t.ok(/application\/json/.test(response.headers['content-type']))
+      t.end()
     })
     t.test('should return the inserted ids', t => {
-      t.plan(DOCS.length + 1)
       const body = JSON.parse(response.payload)
-      t.strictSame(body.length, DOCS.length)
-      body.forEach(el => t.ok(el._id))
-    })
-
-    t.test('GET /<id>', t => {
-      const body = JSON.parse(response.payload)
-      t.plan(body.length)
-
-      body.forEach((doc, index) => {
-        t.test(`GET /doc${index}`, async t => {
-          const response = await fastify.inject({
-            method: 'GET',
-            url: `${prefix}/${doc._id}`,
-          })
-
-          t.test('should return 200', t => {
-            t.plan(1)
-            t.strictSame(response.statusCode, 200)
-          })
-
-          t.test('should have __STATE__ in PUBLIC', t => {
-            t.plan(1)
-
-            const body = JSON.parse(response.payload)
-            t.strictSame(body[__STATE__], STATES.PUBLIC)
-          })
-        })
+      t.strictSame(body, {
+        statusCode: 400,
+        error: 'Bad Request',
+        message: 'body must match pattern "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$"',
       })
-    })
-  })
-})
-
-tap.test('HTTP POST /bulk PUBLIC as defaultState, specifying DRAFT', t => {
-  t.plan(1)
-
-  const DOCS = [
-    {
-      name: 'foo',
-      price: 33.33,
-      position: [4.1, 4.3, 2.1],
-      additionalInfo: {
-        footnotePages: [2, 3, 5, 23, 3],
-        notes: {
-          mynote: 'good',
-        },
-      },
-      __STATE__: STATES.DRAFT,
-    },
-  ]
-
-  t.test('ok', async t => {
-    t.plan(4)
-
-    const { fastify } = await setUpTest(t)
-
-    const prefix = '/cars-endpoint'
-
-    const response = await fastify.inject({
-      method: 'POST',
-      url: `${prefix}/bulk`,
-      payload: DOCS,
-      headers: {
-        userId: newUpdaterId,
-      },
-    })
-
-    t.test('should return 200', t => {
-      t.plan(1)
-      t.strictSame(response.statusCode, 200)
-    })
-    t.test('should return application/json', t => {
-      t.plan(1)
-      t.ok(/application\/json/.test(response.headers['content-type']))
-    })
-    t.test('should return the inserted ids', t => {
-      t.plan(DOCS.length + 1)
-      const body = JSON.parse(response.payload)
-      t.strictSame(body.length, DOCS.length)
-      body.forEach(el => t.ok(el._id))
-    })
-
-    t.test('GET /<id>', t => {
-      const body = JSON.parse(response.payload)
-      t.plan(body.length)
-
-      body.forEach((doc, index) => {
-        t.test(`GET /doc${index}`, async t => {
-          const response = await fastify.inject({
-            method: 'GET',
-            url: `${prefix}/${doc._id}?_st=${STATES.DRAFT}`,
-          })
-
-          t.test('should return 200', t => {
-            t.plan(1)
-            t.strictSame(response.statusCode, 200)
-          })
-
-          t.test('should have __STATE__ in DRAFT', t => {
-            t.plan(1)
-
-            const body = JSON.parse(response.payload)
-            t.strictSame(body[__STATE__], STATES.DRAFT)
-          })
-        })
-      })
-    })
-  })
-})
-
-tap.test('MP4-523: invalid date should return 400', async t => {
-  t.plan(3)
-
-  const { fastify } = await setUpTest(t)
-
-  const response = await fastify.inject({
-    method: 'POST',
-    url: `${prefix}/bulk`,
-    payload: [
-      {
-        name: 'New Book',
-        isbn: 'new-book-isbn1',
-        publishDate: 'AA2018-10-10',
-      },
-    ],
-    headers: {
-      userId: newUpdaterId,
-    },
-  })
-
-  t.test('should return 200', t => {
-    t.plan(1)
-    t.strictSame(response.statusCode, 400)
-  })
-  t.test('should return application/json', t => {
-    t.plan(1)
-    t.ok(/application\/json/.test(response.headers['content-type']))
-  })
-  t.test('should return the inserted ids', t => {
-    t.plan(1)
-    const body = JSON.parse(response.payload)
-    t.strictSame(body, {
-      statusCode: 400,
-      error: 'Bad Request',
-      message: 'body must match pattern "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$"',
+      t.end()
     })
   })
 })

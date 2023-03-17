@@ -24,7 +24,7 @@ const { STATES } = require('../lib/consts')
 const CrudService = require('../lib/CrudService')
 const {
   publicFixtures,
-  dropCollectionAndInsertFixtures,
+  clearCollectionAndInsertFixtures,
   getMongoDatabaseName,
   getMongoURL,
   BOOKS_COLLECTION_NAME,
@@ -49,7 +49,7 @@ tap.test('allowDiskUse', async t => {
   const database = client.db(databaseName)
   const collection = database.collection(BOOKS_COLLECTION_NAME)
 
-  await dropCollectionAndInsertFixtures(collection)
+  await clearCollectionAndInsertFixtures(collection)
 
   t.teardown(async() => {
     await database.dropDatabase()

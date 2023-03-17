@@ -47,7 +47,7 @@ const UPDATED_NULL_NAME_HTTP_DOC = { ...HTTP_DOC,
 const SET_ON_INSERT_COMMAND = { $setOnInsert: UPDATES }
 const baseQuery = '/upsert-one'
 
-tap.test('HTTP POST /upsert-one', t => {
+tap.test('HTTP POST /upsert-one', async t => {
   const tests = [
     {
       name: 'on document found',
@@ -126,14 +126,13 @@ tap.test('HTTP POST /upsert-one', t => {
     },
   ]
 
-  t.plan(tests.length)
+  const { fastify, collection, resetCollection } = await setUpTest(t)
 
   tests.forEach(testConf => {
     const { name, found, ...conf } = testConf
 
     t.test(name, async t => {
-      t.plan(4)
-      const { fastify, collection } = await setUpTest(t)
+      await resetCollection()
 
       const response = await fastify.inject({
         method: 'POST',
@@ -146,17 +145,16 @@ tap.test('HTTP POST /upsert-one', t => {
       })
 
       t.test('should return 200', t => {
-        t.plan(1)
         t.strictSame(response.statusCode, 200)
+        t.end()
       })
 
       t.test('should return "application/json"', t => {
-        t.plan(1)
         t.ok(/application\/json/.test(response.headers['content-type']))
+        t.end()
       })
 
       t.test(`should return ${found ? 'the id' : 'the inserted document'}`, t => {
-        t.plan(1 + (found ? 1 : 0))
         const responseDocument = JSON.parse(response.payload)
         if (found) {
           const expected = { ...conf.returnDoc }
@@ -169,14 +167,11 @@ tap.test('HTTP POST /upsert-one', t => {
           const otherProperties = omit(['_id', 'name'], responseDocument)
           t.strictSame(otherProperties, UPDATES)
         }
+        t.end()
       })
 
-      t.test('on database', t => {
-        t.plan(1)
-
+      t.test('on database', async t => {
         t.test(`should ${found ? 'update' : 'insert'} the document`, async t => {
-          t.plan(7)
-
           const doc = await collection.findOne(conf.retrieveDocumentQuery)
           t.strictSame(doc.price, NEW_PRICE)
           t.strictSame(doc.attachments, NEW_ATTACHMENTS)
@@ -185,420 +180,418 @@ tap.test('HTTP POST /upsert-one', t => {
           t.ok(doc.createdAt)
           t.ok(doc.__STATE__)
           t.ok(Math.abs(Date.now() - doc.updatedAt.getTime()) < 5000, '`updatedAt` should be updated')
+          t.end()
         })
       })
     })
   })
-})
 
-tap.test('unset ObjectId property on document found', async t => {
-  t.plan(4)
-  const { fastify, collection } = await setUpTest(t)
+  t.test('unset ObjectId property on document found', async t => {
+    await resetCollection()
 
-  const response = await fastify.inject({
-    method: 'POST',
-    url: `${prefix + baseQuery}?name=${DOC.name}`,
-    payload: { $unset: { authorAddressId: 'true' } },
-    headers: { userId: newUpdaterId },
-  })
+    const response = await fastify.inject({
+      method: 'POST',
+      url: `${prefix + baseQuery}?name=${DOC.name}`,
+      payload: { $unset: { authorAddressId: 'true' } },
+      headers: { userId: newUpdaterId },
+    })
 
-  t.test('should return 200', t => {
-    t.plan(1)
-    t.strictSame(response.statusCode, 200)
-  })
+    t.test('should return 200', t => {
+      t.strictSame(response.statusCode, 200)
+      t.end()
+    })
 
-  t.test('should return "application/json"', t => {
-    t.plan(1)
-    t.ok(/application\/json/.test(response.headers['content-type']))
-  })
+    t.test('should return "application/json"', t => {
+      t.ok(/application\/json/.test(response.headers['content-type']))
+      t.end()
+    })
 
-  t.test('should return the id', t => {
-    const responseDocument = JSON.parse(response.payload)
-    const actual = { ...responseDocument }
-    t.ok(Number.isFinite(new Date(actual.updatedAt).getTime()))
-    delete actual.updatedAt
+    t.test('should return the id', t => {
+      const responseDocument = JSON.parse(response.payload)
+      const actual = { ...responseDocument }
+      t.ok(Number.isFinite(new Date(actual.updatedAt).getTime()))
+      delete actual.updatedAt
 
-    const expected = omit(
-      ['authorAddressId', 'updatedAt'],
-      { ...HTTP_DOC, updaterId: newUpdaterId }
-    )
+      const expected = omit(
+        ['authorAddressId', 'updatedAt'],
+        { ...HTTP_DOC, updaterId: newUpdaterId }
+      )
 
-    t.strictSame(actual, expected)
-    t.end()
-  })
+      t.strictSame(actual, expected)
+      t.end()
+    })
 
-  t.test('on database', t => {
-    t.plan(1)
-
-    t.test('should update the document', async t => {
-      t.plan(5)
-
-      const doc = await collection.findOne({ _id: DOC._id })
-      t.strictSame(doc.authorAddressId, undefined)
-      t.ok(doc.creatorId)
-      t.ok(doc.createdAt)
-      t.ok(doc.__STATE__)
-      t.ok(Math.abs(Date.now() - doc.updatedAt.getTime()) < 5000, '`updatedAt` should be updated')
+    t.test('on database', async t => {
+      t.test('should update the document', async t => {
+        const doc = await collection.findOne({ _id: DOC._id })
+        t.strictSame(doc.authorAddressId, undefined)
+        t.ok(doc.creatorId)
+        t.ok(doc.createdAt)
+        t.ok(doc.__STATE__)
+        t.ok(Math.abs(Date.now() - doc.updatedAt.getTime()) < 5000, '`updatedAt` should be updated')
+        t.end()
+      })
     })
   })
-})
 
-tap.test('HTTP POST /upsert-one - allow nullable field', t => {
-  const tests = [
-    {
-      name: 'on document found',
-      url: `${baseQuery}?name=${DOC.name}`,
-      acl_rows: undefined,
-      acl_read_columns: undefined,
-      found: true,
-      id: DOC._id,
-      retrieveDocumentQuery: { _id: DOC._id },
-      returnDoc: UPDATED_NULL_NAME_HTTP_DOC,
-    },
-    {
-      name: 'unknown document, insert new one',
-      url: `${baseQuery}?price=44.0`,
-      acl_rows: undefined,
-      acl_read_columns: ['_id', 'name', 'price', 'attachments'],
-      found: false,
-      id: DOC._id,
-      retrieveDocumentQuery: { price: NEW_PRICE },
-      returnDoc: UPDATED_NULL_NAME_HTTP_DOC,
-    },
-    {
-      name: 'unknown document, insert new one with setOnInsert',
-      url: `${baseQuery}?price=44.0`,
-      acl_rows: undefined,
-      acl_read_columns: ['_id', 'name', 'price', 'attachments'],
-      found: false,
-      updateCommand: { $setOnInsert: NULL_NAME_UPDATES },
-      id: DOC._id,
-      retrieveDocumentQuery: { price: NEW_PRICE },
-      returnDoc: UPDATED_NULL_NAME_HTTP_DOC,
-    },
-    {
-      name: 'with matching filter',
-      url: `${baseQuery}?_q=${JSON.stringify({ ...MATCHING_QUERY })}`,
-      acl_rows: undefined,
-      acl_read_columns: undefined,
-      found: true,
-      id: DOC._id,
-      retrieveDocumentQuery: { _id: DOC._id },
-      returnDoc: UPDATED_NULL_NAME_HTTP_DOC,
-    },
-    {
-      name: 'with matching acl_rows',
-      url: `${baseQuery}?_q=${JSON.stringify({ ...MATCHING_QUERY })}`,
-      acl_rows: [MATCHING_QUERY],
-      acl_read_columns: undefined,
-      found: true,
-      id: DOC._id,
-      retrieveDocumentQuery: { _id: DOC._id },
-      returnDoc: UPDATED_NULL_NAME_HTTP_DOC,
-    },
-    {
-      name: 'with matching query and matching query filter',
-      url: `${baseQuery}?_q=${JSON.stringify({ ...MATCHING_QUERY })}&price=${DOC.price}`,
-      acl_rows: undefined,
-      acl_read_columns: undefined,
-      found: true,
-      id: DOC._id,
-      retrieveDocumentQuery: { _id: DOC._id },
-      returnDoc: UPDATED_NULL_NAME_HTTP_DOC,
-    },
-    {
-      name: 'date id nullable',
-      url: `${baseQuery}?_q=${JSON.stringify({ ...MATCHING_QUERY })}&price=${DOC.price}`,
-      acl_rows: undefined,
-      acl_read_columns: undefined,
-      found: true,
-      updateCommand: { $set: { publishDate: null } },
-      id: DOC._id,
-      retrieveDocumentQuery: { _id: DOC._id },
-      checkOnlySubset: true,
-      docOnDatabase: {
-        publishDate: null,
+  t.test('HTTP POST /upsert-one - allow nullable field', async t => {
+    const tests = [
+      {
+        name: 'on document found',
+        url: `${baseQuery}?name=${DOC.name}`,
+        acl_rows: undefined,
+        acl_read_columns: undefined,
+        found: true,
+        id: DOC._id,
+        retrieveDocumentQuery: { _id: DOC._id },
+        returnDoc: UPDATED_NULL_NAME_HTTP_DOC,
       },
-      returnDoc: {
-        publishDate: null,
+      {
+        name: 'unknown document, insert new one',
+        url: `${baseQuery}?price=44.0`,
+        acl_rows: undefined,
+        acl_read_columns: ['_id', 'name', 'price', 'attachments'],
+        found: false,
+        id: DOC._id,
+        retrieveDocumentQuery: { price: NEW_PRICE },
+        returnDoc: UPDATED_NULL_NAME_HTTP_DOC,
       },
-    },
-  ]
+      {
+        name: 'unknown document, insert new one with setOnInsert',
+        url: `${baseQuery}?price=44.0`,
+        acl_rows: undefined,
+        acl_read_columns: ['_id', 'name', 'price', 'attachments'],
+        found: false,
+        updateCommand: { $setOnInsert: NULL_NAME_UPDATES },
+        id: DOC._id,
+        retrieveDocumentQuery: { price: NEW_PRICE },
+        returnDoc: UPDATED_NULL_NAME_HTTP_DOC,
+      },
+      {
+        name: 'with matching filter',
+        url: `${baseQuery}?_q=${JSON.stringify({ ...MATCHING_QUERY })}`,
+        acl_rows: undefined,
+        acl_read_columns: undefined,
+        found: true,
+        id: DOC._id,
+        retrieveDocumentQuery: { _id: DOC._id },
+        returnDoc: UPDATED_NULL_NAME_HTTP_DOC,
+      },
+      {
+        name: 'with matching acl_rows',
+        url: `${baseQuery}?_q=${JSON.stringify({ ...MATCHING_QUERY })}`,
+        acl_rows: [MATCHING_QUERY],
+        acl_read_columns: undefined,
+        found: true,
+        id: DOC._id,
+        retrieveDocumentQuery: { _id: DOC._id },
+        returnDoc: UPDATED_NULL_NAME_HTTP_DOC,
+      },
+      {
+        name: 'with matching query and matching query filter',
+        url: `${baseQuery}?_q=${JSON.stringify({ ...MATCHING_QUERY })}&price=${DOC.price}`,
+        acl_rows: undefined,
+        acl_read_columns: undefined,
+        found: true,
+        id: DOC._id,
+        retrieveDocumentQuery: { _id: DOC._id },
+        returnDoc: UPDATED_NULL_NAME_HTTP_DOC,
+      },
+      {
+        name: 'date id nullable',
+        url: `${baseQuery}?_q=${JSON.stringify({ ...MATCHING_QUERY })}&price=${DOC.price}`,
+        acl_rows: undefined,
+        acl_read_columns: undefined,
+        found: true,
+        updateCommand: { $set: { publishDate: null } },
+        id: DOC._id,
+        retrieveDocumentQuery: { _id: DOC._id },
+        checkOnlySubset: true,
+        docOnDatabase: {
+          publishDate: null,
+        },
+        returnDoc: {
+          publishDate: null,
+        },
+      },
+    ]
 
-  t.plan(tests.length)
+    tests.forEach(testConf => {
+      const { name, found, ...conf } = testConf
 
-  tests.forEach(testConf => {
-    const { name, found, ...conf } = testConf
+      t.test(name, async t => {
+        await resetCollection()
 
-    t.test(name, async t => {
-      t.plan(4)
-      const { fastify, collection } = await setUpTest(t)
+        const response = await fastify.inject({
+          method: 'POST',
+          url: prefix + conf.url,
+          payload: conf.updateCommand ? conf.updateCommand : UPDATE_NULL_NAME_COMMAND,
+          headers: {
+            userId: newUpdaterId,
+            ...getHeaders(conf),
+          },
+        })
+
+        t.test('should return 200', t => {
+          t.strictSame(response.statusCode, 200, response.payload)
+          t.end()
+        })
+
+        t.test('should return "application/json"', t => {
+          t.ok(/application\/json/.test(response.headers['content-type']))
+          t.end()
+        })
+
+        t.test(`should return ${found ? 'the id' : 'the inserted document'}`, t => {
+          // t.plan(1 + (found ? 1 : 0))
+          const responseDocument = JSON.parse(response.payload)
+          if (found) {
+            if (conf.checkOnlySubset) {
+              Object.keys(conf.returnDoc).forEach(key => {
+                t.strictSame(responseDocument[key], conf.returnDoc[key])
+              })
+            } else {
+              const expected = { ...conf.returnDoc }
+              delete expected.updatedAt
+              const actual = { ...responseDocument }
+              t.ok(Number.isFinite(new Date(actual.updatedAt).getTime()))
+              delete actual.updatedAt
+              t.strictSame(actual, expected)
+            }
+          } else {
+            const otherProperties = omit(['_id'], responseDocument)
+            t.strictSame(otherProperties, NULL_NAME_UPDATES)
+          }
+          t.end()
+        })
+
+        t.test('on database', async t => {
+          if (conf.docOnDatabase) {
+            t.test(`should ${found ? 'update' : 'insert'} the document`, async t => {
+              const doc = await collection.findOne(conf.retrieveDocumentQuery)
+              Object.keys(conf.docOnDatabase).forEach(key => {
+                t.strictSame(doc[key], conf.docOnDatabase[key])
+              })
+            })
+          } else {
+            t.test(`should ${found ? 'update' : 'insert'} the document`, async t => {
+              const doc = await collection.findOne(conf.retrieveDocumentQuery)
+              t.equal(doc.name, null)
+              t.strictSame(doc.price, NEW_PRICE)
+              t.strictSame(doc.attachments, NEW_ATTACHMENTS)
+              t.strictSame(doc.updaterId, newUpdaterId)
+              t.ok(doc.creatorId)
+              t.ok(doc.createdAt)
+              t.ok(doc.__STATE__)
+              t.ok(Math.abs(Date.now() - doc.updatedAt.getTime()) < 5000, '`updatedAt` should be updated')
+
+              t.end()
+            })
+          }
+          t.end()
+        })
+      })
+    })
+  })
+
+  t.test('MP4-472: updaterId null on insert', async t => {
+    t.test('using $set in body', async t => {
+      await resetCollection()
+
+      const command = {
+        $set: {
+          name: 'doc1',
+          isbn: 'isbn0000001',
+          price: 100,
+        },
+      }
 
       const response = await fastify.inject({
         method: 'POST',
-        url: prefix + conf.url,
-        payload: conf.updateCommand ? conf.updateCommand : UPDATE_NULL_NAME_COMMAND,
+        url: `${prefix + baseQuery}?name=i-dont-exisist`,
+        payload: command,
         headers: {
-          userId: newUpdaterId,
-          ...getHeaders(conf),
+          userId: 'my-totally-new-user',
         },
       })
 
-      t.test('should return 200', t => {
-        t.plan(1)
-        t.strictSame(response.statusCode, 200, response.payload)
+      const parsedResponse = JSON.parse(response.payload)
+
+      t.ok(parsedResponse.updatedAt)
+      t.ok(parsedResponse.updaterId)
+      t.equal(parsedResponse.updaterId, 'my-totally-new-user')
+    })
+
+    t.test('using $setOnInsert in body', async t => {
+      await resetCollection()
+
+      const command = {
+        $setOnInsert: {
+          name: 'doc2',
+          isbn: 'isbn0000002',
+          price: 100,
+        },
+      }
+
+      const response = await fastify.inject({
+        method: 'POST',
+        url: `${prefix + baseQuery}?name=i-dont-exisist`,
+        payload: command,
+        headers: {
+          userId: 'my-totally-new-user',
+        },
       })
 
-      t.test('should return "application/json"', t => {
-        t.plan(1)
-        t.ok(/application\/json/.test(response.headers['content-type']))
+      const parsedResponse = JSON.parse(response.payload)
+
+      t.ok(parsedResponse.updatedAt)
+      t.ok(parsedResponse.updaterId)
+      t.equal(parsedResponse.updaterId, 'my-totally-new-user')
+    })
+
+    t.test('using $set and $setOnInsert in body', async t => {
+      await resetCollection()
+
+      const command = {
+        $setOnInsert: {
+          name: 'doc3',
+          isbn: 'isbn0000003',
+        },
+        $set: {
+          price: 100,
+        },
+      }
+
+      const response = await fastify.inject({
+        method: 'POST',
+        url: `${prefix + baseQuery}?name=i-dont-exisist`,
+        payload: command,
+        headers: {
+          userId: 'my-totally-new-user',
+        },
       })
 
-      t.test(`should return ${found ? 'the id' : 'the inserted document'}`, t => {
-        // t.plan(1 + (found ? 1 : 0))
-        const responseDocument = JSON.parse(response.payload)
-        if (found) {
-          if (conf.checkOnlySubset) {
-            Object.keys(conf.returnDoc).forEach(key => {
-              t.strictSame(responseDocument[key], conf.returnDoc[key])
-            })
-          } else {
-            const expected = { ...conf.returnDoc }
-            delete expected.updatedAt
-            const actual = { ...responseDocument }
-            t.ok(Number.isFinite(new Date(actual.updatedAt).getTime()))
-            delete actual.updatedAt
-            t.strictSame(actual, expected)
-          }
-        } else {
-          const otherProperties = omit(['_id'], responseDocument)
-          t.strictSame(otherProperties, NULL_NAME_UPDATES)
-        }
-        t.end()
+      const parsedResponse = JSON.parse(response.payload)
+
+      t.ok(parsedResponse.updatedAt)
+      t.ok(parsedResponse.updaterId)
+      t.equal(parsedResponse.updaterId, 'my-totally-new-user')
+    })
+
+    t.test('upsert without userId', async t => {
+      await resetCollection()
+
+      const command = {
+        $setOnInsert: {
+          name: 'doc3',
+          isbn: 'isbn0000003',
+        },
+        $set: {
+          price: 100,
+        },
+      }
+
+      const response = await fastify.inject({
+        method: 'POST',
+        url: `${prefix + baseQuery}?name=i-dont-exisist`,
+        payload: command,
+        headers: {
+          // userId: 'my-totally-new-user'
+        },
       })
 
-      t.test('on database', t => {
-        t.plan(1)
+      const parsedResponse = JSON.parse(response.payload)
 
-        if (conf.docOnDatabase) {
-          t.test(`should ${found ? 'update' : 'insert'} the document`, async t => {
-            const doc = await collection.findOne(conf.retrieveDocumentQuery)
-            Object.keys(conf.docOnDatabase).forEach(key => {
-              t.strictSame(doc[key], conf.docOnDatabase[key])
-            })
-          })
-        } else {
-          t.test(`should ${found ? 'update' : 'insert'} the document`, async t => {
-            const doc = await collection.findOne(conf.retrieveDocumentQuery)
-            t.equal(doc.name, null)
-            t.strictSame(doc.price, NEW_PRICE)
-            t.strictSame(doc.attachments, NEW_ATTACHMENTS)
-            t.strictSame(doc.updaterId, newUpdaterId)
-            t.ok(doc.creatorId)
-            t.ok(doc.createdAt)
-            t.ok(doc.__STATE__)
-            t.ok(Math.abs(Date.now() - doc.updatedAt.getTime()) < 5000, '`updatedAt` should be updated')
+      t.ok(parsedResponse.updatedAt)
+      t.ok(parsedResponse.updaterId)
+      t.equal(parsedResponse.updaterId, 'public')
+    })
 
-            t.end()
-          })
-        }
+    t.test('upsert with empty userId', async t => {
+      await resetCollection()
+
+      const command = {
+        $setOnInsert: {
+          name: 'doc3',
+          isbn: 'isbn0000003',
+        },
+        $set: {
+          price: 100,
+        },
+      }
+
+      const response = await fastify.inject({
+        method: 'POST',
+        url: `${prefix + baseQuery}?name=i-dont-exisist`,
+        payload: command,
+        headers: {
+          userId: '',
+        },
       })
-    })
-  })
-})
 
-tap.test('MP4-472: updaterId null on insert', async t => {
-  t.plan(7)
-  t.test('using $set in body', async t => {
-    const { fastify } = await setUpTest(t)
+      const parsedResponse = JSON.parse(response.payload)
 
-    const command = {
-      $set: {
-        name: 'doc1',
-        isbn: 'isbn0000001',
-        price: 100,
-      },
-    }
-
-    const response = await fastify.inject({
-      method: 'POST',
-      url: `${prefix + baseQuery}?name=i-dont-exisist`,
-      payload: command,
-      headers: {
-        userId: 'my-totally-new-user',
-      },
+      t.ok(parsedResponse.updatedAt)
+      t.ok(parsedResponse.updaterId)
+      t.equal(parsedResponse.updaterId, 'public')
     })
 
-    const parsedResponse = JSON.parse(response.payload)
+    t.test('upsert with userId "null"', async t => {
+      await resetCollection()
 
-    t.ok(parsedResponse.updatedAt)
-    t.ok(parsedResponse.updaterId)
-    t.equal(parsedResponse.updaterId, 'my-totally-new-user')
-  })
-  t.test('using $setOnInsert in body', async t => {
-    const { fastify } = await setUpTest(t)
+      const command = {
+        $setOnInsert: {
+          name: 'doc3',
+          isbn: 'isbn0000003',
+        },
+        $set: {
+          price: 100,
+        },
+      }
 
-    const command = {
-      $setOnInsert: {
-        name: 'doc2',
-        isbn: 'isbn0000002',
-        price: 100,
-      },
-    }
+      const response = await fastify.inject({
+        method: 'POST',
+        url: `${prefix + baseQuery}?name=i-dont-exisist`,
+        payload: command,
+        headers: {
+          userId: 'null',
+        },
+      })
 
-    const response = await fastify.inject({
-      method: 'POST',
-      url: `${prefix + baseQuery}?name=i-dont-exisist`,
-      payload: command,
-      headers: {
-        userId: 'my-totally-new-user',
-      },
+      const parsedResponse = JSON.parse(response.payload)
+
+      t.ok(parsedResponse.updatedAt)
+      t.ok(parsedResponse.updaterId)
+      t.equal(parsedResponse.updaterId, 'public')
     })
 
-    const parsedResponse = JSON.parse(response.payload)
+    t.test('upsert with userId "undefined"', async t => {
+      await resetCollection()
 
-    t.ok(parsedResponse.updatedAt)
-    t.ok(parsedResponse.updaterId)
-    t.equal(parsedResponse.updaterId, 'my-totally-new-user')
-  })
-  t.test('using $set and $setOnInsert in body', async t => {
-    const { fastify } = await setUpTest(t)
+      const command = {
+        $setOnInsert: {
+          name: 'doc3',
+          isbn: 'isbn0000003',
+        },
+        $set: {
+          price: 100,
+        },
+      }
 
-    const command = {
-      $setOnInsert: {
-        name: 'doc3',
-        isbn: 'isbn0000003',
-      },
-      $set: {
-        price: 100,
-      },
-    }
+      const response = await fastify.inject({
+        method: 'POST',
+        url: `${prefix + baseQuery}?name=i-dont-exisist`,
+        payload: command,
+        headers: {
+          userId: 'null',
+        },
+      })
 
-    const response = await fastify.inject({
-      method: 'POST',
-      url: `${prefix + baseQuery}?name=i-dont-exisist`,
-      payload: command,
-      headers: {
-        userId: 'my-totally-new-user',
-      },
+      const parsedResponse = JSON.parse(response.payload)
+
+      t.ok(parsedResponse.updatedAt)
+      t.ok(parsedResponse.updaterId)
+      t.equal(parsedResponse.updaterId, 'public')
     })
-
-    const parsedResponse = JSON.parse(response.payload)
-
-    t.ok(parsedResponse.updatedAt)
-    t.ok(parsedResponse.updaterId)
-    t.equal(parsedResponse.updaterId, 'my-totally-new-user')
-  })
-  t.test('upsert without userId', async t => {
-    const { fastify } = await setUpTest(t)
-
-    const command = {
-      $setOnInsert: {
-        name: 'doc3',
-        isbn: 'isbn0000003',
-      },
-      $set: {
-        price: 100,
-      },
-    }
-
-    const response = await fastify.inject({
-      method: 'POST',
-      url: `${prefix + baseQuery}?name=i-dont-exisist`,
-      payload: command,
-      headers: {
-        // userId: 'my-totally-new-user'
-      },
-    })
-
-    const parsedResponse = JSON.parse(response.payload)
-
-    t.ok(parsedResponse.updatedAt)
-    t.ok(parsedResponse.updaterId)
-    t.equal(parsedResponse.updaterId, 'public')
-  })
-  t.test('upsert with empty userId', async t => {
-    const { fastify } = await setUpTest(t)
-
-    const command = {
-      $setOnInsert: {
-        name: 'doc3',
-        isbn: 'isbn0000003',
-      },
-      $set: {
-        price: 100,
-      },
-    }
-
-    const response = await fastify.inject({
-      method: 'POST',
-      url: `${prefix + baseQuery}?name=i-dont-exisist`,
-      payload: command,
-      headers: {
-        userId: '',
-      },
-    })
-
-    const parsedResponse = JSON.parse(response.payload)
-
-    t.ok(parsedResponse.updatedAt)
-    t.ok(parsedResponse.updaterId)
-    t.equal(parsedResponse.updaterId, 'public')
-  })
-  t.test('upsert with userId "null"', async t => {
-    const { fastify } = await setUpTest(t)
-
-    const command = {
-      $setOnInsert: {
-        name: 'doc3',
-        isbn: 'isbn0000003',
-      },
-      $set: {
-        price: 100,
-      },
-    }
-
-    const response = await fastify.inject({
-      method: 'POST',
-      url: `${prefix + baseQuery}?name=i-dont-exisist`,
-      payload: command,
-      headers: {
-        userId: 'null',
-      },
-    })
-
-    const parsedResponse = JSON.parse(response.payload)
-
-    t.ok(parsedResponse.updatedAt)
-    t.ok(parsedResponse.updaterId)
-    t.equal(parsedResponse.updaterId, 'public')
-  })
-  t.test('upsert with userId "undefined"', async t => {
-    const { fastify } = await setUpTest(t)
-
-    const command = {
-      $setOnInsert: {
-        name: 'doc3',
-        isbn: 'isbn0000003',
-      },
-      $set: {
-        price: 100,
-      },
-    }
-
-    const response = await fastify.inject({
-      method: 'POST',
-      url: `${prefix + baseQuery}?name=i-dont-exisist`,
-      payload: command,
-      headers: {
-        userId: 'null',
-      },
-    })
-
-    const parsedResponse = JSON.parse(response.payload)
-
-    t.ok(parsedResponse.updatedAt)
-    t.ok(parsedResponse.updaterId)
-    t.equal(parsedResponse.updaterId, 'public')
   })
 })

@@ -23,11 +23,7 @@ const { setUpTest } = require('./httpInterface.utils')
 const { SCHEMA_CUSTOM_KEYWORDS } = require('../lib/consts')
 
 tap.test('HTTP swagger', t => {
-  t.plan(1)
-
   t.test('ok', async t => {
-    t.plan(4)
-
     const { fastify } = await setUpTest(t)
 
     const response = await fastify.inject({
@@ -36,24 +32,26 @@ tap.test('HTTP swagger', t => {
     })
 
     t.test('should return 200', t => {
-      t.plan(1)
       t.strictSame(response.statusCode, 200)
+      t.end()
     })
     t.test('should return application/json', t => {
-      t.plan(1)
       t.ok(/application\/json/.test(response.headers['content-type']))
+      t.end()
     })
     t.skip('should return a valid swagger', async t => {
-      t.plan(1)
       const swagger = await SwaggerParser.validate(JSON.parse(response.payload))
       t.ok(swagger)
+      t.end()
     })
 
     t.test('should not contain unique id of schema', t => {
-      t.plan(1)
       const swagger = response.payload
       const regex = new RegExp(`"${SCHEMA_CUSTOM_KEYWORDS.UNIQUE_OPERATION_ID}"`, 'g')
       t.notOk(swagger.match(regex))
+      t.end()
     })
   })
+
+  t.end()
 })

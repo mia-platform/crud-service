@@ -27,7 +27,7 @@ const [DOC] = fixtures
 const MATCHING_PRICE = DOC.price - 1
 const NON_MATCHING_PRICE = DOC.price + 1
 
-tap.test('HTTP DELETE /', t => {
+tap.test('HTTP DELETE /', async t => {
   const tests = [
     {
       name: 'without filter',
@@ -99,14 +99,13 @@ tap.test('HTTP DELETE /', t => {
     },
   ]
 
-  t.plan(tests.length)
+  const { fastify, collection, resetCollection } = await setUpTest(t)
 
   tests.forEach(testConf => {
     const { name, databaseDocuments, ...conf } = testConf
 
     t.test(name, async t => {
-      t.plan(4)
-      const { fastify, collection } = await setUpTest(t)
+      await resetCollection()
 
       const response = await fastify.inject({
         method: 'DELETE',
@@ -115,118 +114,121 @@ tap.test('HTTP DELETE /', t => {
       })
 
       t.test('should return 200', t => {
-        t.plan(1)
         t.strictSame(response.statusCode, 200)
+        t.end()
       })
 
       t.test('should return the right content-type', t => {
-        t.plan(1)
         t.ok(/application\/json/.test(response.headers['content-type']))
+        t.end()
       })
 
       t.test('should return the deleted document count', t => {
-        t.plan(1)
         t.strictSame(JSON.parse(response.payload), fixtures.length - databaseDocuments.length)
+        t.end()
       })
 
       t.test('on database', async t => {
-        t.plan(1)
-
         const documents = await collection.find().toArray()
 
         t.test('should be there', t => {
-          t.plan(1)
           t.strictSame(documents, databaseDocuments)
+          t.end()
         })
+
+        t.end()
       })
+
+      t.end()
     })
   })
-})
 
-tap.test('query filter on nested object with dot notation', async t => {
-  const DOC_TO_DELETE_1 = {
-    ...fixtures[0],
-    isbn: 'isbn-1',
-    _id: ObjectId.createFromHexString('111111111111111111111111'),
-    metadata: {
-      somethingNumber: 2,
-      somethingString: 'the-saved-string',
-      somethingArrayObject: [{
-        arrayItemObjectChildNumber: 4,
-      }],
-      somethingArrayOfNumbers: [5],
-    },
-  }
-  const DOC_TO_DELETE_2 = {
-    ...fixtures[0],
-    isbn: 'isbn-2',
-    _id: ObjectId.createFromHexString('211111111111111111111111'),
-    metadata: {
-      somethingNumber: 2,
-      somethingString: 'the-saved-string',
-      somethingArrayObject: [{
-        arrayItemObjectChildNumber: 4,
-      }],
-      somethingArrayOfNumbers: [5],
-    },
-  }
+  t.test('query filter on nested object with dot notation', async t => {
+    const DOC_TO_DELETE_1 = {
+      ...fixtures[0],
+      isbn: 'isbn-1',
+      _id: ObjectId.createFromHexString('111111111111111111111111'),
+      metadata: {
+        somethingNumber: 2,
+        somethingString: 'the-saved-string',
+        somethingArrayObject: [{
+          arrayItemObjectChildNumber: 4,
+        }],
+        somethingArrayOfNumbers: [5],
+      },
+    }
+    const DOC_TO_DELETE_2 = {
+      ...fixtures[0],
+      isbn: 'isbn-2',
+      _id: ObjectId.createFromHexString('211111111111111111111111'),
+      metadata: {
+        somethingNumber: 2,
+        somethingString: 'the-saved-string',
+        somethingArrayObject: [{
+          arrayItemObjectChildNumber: 4,
+        }],
+        somethingArrayOfNumbers: [5],
+      },
+    }
 
-  const DOC_NOT_TO_DELETE = {
-    ...fixtures[0],
-    isbn: 'isbn-3',
-    _id: ObjectId.createFromHexString('311111111111111111111111'),
-    metadata: {
-      somethingNumber: 4,
-      somethingString: 'another-the-saved-string',
-      somethingArrayObject: [{
-        arrayItemObjectChildNumber: 4,
-      }],
-      somethingArrayOfNumbers: [5],
-    },
-  }
+    const DOC_NOT_TO_DELETE = {
+      ...fixtures[0],
+      isbn: 'isbn-3',
+      _id: ObjectId.createFromHexString('311111111111111111111111'),
+      metadata: {
+        somethingNumber: 4,
+        somethingString: 'another-the-saved-string',
+        somethingArrayObject: [{
+          arrayItemObjectChildNumber: 4,
+        }],
+        somethingArrayOfNumbers: [5],
+      },
+    }
+    await resetCollection([DOC_TO_DELETE_1, DOC_TO_DELETE_2, DOC_NOT_TO_DELETE])
 
-  const { fastify, collection } = await setUpTest(t, [DOC_TO_DELETE_1, DOC_TO_DELETE_2, DOC_NOT_TO_DELETE])
+    let docsOnDb = await collection.findOne({ _id: DOC._id })
 
-  let docsOnDb = await collection.findOne({ _id: DOC._id })
+    t.ok(docsOnDb)
 
-  t.ok(docsOnDb)
+    const failingDelete = await fastify.inject({
+      method: 'DELETE',
+      url: `${prefix}/`,
+      query: {
+        'metadata.somethingNumber': '99999999999',
+        'metadata.somethingString': 'the-saved-string',
+        'metadata.somethingArrayObject.0.arrayItemObjectChildNumber': '4',
+        'metadata.somethingArrayOfNumbers.0': '5',
+      },
+      headers: {},
+    })
 
-  const failingDelete = await fastify.inject({
-    method: 'DELETE',
-    url: `${prefix}/`,
-    query: {
-      'metadata.somethingNumber': '99999999999',
-      'metadata.somethingString': 'the-saved-string',
-      'metadata.somethingArrayObject.0.arrayItemObjectChildNumber': '4',
-      'metadata.somethingArrayOfNumbers.0': '5',
-    },
-    headers: {},
+    t.strictSame(failingDelete.statusCode, 200)
+    t.strictSame(JSON.parse(failingDelete.payload), 0)
+
+    docsOnDb = await collection.find({}).toArray()
+    t.equal(docsOnDb.length, 3)
+
+    const response = await fastify.inject({
+      method: 'DELETE',
+      url: `${prefix}/`,
+      query: {
+        'metadata.somethingNumber': '2',
+        'metadata.somethingString': 'the-saved-string',
+        'metadata.somethingArrayObject.0.arrayItemObjectChildNumber': '4',
+        'metadata.somethingArrayOfNumbers.0': '5',
+      },
+      headers: {},
+    })
+
+    t.strictSame(response.statusCode, 200)
+    t.strictSame(JSON.parse(response.payload), 2)
+
+    docsOnDb = await collection.find({}).toArray()
+    t.equal(docsOnDb.length, 1)
+    t.strictSame(docsOnDb[0]._id, DOC_NOT_TO_DELETE._id)
+
+    t.end()
   })
-
-  t.strictSame(failingDelete.statusCode, 200)
-  t.strictSame(JSON.parse(failingDelete.payload), 0)
-
-  docsOnDb = await collection.find({}).toArray()
-  t.equal(docsOnDb.length, 3)
-
-  const response = await fastify.inject({
-    method: 'DELETE',
-    url: `${prefix}/`,
-    query: {
-      'metadata.somethingNumber': '2',
-      'metadata.somethingString': 'the-saved-string',
-      'metadata.somethingArrayObject.0.arrayItemObjectChildNumber': '4',
-      'metadata.somethingArrayOfNumbers.0': '5',
-    },
-    headers: {},
-  })
-
-  t.strictSame(response.statusCode, 200)
-  t.strictSame(JSON.parse(response.payload), 2)
-
-  docsOnDb = await collection.find({}).toArray()
-  t.equal(docsOnDb.length, 1)
-  t.strictSame(docsOnDb[0]._id, DOC_NOT_TO_DELETE._id)
 
   t.end()
 })

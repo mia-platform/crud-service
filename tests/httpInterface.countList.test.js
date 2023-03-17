@@ -134,8 +134,6 @@ tap.test('HTTP GET /count', async t => {
     const { name, ...conf } = testConf
 
     t.test(name, async t => {
-      t.plan(4)
-
       const response = await fastify.inject({
         method: conf.method,
         url: conf.url,
@@ -143,22 +141,27 @@ tap.test('HTTP GET /count', async t => {
       })
 
       t.test('should return 200', t => {
-        t.plan(1)
         t.strictSame(response.statusCode, 200)
+        t.end()
       })
+
       t.test('should return JSON', t => {
-        t.plan(1)
         t.ok(/application\/json/.test(response.headers['content-type']))
+        t.end()
       })
+
       t.test('should return the expected body', t => {
-        t.plan(1)
         t.strictSame(JSON.parse(response.payload), conf.count)
+        t.end()
       })
+
       t.test('should keep the document as is in database', async t => {
-        t.plan(1)
         const documents = await collection.find().toArray()
         t.strictSame(documents, fixtures)
+        t.end()
       })
+
+      t.end()
     })
   })
 })

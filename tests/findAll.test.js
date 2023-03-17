@@ -28,7 +28,7 @@ const {
   fixtures,
   publicFixtures,
   draftFixture,
-  dropCollectionAndInsertFixtures,
+  clearCollectionAndInsertFixtures,
   getMongoDatabaseName,
   getMongoURL,
   BOOKS_COLLECTION_NAME,
@@ -54,7 +54,7 @@ tap.test('findAll', async t => {
   const database = client.db(databaseName)
   const collection = database.collection(BOOKS_COLLECTION_NAME)
 
-  await dropCollectionAndInsertFixtures(collection)
+  await clearCollectionAndInsertFixtures(collection)
 
   t.teardown(async() => {
     await database.dropDatabase()
