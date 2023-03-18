@@ -272,7 +272,7 @@ For collections, also the following methods are available:
 | DELETE | {base URL}/{endpoint}/           | Delete multiple items from the collection.                                                   |
 | DELETE | {base URL}/{endpoint}/{id}       | Delete an item with specific _ID_ from the collection.                                       |
 
-All these methods might include additional query parameters to refine the search. To have more detail, you can check the [live documentation](http://localhost:3000/documentation).
+All these methods might include additional query parameters to refine the search. To have more detail, you can check the [live documentation](http://localhost:3000/documentation) (available only when a service instance is started locally) or refer to the service [documentation overview](./docs/10_Overview_and_Usage.md#crud-endpoints).
 
 
 ### JoinService
