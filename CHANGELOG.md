@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Support to [$addToSet](https://www.mongodb.com/docs/manual/reference/operator/update/addToSet/) operations for array fields
 
+### Changed
+
+- Upgraded service libraries
+- Refactored tests to further reduce their execution time and prevent tests timeouts
+- Improved service documentation
+
 ## 6.3.0 - 2023-02-08
 
 ### Fixed
