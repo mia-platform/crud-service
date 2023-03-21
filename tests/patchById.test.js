@@ -25,7 +25,7 @@ const CrudService = require('../lib/CrudService')
 
 const {
   fixtures,
-  dropCollectionAndInsertFixtures,
+  clearCollectionAndInsertFixtures,
   checkDocumentsInDatabase,
   newUpdaterId,
   getMongoDatabaseName,
@@ -74,7 +74,7 @@ tap.test('patchById', async t => {
   t.test('with only doc', async t => {
     t.plan(3)
 
-    await dropCollectionAndInsertFixtures(collection)
+    await clearCollectionAndInsertFixtures(collection)
 
     const ret = await crudService.patchById(context, chosenDocId, updateCommand(), {}, chosenDocProjection)
 
@@ -95,7 +95,7 @@ tap.test('patchById', async t => {
   t.test('with only doc and a matching query', async t => {
     t.plan(3)
 
-    await dropCollectionAndInsertFixtures(collection)
+    await clearCollectionAndInsertFixtures(collection)
 
     const matchingQuery = { price: { $gt: 0 } }
     const ret = await crudService.patchById(context, chosenDocId, updateCommand(), matchingQuery, chosenDocProjection)
@@ -117,7 +117,7 @@ tap.test('patchById', async t => {
   t.test('with only doc and a non-matching query', async t => {
     t.plan(2)
 
-    await dropCollectionAndInsertFixtures(collection)
+    await clearCollectionAndInsertFixtures(collection)
 
     const matchingQuery = { price: { $lt: 0 } }
 
@@ -134,7 +134,7 @@ tap.test('patchById', async t => {
   t.test('with a document in draft', async t => {
     t.plan(2)
 
-    await dropCollectionAndInsertFixtures(collection)
+    await clearCollectionAndInsertFixtures(collection)
 
     const matchingQuery = { price: { $lt: 0 } }
 
@@ -151,7 +151,7 @@ tap.test('patchById', async t => {
   t.test('with a document in draft and declaring the __STATE__ draft', async t => {
     t.plan(2)
 
-    await dropCollectionAndInsertFixtures(collection)
+    await clearCollectionAndInsertFixtures(collection)
 
     const matchingQuery = { price: { $gt: 0 } }
 
@@ -206,7 +206,7 @@ tap.test('patchById', async t => {
       t.test(conf.name, async t => {
         t.plan(3)
 
-        await dropCollectionAndInsertFixtures(collection)
+        await clearCollectionAndInsertFixtures(collection)
 
         const ret = await crudService.patchById(context, chosenDocId, conf.cmd, {}, chosenDocProjection)
 
@@ -237,7 +237,7 @@ tap.test('patchById', async t => {
   t.test('Cannot change the standardFields', async t => {
     t.plan(veryBadCommands.length)
 
-    await dropCollectionAndInsertFixtures(collection)
+    await clearCollectionAndInsertFixtures(collection)
 
     veryBadCommands.forEach((testConf) => {
       t.test(JSON.stringify(testConf.cmd), async t => {
@@ -283,7 +283,7 @@ tap.test('patchById', async t => {
   t.test('update nested object in array', async t => {
     t.plan(2)
 
-    await dropCollectionAndInsertFixtures(collection)
+    await clearCollectionAndInsertFixtures(collection)
 
     const ret = await crudService.patchById(context, docId, updateArrayNestedObject(), arrayQuery, docProjection)
     t.test('should return the updated object', t => {
@@ -301,7 +301,7 @@ tap.test('patchById', async t => {
   t.test('update number array element', async t => {
     t.plan(2)
 
-    await dropCollectionAndInsertFixtures(collection)
+    await clearCollectionAndInsertFixtures(collection)
 
     const ret = await crudService.patchById(context, docId, updateNumberArrayObject(), { tagIds: 1 }, docProjection)
     t.test('should return the updated object', t => {
@@ -328,7 +328,7 @@ tap.test('patchById', async t => {
   t.test('update array of numbers element to number string', async t => {
     t.plan(2)
 
-    await dropCollectionAndInsertFixtures(collection)
+    await clearCollectionAndInsertFixtures(collection)
 
     const ret = await crudService.patchById(
       context,

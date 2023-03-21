@@ -44,7 +44,7 @@ const UNKNOWN_ID = '000000000000000000000000'
 const UPDATE_COMMAND = { $set: { price: NEW_PRICE, attachments: NEW_ATTACHMENTS } }
 const applyUpdate = doc => ({ ...doc, ...UPDATE_COMMAND.$set })
 
-tap.test('HTTP PATCH /', t => {
+tap.test('HTTP PATCH /', async t => {
   const tests = [
     {
       name: 'update all (public)',
@@ -186,14 +186,13 @@ tap.test('HTTP PATCH /', t => {
     },
   ]
 
-  t.plan(tests.length)
+  const { fastify, collection, resetCollection } = await setUpTest(t)
 
   tests.forEach(testConf => {
     const { name, url, command, expectedUpdatedDocuments } = testConf
 
     t.test(name, async t => {
-      t.plan(4)
-      const { fastify, collection } = await setUpTest(t)
+      await resetCollection()
 
       const response = await fastify.inject({
         method: 'PATCH',
@@ -206,22 +205,21 @@ tap.test('HTTP PATCH /', t => {
       })
 
       t.test('should return 200', t => {
-        t.plan(1)
         t.strictSame(response.statusCode, 200, response.payload)
+        t.end()
       })
 
       t.test('should return "application/json"', t => {
-        t.plan(1)
         t.ok(/application\/json/.test(response.headers['content-type']))
+        t.end()
       })
 
       t.test('should return the number of modified documents', t => {
-        t.plan(1)
         t.strictSame(JSON.parse(response.payload), expectedUpdatedDocuments.length)
+        t.end()
       })
 
       t.test('on database', async t => {
-        t.plan(expectedUpdatedDocuments.length)
         const updatedDocs = await collection.find(
           {
             _id: { $in: expectedUpdatedDocuments.map(doc => doc._id) },
@@ -233,196 +231,121 @@ tap.test('HTTP PATCH /', t => {
           const expected = omit(['_id', 'updaterId', 'updatedAt'], expectedUpdatedDocuments[i])
           t.strictSame(actual, expected)
         }
+
+        t.end()
       })
+
+      t.end()
     })
   })
-})
 
-tap.test('HTTP PATCH / - update Date', async t => {
-  t.plan(4)
-  const { fastify, collection } = await setUpTest(t)
+  t.test('- update Date', async t => {
+    await resetCollection()
 
-  const expectedUpdatedDocument = fixtures.find(doc => doc._id.toString() === ID)
-  const response = await fastify.inject({
-    method: 'PATCH',
-    url: `${prefix}/?_id=${ID}`,
-    payload: { $currentDate: { publishDate: 'true' } },
-    headers: {
-      userId: newUpdaterId,
-    },
-  })
-
-  t.test('should return 200', t => {
-    t.plan(1)
-    t.strictSame(response.statusCode, 200, response.payload)
-  })
-
-  t.test('should return "application/json"', t => {
-    t.plan(1)
-    t.ok(/application\/json/.test(response.headers['content-type']))
-  })
-
-  t.test('should return the number of modified documents', t => {
-    t.plan(1)
-    t.strictSame(JSON.parse(response.payload), 1)
-  })
-
-  t.test('on database', async t => {
-    t.plan(2)
-    const updatedDoc = await collection.findOne({ _id: DOC._id })
-
-    t.ok(updatedDoc.publishDate > expectedUpdatedDocument.publishDate)
-
-    const actual = omit(['_id', 'updaterId', 'updatedAt', 'publishDate'], updatedDoc)
-    const expected = omit(['_id', 'updaterId', 'updatedAt', 'publishDate'], expectedUpdatedDocument)
-    t.strictSame(actual, expected)
-  })
-})
-
-tap.test('HTTP PATCH / - nested object', async t => {
-  const DOC_TEST1 = {
-    ...fixtures[0],
-    author: 'James Joyce',
-    metadata: {
-      somethingNumber: 3,
-      somethingString: 'a',
-      somethingArrayObject: [{
-        arrayItemObjectChildNumber: 4,
-      }],
-      somethingArrayOfNumbers: [2, 5],
-    },
-    attachments: [{
-      name: 'note-a',
-      neastedArr: [111],
-    }],
-  }
-  const DOC_TEST2 = {
-    ...fixtures[1],
-    author: 'James Joyce',
-    metadata: {
-      somethingNumber: 4,
-      somethingString: 'b',
-      somethingArrayObject: [{
-        arrayItemObjectChildNumber: 4,
-      }],
-      somethingArrayOfNumbers: [5],
-    },
-    attachments: [{
-      name: 'note-b',
-      neastedArr: [222, 333],
-    }],
-  }
-  const DOC_TEST3 = {
-    ...fixtures[2],
-    author: 'Paul Auster',
-    metadata: {
-      somethingNumber: 5,
-      somethingString: 'c',
-      somethingArrayObject: [{
-        arrayItemObjectChildNumber: 4,
-      }],
-      somethingArrayOfNumbers: [4],
-    },
-    attachments: [{
-      name: 'note-c',
-      neastedArr: [444],
-    }],
-  }
-
-  const VALUE_AS_NUMBER = 5555
-  const VALUE_AS_STRING = `${VALUE_AS_NUMBER}`
-
-  t.test('$set', async t => {
-    const matchingQuery = JSON.stringify({ author: 'James Joyce' })
-
-    const UPDATE_COMMAND = {
-      $set: {
-        'metadata.somethingNumber': VALUE_AS_STRING,
-      },
-    }
-
-    const EXPECTED_NUMBER_DOCUMENT_TO_UPDATE = 2
-
-    const { fastify, collection } = await setUpTest(t, [DOC_TEST1, DOC_TEST2, DOC_TEST3])
-
+    const expectedUpdatedDocument = fixtures.find(doc => doc._id.toString() === ID)
     const response = await fastify.inject({
       method: 'PATCH',
-      url: `${prefix}/?_q=${matchingQuery}`,
-      payload: UPDATE_COMMAND,
+      url: `${prefix}/?_id=${ID}`,
+      payload: { $currentDate: { publishDate: 'true' } },
       headers: {
         userId: newUpdaterId,
       },
     })
 
-    t.test('should update the document', async t => {
-      t.equal(JSON.parse(response.payload), EXPECTED_NUMBER_DOCUMENT_TO_UPDATE)
-
-      const docsOnDb = await collection.find({ author: 'James Joyce' }).toArray()
-      t.equal(docsOnDb.length, EXPECTED_NUMBER_DOCUMENT_TO_UPDATE)
-      for (const item of docsOnDb) {
-        t.strictSame(item.metadata.somethingNumber, VALUE_AS_NUMBER)
-      }
-      const unchanged = await collection.find({ author: { $ne: 'James Joyce' } }).toArray()
-      t.equal(unchanged.length, 1)
-      t.strictSame(unchanged, [DOC_TEST3])
+    t.test('should return 200', t => {
+      t.strictSame(response.statusCode, 200, response.payload)
+      t.end()
     })
+
+    t.test('should return "application/json"', t => {
+      t.ok(/application\/json/.test(response.headers['content-type']))
+      t.end()
+    })
+
+    t.test('should return the number of modified documents', t => {
+      t.strictSame(JSON.parse(response.payload), 1)
+      t.end()
+    })
+
+    t.test('on database', async t => {
+      const updatedDoc = await collection.findOne({ _id: DOC._id })
+
+      t.ok(updatedDoc.publishDate > expectedUpdatedDocument.publishDate)
+
+      const actual = omit(['_id', 'updaterId', 'updatedAt', 'publishDate'], updatedDoc)
+      const expected = omit(['_id', 'updaterId', 'updatedAt', 'publishDate'], expectedUpdatedDocument)
+      t.strictSame(actual, expected)
+      t.end()
+    })
+
     t.end()
   })
 
-  t.test('$set with positional operator', async t => {
-    const EXPECTED_UPDATE = {
-      [DOC_TEST1._id.toString()]: [2, VALUE_AS_NUMBER],
-      [DOC_TEST2._id.toString()]: [VALUE_AS_NUMBER],
-    }
-
-    const UPDATE_COMMAND = {
-      $set: {
-        'metadata.somethingArrayOfNumbers.$.replace': VALUE_AS_STRING,
+  t.test('- nested object', async t => {
+    const DOC_TEST1 = {
+      ...fixtures[0],
+      author: 'James Joyce',
+      metadata: {
+        somethingNumber: 3,
+        somethingString: 'a',
+        somethingArrayObject: [{
+          arrayItemObjectChildNumber: 4,
+        }],
+        somethingArrayOfNumbers: [2, 5],
       },
+      attachments: [{
+        name: 'note-a',
+        neastedArr: [111],
+      }],
     }
-
-    const QUERY = {
-      'metadata.somethingArrayOfNumbers': '5',
-    }
-
-    const EXPECTED_NUMBER_DOCUMENT_TO_UPDATE = Object.keys(EXPECTED_UPDATE).length
-
-    const { fastify, collection } = await setUpTest(t, [DOC_TEST1, DOC_TEST2, DOC_TEST3])
-
-    const response = await fastify.inject({
-      method: 'PATCH',
-      url: `${prefix}/`,
-      query: QUERY,
-      payload: UPDATE_COMMAND,
-      headers: {
-        userId: newUpdaterId,
+    const DOC_TEST2 = {
+      ...fixtures[1],
+      author: 'James Joyce',
+      metadata: {
+        somethingNumber: 4,
+        somethingString: 'b',
+        somethingArrayObject: [{
+          arrayItemObjectChildNumber: 4,
+        }],
+        somethingArrayOfNumbers: [5],
       },
-    })
-
-    t.equal(response.payload, `${EXPECTED_NUMBER_DOCUMENT_TO_UPDATE}`)
-    const docsOnDb = await collection.find({ 'metadata.somethingArrayOfNumbers': VALUE_AS_NUMBER }).toArray()
-    t.equal(docsOnDb.length, EXPECTED_NUMBER_DOCUMENT_TO_UPDATE)
-
-    for (const item of docsOnDb) {
-      t.strictSame(item.metadata.somethingArrayOfNumbers, EXPECTED_UPDATE[item._id.toString()])
+      attachments: [{
+        name: 'note-b',
+        neastedArr: [222, 333],
+      }],
+    }
+    const DOC_TEST3 = {
+      ...fixtures[2],
+      author: 'Paul Auster',
+      metadata: {
+        somethingNumber: 5,
+        somethingString: 'c',
+        somethingArrayObject: [{
+          arrayItemObjectChildNumber: 4,
+        }],
+        somethingArrayOfNumbers: [4],
+      },
+      attachments: [{
+        name: 'note-c',
+        neastedArr: [444],
+      }],
     }
 
-    t.end()
-  })
+    const VALUE_AS_NUMBER = 5555
+    const VALUE_AS_STRING = `${VALUE_AS_NUMBER}`
 
-  t.test('$push', async t => {
-    const matchingQuery = JSON.stringify({ author: 'James Joyce' })
+    t.test('$set', async t => {
+      const matchingQuery = JSON.stringify({ author: 'James Joyce' })
 
-    t.test('ok with casting', async t => {
       const UPDATE_COMMAND = {
-        $push: {
-          attachments: { detail: { size: VALUE_AS_STRING }, name: 'pushed' },
-          'metadata.somethingArrayObject': { arrayItemObjectChildNumber: VALUE_AS_STRING },
-          'metadata.somethingArrayOfNumbers': VALUE_AS_STRING,
+        $set: {
+          'metadata.somethingNumber': VALUE_AS_STRING,
         },
       }
 
-      const { fastify, collection } = await setUpTest(t, [DOC_TEST1, DOC_TEST2, DOC_TEST3])
+      const EXPECTED_NUMBER_DOCUMENT_TO_UPDATE = 2
+
+      await resetCollection([DOC_TEST1, DOC_TEST2, DOC_TEST3])
 
       const response = await fastify.inject({
         method: 'PATCH',
@@ -433,212 +356,296 @@ tap.test('HTTP PATCH / - nested object', async t => {
         },
       })
 
-      const EXPECTED_DOCUMENTS_TO_UPDATE = [DOC_TEST1, DOC_TEST2]
-      t.equal(JSON.parse(response.payload), EXPECTED_DOCUMENTS_TO_UPDATE.length)
+      t.test('should update the document', async t => {
+        t.equal(JSON.parse(response.payload), EXPECTED_NUMBER_DOCUMENT_TO_UPDATE)
 
-      const docsOnDb = await collection.find({ author: 'James Joyce' }).toArray()
-      t.equal(docsOnDb.length, EXPECTED_DOCUMENTS_TO_UPDATE.length)
-
-      for (const itemOnDb of docsOnDb) {
-        const originalDoc = EXPECTED_DOCUMENTS_TO_UPDATE.find(doc => doc._id.toString() === itemOnDb._id.toString())
-        t.strictSame(
-          itemOnDb.attachments,
-          originalDoc.attachments.concat({ detail: { size: VALUE_AS_NUMBER }, name: 'pushed' })
-        )
-
-        const originalMetadata = originalDoc.metadata
-        const metadataOnDb = itemOnDb.metadata
-        t.strictSame(
-          metadataOnDb.somethingArrayObject,
-          originalMetadata.somethingArrayObject.concat({ arrayItemObjectChildNumber: VALUE_AS_NUMBER })
-        )
-        t.strictSame(
-          metadataOnDb.somethingArrayOfNumbers,
-          originalMetadata.somethingArrayOfNumbers.concat(VALUE_AS_NUMBER)
-        )
-      }
-
-      const unchanged = await collection.find({ author: { $ne: 'James Joyce' } }).toArray()
-      t.equal(unchanged.length, 1)
-      t.strictSame(unchanged, [DOC_TEST3])
-    })
-
-    t.test('ok with casting of array in array', async t => {
-      const UPDATE_COMMAND = {
-        $push: {
-          'attachments.0.neastedArr': VALUE_AS_STRING,
-        },
-      }
-
-      const { fastify, collection } = await setUpTest(t, [DOC_TEST1, DOC_TEST2, DOC_TEST3])
-
-      const response = await fastify.inject({
-        method: 'PATCH',
-        url: `${prefix}/?_q=${matchingQuery}`,
-        payload: UPDATE_COMMAND,
-        headers: {
-          userId: newUpdaterId,
-        },
+        const docsOnDb = await collection.find({ author: 'James Joyce' }).toArray()
+        t.equal(docsOnDb.length, EXPECTED_NUMBER_DOCUMENT_TO_UPDATE)
+        for (const item of docsOnDb) {
+          t.strictSame(item.metadata.somethingNumber, VALUE_AS_NUMBER)
+        }
+        const unchanged = await collection.find({ author: { $ne: 'James Joyce' } }).toArray()
+        t.equal(unchanged.length, 1)
+        t.strictSame(unchanged, [DOC_TEST3])
       })
 
-      const EXPECTED_DOCUMENTS_TO_UPDATE = [DOC_TEST1, DOC_TEST2]
-
-      t.equal(JSON.parse(response.payload), EXPECTED_DOCUMENTS_TO_UPDATE.length)
-
-      const docsOnDb = await collection.find({ author: 'James Joyce' }).toArray()
-      t.equal(docsOnDb.length, EXPECTED_DOCUMENTS_TO_UPDATE.length)
-
-      for (const itemOnDb of docsOnDb) {
-        const originalDoc = EXPECTED_DOCUMENTS_TO_UPDATE.find(doc => doc._id.toString() === itemOnDb._id.toString())
-        t.strictSame(itemOnDb.attachments, [{
-          ...originalDoc.attachments[0],
-          neastedArr: originalDoc.attachments[0].neastedArr.concat(VALUE_AS_NUMBER),
-        }])
-      }
-
-      const unchanged = await collection.find({ author: { $ne: 'James Joyce' } }).toArray()
-      t.equal(unchanged.length, 1)
-      t.strictSame(unchanged, [DOC_TEST3])
+      t.end()
     })
 
-    t.end()
-  })
+    t.test('$set with positional operator', async t => {
+      const EXPECTED_UPDATE = {
+        [DOC_TEST1._id.toString()]: [2, VALUE_AS_NUMBER],
+        [DOC_TEST2._id.toString()]: [VALUE_AS_NUMBER],
+      }
 
-  t.test('$addToSet', async t => {
-    const matchingQuery = JSON.stringify({ author: 'James Joyce' })
-
-    t.test('ok with casting', async t => {
-      const [duplicateValue] = DOC_TEST1.metadata.somethingArrayOfNumbers
       const UPDATE_COMMAND = {
-        $addToSet: {
-          attachments: { detail: { size: VALUE_AS_STRING }, name: 'pushed' },
-          'metadata.somethingArrayObject': { arrayItemObjectChildNumber: VALUE_AS_STRING },
-          'metadata.somethingArrayOfNumbers': duplicateValue,
+        $set: {
+          'metadata.somethingArrayOfNumbers.$.replace': VALUE_AS_STRING,
         },
       }
 
-      const { fastify, collection } = await setUpTest(t, [DOC_TEST1, DOC_TEST2, DOC_TEST3])
-
-      const response = await fastify.inject({
-        method: 'PATCH',
-        url: `${prefix}/?_q=${matchingQuery}`,
-        payload: UPDATE_COMMAND,
-        headers: {
-          userId: newUpdaterId,
-        },
-      })
-
-      const EXPECTED_DOCUMENTS_TO_UPDATE = [DOC_TEST1, DOC_TEST2]
-      t.equal(JSON.parse(response.payload), EXPECTED_DOCUMENTS_TO_UPDATE.length)
-
-      const docsOnDb = await collection.find({ author: 'James Joyce' }).toArray()
-      t.equal(docsOnDb.length, EXPECTED_DOCUMENTS_TO_UPDATE.length)
-
-      for (const itemOnDb of docsOnDb) {
-        const originalDoc = EXPECTED_DOCUMENTS_TO_UPDATE.find(doc => doc._id.toString() === itemOnDb._id.toString())
-        t.strictSame(
-          itemOnDb.attachments,
-          originalDoc.attachments.concat({ detail: { size: VALUE_AS_NUMBER }, name: 'pushed' })
-        )
-
-        const originalMetadata = originalDoc.metadata
-        const metadataOnDb = itemOnDb.metadata
-        t.strictSame(
-          metadataOnDb.somethingArrayObject,
-          originalMetadata.somethingArrayObject.concat({ arrayItemObjectChildNumber: VALUE_AS_NUMBER })
-        )
-
-        const uniqueArray = [...new Set(originalMetadata.somethingArrayOfNumbers.concat(duplicateValue))]
-        t.strictSame(
-          metadataOnDb.somethingArrayOfNumbers,
-          uniqueArray
-        )
+      const QUERY = {
+        'metadata.somethingArrayOfNumbers': '5',
       }
 
-      const unchanged = await collection.find({ author: { $ne: 'James Joyce' } }).toArray()
-      t.equal(unchanged.length, 1)
-      t.strictSame(unchanged, [DOC_TEST3])
-    })
+      const EXPECTED_NUMBER_DOCUMENT_TO_UPDATE = Object.keys(EXPECTED_UPDATE).length
 
-    t.test('ok with casting of array in array', async t => {
-      const UPDATE_COMMAND = {
-        $addToSet: {
-          'attachments.0.neastedArr': VALUE_AS_STRING,
-        },
-      }
-
-      const { fastify, collection } = await setUpTest(t, [DOC_TEST1, DOC_TEST2, DOC_TEST3])
-
-      const response = await fastify.inject({
-        method: 'PATCH',
-        url: `${prefix}/?_q=${matchingQuery}`,
-        payload: UPDATE_COMMAND,
-        headers: {
-          userId: newUpdaterId,
-        },
-      })
-
-      const EXPECTED_DOCUMENTS_TO_UPDATE = [DOC_TEST1, DOC_TEST2]
-
-      t.equal(JSON.parse(response.payload), EXPECTED_DOCUMENTS_TO_UPDATE.length)
-
-      const docsOnDb = await collection.find({ author: 'James Joyce' }).toArray()
-      t.equal(docsOnDb.length, EXPECTED_DOCUMENTS_TO_UPDATE.length)
-
-      for (const itemOnDb of docsOnDb) {
-        const originalDoc = EXPECTED_DOCUMENTS_TO_UPDATE.find(doc => doc._id.toString() === itemOnDb._id.toString())
-        t.strictSame(itemOnDb.attachments, [{
-          ...originalDoc.attachments[0],
-          neastedArr: originalDoc.attachments[0].neastedArr.concat(VALUE_AS_NUMBER),
-        }])
-      }
-
-      const unchanged = await collection.find({ author: { $ne: 'James Joyce' } }).toArray()
-      t.equal(unchanged.length, 1)
-      t.strictSame(unchanged, [DOC_TEST3])
-    })
-
-    t.end()
-  })
-
-  t.end()
-})
-
-tap.test('HTTP PATCH / - standard fields', t => {
-  const requiredFieldNames = collectionDefinition
-    .fields
-    .filter(field => field.required)
-    .map(field => field.name)
-  t.plan(STANDARD_FIELDS.length + 1 + requiredFieldNames.length)
-
-  function makeCheck(t, standardField, update) {
-    t.test(`${standardField} cannot be updated`, async t => {
-      t.plan(3)
-      const { fastify, collection } = await setUpTest(t)
+      await resetCollection([DOC_TEST1, DOC_TEST2, DOC_TEST3])
 
       const response = await fastify.inject({
         method: 'PATCH',
         url: `${prefix}/`,
-        payload: update,
+        query: QUERY,
+        payload: UPDATE_COMMAND,
+        headers: {
+          userId: newUpdaterId,
+        },
       })
 
-      t.test('should return 400', t => {
-        t.plan(1)
-        t.strictSame(response.statusCode, 400)
-      })
-      t.test('should return JSON', t => {
-        t.plan(1)
-        t.ok(/application\/json/.test(response.headers['content-type']))
-      })
-      checkDocumentsInDatabase(t, collection, [], fixtures)
+      t.equal(response.payload, `${EXPECTED_NUMBER_DOCUMENT_TO_UPDATE}`)
+      const docsOnDb = await collection.find({ 'metadata.somethingArrayOfNumbers': VALUE_AS_NUMBER }).toArray()
+      t.equal(docsOnDb.length, EXPECTED_NUMBER_DOCUMENT_TO_UPDATE)
+
+      for (const item of docsOnDb) {
+        t.strictSame(item.metadata.somethingArrayOfNumbers, EXPECTED_UPDATE[item._id.toString()])
+      }
+
+      t.end()
     })
-  }
 
-  STANDARD_FIELDS.forEach(
-    standardField => makeCheck(t, standardField, { $set: { [standardField]: 'gg' } })
-  )
-  makeCheck(t, __STATE__, { $set: { [__STATE__]: 'gg' } })
-  requiredFieldNames.map(
-    name => makeCheck(t, name, { $unset: { [name]: true } })
-  )
+    t.test('$push', async t => {
+      const matchingQuery = JSON.stringify({ author: 'James Joyce' })
+
+      t.test('ok with casting', async t => {
+        const UPDATE_COMMAND = {
+          $push: {
+            attachments: { detail: { size: VALUE_AS_STRING }, name: 'pushed' },
+            'metadata.somethingArrayObject': { arrayItemObjectChildNumber: VALUE_AS_STRING },
+            'metadata.somethingArrayOfNumbers': VALUE_AS_STRING,
+          },
+        }
+
+        await resetCollection([DOC_TEST1, DOC_TEST2, DOC_TEST3])
+
+        const response = await fastify.inject({
+          method: 'PATCH',
+          url: `${prefix}/?_q=${matchingQuery}`,
+          payload: UPDATE_COMMAND,
+          headers: {
+            userId: newUpdaterId,
+          },
+        })
+
+        const EXPECTED_DOCUMENTS_TO_UPDATE = [DOC_TEST1, DOC_TEST2]
+        t.equal(JSON.parse(response.payload), EXPECTED_DOCUMENTS_TO_UPDATE.length)
+
+        const docsOnDb = await collection.find({ author: 'James Joyce' }).toArray()
+        t.equal(docsOnDb.length, EXPECTED_DOCUMENTS_TO_UPDATE.length)
+
+        for (const itemOnDb of docsOnDb) {
+          const originalDoc = EXPECTED_DOCUMENTS_TO_UPDATE.find(doc => doc._id.toString() === itemOnDb._id.toString())
+          t.strictSame(
+            itemOnDb.attachments,
+            originalDoc.attachments.concat({ detail: { size: VALUE_AS_NUMBER }, name: 'pushed' })
+          )
+
+          const originalMetadata = originalDoc.metadata
+          const metadataOnDb = itemOnDb.metadata
+          t.strictSame(
+            metadataOnDb.somethingArrayObject,
+            originalMetadata.somethingArrayObject.concat({ arrayItemObjectChildNumber: VALUE_AS_NUMBER })
+          )
+          t.strictSame(
+            metadataOnDb.somethingArrayOfNumbers,
+            originalMetadata.somethingArrayOfNumbers.concat(VALUE_AS_NUMBER)
+          )
+        }
+
+        const unchanged = await collection.find({ author: { $ne: 'James Joyce' } }).toArray()
+        t.equal(unchanged.length, 1)
+        t.strictSame(unchanged, [DOC_TEST3])
+      })
+
+      t.test('ok with casting of array in array', async t => {
+        const UPDATE_COMMAND = {
+          $push: {
+            'attachments.0.neastedArr': VALUE_AS_STRING,
+          },
+        }
+
+        await resetCollection([DOC_TEST1, DOC_TEST2, DOC_TEST3])
+
+        const response = await fastify.inject({
+          method: 'PATCH',
+          url: `${prefix}/?_q=${matchingQuery}`,
+          payload: UPDATE_COMMAND,
+          headers: {
+            userId: newUpdaterId,
+          },
+        })
+
+        const EXPECTED_DOCUMENTS_TO_UPDATE = [DOC_TEST1, DOC_TEST2]
+
+        t.equal(JSON.parse(response.payload), EXPECTED_DOCUMENTS_TO_UPDATE.length)
+
+        const docsOnDb = await collection.find({ author: 'James Joyce' }).toArray()
+        t.equal(docsOnDb.length, EXPECTED_DOCUMENTS_TO_UPDATE.length)
+
+        for (const itemOnDb of docsOnDb) {
+          const originalDoc = EXPECTED_DOCUMENTS_TO_UPDATE.find(doc => doc._id.toString() === itemOnDb._id.toString())
+          t.strictSame(itemOnDb.attachments, [{
+            ...originalDoc.attachments[0],
+            neastedArr: originalDoc.attachments[0].neastedArr.concat(VALUE_AS_NUMBER),
+          }])
+        }
+
+        const unchanged = await collection.find({ author: { $ne: 'James Joyce' } }).toArray()
+        t.equal(unchanged.length, 1)
+        t.strictSame(unchanged, [DOC_TEST3])
+      })
+
+      t.end()
+    })
+
+    t.test('$addToSet', async t => {
+      const matchingQuery = JSON.stringify({ author: 'James Joyce' })
+
+      t.test('ok with casting', async t => {
+        const [duplicateValue] = DOC_TEST1.metadata.somethingArrayOfNumbers
+        const UPDATE_COMMAND = {
+          $addToSet: {
+            attachments: { detail: { size: VALUE_AS_STRING }, name: 'pushed' },
+            'metadata.somethingArrayObject': { arrayItemObjectChildNumber: VALUE_AS_STRING },
+            'metadata.somethingArrayOfNumbers': duplicateValue,
+          },
+        }
+
+        await resetCollection([DOC_TEST1, DOC_TEST2, DOC_TEST3])
+
+        const response = await fastify.inject({
+          method: 'PATCH',
+          url: `${prefix}/?_q=${matchingQuery}`,
+          payload: UPDATE_COMMAND,
+          headers: {
+            userId: newUpdaterId,
+          },
+        })
+
+        const EXPECTED_DOCUMENTS_TO_UPDATE = [DOC_TEST1, DOC_TEST2]
+        t.equal(JSON.parse(response.payload), EXPECTED_DOCUMENTS_TO_UPDATE.length)
+
+        const docsOnDb = await collection.find({ author: 'James Joyce' }).toArray()
+        t.equal(docsOnDb.length, EXPECTED_DOCUMENTS_TO_UPDATE.length)
+
+        for (const itemOnDb of docsOnDb) {
+          const originalDoc = EXPECTED_DOCUMENTS_TO_UPDATE.find(doc => doc._id.toString() === itemOnDb._id.toString())
+          t.strictSame(
+            itemOnDb.attachments,
+            originalDoc.attachments.concat({ detail: { size: VALUE_AS_NUMBER }, name: 'pushed' })
+          )
+
+          const originalMetadata = originalDoc.metadata
+          const metadataOnDb = itemOnDb.metadata
+          t.strictSame(
+            metadataOnDb.somethingArrayObject,
+            originalMetadata.somethingArrayObject.concat({ arrayItemObjectChildNumber: VALUE_AS_NUMBER })
+          )
+
+          const uniqueArray = [...new Set(originalMetadata.somethingArrayOfNumbers.concat(duplicateValue))]
+          t.strictSame(
+            metadataOnDb.somethingArrayOfNumbers,
+            uniqueArray
+          )
+        }
+
+        const unchanged = await collection.find({ author: { $ne: 'James Joyce' } }).toArray()
+        t.equal(unchanged.length, 1)
+        t.strictSame(unchanged, [DOC_TEST3])
+      })
+
+      t.test('ok with casting of array in array', async t => {
+        const UPDATE_COMMAND = {
+          $addToSet: {
+            'attachments.0.neastedArr': VALUE_AS_STRING,
+          },
+        }
+
+        await resetCollection([DOC_TEST1, DOC_TEST2, DOC_TEST3])
+
+        const response = await fastify.inject({
+          method: 'PATCH',
+          url: `${prefix}/?_q=${matchingQuery}`,
+          payload: UPDATE_COMMAND,
+          headers: {
+            userId: newUpdaterId,
+          },
+        })
+
+        const EXPECTED_DOCUMENTS_TO_UPDATE = [DOC_TEST1, DOC_TEST2]
+
+        t.equal(JSON.parse(response.payload), EXPECTED_DOCUMENTS_TO_UPDATE.length)
+
+        const docsOnDb = await collection.find({ author: 'James Joyce' }).toArray()
+        t.equal(docsOnDb.length, EXPECTED_DOCUMENTS_TO_UPDATE.length)
+
+        for (const itemOnDb of docsOnDb) {
+          const originalDoc = EXPECTED_DOCUMENTS_TO_UPDATE.find(doc => doc._id.toString() === itemOnDb._id.toString())
+          t.strictSame(itemOnDb.attachments, [{
+            ...originalDoc.attachments[0],
+            neastedArr: originalDoc.attachments[0].neastedArr.concat(VALUE_AS_NUMBER),
+          }])
+        }
+
+        const unchanged = await collection.find({ author: { $ne: 'James Joyce' } }).toArray()
+        t.equal(unchanged.length, 1)
+        t.strictSame(unchanged, [DOC_TEST3])
+      })
+
+      t.end()
+    })
+
+    t.end()
+  })
+
+  t.test('- standard fields', t => {
+    const requiredFieldNames = collectionDefinition
+      .fields
+      .filter(field => field.required)
+      .map(field => field.name)
+    t.plan(STANDARD_FIELDS.length + 1 + requiredFieldNames.length)
+
+    function makeCheck(t, standardField, update) {
+      t.test(`${standardField} cannot be updated`, async t => {
+        await resetCollection()
+
+        const response = await fastify.inject({
+          method: 'PATCH',
+          url: `${prefix}/`,
+          payload: update,
+        })
+
+        t.test('should return 400', t => {
+          t.strictSame(response.statusCode, 400)
+          t.end()
+        })
+        t.test('should return JSON', t => {
+          t.ok(/application\/json/.test(response.headers['content-type']))
+          t.end()
+        })
+        checkDocumentsInDatabase(t, collection, [], fixtures)
+
+        t.end()
+      })
+    }
+
+    STANDARD_FIELDS.forEach(
+      standardField => makeCheck(t, standardField, { $set: { [standardField]: 'gg' } })
+    )
+    makeCheck(t, __STATE__, { $set: { [__STATE__]: 'gg' } })
+    requiredFieldNames.map(
+      name => makeCheck(t, name, { $unset: { [name]: true } })
+    )
+  })
+
+  t.end()
 })

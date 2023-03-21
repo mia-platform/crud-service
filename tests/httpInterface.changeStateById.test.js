@@ -35,7 +35,7 @@ const NON_MATCHING_QUERY = { price: { $gt: NON_MATCHING_PRICE } }
 const [STATION_DOC] = stationFixtures
 const STATION_ID = STATION_DOC._id.toString()
 
-tap.test('HTTP POST /<id>/state', t => {
+tap.test('HTTP POST /<id>/state', async t => {
   const tests = [
     {
       name: 'without filter',
@@ -117,13 +117,13 @@ tap.test('HTTP POST /<id>/state', t => {
   ]
 
   t.plan(tests.length)
+  const { fastify, collection, resetCollection } = await setUpTest(t)
 
   tests.forEach(testConf => {
     const { name, found, ...conf } = testConf
 
     t.test(name, async t => {
-      t.plan(3)
-      const { fastify, collection } = await setUpTest(t)
+      await resetCollection()
 
       const response = await fastify.inject({
         method: 'POST',
@@ -136,25 +136,23 @@ tap.test('HTTP POST /<id>/state', t => {
       })
 
       t.test(`should return ${found ? 204 : 404}`, t => {
-        t.plan(1)
         t.strictSame(response.statusCode, found ? 204 : 404, response.payload)
+        t.end()
       })
+
       t.test('should return application/json', t => {
-        t.plan(1)
         if (found) {
           t.strictSame(response.headers['content-type'], undefined)
         } else {
           t.ok(/application\/json/.test(response.headers['content-type']))
         }
+        t.end()
       })
 
       t.test('on database', t => {
-        t.plan(2)
-
         t.test(`should ${found ? '' : 'not'} update the document`, async t => {
-          t.plan(3)
-
           const doc = await collection.findOne({ _id: conf.id })
+
           if (found) {
             t.strictSame(doc[__STATE__], conf.stateTo)
             t.strictSame(doc.updaterId, newUpdaterId)
@@ -164,19 +162,25 @@ tap.test('HTTP POST /<id>/state', t => {
             t.strictSame(doc.updaterId, oldUpdaterId)
             t.ok(Math.abs(Date.now() - doc.updatedAt.getTime()) > 5000, '`updatedAt` should not be updated')
           }
+
+          t.end()
         })
 
         t.test('should keep the other documents as is', async t => {
-          t.plan(1)
           const documents = await collection.find({ _id: { $ne: conf.id } }).toArray()
           t.strictSame(documents, fixtures.filter(d => d._id.toString() !== conf.id.toString()))
+          t.end()
         })
+
+        t.end()
       })
+
+      t.end()
     })
   })
 })
 
-tap.test('HTTP POST /<id>/state with string id', t => {
+tap.test('HTTP POST /<id>/state with string id', async t => {
   const tests = [
     {
       name: 'without filter',
@@ -197,13 +201,13 @@ tap.test('HTTP POST /<id>/state with string id', t => {
   ]
 
   t.plan(tests.length)
+  const { fastify, collection, resetCollection } = await setUpTest(t, stationFixtures, 'stations')
 
   tests.forEach(testConf => {
     const { name, found, ...conf } = testConf
 
     t.test(name, async t => {
-      t.plan(3)
-      const { fastify, collection } = await setUpTest(t, stationFixtures, 'stations')
+      await resetCollection()
 
       const response = await fastify.inject({
         method: 'POST',
@@ -216,25 +220,23 @@ tap.test('HTTP POST /<id>/state with string id', t => {
       })
 
       t.test(`should return ${found ? 204 : 404}`, t => {
-        t.plan(1)
         t.strictSame(response.statusCode, found ? 204 : 404, response.payload)
+        t.end()
       })
+
       t.test('should return application/json', t => {
-        t.plan(1)
         if (found) {
           t.strictSame(response.headers['content-type'], undefined)
         } else {
           t.ok(/application\/json/.test(response.headers['content-type']))
         }
+        t.end()
       })
 
       t.test('on database', t => {
-        t.plan(2)
-
         t.test(`should ${found ? '' : 'not'} update the document`, async t => {
-          t.plan(3)
-
           const doc = await collection.findOne({ _id: conf.id })
+
           if (found) {
             t.strictSame(doc[__STATE__], conf.stateTo)
             t.strictSame(doc.updaterId, newUpdaterId)
@@ -244,14 +246,20 @@ tap.test('HTTP POST /<id>/state with string id', t => {
             t.strictSame(doc.updaterId, oldUpdaterId)
             t.ok(Math.abs(Date.now() - doc.updatedAt.getTime()) > 5000, '`updatedAt` should not be updated')
           }
+
+          t.end()
         })
 
         t.test('should keep the other documents as is', async t => {
-          t.plan(1)
           const documents = await collection.find({ _id: { $ne: conf.id } }).toArray()
           t.strictSame(documents, stationFixtures.filter(d => d._id.toString() !== conf.id.toString()))
+          t.end()
         })
+
+        t.end()
       })
+
+      t.end()
     })
   })
 })

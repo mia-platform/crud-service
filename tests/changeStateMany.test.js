@@ -26,7 +26,7 @@ const CrudService = require('../lib/CrudService')
 const {
   fixtures,
   publicFixtures,
-  dropCollectionAndInsertFixtures,
+  clearCollectionAndInsertFixtures,
   checkDocumentsInDatabase,
   getMongoDatabaseName,
   getMongoURL,
@@ -90,7 +90,7 @@ tap.test('changeStateMany', async t => {
   testConf.forEach(conf => {
     const { filterUpdateCommands } = conf
     t.test(conf.name, async t => {
-      await dropCollectionAndInsertFixtures(collection)
+      await clearCollectionAndInsertFixtures(collection)
 
       const ret = await crudService.changeStateMany(context, filterUpdateCommands)
 

@@ -604,8 +604,6 @@ tap.test('HTTP GET /', async t => {
     const { name, found, ...conf } = testConf
 
     t.test(name, async t => {
-      t.plan(4)
-
       const response = await fastify.inject({
         method: 'GET',
         url: prefix + conf.url,
@@ -613,24 +611,27 @@ tap.test('HTTP GET /', async t => {
       })
 
       t.test('should return 200', t => {
-        t.plan(1)
         t.strictSame(response.statusCode, 200)
+        t.end()
       })
 
       t.test('should return "application/json"', t => {
-        t.plan(1)
         t.strictSame(response.headers['content-type'], 'application/json')
+        t.end()
       })
 
       t.test('should return the document', t => {
-        t.plan(1)
         t.strictSame(JSON.parse(response.payload), found)
+        t.end()
       })
+
       t.test('should keep the document as is in database', async t => {
-        t.plan(1)
         const documents = await collection.find().toArray()
         t.strictSame(documents, fixtures)
+        t.end()
       })
+
+      t.end()
     })
   })
 
@@ -639,8 +640,6 @@ tap.test('HTTP GET /', async t => {
     const { name, found, ...conf } = testConf
 
     t.test(`EXPORT ${name}`, async t => {
-      t.plan(4)
-
       const response = await fastify.inject({
         method: 'GET',
         url: prefix + conf.url,
@@ -648,27 +647,30 @@ tap.test('HTTP GET /', async t => {
       })
 
       t.test('should return 200', t => {
-        t.plan(1)
         t.strictSame(response.statusCode, 200)
+        t.end()
       })
 
       t.test('should return "application/x-ndjson"', t => {
-        t.plan(1)
         t.ok(/application\/x-ndjson/.test(response.headers['content-type']))
+        t.end()
       })
 
       t.test('should return the document', t => {
-        t.plan(1)
         const documents = response.payload.split('\n')
           .filter(s => s !== '')
           .map(JSON.parse)
         t.strictSame(documents, found)
+        t.end()
       })
+
       t.test('should keep the document as is in database', async t => {
-        t.plan(1)
         const documents = await collection.find().toArray()
         t.strictSame(documents, fixtures)
+        t.end()
       })
+
+      t.end()
     })
   })
 })
@@ -751,8 +753,6 @@ tap.test('HTTP GET / - $text search', async t => {
     const { name, found, ...conf } = testConf
 
     t.test(name, async t => {
-      t.plan(4)
-
       const response = await fastify.inject({
         method: 'GET',
         url: prefix + conf.url,
@@ -760,13 +760,13 @@ tap.test('HTTP GET / - $text search', async t => {
       })
 
       t.test('should return 200', t => {
-        t.plan(1)
         t.strictSame(response.statusCode, 200)
+        t.end()
       })
 
       t.test('should return "application/json"', t => {
-        t.plan(1)
         t.strictSame(response.headers['content-type'], 'application/json')
+        t.end()
       })
 
       t.test('should return the document', t => {
@@ -779,15 +779,17 @@ tap.test('HTTP GET / - $text search', async t => {
             }
           })
         }
-        t.plan(expectedResponse.length)
         assertExpectedResponse(t, JSON.parse(response.payload), expectedResponse)
+        t.end()
       })
 
       t.test('should keep the document as is in database', async t => {
-        t.plan(1)
         const documents = await collection.find().toArray()
         t.strictSame(documents, fixtures)
+        t.end()
       })
+
+      t.end()
     })
   })
 
@@ -796,8 +798,6 @@ tap.test('HTTP GET / - $text search', async t => {
     const { name, found, ...conf } = testConf
 
     t.test(name, async t => {
-      t.plan(4)
-
       const response = await fastify.inject({
         method: 'GET',
         url: prefix + conf.url,
@@ -805,123 +805,301 @@ tap.test('HTTP GET / - $text search', async t => {
       })
 
       t.test('should return 200', t => {
-        t.plan(1)
         t.strictSame(response.statusCode, 200)
+        t.end()
       })
 
       t.test('should return "application/x-ndjson"', t => {
-        t.plan(1)
         t.ok(/application\/x-ndjson/.test(response.headers['content-type']))
+        t.end()
       })
 
       t.test('should return the document', t => {
-        t.plan(1)
         const documents = response.payload.split('\n')
           .filter(s => s !== '')
           .map(JSON.parse)
         t.strictSame(documents, found)
+        t.end()
       })
       t.test('should keep the document as is in database', async t => {
-        t.plan(1)
         const documents = await collection.find().toArray()
         t.strictSame(documents, fixtures)
+        t.end()
       })
+
+      t.end()
     })
   })
 })
 
-tap.test('filter on nested object with object notation cannot be used', async t => {
-  // Documentation purpose
-  const DOC = {
-    ...fixtures[0],
-    metadata: {
-      somethingNumber: 2,
-    },
-    attachments: [{
+tap.test('HTTP GET / ', async t => {
+  const { fastify, collection, resetCollection } = await setUpTest(t, [])
+
+  t.test('filter on nested object with object notation cannot be used', async t => {
+    // Documentation purpose
+    const DOC = {
+      ...fixtures[0],
+      metadata: {
+        somethingNumber: 2,
+      },
+      attachments: [{
+        name: 'note',
+        detail: {
+          size: 6,
+        },
+      }],
+    }
+    await resetCollection([DOC])
+
+    const filterQueryMetadata = { somethingNumber: 2 }
+    const filterAttachments = [{
       name: 'note',
       detail: {
         size: 6,
       },
-    }],
-  }
-  const { fastify, collection } = await setUpTest(t, [DOC])
+    }]
 
-  const filterQueryMetadata = { somethingNumber: 2 }
-  const filterAttachments = [{
-    name: 'note',
-    detail: {
-      size: 6,
-    },
-  }]
+    const docOnDb = await collection.findOne({ metadata: filterQueryMetadata, attachments: filterAttachments })
 
-  const docOnDb = await collection.findOne({ metadata: filterQueryMetadata, attachments: filterAttachments })
+    t.ok(docOnDb)
 
-  t.ok(docOnDb)
-
-  const response = await fastify.inject({
-    method: 'GET',
-    url: `${prefix}/`,
-    query: {
-      metadata: JSON.stringify(filterQueryMetadata),
-      attachments: JSON.stringify(filterAttachments),
-    },
-    headers: {},
-  })
-
-  t.strictSame(response.statusCode, 400)
-  t.strictSame(JSON.parse(response.payload), {
-    statusCode: 400,
-    error: 'Bad Request',
-    message: 'querystring must NOT have additional properties',
-  })
-
-  t.end()
-})
-
-tap.test('HTTP GET / (missing property)', async t => {
-  const { fastify } = await setUpTest(t)
-
-  t.test('with _s with nonexistent property', async assert => {
     const response = await fastify.inject({
       method: 'GET',
-      url: `${prefix}/?_s=nonexistent`,
-      headers: {},
-    })
-
-    assert.strictSame(response.statusCode, 400)
-    assert.end()
-  })
-
-  t.test('with _s with nonexistent and existing properties', async t => {
-    const response = await fastify.inject({
-      method: 'GET',
-      url: `${prefix}/?_s=price,nonexistent`,
+      url: `${prefix}/`,
+      query: {
+        metadata: JSON.stringify(filterQueryMetadata),
+        attachments: JSON.stringify(filterAttachments),
+      },
       headers: {},
     })
 
     t.strictSame(response.statusCode, 400)
+    t.strictSame(JSON.parse(response.payload), {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'querystring must NOT have additional properties',
+    })
+
     t.end()
   })
 
-  t.test('with _s with existing nested and nonexistent properties', async t => {
-    const response = await fastify.inject({
-      method: 'GET',
-      url: `${prefix}/?_s=attachments.name,nonexistent`,
-      headers: {},
+  t.test('(missing property)', async t => {
+    await resetCollection()
+
+    t.test('with _s with nonexistent property', async assert => {
+      const response = await fastify.inject({
+        method: 'GET',
+        url: `${prefix}/?_s=nonexistent`,
+        headers: {},
+      })
+
+      assert.strictSame(response.statusCode, 400)
+      assert.end()
     })
 
-    t.strictSame(response.statusCode, 400)
+    t.test('with _s with nonexistent and existing properties', async t => {
+      const response = await fastify.inject({
+        method: 'GET',
+        url: `${prefix}/?_s=price,nonexistent`,
+        headers: {},
+      })
+
+      t.strictSame(response.statusCode, 400)
+      t.end()
+    })
+
+    t.test('with _s with existing nested and nonexistent properties', async t => {
+      const response = await fastify.inject({
+        method: 'GET',
+        url: `${prefix}/?_s=attachments.name,nonexistent`,
+        headers: {},
+      })
+
+      t.strictSame(response.statusCode, 400)
+      t.end()
+    })
+
+    t.test('with _s with nonexistent and existing nested properties REPEATED QUERYSTRING', async t => {
+      const response = await fastify.inject({
+        method: 'GET',
+        url: `${prefix}/?_s=nonexistent&_s=attachments.name`,
+        headers: {},
+      })
+
+      t.strictSame(response.statusCode, 400)
+      t.end()
+    })
+
     t.end()
   })
 
-  t.test('with _s with nonexistent and existing nested properties REPEATED QUERYSTRING', async t => {
+  t.test('serialize correctly data on GET (a string should be casted to number to match schema)', async t => {
+    const DOC = {
+      ...fixtures[0],
+      // expected to be casted to number
+      price: '44',
+      ignoreMe: 'expect to be ignored',
+    }
+
+    await resetCollection([DOC])
+
     const response = await fastify.inject({
       method: 'GET',
-      url: `${prefix}/?_s=nonexistent&_s=attachments.name`,
+      url: '/books-endpoint/',
       headers: {},
     })
 
-    t.strictSame(response.statusCode, 400)
+    t.strictSame(response.statusCode, 200)
+    const [item] = JSON.parse(response.payload)
+
+    t.equal(item.ignoreMe, undefined)
+    t.strictSame(item.price, 44)
+
+    t.end()
+  })
+
+
+  t.test('(limits)', async t => {
+    const limitsFixtures = []
+    for (let index = 0; index < 26; index++) {
+      limitsFixtures.push({ [__STATE__]: STATES.PUBLIC, isbn: `default-test-${index}` })
+    }
+
+    await resetCollection(limitsFixtures)
+
+    t.test('don\'t fail with minimum and maximum limit value and return only default numbers ', async t => {
+      t.test('Minimum 1', async t => {
+        const response = await fastify.inject({
+          method: 'GET',
+          url: `${prefix}/?_l=1`,
+        })
+
+        t.strictSame(response.statusCode, 200)
+        t.end()
+      })
+
+      t.test('Maximum 200', async t => {
+        const response = await fastify.inject({
+          method: 'GET',
+          url: `${prefix}/?_l=200`,
+        })
+
+        t.strictSame(response.statusCode, 200)
+        t.end()
+      })
+
+      t.test('Return the default number of document', async t => {
+        const response = await fastify.inject({
+          method: 'GET',
+          url: `${prefix}/`,
+        })
+
+        t.strictSame(response.statusCode, 200)
+        t.strictSame(JSON.parse(response.payload).length, 25)
+        t.end()
+      })
+
+      t.end()
+    })
+
+    t.test('fails with wrong limit value', async assert => {
+      const response = await fastify.inject({
+        method: 'GET',
+        url: `${prefix}/?_l=500`,
+      })
+
+      assert.strictSame(response.statusCode, 400)
+      assert.end()
+    })
+
+    t.end()
+  })
+
+  t.test('fails', async t => {
+    await resetCollection()
+
+    t.test('with 500', async t => {
+      UNALLOWED_RAW_PROJECTIONS.forEach(projection => {
+        t.test('Should not allow raw projection', async assert => {
+          const { statusCode } = await fastify.inject({
+            method: 'GET',
+            url: `${prefix}/?_rawp=${JSON.stringify(projection)}`,
+            headers: {},
+          })
+
+          assert.strictSame(statusCode, 400)
+          assert.end()
+        })
+      })
+
+      t.test('Should raise error if raw projection tries to override acls', async assert => {
+        const expectedPayload = {
+          statusCode: 400,
+          error: 'Bad Request',
+          message: '_rawp exclusive projection is overriding at least one acl_read_column value',
+        }
+        const { statusCode, payload } = await fastify.inject({
+          method: 'GET',
+          url: `${prefix}/?_rawp=${JSON.stringify(RAW_PROJECTION_PLAIN_EXCLUSIVE)}`,
+          headers: {
+            acl_read_columns: ['price', 'author', 'name'],
+          },
+        })
+
+        assert.strictSame(statusCode, 400)
+        assert.strictSame(JSON.parse(payload), expectedPayload)
+        assert.end()
+      })
+
+      t.end()
+    })
+
+    t.test('with 400 for mixed _rawp and _p', async t => {
+      UNALLOWED_RAW_PROJECTIONS.forEach(projection => {
+        t.test('Should not allow raw projection with projection', async assert => {
+          const expectedPayload = {
+            statusCode: 400,
+            error: 'Bad Request',
+            message: 'Use of both _rawp and _p parameter is not allowed',
+          }
+          const { statusCode, payload } = await fastify.inject({
+            method: 'GET',
+            url: `${prefix}/?_rawp=${JSON.stringify(projection)}&_p=author`,
+            headers: {},
+          })
+
+          assert.strictSame(statusCode, 400)
+          assert.strictSame(JSON.parse(payload), expectedPayload)
+          assert.end()
+        })
+      })
+
+      t.end()
+    })
+
+    t.test('with 400 due to usage of forbidden operators', async t => {
+      BAD_RAW_PROJECTIONS_USAGE.forEach(projection => {
+        t.test('Should not allow specified raw projection', async assert => {
+          const expectedPayload = {
+            statusCode: 400,
+            error: 'Bad Request',
+            message: `Operator ${projection.unwantedOperator} is not allowed in raw projection`,
+          }
+          const { statusCode, payload } = await fastify.inject({
+            method: 'GET',
+            url: `${prefix}/?_rawp=${JSON.stringify(projection.input)}`,
+            headers: {},
+          })
+
+          assert.strictSame(statusCode, 400)
+          assert.strictSame(JSON.parse(payload), expectedPayload)
+          assert.end()
+        })
+      })
+
+      t.end()
+    })
+
     t.end()
   })
 
@@ -1016,32 +1194,6 @@ tap.test('HTTP GET / with _id in querystring', async t => {
   t.end()
 })
 
-tap.test('serialize correctly data on GET (a string should be casted to number to match schema)', async t => {
-  const DOC = {
-    ...fixtures[0],
-    // expected to be casted to number
-    price: '44',
-    ignoreMe: 'expect to be ignored',
-  }
-
-  const { fastify } = await setUpTest(t, [DOC])
-
-  const response = await fastify.inject({
-    method: 'GET',
-    url: '/books-endpoint/',
-    headers: {},
-  })
-
-  t.strictSame(response.statusCode, 200)
-  const [item] = JSON.parse(response.payload)
-
-  t.equal(item.ignoreMe, undefined)
-  t.strictSame(item.price, 44)
-
-  t.end()
-})
-
-
 tap.test('HTTP GET /export', async t => {
   const mongoDbCollectionName = booksCollectionDefinition.name
   const { fastify } = await setUpTest(t, lotOfBooksFixtures, mongoDbCollectionName)
@@ -1091,152 +1243,6 @@ tap.test('HTTP GET /export', async t => {
   t.end()
 })
 
-tap.test('HTTP GET / (limits)', async t => {
-  const limitsFixtures = []
-  for (let index = 0; index < 26; index++) {
-    limitsFixtures.push({ [__STATE__]: STATES.PUBLIC, isbn: `default-test-${index}` })
-  }
-
-  const { fastify } = await setUpTest(t, limitsFixtures)
-
-  t.test('don\'t fail with minimum and maximum limit value and return only default numbers ', async t => {
-    t.test('Minimum 1', async t => {
-      const response = await fastify.inject({
-        method: 'GET',
-        url: `${prefix}/?_l=1`,
-      })
-
-      t.strictSame(response.statusCode, 200)
-      t.end()
-    })
-
-    t.test('Maximum 200', async t => {
-      const response = await fastify.inject({
-        method: 'GET',
-        url: `${prefix}/?_l=200`,
-      })
-
-      t.strictSame(response.statusCode, 200)
-      t.end()
-    })
-
-    t.test('Return the default number of document', async t => {
-      const response = await fastify.inject({
-        method: 'GET',
-        url: `${prefix}/`,
-      })
-
-      t.strictSame(response.statusCode, 200)
-      t.strictSame(JSON.parse(response.payload).length, 25)
-      t.end()
-    })
-
-    t.end()
-  })
-
-  t.test('fails with wrong limit value', async assert => {
-    const response = await fastify.inject({
-      method: 'GET',
-      url: `${prefix}/?_l=500`,
-    })
-
-    assert.strictSame(response.statusCode, 400)
-    assert.end()
-  })
-
-  t.end()
-})
-
-tap.test('HTTP GET / fails', async t => {
-  const { fastify } = await setUpTest(t)
-
-  t.test('with 500', async t => {
-    UNALLOWED_RAW_PROJECTIONS.forEach(projection => {
-      t.test('Should not allow raw projection', async assert => {
-        const { statusCode } = await fastify.inject({
-          method: 'GET',
-          url: `${prefix}/?_rawp=${JSON.stringify(projection)}`,
-          headers: {},
-        })
-
-        assert.strictSame(statusCode, 400)
-        assert.end()
-      })
-    })
-
-    t.test('Should raise error if raw projection tries to override acls', async assert => {
-      const expectedPayload = {
-        statusCode: 400,
-        error: 'Bad Request',
-        message: '_rawp exclusive projection is overriding at least one acl_read_column value',
-      }
-      const { statusCode, payload } = await fastify.inject({
-        method: 'GET',
-        url: `${prefix}/?_rawp=${JSON.stringify(RAW_PROJECTION_PLAIN_EXCLUSIVE)}`,
-        headers: {
-          acl_read_columns: ['price', 'author', 'name'],
-        },
-      })
-
-      assert.strictSame(statusCode, 400)
-      assert.strictSame(JSON.parse(payload), expectedPayload)
-      assert.end()
-    })
-
-    t.end()
-  })
-
-  t.test('with 400 for mixed _rawp and _p', async t => {
-    UNALLOWED_RAW_PROJECTIONS.forEach(projection => {
-      t.test('Should not allow raw projection with projection', async assert => {
-        const expectedPayload = {
-          statusCode: 400,
-          error: 'Bad Request',
-          message: 'Use of both _rawp and _p parameter is not allowed',
-        }
-        const { statusCode, payload } = await fastify.inject({
-          method: 'GET',
-          url: `${prefix}/?_rawp=${JSON.stringify(projection)}&_p=author`,
-          headers: {},
-        })
-
-        assert.strictSame(statusCode, 400)
-        assert.strictSame(JSON.parse(payload), expectedPayload)
-        assert.end()
-      })
-    })
-
-    t.end()
-  })
-
-  t.test('with 400 due to usage of forbidden operators', async t => {
-    const { fastify } = await setUpTest(t)
-
-    BAD_RAW_PROJECTIONS_USAGE.forEach(projection => {
-      t.test('Should not allow specified raw projection', async assert => {
-        const expectedPayload = {
-          statusCode: 400,
-          error: 'Bad Request',
-          message: `Operator ${projection.unwantedOperator} is not allowed in raw projection`,
-        }
-        const { statusCode, payload } = await fastify.inject({
-          method: 'GET',
-          url: `${prefix}/?_rawp=${JSON.stringify(projection.input)}`,
-          headers: {},
-        })
-
-        assert.strictSame(statusCode, 400)
-        assert.strictSame(JSON.parse(payload), expectedPayload)
-        assert.end()
-      })
-    })
-
-    t.end()
-  })
-
-  t.end()
-})
-
 if (process.env.MONGO_VERSION === '4.0') {
   tap.test('unsupported _rawp in MongoDB v4.0', async t => {
     const { fastify } = await setUpTest(t)
@@ -1255,17 +1261,17 @@ if (process.env.MONGO_VERSION === '4.0') {
     })
 
     t.test('should return 200', t => {
-      t.plan(1)
       t.strictSame(response.statusCode, 400)
+      t.end()
     })
 
     t.test('should return "application/json"', t => {
-      t.plan(1)
+      t.end()
       t.strictSame(response.headers['content-type'], 'application/json; charset=utf-8')
     })
 
     t.test('should return the error message', t => {
-      t.plan(1)
+      t.end()
       t.strictSame(JSON.parse(response.payload), {
         message: 'Unsupported projection option: attachments: { $filter: { input: "$attachments", as: "item", cond: { $in: [ "$$item.name", [ "note" ] ] } } }',
         error: 'Bad Request',

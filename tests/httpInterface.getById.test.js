@@ -275,8 +275,6 @@ tap.test('HTTP GET /<id>', async t => {
     const { name, found, ...conf } = testConf
 
     t.test(name, async t => {
-      t.plan(4)
-
       const response = await fastify.inject({
         method: 'GET',
         url: prefix + conf.url,
@@ -284,29 +282,31 @@ tap.test('HTTP GET /<id>', async t => {
       })
 
       t.test(`should return ${found ? '200' : '404'}`, t => {
-        t.plan(1)
         t.strictSame(response.statusCode, (found ? 200 : 404))
+        t.end()
       })
 
       t.test('should return "application/json"', t => {
-        t.plan(1)
         t.ok(/application\/json/.test(response.headers['content-type']))
+        t.end()
       })
 
       t.test(`should return ${found ? 'the document' : 'NOT_FOUND_BODY'}`, t => {
-        t.plan(1)
-
         if (found) {
           t.strictSame(JSON.parse(response.payload), found)
         } else {
           t.strictSame(JSON.parse(response.payload), NOT_FOUND_BODY)
         }
+        t.end()
       })
+
       t.test('should keep the document as is in database', async t => {
-        t.plan(1)
         const documents = await collection.find().toArray()
         t.strictSame(documents, fixtures)
+        t.end()
       })
+
+      t.end()
     })
   })
 })
@@ -450,204 +450,217 @@ tap.test('HTTP GET /<id> with string id', async t => {
     const { name, found, ...conf } = testConf
 
     t.test(name, async t => {
-      t.plan(4)
-
       const response = await fastify.inject({
         method: 'GET',
         url: stationsPrefix + conf.url,
         headers: getHeaders(conf),
       })
       t.test(`should return ${found ? '200' : '404'}`, t => {
-        t.plan(1)
         t.strictSame(response.statusCode, (found ? 200 : 404))
+        t.end()
       })
 
       t.test('should return "application/json"', t => {
-        t.plan(1)
         t.ok(/application\/json/.test(response.headers['content-type']))
+        t.end()
       })
 
       t.test(`should return ${found ? 'the document' : 'NOT_FOUND_BODY'}`, t => {
-        t.plan(1)
-
         if (found) {
           t.strictSame(JSON.parse(response.payload), found)
         } else {
           t.strictSame(JSON.parse(response.payload), NOT_FOUND_BODY)
         }
+        t.end()
       })
+
       t.test('should keep the document as is in database', async t => {
-        t.plan(1)
         const documents = await collection.find().toArray()
         t.strictSame(documents, stationFixtures)
+        t.end()
       })
+
+      t.end()
     })
   })
 })
 
-tap.test('HTTP GET /:id cast correctly nested object with schema', async t => {
-  const DOC_TEST = {
-    ...DOC,
-    _id: ObjectId.createFromHexString('211111111111111111111111'),
-    metadata: {
-      somethingNumber: '3333',
-    },
-    attachments: [{
+tap.test('HTTP GET', async t => {
+  const { fastify, resetCollection } = await setUpTest(t, null, 'books')
+
+  t.test('/:id cast correctly nested object with schema', async t => {
+    const DOC_TEST = {
+      ...DOC,
+      _id: ObjectId.createFromHexString('211111111111111111111111'),
+      metadata: {
+        somethingNumber: '3333',
+      },
+      attachments: [{
+        name: 'the-note',
+        detail: {
+          size: '6',
+        },
+      }],
+      [STATE]: STATES.PUBLIC,
+    }
+
+    await resetCollection([DOC_TEST])
+
+    const response = await fastify.inject({
+      method: 'GET',
+      url: `${prefix}/${DOC_TEST._id.toHexString()}`,
+      headers: {},
+    })
+    t.strictSame(JSON.parse(response.payload).metadata, {
+      somethingNumber: 3333,
+    })
+    t.strictSame(JSON.parse(response.payload).attachments, [{
       name: 'the-note',
       detail: {
-        size: '6',
+        size: 6,
       },
-    }],
-    [STATE]: STATES.PUBLIC,
-  }
+    }])
 
-  const { fastify } = await setUpTest(t, [DOC_TEST], 'books')
-  const response = await fastify.inject({
-    method: 'GET',
-    url: `${prefix}/${DOC_TEST._id.toHexString()}`,
-    headers: {},
+    t.end()
   })
-  t.strictSame(JSON.parse(response.payload).metadata, {
-    somethingNumber: 3333,
-  })
-  t.strictSame(JSON.parse(response.payload).attachments, [{
-    name: 'the-note',
-    detail: {
-      size: 6,
-    },
-  }])
-  t.end()
-})
 
-tap.test('HTTP GET /:id filter correctly by nested object field', async t => {
-  const DOC_TEST = {
-    ...fixtures[0],
-    _id: ObjectId.createFromHexString('311111111111111111111111'),
-    metadata: {
+  t.test('/:id filter correctly by nested object field', async t => {
+    const DOC_TEST = {
+      ...fixtures[0],
+      _id: ObjectId.createFromHexString('311111111111111111111111'),
+      metadata: {
+        somethingNumber: 3333,
+        somethingArrayObject: [{
+          arrayItemObjectChildNumber: 4,
+        }],
+        somethingArrayOfNumbers: [5],
+      },
+      [STATE]: STATES.PUBLIC,
+    }
+    const DOC_TEST_NO_MATCH = {
+      ...fixtures[0],
+      isbn: 'faske isbn 2',
+      _id: ObjectId.createFromHexString('321111111111111111111111'),
+      metadata: {
+        somethingNumber: 999,
+        somethingArrayObject: [{
+          arrayItemObjectChildNumber: 4,
+        }],
+        somethingArrayOfNumbers: [5],
+      },
+      [STATE]: STATES.PUBLIC,
+    }
+
+    await resetCollection([DOC_TEST, DOC_TEST_NO_MATCH])
+
+    const response = await fastify.inject({
+      method: 'GET',
+      url: `${prefix}/${DOC_TEST._id.toHexString()}`,
+      query: {
+        'metadata.somethingNumber': '3333',
+        'metadata.somethingArrayObject.0.arrayItemObjectChildNumber': '4',
+        'metadata.somethingArrayOfNumbers.0': '5',
+      },
+      headers: {},
+    })
+
+    t.equal(response.statusCode, 200)
+    t.strictSame(JSON.parse(response.payload).metadata, {
       somethingNumber: 3333,
       somethingArrayObject: [{
         arrayItemObjectChildNumber: 4,
       }],
       somethingArrayOfNumbers: [5],
-    },
-    [STATE]: STATES.PUBLIC,
-  }
-  const DOC_TEST_NO_MATCH = {
-    ...fixtures[0],
-    isbn: 'faske isbn 2',
-    _id: ObjectId.createFromHexString('321111111111111111111111'),
-    metadata: {
-      somethingNumber: 999,
-      somethingArrayObject: [{
-        arrayItemObjectChildNumber: 4,
-      }],
-      somethingArrayOfNumbers: [5],
-    },
-    [STATE]: STATES.PUBLIC,
-  }
-
-  const { fastify } = await setUpTest(t, [DOC_TEST, DOC_TEST_NO_MATCH], 'books')
-  const response = await fastify.inject({
-    method: 'GET',
-    url: `${prefix}/${DOC_TEST._id.toHexString()}`,
-    query: {
-      'metadata.somethingNumber': '3333',
-      'metadata.somethingArrayObject.0.arrayItemObjectChildNumber': '4',
-      'metadata.somethingArrayOfNumbers.0': '5',
-    },
-    headers: {},
-  })
-  t.equal(response.statusCode, 200)
-  t.strictSame(JSON.parse(response.payload).metadata, {
-    somethingNumber: 3333,
-    somethingArrayObject: [{
-      arrayItemObjectChildNumber: 4,
-    }],
-    somethingArrayOfNumbers: [5],
-  })
-  t.end()
-})
-
-tap.test('HTTP GET /:id 404 with unmatching filter on nested object', async t => {
-  const DOC_TEST = {
-    ...fixtures[0],
-    _id: ObjectId.createFromHexString('311111111111111111111111'),
-    metadata: {
-      somethingNumber: 1,
-      somethingArrayObject: [{
-        arrayItemObjectChildNumber: 4,
-      }],
-      somethingArrayOfNumbers: [5],
-    },
-    [STATE]: STATES.PUBLIC,
-  }
-
-  const { fastify } = await setUpTest(t, [DOC_TEST], 'books')
-  const response = await fastify.inject({
-    method: 'GET',
-    url: `${prefix}/${DOC_TEST._id.toHexString()}`,
-    query: {
-      'metadata.somethingArrayObject.0.arrayItemObjectChildNumber': '999',
-    },
-    headers: {},
-  })
-  t.equal(response.statusCode, 404)
-  t.strictSame(JSON.parse(response.payload), NOT_FOUND_BODY)
-  t.end()
-})
-
-tap.test('HTTP GET /:id fails with 400', async t => {
-  const { fastify } = await setUpTest(t)
-
-  UNALLOWED_RAW_PROJECTIONS.forEach(projection => {
-    t.test('Should not allow raw projection', async assert => {
-      const { statusCode } = await fastify.inject({
-        method: 'GET',
-        url: `${prefix}/${ID}?_rawp=${JSON.stringify(projection)}`,
-        headers: {},
-      })
-
-      assert.strictSame(statusCode, 400)
-      assert.end()
     })
+
+    t.end()
   })
 
-  t.test('Should raise error if raw projection tries to override acls', async assert => {
-    const expectedPayload = {
-      statusCode: 400,
-      error: 'Bad Request',
-      message: '_rawp exclusive projection is overriding at least one acl_read_column value',
-    }
-    const { statusCode, payload } = await fastify.inject({
-      method: 'GET',
-      url: `${prefix}/${ID}?_rawp=${JSON.stringify(RAW_PROJECTION_PLAIN_EXCLUSIVE)}`,
-      headers: {
-        acl_read_columns: ['price', 'author', 'name'],
+  t.test('/:id 404 with unmatching filter on nested object', async t => {
+    const DOC_TEST = {
+      ...fixtures[0],
+      _id: ObjectId.createFromHexString('311111111111111111111111'),
+      metadata: {
+        somethingNumber: 1,
+        somethingArrayObject: [{
+          arrayItemObjectChildNumber: 4,
+        }],
+        somethingArrayOfNumbers: [5],
       },
+      [STATE]: STATES.PUBLIC,
+    }
+
+    await resetCollection([DOC_TEST])
+
+    const response = await fastify.inject({
+      method: 'GET',
+      url: `${prefix}/${DOC_TEST._id.toHexString()}`,
+      query: {
+        'metadata.somethingArrayObject.0.arrayItemObjectChildNumber': '999',
+      },
+      headers: {},
     })
 
-    assert.strictSame(statusCode, 400)
-    assert.strictSame(JSON.parse(payload), expectedPayload)
-    assert.end()
+    t.equal(response.statusCode, 404)
+    t.strictSame(JSON.parse(response.payload), NOT_FOUND_BODY)
+    t.end()
   })
 
-  UNALLOWED_RAW_PROJECTIONS.forEach(() => {
-    t.test('should not allow raw projection with projection (mixed _rawp and _p)', async assert => {
+  t.test('/:id fails with 400', async t => {
+    await resetCollection([DOC])
+
+    UNALLOWED_RAW_PROJECTIONS.forEach(projection => {
+      t.test('Should not allow raw projection', async assert => {
+        const { statusCode } = await fastify.inject({
+          method: 'GET',
+          url: `${prefix}/${ID}?_rawp=${JSON.stringify(projection)}`,
+          headers: {},
+        })
+
+        assert.strictSame(statusCode, 400)
+        assert.end()
+      })
+    })
+
+    t.test('Should raise error if raw projection tries to override acls', async assert => {
       const expectedPayload = {
         statusCode: 400,
         error: 'Bad Request',
-        message: 'Use of both _rawp and _p parameter is not allowed',
+        message: '_rawp exclusive projection is overriding at least one acl_read_column value',
       }
       const { statusCode, payload } = await fastify.inject({
         method: 'GET',
-        url: `${prefix}/${ID}?_rawp=${JSON.stringify(RAW_PROJECTION)}&_p=price`,
-        headers: {},
+        url: `${prefix}/${ID}?_rawp=${JSON.stringify(RAW_PROJECTION_PLAIN_EXCLUSIVE)}`,
+        headers: {
+          acl_read_columns: ['price', 'author', 'name'],
+        },
       })
 
       assert.strictSame(statusCode, 400)
       assert.strictSame(JSON.parse(payload), expectedPayload)
       assert.end()
     })
+
+    UNALLOWED_RAW_PROJECTIONS.forEach(() => {
+      t.test('should not allow raw projection with projection (mixed _rawp and _p)', async assert => {
+        const expectedPayload = {
+          statusCode: 400,
+          error: 'Bad Request',
+          message: 'Use of both _rawp and _p parameter is not allowed',
+        }
+        const { statusCode, payload } = await fastify.inject({
+          method: 'GET',
+          url: `${prefix}/${ID}?_rawp=${JSON.stringify(RAW_PROJECTION)}&_p=price`,
+          headers: {},
+        })
+
+        assert.strictSame(statusCode, 400)
+        assert.strictSame(JSON.parse(payload), expectedPayload)
+        assert.end()
+      })
+    })
+
+    t.end()
   })
 
   t.end()

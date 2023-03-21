@@ -17,7 +17,7 @@
     "bench": "node bench/queryParser.bench.js",
     "checkonly": "! grep -r '\\.only' tests/",
     "coverage": "npm run unit -- --coverage-report=text-summary",
-    "postcoverage": "TAP_TIMEOUT=200 tap -b --timeout=200 --coverage-report=lcov --no-browser",
+    "postcoverage": "TAP_TIMEOUT=120 tap -b --timeout=120 --coverage-report=lcov --no-browser",
     "lint": "eslint . --ignore-path=.gitignore",
     "start": "lc39 index.js",
     "start:local": "npm start -- --env-path ./local.env",

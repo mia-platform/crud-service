@@ -36,7 +36,7 @@ const MATCHING_QUERY = { price: { $gt: MATCHING_PRICE } }
 const NON_MATCHING_QUERY = { price: { $gt: NON_MATCHING_PRICE } }
 const UPDATE_COMMAND = { $set: { price: NEW_PRICE } }
 
-tap.test('HTTP PATCH /bulk', t => {
+tap.test('HTTP PATCH /bulk', async t => {
   const tests = [
     {
       name: 'without filter - one',
@@ -283,14 +283,13 @@ tap.test('HTTP PATCH /bulk', t => {
     },
   ]
 
-  t.plan(tests.length + 5)
+  const { fastify, collection, resetCollection } = await setUpTest(t)
 
   tests.forEach(testConf => {
     const { name, ...conf } = testConf
 
     t.test(name, async t => {
-      t.plan(4)
-      const { fastify, collection } = await setUpTest(t)
+      await resetCollection()
 
       const response = await fastify.inject({
         method: 'PATCH',
@@ -300,40 +299,42 @@ tap.test('HTTP PATCH /bulk', t => {
       })
 
       t.test('should return 200', t => {
-        t.plan(1)
         t.strictSame(response.statusCode, 200)
+        t.end()
       })
 
       t.test('should return "application/json"', t => {
-        t.plan(1)
         t.ok(/application\/json/.test(response.headers['content-type']))
+        t.end()
       })
 
       t.test(`should return ${conf.updatedDocumentNumber}`, t => {
-        t.plan(1)
         t.strictSame(JSON.parse(response.payload), conf.updatedDocumentNumber)
+        t.end()
       })
 
       t.test('on database', t => {
-        t.plan(2)
-
         t.test('should update the documents', async t => {
-          const testsNum = conf.new_attachments_name ? conf.updatedDocumentNumber * 2 : conf.updatedDocumentNumber
-          t.plan(testsNum)
-
           const docs = await collection.find({ _id: { $in: conf.updatedDocumentIds } }).toArray()
           docs.forEach(d => t.strictSame(d.price, NEW_PRICE))
+
           if (conf.new_attachments_name) {
             docs.forEach((d, i) => t.strictSame(d.attachments[0].name, conf.new_attachments_name[i]))
           }
+
+          t.end()
         })
 
         t.test('should keep the other documents as is', async t => {
-          t.plan(1)
           const documents = await collection.find({ _id: { $nin: conf.updatedDocumentIds } }).toArray()
           t.strictSame(documents, fixtures.filter(d => conf.updatedDocumentIds.indexOf(d._id) < 0))
+          t.end()
         })
+
+        t.end()
       })
+
+      t.end()
     })
   })
 
@@ -353,7 +354,8 @@ tap.test('HTTP PATCH /bulk', t => {
       const UPDATE_COMMAND = { $set: { price: 999 } }
 
       t.test('for item value', async t => {
-        const { fastify, collection } = await setUpTest(t, [DOC_FILTER_TEST])
+        await resetCollection([DOC_FILTER_TEST])
+
         const response = await fastify.inject({
           method: 'PATCH',
           url: `${prefix}/bulk`,
@@ -370,14 +372,12 @@ tap.test('HTTP PATCH /bulk', t => {
 
         t.equal(JSON.parse(response.payload), 1)
         const docOnDb = await collection.findOne({ _id: DOC_FILTER_TEST._id })
-
         t.equal(docOnDb.price, 999)
-
         t.end()
       })
 
       t.test('for array value', async t => {
-        const { fastify, collection } = await setUpTest(t, [DOC_FILTER_TEST])
+        await resetCollection([DOC_FILTER_TEST])
 
         const response = await fastify.inject({
           method: 'PATCH',
@@ -400,7 +400,7 @@ tap.test('HTTP PATCH /bulk', t => {
       })
 
       t.test('unmatching', async t => {
-        const { fastify, collection } = await setUpTest(t, [DOC_FILTER_TEST])
+        await resetCollection([DOC_FILTER_TEST])
 
         const response = await fastify.inject({
           method: 'PATCH',
@@ -436,7 +436,7 @@ tap.test('HTTP PATCH /bulk', t => {
         },
       }
 
-      const { fastify, collection } = await setUpTest(t)
+      await resetCollection()
 
       const response = await fastify.inject({
         method: 'PATCH',
@@ -452,8 +452,8 @@ tap.test('HTTP PATCH /bulk', t => {
       })
 
       t.test('should update one document', t => {
-        t.plan(1)
         t.equal(JSON.parse(response.payload), 1)
+        t.end()
       })
 
       t.test('should update the document', async t => {
@@ -489,7 +489,7 @@ tap.test('HTTP PATCH /bulk', t => {
         },
       }
 
-      const { fastify, collection } = await setUpTest(t, [DOC_REPLACE_TEST])
+      await resetCollection([DOC_REPLACE_TEST])
 
       const response = await fastify.inject({
         method: 'PATCH',
@@ -535,7 +535,7 @@ tap.test('HTTP PATCH /bulk', t => {
         },
       }
 
-      const { fastify, collection } = await setUpTest(t, [DOC_TEST])
+      await resetCollection([DOC_TEST])
 
       const response = await fastify.inject({
         method: 'PATCH',
@@ -551,8 +551,8 @@ tap.test('HTTP PATCH /bulk', t => {
       })
 
       t.test('should update one document', t => {
-        t.plan(1)
         t.equal(JSON.parse(response.payload), 1)
+        t.end()
       })
 
       t.test('should update the document', async t => {
@@ -593,7 +593,7 @@ tap.test('HTTP PATCH /bulk', t => {
         },
       }
 
-      const { fastify, collection } = await setUpTest(t, [DOC_TEST])
+      await resetCollection([DOC_TEST])
 
       const response = await fastify.inject({
         method: 'PATCH',
@@ -609,8 +609,8 @@ tap.test('HTTP PATCH /bulk', t => {
       })
 
       t.test('should update one document', t => {
-        t.plan(1)
         t.equal(JSON.parse(response.payload), 1)
+        t.end()
       })
 
       t.test('should update the document without duplicates', async t => {
@@ -666,7 +666,7 @@ tap.test('HTTP PATCH /bulk', t => {
         },
       }
 
-      const { fastify, collection } = await setUpTest(t, [DOC_TO_UNSET, fixtures[1]])
+      await resetCollection([DOC_TO_UNSET, fixtures[1]])
 
       const response = await fastify.inject({
         method: 'PATCH',
@@ -682,8 +682,8 @@ tap.test('HTTP PATCH /bulk', t => {
       })
 
       t.test('should update one document', t => {
-        t.plan(1)
         t.equal(JSON.parse(response.payload), 1)
+        t.end()
       })
 
       t.test('should update the document', async t => {
@@ -710,8 +710,7 @@ tap.test('HTTP PATCH /bulk', t => {
   })
 
   t.test('with empty list', async t => {
-    t.plan(2)
-    const { fastify } = await setUpTest(t)
+    await resetCollection()
 
     const response = await fastify.inject({
       method: 'PATCH',
@@ -721,19 +720,20 @@ tap.test('HTTP PATCH /bulk', t => {
     })
 
     t.test('should return 400', t => {
-      t.plan(1)
       t.strictSame(response.statusCode, 400)
+      t.end()
     })
 
     t.test('should return "application/json"', t => {
-      t.plan(1)
       t.ok(/application\/json/.test(response.headers['content-type']))
+      t.end()
     })
+
+    t.end()
   })
 
   t.test('unset ObjectId property', async t => {
-    t.plan(4)
-    const { fastify, collection } = await setUpTest(t)
+    await resetCollection()
 
     const response = await fastify.inject({
       method: 'PATCH',
@@ -750,41 +750,40 @@ tap.test('HTTP PATCH /bulk', t => {
     })
 
     t.test('should return 200', t => {
-      t.plan(1)
       t.strictSame(response.statusCode, 200)
+      t.end()
     })
 
     t.test('should return "application/json"', t => {
-      t.plan(1)
       t.ok(/application\/json/.test(response.headers['content-type']))
+      t.end()
     })
 
     t.test('should return 1', t => {
-      t.plan(1)
       t.strictSame(JSON.parse(response.payload), 1)
+      t.end()
     })
 
     t.test('on database', t => {
-      t.plan(2)
-
       t.test('should update the document', async t => {
-        t.plan(1)
-
         const doc = await collection.findOne({ _id: DOC._id })
         t.strictSame(doc.authorAddressId, undefined)
+        t.end()
       })
 
       t.test('should keep the other documents as is', async t => {
-        t.plan(1)
         const documents = await collection.find({ _id: { $ne: DOC._id } }).toArray()
         t.strictSame(documents, fixtures.filter(d => d._id !== DOC._id))
+        t.end()
       })
+      t.end()
     })
+
+    t.end()
   })
 
   t.test('unset required property', async t => {
-    t.plan(2)
-    const { fastify } = await setUpTest(t)
+    await resetCollection()
 
     const response = await fastify.inject({
       method: 'PATCH',
@@ -801,19 +800,20 @@ tap.test('HTTP PATCH /bulk', t => {
     })
 
     t.test('should return 400', t => {
-      t.plan(1)
       t.strictSame(response.statusCode, 400)
+      t.end()
     })
 
     t.test('should return "application/json"', t => {
-      t.plan(1)
       t.ok(/application\/json/.test(response.headers['content-type']))
+      t.end()
     })
+
+    t.end()
   })
 
   t.test('patch bulk bigger than 1 MB', async t => {
-    t.plan(2)
-    const { fastify } = await setUpTest(t)
+    await resetCollection()
     const n = 20000
 
     function dummyPatchBulk(n) {
@@ -837,74 +837,75 @@ tap.test('HTTP PATCH /bulk', t => {
     })
 
     t.test('should return 200', t => {
-      t.plan(1)
       t.strictSame(response.statusCode, 200)
+      t.end()
     })
 
     t.test('should return "application/json"', t => {
-      t.plan(1)
       t.ok(/application\/json/.test(response.headers['content-type']))
+      t.end()
     })
+
+    t.end()
   })
-})
 
-tap.test('HTTP PATCH /bulk - allow nullable field', t => {
-  t.plan(1)
+  t.test('allow nullable field', async t => {
+    await resetCollection()
 
-  const nowDate = new Date()
-  const DOCS = [
-    {
-      name: 'Name0',
-      isbn: 'aaaaa',
-      price: 10.0,
-      publishDate: nowDate,
-      __STATE__: 'PUBLIC',
-      position: [0, 0], /* [ lon, lat ] */
-    },
-    {
-      name: 'Name1',
-      isbn: 'bbbbb',
-      price: 20.0,
-      publishDate: nowDate,
-      __STATE__: 'PUBLIC',
-      position: [0, 0], /* [ lon, lat ] */
-    },
-    {
-      name: 'Name2',
-      isbn: 'ccccc  ',
-      price: 10.0,
-      publishDate: nowDate,
-      __STATE__: 'PUBLIC',
-      position: [0, 0], /* [ lon, lat ] */
-    },
-  ]
+    const nowDate = new Date()
+    const DOCS = [
+      {
+        name: 'Name0',
+        isbn: 'aaaaa',
+        price: 10.0,
+        publishDate: nowDate,
+        __STATE__: 'PUBLIC',
+        position: [0, 0], /* [ lon, lat ] */
+      },
+      {
+        name: 'Name1',
+        isbn: 'bbbbb',
+        price: 20.0,
+        publishDate: nowDate,
+        __STATE__: 'PUBLIC',
+        position: [0, 0], /* [ lon, lat ] */
+      },
+      {
+        name: 'Name2',
+        isbn: 'ccccc  ',
+        price: 10.0,
+        publishDate: nowDate,
+        __STATE__: 'PUBLIC',
+        position: [0, 0], /* [ lon, lat ] */
+      },
+    ]
 
-  t.test('ok', async t => {
-    t.plan(4)
-
-    const { fastify } = await setUpTest(t)
+    // first create a record through the POST API
     const postResponse = await fastify.inject({
       method: 'POST',
       url: `${prefix}/bulk`,
       payload: DOCS,
     })
-    t.test('should return 200', t => {
-      t.plan(1)
-      t.strictSame(postResponse.statusCode, 200, postResponse.payload)
-    })
-    t.test('should return application/json', t => {
-      t.plan(1)
-      t.ok(/application\/json/.test(postResponse.headers['content-type']))
-    })
-    t.test('should return the inserted ids', t => {
-      t.plan(DOCS.length + 1)
-      const postResult = JSON.parse(postResponse.payload)
-      t.strictSame(postResult.length, DOCS.length)
-      postResult.forEach(el => t.ok(el._id))
-    })
-    t.test('PATCH', async t => {
-      t.plan(4)
 
+    t.test('should return 200', assert => {
+      assert.strictSame(postResponse.statusCode, 200, postResponse.payload)
+      assert.end()
+    })
+
+    t.test('should return application/json', assert => {
+      assert.ok(/application\/json/.test(postResponse.headers['content-type']))
+      assert.end()
+    })
+
+    t.test('should return the inserted ids', assert => {
+      const postResult = JSON.parse(postResponse.payload)
+      assert.strictSame(postResult.length, DOCS.length)
+      postResult.forEach(el => assert.ok(el._id))
+      assert.end()
+    })
+
+    // test that created record can be updated
+    t.test('PATCH', async t => {
       const postResult = JSON.parse(postResponse.payload)
       const update = { $set: { name: null } }
       const payload = postResult.map(el => ({
@@ -920,31 +921,40 @@ tap.test('HTTP PATCH /bulk - allow nullable field', t => {
         payload,
       })
 
-      t.test('should return 200', t => {
-        t.plan(1)
-        t.strictSame(patchResponse.statusCode, 200)
+      t.test('should return 200', assert => {
+        assert.strictSame(patchResponse.statusCode, 200)
+        assert.end()
       })
-      t.test('should return application/json', t => {
-        t.plan(1)
-        t.ok(/application\/json/.test(patchResponse.headers['content-type']))
+
+      t.test('should return application/json', assert => {
+        assert.ok(/application\/json/.test(patchResponse.headers['content-type']))
+        assert.end()
       })
-      t.test('should return the number of updated elements', t => {
-        t.plan(1)
+
+      t.test('should return the number of updated elements', assert => {
         const patchResult = JSON.parse(patchResponse.payload)
-        t.strictSame(patchResult, DOCS.length)
+        assert.strictSame(patchResult, DOCS.length)
+        assert.end()
       })
-      t.test('should have null name', t => {
-        t.plan(DOCS.length * 2)
-        postResult.forEach(async el => {
+
+      t.test('should have null name', async assert => {
+        await Promise.all(postResult.map(async el => {
           const getResponse = await fastify.inject({
             method: 'GET',
             url: `${prefix}/${el._id}`,
           })
-          t.strictSame(getResponse.statusCode, 200)
+
+          assert.strictSame(getResponse.statusCode, 200)
           const getResult = JSON.parse(getResponse.payload)
-          t.equal(getResult.name, null)
-        })
+          assert.equal(getResult.name, null)
+        }))
+
+        assert.end()
       })
+
+      t.end()
     })
   })
+
+  t.end()
 })

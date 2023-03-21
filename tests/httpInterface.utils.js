@@ -21,7 +21,7 @@ const { join } = require('path')
 const { MongoClient } = require('mongodb')
 
 const {
-  dropCollectionAndInsertFixtures,
+  clearCollectionAndInsertFixtures,
   getMongoDatabaseName,
   getMongoURL,
   BOOKS_COLLECTION_NAME,
@@ -43,7 +43,8 @@ async function setUpTest(
   const database = client.db(databaseName)
   const collection = database.collection(mongoDBCollectionName)
 
-  await dropCollectionAndInsertFixtures(collection, testFixtures)
+  const resetCollection = (records = testFixtures) => clearCollectionAndInsertFixtures(collection, records)
+  await resetCollection()
 
   const logLevel = 'silent'
   const envVariables = {
@@ -64,7 +65,8 @@ async function setUpTest(
     await client.close()
     await fastify.close()
   })
-  return { fastify, collection, database }
+
+  return { fastify, collection, database, resetCollection }
 }
 
 async function setUpEmptyCollectionsTest(t) {
@@ -102,7 +104,7 @@ async function setUpMultipleCollectionTest(t, testFixtures, mongoDBCollectionNam
   for (const collectionName of mongoDBCollectionName) {
     const collection = database.collection(collectionName)
     // eslint-disable-next-line no-await-in-loop
-    await dropCollectionAndInsertFixtures(collection, testFixtures[collectionName])
+    await clearCollectionAndInsertFixtures(collection, testFixtures[collectionName])
     collections.push(collection)
   }
 

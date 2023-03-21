@@ -24,7 +24,7 @@ const { STATES, __STATE__ } = require('../lib/consts')
 const CrudService = require('../lib/CrudService')
 
 const {
-  dropCollectionAndInsertFixtures,
+  clearCollectionAndInsertFixtures,
   getMongoDatabaseName,
   getMongoURL,
   BOOKS_COLLECTION_NAME,
@@ -81,7 +81,7 @@ tap.test('insertMany', async t => {
   const database = client.db(databaseName)
   const collection = database.collection(BOOKS_COLLECTION_NAME)
 
-  await dropCollectionAndInsertFixtures(collection)
+  await clearCollectionAndInsertFixtures(collection)
 
   t.teardown(async() => {
     await database.dropDatabase()

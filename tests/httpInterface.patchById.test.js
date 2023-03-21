@@ -81,7 +81,7 @@ const UPDATED_HTTP_DOC = {
  * might be resolved splitting this file in two
  */
 
-tap.test('HTTP PATCH /<id>', t => {
+tap.test('HTTP PATCH /<id>', async t => {
   const tests = [
     {
       name: 'on document found',
@@ -567,13 +567,13 @@ tap.test('HTTP PATCH /<id>', t => {
   ]
 
   t.plan(tests.length)
+  const { fastify, collection, resetCollection } = await setUpTest(t)
 
   tests.forEach(testConf => {
     const { name, found, ...conf } = testConf
 
     t.test(name, async t => {
-      t.plan(4)
-      const { fastify, collection } = await setUpTest(t)
+      await resetCollection()
 
       const response = await fastify.inject({
         method: 'PATCH',
@@ -586,17 +586,16 @@ tap.test('HTTP PATCH /<id>', t => {
       })
 
       t.test(`should return ${found ? 200 : 404}`, t => {
-        t.plan(1)
         t.strictSame(response.statusCode, found ? 200 : 404, response.payload)
+        t.end()
       })
 
       t.test('should return "application/json"', t => {
-        t.plan(1)
         t.ok(/application\/json/.test(response.headers['content-type']))
+        t.end()
       })
 
       t.test(`should return ${found ? 'the id' : 'the not NOT_FOUND_BODY'}`, t => {
-        t.plan(1 + (conf.returnDoc ? 1 : 0))
         if (conf.returnDoc) {
           const expected = { ...conf.returnDoc }
           delete expected.updatedAt
@@ -607,15 +606,12 @@ tap.test('HTTP PATCH /<id>', t => {
         } else {
           t.strictSame(JSON.parse(response.payload), found ? { _id: conf.id.toString() } : NOT_FOUND_BODY)
         }
+        t.end()
       })
 
       t.test('on database', t => {
-        t.plan(1 + !conf.command)
-
         if (!conf.command) {
           t.test(`should ${found ? '' : 'not'} update the document`, async t => {
-            t.plan(4)
-
             const doc = await collection.findOne({ _id: conf.id })
             if (found) {
               t.strictSame(doc.price, NEW_PRICE)
@@ -628,15 +624,20 @@ tap.test('HTTP PATCH /<id>', t => {
               t.strictSame(doc.updaterId, oldUpdaterId)
               t.ok(Math.abs(Date.now() - doc.updatedAt.getTime()) > 5000, '`updatedAt` should not be updated')
             }
+            t.end()
           })
         }
 
         t.test('should keep the other documents as is', async t => {
-          t.plan(1)
           const documents = await collection.find({ _id: { $ne: conf.id } }).toArray()
           t.strictSame(documents, fixtures.filter(d => d._id.toString() !== conf.id.toString()))
+          t.end()
         })
+
+        t.end()
       })
+
+      t.end()
     })
   })
 })

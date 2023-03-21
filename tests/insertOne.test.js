@@ -25,7 +25,7 @@ const CrudService = require('../lib/CrudService')
 const { pkFactories } = require('../lib/pkFactories')
 
 const {
-  dropCollectionAndInsertFixtures,
+  clearCollectionAndInsertFixtures,
   getMongoDatabaseName,
   getMongoURL,
   BOOKS_COLLECTION_NAME,
@@ -67,7 +67,7 @@ tap.test('insertOne', async t => {
   const database = client.db(databaseName)
   const collection = database.collection(BOOKS_COLLECTION_NAME)
 
-  await dropCollectionAndInsertFixtures(collection)
+  await clearCollectionAndInsertFixtures(collection)
 
   t.teardown(async() => {
     await database.dropDatabase()
@@ -159,7 +159,7 @@ tap.test('insertOne with string id', async t => {
   const database = client.db(databaseName)
   const collection = database.collection(STATIONS_COLLECTION_NAME)
 
-  await dropCollectionAndInsertFixtures(collection)
+  await clearCollectionAndInsertFixtures(collection)
 
   const crudService = new CrudService(collection, STATES.PUBLIC)
 

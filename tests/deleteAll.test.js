@@ -27,7 +27,7 @@ const {
   fixtures,
   publicFixtures,
   draftFixture,
-  dropCollectionAndInsertFixtures,
+  clearCollectionAndInsertFixtures,
   checkDocumentsInDatabase,
   BOOKS_COLLECTION_NAME,
   getMongoDatabaseName,
@@ -57,7 +57,7 @@ tap.test('deleteAll', async t => {
 
   t.test('with only doc', async t => {
     t.plan(3)
-    await dropCollectionAndInsertFixtures(collection)
+    await clearCollectionAndInsertFixtures(collection)
 
     const ret = await crudService.deleteAll(context)
 
@@ -78,7 +78,7 @@ tap.test('deleteAll', async t => {
 
   t.test('with doc and a matching query', async t => {
     t.plan(3)
-    await dropCollectionAndInsertFixtures(collection)
+    await clearCollectionAndInsertFixtures(collection)
 
     const matchingQuery = { price: { $gt: publicFixtures[1].price - 1 } }
     const ret = await crudService.deleteAll(context, matchingQuery)
@@ -99,7 +99,7 @@ tap.test('deleteAll', async t => {
 
   t.test('in draft', async t => {
     t.plan(2)
-    await dropCollectionAndInsertFixtures(collection)
+    await clearCollectionAndInsertFixtures(collection)
 
     const ret = await crudService.deleteAll(context, {}, [STATES.DRAFT])
 
@@ -113,7 +113,7 @@ tap.test('deleteAll', async t => {
 
   t.test('in draft or in trash with matching query', async t => {
     t.plan(2)
-    await dropCollectionAndInsertFixtures(collection)
+    await clearCollectionAndInsertFixtures(collection)
 
     const matchingQuery = { price: { $gt: draftFixture.price - 1 } }
     const ret = await crudService.deleteAll(context, matchingQuery, [STATES.DRAFT, STATES.TRASH])

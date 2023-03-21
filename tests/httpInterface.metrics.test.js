@@ -26,7 +26,7 @@ const DOC = {
 }
 
 tap.test('HTTP GET /-/metrics', async t => {
-  const { fastify } = await setUpTest(t, undefined, undefined, true)
+  const { fastify } = await setUpTest(t, null, undefined, true)
 
   let response
   response = await fastify.inject({

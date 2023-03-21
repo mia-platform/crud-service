@@ -26,7 +26,7 @@ const {
   getMongoDatabaseName,
   getMongoURL,
   BOOKS_COLLECTION_NAME,
-  dropCollectionAndInsertFixtures,
+  clearCollectionAndInsertFixtures,
 } = require('./utils')
 
 const animalsFixtures = require('./fixtures/animals')
@@ -41,7 +41,7 @@ tap.test('integration', async t => {
   const client = await MongoClient.connect(mongoURL)
   const database = client.db(databaseName)
   const collection = database.collection(BOOKS_COLLECTION_NAME)
-  await dropCollectionAndInsertFixtures(collection)
+  await clearCollectionAndInsertFixtures(collection)
 
   const fastify = await lc39('./index.js', {
     envVariables: {
@@ -406,7 +406,7 @@ tap.test('ALLOW_DISK_USE_IN_QUERIES integration', async t => {
 
     const database = client.db(databaseName)
     const collection = database.collection(BOOKS_COLLECTION_NAME)
-    await dropCollectionAndInsertFixtures(collection)
+    await clearCollectionAndInsertFixtures(collection)
 
     const fastify = await lc39('./index.js', {
       envVariables: {
@@ -459,7 +459,7 @@ tap.test('ALLOW_DISK_USE_IN_QUERIES integration', async t => {
     const database = client.db(databaseName)
     const collection = database.collection(BOOKS_COLLECTION_NAME)
 
-    await dropCollectionAndInsertFixtures(collection)
+    await clearCollectionAndInsertFixtures(collection)
     await client.close()
 
     const fastify = await lc39('./index.js', {
