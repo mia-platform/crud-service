@@ -28,6 +28,7 @@ const collectionDefinitions = {
   books: require('./collectionDefinitions/books'),
   cars: require('./collectionDefinitions/cars'),
   stations: require('./collectionDefinitions/stations'),
+  restaurants: require('./collectionDefinitions/restaurants'),
 }
 
 const expectedSchemaPath = './tests/expectedSchemas/'
@@ -50,6 +51,7 @@ const expectedSchemasNames = operations.reduce((acc, operation) => {
       books: `${expectedSchemaPath}books${operation}Schema.js`,
       cars: `${expectedSchemaPath}cars${operation}Schema.js`,
       stations: `${expectedSchemaPath}stations${operation}Schema.js`,
+      restaurants: `${expectedSchemaPath}restaurants${operation}Schema.js`,
     },
   })
 }, {})
