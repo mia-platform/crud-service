@@ -17,12 +17,12 @@
 'use strict'
 
 module.exports = {
-  'summary': 'Update multiple items of stations, each one with its own modifications',
+  'summary': 'Update multiple items of restaurants, each one with its own modifications',
   'tags': [
-    'Stations Endpoint',
+    'Restaurants',
   ],
   'body': {
-    'operationId': 'stations__MIA__patchBulk__MIA__body',
+    'operationId': 'restaurants__MIA__patchBulk__MIA__body',
     'type': 'array',
     'items': {
       'type': 'object',
@@ -44,52 +44,43 @@ module.exports = {
               'default': 'PUBLIC',
               'description': 'Filter by \\_\\_STATE__, multiple states can be specified in OR by providing a comma separated list',
             },
-            'updaterId': {
-              'type': 'string',
-              'description': 'User id that has requested the last change successfully',
-            },
-            'updatedAt': {
-              'type': 'string',
-              'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
-              'description': 'Date of the request that has performed the last change',
-              'examples': [
-                '2020-09-16T12:00:00.000Z',
-              ],
-            },
-            'creatorId': {
-              'type': 'string',
-              'description': 'User id that has created this object',
-            },
-            'createdAt': {
-              'type': 'string',
-              'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
-              'description': 'Date of the request that has performed the object creation',
-              'examples': [
-                '2020-09-16T12:00:00.000Z',
-              ],
-            },
-            'Cap': {
-              'type': 'number',
-            },
-            'CodiceMIR': {
-              'type': 'string',
-            },
-            'Comune': {
-              'type': 'string',
-            },
-            'Indirizzo': {
-              'type': 'string',
-            },
-            'country': {
-              'type': 'string',
-            },
-            '_q': {
-              'type': 'string',
-              'description': 'Additional query part to forward to MongoDB',
-            },
             '_rawp': {
               'type': 'string',
               'description': 'Additional raw stringified projection for MongoDB',
+            },
+            'creatorId': {
+              'type': 'string',
+            },
+            'createdAt': {
+              'type': 'string',
+              'format': 'date-time',
+            },
+            'updaterId': {
+              'type': 'string',
+            },
+            'updatedAt': {
+              'type': 'string',
+              'format': 'date-time',
+            },
+            'ingredients': {
+              'type': 'array',
+              'items': {
+                'type': 'string',
+              },
+            },
+            'location': {
+              'type': 'object',
+              'properties': {
+                'type': {
+                  'type': 'string',
+                },
+                'coordinates': {
+                  'type': 'array',
+                  'items': {
+                    'type': 'number',
+                  },
+                },
+              },
             },
           },
           'additionalProperties': false,
@@ -100,74 +91,83 @@ module.exports = {
             '$set': {
               'type': 'object',
               'properties': {
-                'Cap': {
-                  'type': 'number',
-                  'nullable': true,
-                },
-                'CodiceMIR': {
-                  'type': 'string',
-                  'nullable': true,
-                },
-                'Comune': {
-                  'type': 'string',
-                  'nullable': true,
-                },
-                'Direttrici': {
-                  'type': 'array',
-                  'items': {
+                'type': 'object',
+                'required': [
+                  '_id',
+                  'creatorId',
+                  'createdAt',
+                  'updaterId',
+                  'updatedAt',
+                  '__STATE__',
+                ],
+                'properties': {
+                  '_id': {
+                    'type': 'string',
+                    'pattern': '^[a-fA-F0-9]{24}$',
+                  },
+                  '__STATE__': {
+                    'type': 'string',
+                    'enum': [
+                      'PUBLIC',
+                      'DRAFT',
+                      'TRASH',
+                      'DELETED',
+                    ],
+                  },
+                  'creatorId': {
                     'type': 'string',
                   },
-                  'nullable': true,
+                  'createdAt': {
+                    'type': 'string',
+                    'format': 'date-time',
+                  },
+                  'updaterId': {
+                    'type': 'string',
+                  },
+                  'updatedAt': {
+                    'type': 'string',
+                    'format': 'date-time',
+                  },
+                  'ingredients': {
+                    'type': 'array',
+                    'items': {
+                      'type': 'string',
+                    },
+                  },
+                  'location': {
+                    'type': 'object',
+                    'properties': {
+                      'type': {
+                        'type': 'string',
+                      },
+                      'coordinates': {
+                        'type': 'array',
+                        'items': {
+                          'type': 'number',
+                        },
+                      },
+                    },
+                  },
                 },
-                'Indirizzo': {
-                  'type': 'string',
-                  'nullable': true,
-                },
-                'country': {
-                  'type': 'string',
-                  'nullable': true,
-                },
-                'Direttrici.$.replace': {
+                'ingredients.$.replace': {
                   'type': 'string',
                 },
               },
               'additionalProperties': false,
-              'patternProperties': {},
+              'patternProperties': {
+                'location.': true,
+              },
             },
             '$unset': {
               'type': 'object',
               'properties': {
-                'Cap': {
+                'ingredients': {
                   'type': 'boolean',
                   'enum': [
                     true,
                   ],
                 },
-                'CodiceMIR': {
-                  'type': 'boolean',
-                  'enum': [
-                    true,
-                  ],
-                },
-                'Comune': {
-                  'type': 'boolean',
-                  'enum': [
-                    true,
-                  ],
-                },
-                'Direttrici': {
-                  'type': 'boolean',
-                  'enum': [
-                    true,
-                  ],
-                },
-                'Indirizzo': {
-                  'type': 'boolean',
-                  'enum': [
-                    true,
-                  ],
-                },
-                'country': {
+                'location': {
                   'type': 'boolean',
                   'enum': [
                     true,
@@ -175,27 +175,31 @@ module.exports = {
                 },
               },
               'additionalProperties': false,
-              'patternProperties': {},
+              'patternProperties': {
+                'location.': true,
+                '^location\\..+': {
+                  'type': 'boolean',
+                  'enum': [
+                    true,
+                  ],
+                },
+              },
             },
             '$inc': {
               'type': 'object',
-              'properties': {
-                'Cap': {
-                  'type': 'number',
-                },
-              },
+              'properties': {},
               'additionalProperties': false,
-              'patternProperties': {},
+              'patternProperties': {
+                'location.': true,
+              },
             },
             '$mul': {
               'type': 'object',
-              'properties': {
-                'Cap': {
-                  'type': 'number',
-                },
-              },
+              'properties': {},
               'additionalProperties': false,
-              'patternProperties': {},
+              'patternProperties': {
+                'location.': true,
+              },
             },
             '$currentDate': {
               'type': 'object',
@@ -205,7 +209,7 @@ module.exports = {
             '$push': {
               'type': 'object',
               'properties': {
-                'Direttrici': {
+                'ingredients': {
                   'type': 'string',
                 },
               },
@@ -214,7 +218,7 @@ module.exports = {
             '$addToSet': {
               'type': 'object',
               'properties': {
-                'Direttrici': {
+                'ingredients': {
                   'type': 'string',
                 },
               },
@@ -233,7 +237,7 @@ module.exports = {
   },
   'response': {
     '200': {
-      'operationId': 'stations__MIA__patchBulk__MIA__response.200',
+      'operationId': 'restaurants__MIA__patchBulk__MIA__response.200',
       'type': 'integer',
       'minimum': 0,
     },

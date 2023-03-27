@@ -17,12 +17,12 @@
 'use strict'
 
 module.exports = {
-  'summary': 'Change state of an item of cars collection.',
+  'summary': 'Change state of an item of restaurants collection.',
   'tags': [
-    'Cars Endpoint',
+    'Restaurants',
   ],
   'params': {
-    'operationId': 'cars__MIA__changeState__MIA__params',
+    'operationId': 'restaurants__MIA__changeState__MIA__params',
     'properties': {
       'id': {
         'type': 'string',
@@ -32,54 +32,52 @@ module.exports = {
     'type': 'object',
   },
   'querystring': {
-    'operationId': 'cars__MIA__changeState__MIA__querystring',
+    'operationId': 'restaurants__MIA__changeState__MIA__querystring',
     'type': 'object',
     'properties': {
-      'name': {
-        'type': 'string',
-        'description': "The car's name",
-      },
-      'price': {
-        'type': 'number',
-        'description': "The car's price",
-      },
-      'updaterId': {
-        'type': 'string',
-        'description': 'User id that has requested the last change successfully',
-      },
-      'updatedAt': {
-        'type': 'string',
-        'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
-        'description': 'Date of the request that has performed the last change',
-        'examples': [
-          '2020-09-16T12:00:00.000Z',
-        ],
-      },
-      'creatorId': {
-        'type': 'string',
-        'description': 'User id that has created this object',
-      },
-      'createdAt': {
-        'type': 'string',
-        'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
-        'description': 'Date of the request that has performed the object creation',
-        'examples': [
-          '2020-09-16T12:00:00.000Z',
-        ],
-      },
-      '_q': {
-        'type': 'string',
-        'description': 'Additional query part to forward to MongoDB',
-      },
       '_rawp': {
         'type': 'string',
         'description': 'Additional raw stringified projection for MongoDB',
+      },
+      'creatorId': {
+        'type': 'string',
+      },
+      'createdAt': {
+        'type': 'string',
+        'format': 'date-time',
+      },
+      'updaterId': {
+        'type': 'string',
+      },
+      'updatedAt': {
+        'type': 'string',
+        'format': 'date-time',
+      },
+      'ingredients': {
+        'type': 'array',
+        'items': {
+          'type': 'string',
+        },
+      },
+      'location': {
+        'type': 'object',
+        'properties': {
+          'type': {
+            'type': 'string',
+          },
+          'coordinates': {
+            'type': 'array',
+            'items': {
+              'type': 'number',
+            },
+          },
+        },
       },
     },
     'additionalProperties': false,
   },
   'body': {
-    'operationId': 'cars__MIA__changeState__MIA__body',
+    'operationId': 'restaurants__MIA__changeState__MIA__body',
     'type': 'object',
     'required': [
       'stateTo',

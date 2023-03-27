@@ -42,11 +42,12 @@ const generatePathFieldsForRawSchema = require('./lib/generatePathFieldsForRawSc
 const { getIdType, registerMongoInstances } = require('./lib/mongo/mongo-plugin')
 const mergeViewsInCollections = require('./lib/mergeViewsInCollections')
 
-const modelJsonSchema = require('./lib/model.jsonschema')
+const { deprecatedModelJsonSchema, modelJsonSchema } = require('./lib/model.jsonschema')
 const fastifyEnvSchema = require('./envSchema')
 
 const ajv = new Ajv({ useDefaults: true })
 ajvFormats(ajv)
+const deprecatedValidate = ajv.compile(deprecatedModelJsonSchema)
 const validate = ajv.compile(modelJsonSchema)
 
 const PREFIX_OF_INDEX_NAMES_TO_PRESERVE = 'preserve_'
@@ -97,9 +98,9 @@ async function loadModels(fastify) {
 
   const models = {}
   for (const collectionDefinition of mergedCollections) {
-    const valid = validate(collectionDefinition)
+    const valid = validate(collectionDefinition) || deprecatedValidate(collectionDefinition)
     if (!valid) {
-      fastify.log.debug(validate.errors)
+      fastify.log.debug(validate.errors ?? deprecatedValidate.errors)
       throw new Error(`Invalid collection definition: ${collectionDefinition.name}`)
     }
 
@@ -111,7 +112,9 @@ async function loadModels(fastify) {
     const collectionType = getIdType(collectionDefinition)
     const collection = fastify.mongo[getDatabaseNameByType(collectionType)].db.collection(collectionName)
 
-    const allFieldNames = collectionDefinition.fields.map(field => field.name)
+    const allFieldNames = !collectionDefinition.schema
+      ? collectionDefinition.fields.map(field => field.name)
+      : Object.keys(collectionDefinition.schema.properties)
     const pathsForRawSchema = generatePathFieldsForRawSchema(fastify.log, collectionDefinition)
 
     // TODO: make this configurable

@@ -17,12 +17,12 @@
 'use strict'
 
 module.exports = {
-  'summary': 'Change state of multiple items of cars.',
+  'summary': 'Change state of multiple items of restaurants.',
   'tags': [
-    'Cars Endpoint',
+    'Restaurants',
   ],
   'body': {
-    'operationId': 'cars__MIA__changeStateMany__MIA__body',
+    'operationId': 'restaurants__MIA__changeStateMany__MIA__body',
     'type': 'array',
     'items': {
       'type': 'object',
@@ -32,47 +32,29 @@ module.exports = {
           'properties': {
             '_id': {
               'type': 'string',
-              'pattern': '^[a-fA-F\\d]{24}$',
-              'description': 'Hexadecimal identifier of the document in the collection',
+              'pattern': '^(?!\\s*$).+',
+              'description': 'String identifier of the document in the collection',
               'examples': [
-                '000000000000000000000000',
-              ],
-            },
-            'name': {
-              'type': 'string',
-              'description': "The car's name",
-            },
-            'price': {
-              'type': 'number',
-              'description': "The car's price",
-            },
-            'additionalInfo': {
-              'type': 'object',
-              'additionalProperties': true,
-            },
-            'updaterId': {
-              'type': 'string',
-              'description': 'User id that has requested the last change successfully',
-            },
-            'updatedAt': {
-              'type': 'string',
-              'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
-              'description': 'Date of the request that has performed the last change',
-              'examples': [
-                '2020-09-16T12:00:00.000Z',
+                '00000000-0000-4000-0000-000000000000',
               ],
             },
             'creatorId': {
               'type': 'string',
-              'description': 'User id that has created this object',
             },
             'createdAt': {
               'type': 'string',
-              'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
-              'description': 'Date of the request that has performed the object creation',
-              'examples': [
-                '2020-09-16T12:00:00.000Z',
-              ],
+            },
+            'updaterId': {
+              'type': 'string',
+            },
+            'updatedAt': {
+              'type': 'string',
+            },
+            'ingredients': {
+              'type': 'array',
+            },
+            'location': {
+              'type': 'object',
             },
           },
         },
@@ -96,10 +78,10 @@ module.exports = {
   },
   'response': {
     '200': {
-      'operationId': 'cars__MIA__changeStateMany__MIA__response.200',
+      'operationId': 'restaurants__MIA__changeStateMany__MIA__response.200',
       'type': 'integer',
       'minimum': 0,
-      'description': 'Number of updated cars',
+      'description': 'Number of updated restaurants',
     },
   },
 }

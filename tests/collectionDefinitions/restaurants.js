@@ -16,6 +16,8 @@
 
 'use strict'
 
+const { STATES } = require('../../lib/consts')
+
 module.exports = {
   name: 'restaurants',
   type: 'collection',
@@ -26,7 +28,7 @@ module.exports = {
     required: [
       '_id',
       'creatorId',
-      'createrAt',
+      'createdAt',
       'updaterId',
       'updatedAt',
       '__STATE__',
@@ -38,7 +40,7 @@ module.exports = {
       },
       __STATE__: {
         type: 'string',
-        enum: ['PUBLIC', 'DRAFT'],
+        enum: Object.keys(STATES),
       },
       creatorId: {
         type: 'string',

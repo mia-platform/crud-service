@@ -1,0 +1,233 @@
+/*
+ * Copyright 2023 Mia s.r.l.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+'use strict'
+
+module.exports = {
+  'summary': 'Update the items of the restaurants collection that match the query.',
+  'tags': [
+    'Restaurants',
+  ],
+  'querystring': {
+    'operationId': 'restaurants__MIA__patchMany__MIA__querystring',
+    'type': 'object',
+    'properties': {
+      '_id': {
+        'type': 'string',
+        'pattern': '^(?!\\s*$).+',
+        'description': 'String identifier of the document in the collection',
+        'examples': [
+          '00000000-0000-4000-0000-000000000000',
+        ],
+      },
+      '_st': {
+        'type': 'string',
+        'pattern': '(PUBLIC|DRAFT|TRASH|DELETED)(,(PUBLIC|DRAFT|TRASH|DELETED))*',
+        'default': 'PUBLIC',
+        'description': 'Filter by \\_\\_STATE__, multiple states can be specified in OR by providing a comma separated list',
+      },
+      '_rawp': {
+        'type': 'string',
+        'description': 'Additional raw stringified projection for MongoDB',
+      },
+      'creatorId': {
+        'type': 'string',
+      },
+      'createdAt': {
+        'type': 'string',
+        'format': 'date-time',
+      },
+      'updaterId': {
+        'type': 'string',
+      },
+      'updatedAt': {
+        'type': 'string',
+        'format': 'date-time',
+      },
+      'ingredients': {
+        'type': 'array',
+        'items': {
+          'type': 'string',
+        },
+      },
+      'location': {
+        'type': 'object',
+        'properties': {
+          'type': {
+            'type': 'string',
+          },
+          'coordinates': {
+            'type': 'array',
+            'items': {
+              'type': 'number',
+            },
+          },
+        },
+      },
+    },
+    'additionalProperties': false,
+  },
+  'body': {
+    'operationId': 'restaurants__MIA__patchMany__MIA__body',
+    'type': 'object',
+    'properties': {
+      '$set': {
+        'type': 'object',
+        'properties': {
+          'type': 'object',
+          'required': [
+            '_id',
+            'creatorId',
+            'createdAt',
+            'updaterId',
+            'updatedAt',
+            '__STATE__',
+          ],
+          'properties': {
+            '_id': {
+              'type': 'string',
+              'pattern': '^[a-fA-F0-9]{24}$',
+            },
+            '__STATE__': {
+              'type': 'string',
+              'enum': [
+                'PUBLIC',
+                'DRAFT',
+                'TRASH',
+                'DELETED',
+              ],
+            },
+            'creatorId': {
+              'type': 'string',
+            },
+            'createdAt': {
+              'type': 'string',
+              'format': 'date-time',
+            },
+            'updaterId': {
+              'type': 'string',
+            },
+            'updatedAt': {
+              'type': 'string',
+              'format': 'date-time',
+            },
+            'ingredients': {
+              'type': 'array',
+              'items': {
+                'type': 'string',
+              },
+            },
+            'location': {
+              'type': 'object',
+              'properties': {
+                'type': {
+                  'type': 'string',
+                },
+                'coordinates': {
+                  'type': 'array',
+                  'items': {
+                    'type': 'number',
+                  },
+                },
+              },
+            },
+          },
+          'ingredients.$.replace': {
+            'type': 'string',
+          },
+        },
+        'additionalProperties': false,
+        'patternProperties': {
+          'location.': true,
+        },
+      },
+      '$unset': {
+        'type': 'object',
+        'properties': {
+          'ingredients': {
+            'type': 'boolean',
+            'enum': [
+              true,
+            ],
+          },
+          'location': {
+            'type': 'boolean',
+            'enum': [
+              true,
+            ],
+          },
+        },
+        'additionalProperties': false,
+        'patternProperties': {
+          'location.': true,
+          '^location\\..+': {
+            'type': 'boolean',
+            'enum': [
+              true,
+            ],
+          },
+        },
+      },
+      '$inc': {
+        'type': 'object',
+        'properties': {},
+        'additionalProperties': false,
+        'patternProperties': {
+          'location.': true,
+        },
+      },
+      '$mul': {
+        'type': 'object',
+        'properties': {},
+        'additionalProperties': false,
+        'patternProperties': {
+          'location.': true,
+        },
+      },
+      '$currentDate': {
+        'type': 'object',
+        'properties': {},
+        'additionalProperties': false,
+      },
+      '$push': {
+        'type': 'object',
+        'properties': {
+          'ingredients': {
+            'type': 'string',
+          },
+        },
+        'additionalProperties': false,
+      },
+      '$addToSet': {
+        'type': 'object',
+        'properties': {
+          'ingredients': {
+            'type': 'string',
+          },
+        },
+        'additionalProperties': false,
+      },
+    },
+    'additionalProperties': false,
+  },
+  'response': {
+    '200': {
+      'operationId': 'restaurants__MIA__patchMany__MIA__response.200',
+      'type': 'number',
+      'description': 'the number of documents that were modified',
+    },
+  },
+}
