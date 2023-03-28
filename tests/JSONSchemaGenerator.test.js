@@ -28,6 +28,7 @@ const collectionDefinitions = {
   books: require('./collectionDefinitions/books'),
   cars: require('./collectionDefinitions/cars'),
   stations: require('./collectionDefinitions/stations'),
+  restaurants: require('./collectionDefinitions/restaurants'),
 }
 
 const Ajv = require('ajv')
@@ -59,6 +60,7 @@ const expectedSchemas = operations.reduce((acc, operation) => {
       stations: require(`./expectedSchemas/stations${operation}Schema`),
       books: require(`./expectedSchemas/books${operation}Schema`),
       cars: require(`./expectedSchemas/cars${operation}Schema`),
+      restaurants: require(`./expectedSchemas/restaurants${operation}Schema`),
     },
   })
 }, {})
