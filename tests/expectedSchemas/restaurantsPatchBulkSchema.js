@@ -19,7 +19,7 @@
 module.exports = {
   'summary': 'Update multiple items of restaurants, each one with its own modifications',
   'tags': [
-    'Restaurants',
+    'Restaurants Endpoint',
   ],
   'body': {
     'operationId': 'restaurants__MIA__patchBulk__MIA__body',
@@ -53,34 +53,24 @@ module.exports = {
             },
             'createdAt': {
               'type': 'string',
-              'format': 'date-time',
             },
             'updaterId': {
               'type': 'string',
             },
             'updatedAt': {
               'type': 'string',
-              'format': 'date-time',
             },
             'ingredients': {
               'type': 'array',
-              'items': {
-                'type': 'string',
-              },
+            },
+            'name': {
+              'type': 'string',
             },
             'location': {
               'type': 'object',
-              'properties': {
-                'type': {
-                  'type': 'string',
-                },
-                'coordinates': {
-                  'type': 'array',
-                  'items': {
-                    'type': 'number',
-                  },
-                },
-              },
+            },
+            'openedAt': {
+              'type': 'string',
             },
             'type': {
               'type': 'string',
@@ -101,24 +91,18 @@ module.exports = {
               'properties': {
                 'ingredients': {
                   'type': 'array',
-                  'items': {
-                    'type': 'string',
-                  },
                   'nullable': true,
+                },
+                'name': {
+                  'type': 'string',
+                  'nullable': false,
                 },
                 'location': {
                   'type': 'object',
-                  'properties': {
-                    'type': {
-                      'type': 'string',
-                    },
-                    'coordinates': {
-                      'type': 'array',
-                      'items': {
-                        'type': 'number',
-                      },
-                    },
-                  },
+                  'nullable': true,
+                },
+                'openedAt': {
+                  'type': 'string',
                   'nullable': true,
                 },
                 'ingredients.$.replace': {
@@ -146,6 +130,12 @@ module.exports = {
                   ],
                 },
                 'location': {
+                  'type': 'boolean',
+                  'enum': [
+                    true,
+                  ],
+                },
+                'openedAt': {
                   'type': 'boolean',
                   'enum': [
                     true,
@@ -187,7 +177,14 @@ module.exports = {
             },
             '$currentDate': {
               'type': 'object',
-              'properties': {},
+              'properties': {
+                'openedAt': {
+                  'type': 'boolean',
+                  'enum': [
+                    true,
+                  ],
+                },
+              },
               'additionalProperties': false,
             },
             '$push': {

@@ -769,6 +769,7 @@ tap.test('MP4-462: default state ignored on /bulk when at least one document has
         {
           __STATE__: STATES.PUBLIC,
           ingredients: ['Rabarbaro', 'Barbabietola'],
+          name: 'Taverna a Mare',
         },
         {
           ingredients: ['Orecchiette', 'Rape'],
@@ -776,6 +777,7 @@ tap.test('MP4-462: default state ignored on /bulk when at least one document has
             type: 'Point',
             coordinates: [69, 100],
           },
+          name: 'L\'Osteria del Tempo Perso',
         },
       ],
     },

@@ -19,34 +19,31 @@
 module.exports = {
   'summary': 'Insert new items in the restaurants collection.',
   'tags': [
-    'Restaurants',
+    'Restaurants Endpoint',
   ],
   'body': {
     'operationId': 'restaurants__MIA__postBulk__MIA__body',
     'type': 'array',
     'items': {
       'type': 'object',
+      'required': [
+        'name',
+      ],
       'properties': {
         'ingredients': {
           'type': 'array',
-          'items': {
-            'type': 'string',
-          },
           'nullable': true,
+        },
+        'name': {
+          'type': 'string',
+          'nullable': false,
         },
         'location': {
           'type': 'object',
-          'properties': {
-            'type': {
-              'type': 'string',
-            },
-            'coordinates': {
-              'type': 'array',
-              'items': {
-                'type': 'number',
-              },
-            },
-          },
+          'nullable': true,
+        },
+        'openedAt': {
+          'type': 'string',
           'nullable': true,
         },
         '__STATE__': {

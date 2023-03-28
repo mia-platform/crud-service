@@ -20,7 +20,7 @@ module.exports = {
   'summary': 'Returns a list of documents in restaurants',
   'description': 'Results can be filtered specifying the following parameters:',
   'tags': [
-    'Restaurants',
+    'Restaurants Endpoint',
   ],
   'querystring': {
     'operationId': 'restaurants__MIA__getList__MIA__querystring',
@@ -56,34 +56,24 @@ module.exports = {
       },
       'createdAt': {
         'type': 'string',
-        'format': 'date-time',
       },
       'updaterId': {
         'type': 'string',
       },
       'updatedAt': {
         'type': 'string',
-        'format': 'date-time',
       },
       'ingredients': {
         'type': 'array',
-        'items': {
-          'type': 'string',
-        },
+      },
+      'name': {
+        'type': 'string',
       },
       'location': {
         'type': 'object',
-        'properties': {
-          'type': {
-            'type': 'string',
-          },
-          'coordinates': {
-            'type': 'array',
-            'items': {
-              'type': 'number',
-            },
-          },
-        },
+      },
+      'openedAt': {
+        'type': 'string',
       },
       '_l': {
         'type': 'integer',
@@ -105,13 +95,13 @@ module.exports = {
         'anyOf': [
           {
             'type': 'string',
-            'pattern': '^-?(_id|__STATE__|creatorId|createdAt|updaterId|updatedAt|ingredients|location)(\\.([^\\.,])+)*(,-?(_id|__STATE__|creatorId|createdAt|updaterId|updatedAt|ingredients|location)(\\.([^\\.,])+)*)*$',
+            'pattern': '^-?(_id|__STATE__|creatorId|createdAt|updaterId|updatedAt|ingredients|name|location|openedAt)(\\.([^\\.,])+)*(,-?(_id|__STATE__|creatorId|createdAt|updaterId|updatedAt|ingredients|name|location|openedAt)(\\.([^\\.,])+)*)*$',
           },
           {
             'type': 'array',
             'items': {
               'type': 'string',
-              'pattern': '^-?(_id|__STATE__|creatorId|createdAt|updaterId|updatedAt|ingredients|location)(\\.([^\\.,])+)*(,-?(_id|__STATE__|creatorId|createdAt|updaterId|updatedAt|ingredients|location)(\\.([^\\.,])+)*)*$',
+              'pattern': '^-?(_id|__STATE__|creatorId|createdAt|updaterId|updatedAt|ingredients|name|location|openedAt)(\\.([^\\.,])+)*(,-?(_id|__STATE__|creatorId|createdAt|updaterId|updatedAt|ingredients|name|location|openedAt)(\\.([^\\.,])+)*)*$',
             },
           },
         ],
@@ -137,17 +127,10 @@ module.exports = {
         'properties': {
           '_id': {
             'type': 'string',
-            'pattern': '^[a-fA-F0-9]{24}$',
             'nullable': false,
           },
           '__STATE__': {
             'type': 'string',
-            'enum': [
-              'PUBLIC',
-              'DRAFT',
-              'TRASH',
-              'DELETED',
-            ],
             'nullable': false,
           },
           'creatorId': {
@@ -156,7 +139,6 @@ module.exports = {
           },
           'createdAt': {
             'type': 'string',
-            'format': 'date-time',
             'nullable': false,
           },
           'updaterId': {
@@ -165,29 +147,22 @@ module.exports = {
           },
           'updatedAt': {
             'type': 'string',
-            'format': 'date-time',
             'nullable': false,
           },
           'ingredients': {
             'type': 'array',
-            'items': {
-              'type': 'string',
-            },
             'nullable': true,
+          },
+          'name': {
+            'type': 'string',
+            'nullable': false,
           },
           'location': {
             'type': 'object',
-            'properties': {
-              'type': {
-                'type': 'string',
-              },
-              'coordinates': {
-                'type': 'array',
-                'items': {
-                  'type': 'number',
-                },
-              },
-            },
+            'nullable': true,
+          },
+          'openedAt': {
+            'type': 'string',
             'nullable': true,
           },
         },

@@ -19,7 +19,7 @@
 module.exports = {
   'summary': 'Change state of multiple items of restaurants.',
   'tags': [
-    'Restaurants',
+    'Restaurants Endpoint',
   ],
   'body': {
     'operationId': 'restaurants__MIA__changeStateMany__MIA__body',
@@ -53,8 +53,14 @@ module.exports = {
             'ingredients': {
               'type': 'array',
             },
+            'name': {
+              'type': 'string',
+            },
             'location': {
               'type': 'object',
+            },
+            'openedAt': {
+              'type': 'string',
             },
             'type': {
               'type': 'string',

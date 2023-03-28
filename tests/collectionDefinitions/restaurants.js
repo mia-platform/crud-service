@@ -22,7 +22,7 @@ module.exports = {
   name: 'restaurants',
   type: 'collection',
   defaultState: 'PUBLIC',
-  endpointBasePath: '/restaurants',
+  endpointBasePath: '/restaurants-endpoint',
   schema: {
     type: 'object',
     required: [
@@ -32,6 +32,7 @@ module.exports = {
       'updaterId',
       'updatedAt',
       '__STATE__',
+      'name',
     ],
     properties: {
       _id: {
@@ -62,6 +63,9 @@ module.exports = {
           type: 'string',
         },
       },
+      name: {
+        type: 'string',
+      },
       location: {
         type: 'object',
         properties: {
@@ -75,6 +79,10 @@ module.exports = {
             },
           },
         },
+      },
+      openedAt: {
+        type: 'string',
+        format: 'date-time',
       },
     },
   },

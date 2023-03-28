@@ -19,7 +19,7 @@
 module.exports = {
   'summary': 'Delete multiple items from the restaurants collection.',
   'tags': [
-    'Restaurants',
+    'Restaurants Endpoint',
   ],
   'querystring': {
     'operationId': 'restaurants__MIA__deleteList__MIA__querystring',
@@ -40,34 +40,24 @@ module.exports = {
       },
       'createdAt': {
         'type': 'string',
-        'format': 'date-time',
       },
       'updaterId': {
         'type': 'string',
       },
       'updatedAt': {
         'type': 'string',
-        'format': 'date-time',
       },
       'ingredients': {
         'type': 'array',
-        'items': {
-          'type': 'string',
-        },
+      },
+      'name': {
+        'type': 'string',
       },
       'location': {
         'type': 'object',
-        'properties': {
-          'type': {
-            'type': 'string',
-          },
-          'coordinates': {
-            'type': 'array',
-            'items': {
-              'type': 'number',
-            },
-          },
-        },
+      },
+      'openedAt': {
+        'type': 'string',
       },
       'type': {
         'type': 'string',

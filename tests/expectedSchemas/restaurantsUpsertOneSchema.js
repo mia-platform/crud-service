@@ -19,7 +19,7 @@
 module.exports = {
   'summary': 'Update an item in the restaurants collection. If the item is not in the collection, it will be inserted.',
   'tags': [
-    'Restaurants',
+    'Restaurants Endpoint',
   ],
   'querystring': {
     'operationId': 'restaurants__MIA__upsertOne__MIA__querystring',
@@ -40,34 +40,24 @@ module.exports = {
       },
       'createdAt': {
         'type': 'string',
-        'format': 'date-time',
       },
       'updaterId': {
         'type': 'string',
       },
       'updatedAt': {
         'type': 'string',
-        'format': 'date-time',
       },
       'ingredients': {
         'type': 'array',
-        'items': {
-          'type': 'string',
-        },
+      },
+      'name': {
+        'type': 'string',
       },
       'location': {
         'type': 'object',
-        'properties': {
-          'type': {
-            'type': 'string',
-          },
-          'coordinates': {
-            'type': 'array',
-            'items': {
-              'type': 'number',
-            },
-          },
-        },
+      },
+      'openedAt': {
+        'type': 'string',
       },
       'type': {
         'type': 'string',
@@ -89,24 +79,18 @@ module.exports = {
         'properties': {
           'ingredients': {
             'type': 'array',
-            'items': {
-              'type': 'string',
-            },
             'nullable': true,
+          },
+          'name': {
+            'type': 'string',
+            'nullable': false,
           },
           'location': {
             'type': 'object',
-            'properties': {
-              'type': {
-                'type': 'string',
-              },
-              'coordinates': {
-                'type': 'array',
-                'items': {
-                  'type': 'number',
-                },
-              },
-            },
+            'nullable': true,
+          },
+          'openedAt': {
+            'type': 'string',
             'nullable': true,
           },
           'ingredients.$.replace': {
@@ -128,6 +112,12 @@ module.exports = {
             ],
           },
           'location': {
+            'type': 'boolean',
+            'enum': [
+              true,
+            ],
+          },
+          'openedAt': {
             'type': 'boolean',
             'enum': [
               true,
@@ -163,7 +153,14 @@ module.exports = {
       },
       '$currentDate': {
         'type': 'object',
-        'properties': {},
+        'properties': {
+          'openedAt': {
+            'type': 'boolean',
+            'enum': [
+              true,
+            ],
+          },
+        },
         'additionalProperties': false,
       },
       '$push': {
@@ -189,24 +186,18 @@ module.exports = {
         'properties': {
           'ingredients': {
             'type': 'array',
-            'items': {
-              'type': 'string',
-            },
             'nullable': true,
+          },
+          'name': {
+            'type': 'string',
+            'nullable': false,
           },
           'location': {
             'type': 'object',
-            'properties': {
-              'type': {
-                'type': 'string',
-              },
-              'coordinates': {
-                'type': 'array',
-                'items': {
-                  'type': 'number',
-                },
-              },
-            },
+            'nullable': true,
+          },
+          'openedAt': {
+            'type': 'string',
             'nullable': true,
           },
         },
@@ -222,17 +213,10 @@ module.exports = {
       'properties': {
         '_id': {
           'type': 'string',
-          'pattern': '^[a-fA-F0-9]{24}$',
           'nullable': false,
         },
         '__STATE__': {
           'type': 'string',
-          'enum': [
-            'PUBLIC',
-            'DRAFT',
-            'TRASH',
-            'DELETED',
-          ],
           'nullable': false,
         },
         'creatorId': {
@@ -241,7 +225,6 @@ module.exports = {
         },
         'createdAt': {
           'type': 'string',
-          'format': 'date-time',
           'nullable': false,
         },
         'updaterId': {
@@ -250,29 +233,22 @@ module.exports = {
         },
         'updatedAt': {
           'type': 'string',
-          'format': 'date-time',
           'nullable': false,
         },
         'ingredients': {
           'type': 'array',
-          'items': {
-            'type': 'string',
-          },
           'nullable': true,
+        },
+        'name': {
+          'type': 'string',
+          'nullable': false,
         },
         'location': {
           'type': 'object',
-          'properties': {
-            'type': {
-              'type': 'string',
-            },
-            'coordinates': {
-              'type': 'array',
-              'items': {
-                'type': 'number',
-              },
-            },
-          },
+          'nullable': true,
+        },
+        'openedAt': {
+          'type': 'string',
           'nullable': true,
         },
       },

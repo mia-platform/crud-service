@@ -28,6 +28,7 @@ module.exports = [
     __STATE__: STATES.PUBLIC,
     updaterId: 'aaaaaaaaaaaaaaaaaaaaaaaa',
     ingredients: ['Rabarbaro', 'Barbabietola'],
+    name: 'L\'Osteria del Tempo Perso',
   },
   {
     _id: new ObjectId('cccccccccccccccccccccccc'),
@@ -41,5 +42,6 @@ module.exports = [
       type: 'Point',
       coordinates: [69, 100],
     },
+    name: 'Taverna a Mare',
   },
 ]

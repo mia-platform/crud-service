@@ -19,7 +19,7 @@
 module.exports = {
   'summary': 'Returns the item with specific ID from the restaurants collection.',
   'tags': [
-    'Restaurants',
+    'Restaurants Endpoint',
   ],
   'params': {
     'type': 'object',
@@ -57,34 +57,24 @@ module.exports = {
       },
       'createdAt': {
         'type': 'string',
-        'format': 'date-time',
       },
       'updaterId': {
         'type': 'string',
       },
       'updatedAt': {
         'type': 'string',
-        'format': 'date-time',
       },
       'ingredients': {
         'type': 'array',
-        'items': {
-          'type': 'string',
-        },
+      },
+      'name': {
+        'type': 'string',
       },
       'location': {
         'type': 'object',
-        'properties': {
-          'type': {
-            'type': 'string',
-          },
-          'coordinates': {
-            'type': 'array',
-            'items': {
-              'type': 'number',
-            },
-          },
-        },
+      },
+      'openedAt': {
+        'type': 'string',
       },
       'type': {
         'type': 'string',
@@ -105,17 +95,10 @@ module.exports = {
       'properties': {
         '_id': {
           'type': 'string',
-          'pattern': '^[a-fA-F0-9]{24}$',
           'nullable': false,
         },
         '__STATE__': {
           'type': 'string',
-          'enum': [
-            'PUBLIC',
-            'DRAFT',
-            'TRASH',
-            'DELETED',
-          ],
           'nullable': false,
         },
         'creatorId': {
@@ -124,7 +107,6 @@ module.exports = {
         },
         'createdAt': {
           'type': 'string',
-          'format': 'date-time',
           'nullable': false,
         },
         'updaterId': {
@@ -133,29 +115,22 @@ module.exports = {
         },
         'updatedAt': {
           'type': 'string',
-          'format': 'date-time',
           'nullable': false,
         },
         'ingredients': {
           'type': 'array',
-          'items': {
-            'type': 'string',
-          },
           'nullable': true,
+        },
+        'name': {
+          'type': 'string',
+          'nullable': false,
         },
         'location': {
           'type': 'object',
-          'properties': {
-            'type': {
-              'type': 'string',
-            },
-            'coordinates': {
-              'type': 'array',
-              'items': {
-                'type': 'number',
-              },
-            },
-          },
+          'nullable': true,
+        },
+        'openedAt': {
+          'type': 'string',
           'nullable': true,
         },
       },

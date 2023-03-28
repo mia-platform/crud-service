@@ -20,7 +20,7 @@ module.exports = {
   'summary': 'Export the restaurants collection',
   'description': 'The exported documents are sent as newline separated JSON objects to facilitate large dataset streaming and parsing',
   'tags': [
-    'Restaurants',
+    'Restaurants Endpoint',
   ],
   'querystring': {
     'operationId': 'restaurants__MIA__export__MIA__querystring',
@@ -56,34 +56,24 @@ module.exports = {
       },
       'createdAt': {
         'type': 'string',
-        'format': 'date-time',
       },
       'updaterId': {
         'type': 'string',
       },
       'updatedAt': {
         'type': 'string',
-        'format': 'date-time',
       },
       'ingredients': {
         'type': 'array',
-        'items': {
-          'type': 'string',
-        },
+      },
+      'name': {
+        'type': 'string',
       },
       'location': {
         'type': 'object',
-        'properties': {
-          'type': {
-            'type': 'string',
-          },
-          'coordinates': {
-            'type': 'array',
-            'items': {
-              'type': 'number',
-            },
-          },
-        },
+      },
+      'openedAt': {
+        'type': 'string',
       },
       '_l': {
         'type': 'integer',
@@ -103,13 +93,13 @@ module.exports = {
         'anyOf': [
           {
             'type': 'string',
-            'pattern': '^-?(_id|__STATE__|creatorId|createdAt|updaterId|updatedAt|ingredients|location)(\\.([^\\.,])+)*(,-?(_id|__STATE__|creatorId|createdAt|updaterId|updatedAt|ingredients|location)(\\.([^\\.,])+)*)*$',
+            'pattern': '^-?(_id|__STATE__|creatorId|createdAt|updaterId|updatedAt|ingredients|name|location|openedAt)(\\.([^\\.,])+)*(,-?(_id|__STATE__|creatorId|createdAt|updaterId|updatedAt|ingredients|name|location|openedAt)(\\.([^\\.,])+)*)*$',
           },
           {
             'type': 'array',
             'items': {
               'type': 'string',
-              'pattern': '^-?(_id|__STATE__|creatorId|createdAt|updaterId|updatedAt|ingredients|location)(\\.([^\\.,])+)*(,-?(_id|__STATE__|creatorId|createdAt|updaterId|updatedAt|ingredients|location)(\\.([^\\.,])+)*)*$',
+              'pattern': '^-?(_id|__STATE__|creatorId|createdAt|updaterId|updatedAt|ingredients|name|location|openedAt)(\\.([^\\.,])+)*(,-?(_id|__STATE__|creatorId|createdAt|updaterId|updatedAt|ingredients|name|location|openedAt)(\\.([^\\.,])+)*)*$',
             },
           },
         ],
