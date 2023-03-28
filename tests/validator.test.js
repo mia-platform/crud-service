@@ -19,10 +19,10 @@
 const Ajv = require('ajv')
 const tap = require('tap')
 
-const modelJsonSchema = require('../lib/model.jsonschema')
+const { deprecatedModelJsonSchema } = require('../lib/model.jsonschema')
 
 const ajv = new Ajv({ useDefaults: true, coerceTypes: true })
-const validate = ajv.compile(modelJsonSchema)
+const validate = ajv.compile(deprecatedModelJsonSchema)
 
 tap.test('validate schema', async t => {
   await t.test('should throw if partial Index has wrong filter', t => {

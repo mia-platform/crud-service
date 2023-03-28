@@ -17,6 +17,7 @@
 'use strict'
 
 const { ObjectId } = require('mongodb')
+const { STATES } = require('../../lib/consts')
 
 module.exports = [
   {
@@ -24,19 +25,9 @@ module.exports = [
     createdAt: new Date(2023, 3, 27, 0, 0, 0, 0),
     updatedAt: new Date(2023, 3, 27, 1, 0, 0, 0),
     creatorId: 'aaaaaaaaaaaaaaaaaaaaaaaa',
+    __STATE__: STATES.PUBLIC,
     updaterId: 'aaaaaaaaaaaaaaaaaaaaaaaa',
     ingredients: ['Rabarbaro', 'Barbabietola'],
-  },
-  {
-    _id: new ObjectId('bbbbbbbbbbbbbbbbbbbbbbbb'),
-    createdAt: new Date(2023, 3, 27, 0, 0, 0, 0),
-    updatedAt: new Date(2023, 3, 27, 1, 0, 0, 0),
-    creatorId: 'bbbbbbbbbbbbbbbbbbbbbbbb',
-    updaterId: 'bbbbbbbbbbbbbbbbbbbbbbbb',
-    location: {
-      type: 'Point',
-      coordinates: [0, 420],
-    },
   },
   {
     _id: new ObjectId('cccccccccccccccccccccccc'),
@@ -44,6 +35,7 @@ module.exports = [
     updatedAt: new Date(2023, 3, 27, 1, 0, 0, 0),
     creatorId: 'cccccccccccccccccccccccc',
     updaterId: 'cccccccccccccccccccccccc',
+    __STATE__: STATES.PUBLIC,
     ingredients: ['Orecchiette', 'Rape'],
     location: {
       type: 'Point',

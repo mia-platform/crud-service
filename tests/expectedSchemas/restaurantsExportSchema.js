@@ -115,6 +115,14 @@ module.exports = {
         ],
         'description': 'Sort by the specified property/properties (Start with a "-" to invert the sort order)',
       },
+      'type': {
+        'type': 'string',
+      },
+    },
+    'patternProperties': {
+      'coordinates\\.\\d+$': {
+        'type': 'number',
+      },
     },
     'additionalProperties': false,
   },

@@ -82,6 +82,14 @@ module.exports = {
                 },
               },
             },
+            'type': {
+              'type': 'string',
+            },
+          },
+          'patternProperties': {
+            'coordinates\\.\\d+$': {
+              'type': 'number',
+            },
           },
           'additionalProperties': false,
         },
@@ -91,71 +99,41 @@ module.exports = {
             '$set': {
               'type': 'object',
               'properties': {
-                'type': 'object',
-                'required': [
-                  '_id',
-                  'creatorId',
-                  'createdAt',
-                  'updaterId',
-                  'updatedAt',
-                  '__STATE__',
-                ],
-                'properties': {
-                  '_id': {
-                    'type': 'string',
-                    'pattern': '^[a-fA-F0-9]{24}$',
-                  },
-                  '__STATE__': {
-                    'type': 'string',
-                    'enum': [
-                      'PUBLIC',
-                      'DRAFT',
-                      'TRASH',
-                      'DELETED',
-                    ],
-                  },
-                  'creatorId': {
+                'ingredients': {
+                  'type': 'array',
+                  'items': {
                     'type': 'string',
                   },
-                  'createdAt': {
-                    'type': 'string',
-                    'format': 'date-time',
-                  },
-                  'updaterId': {
-                    'type': 'string',
-                  },
-                  'updatedAt': {
-                    'type': 'string',
-                    'format': 'date-time',
-                  },
-                  'ingredients': {
-                    'type': 'array',
-                    'items': {
+                  'nullable': true,
+                },
+                'location': {
+                  'type': 'object',
+                  'properties': {
+                    'type': {
                       'type': 'string',
                     },
-                  },
-                  'location': {
-                    'type': 'object',
-                    'properties': {
-                      'type': {
-                        'type': 'string',
-                      },
-                      'coordinates': {
-                        'type': 'array',
-                        'items': {
-                          'type': 'number',
-                        },
+                    'coordinates': {
+                      'type': 'array',
+                      'items': {
+                        'type': 'number',
                       },
                     },
                   },
+                  'nullable': true,
                 },
                 'ingredients.$.replace': {
+                  'type': 'string',
+                },
+                'type': {
                   'type': 'string',
                 },
               },
               'additionalProperties': false,
               'patternProperties': {
                 'location.': true,
+                'coordinates\\.\\d+$': {
+                  'type': 'number',
+                },
               },
             },
             '$unset': {
@@ -191,6 +169,9 @@ module.exports = {
               'additionalProperties': false,
               'patternProperties': {
                 'location.': true,
+                'coordinates\\.\\d+$': {
+                  'type': 'number',
+                },
               },
             },
             '$mul': {
@@ -199,6 +180,9 @@ module.exports = {
               'additionalProperties': false,
               'patternProperties': {
                 'location.': true,
+                'coordinates\\.\\d+$': {
+                  'type': 'number',
+                },
               },
             },
             '$currentDate': {

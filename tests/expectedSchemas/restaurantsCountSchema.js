@@ -77,6 +77,14 @@ module.exports = {
           },
         },
       },
+      'type': {
+        'type': 'string',
+      },
+    },
+    'patternProperties': {
+      'coordinates\\.\\d+$': {
+        'type': 'number',
+      },
     },
     'additionalProperties': false,
   },

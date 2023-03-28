@@ -56,6 +56,14 @@ module.exports = {
             'location': {
               'type': 'object',
             },
+            'type': {
+              'type': 'string',
+            },
+          },
+          'patternProperties': {
+            'coordinates\\.\\d+$': {
+              'type': 'number',
+            },
           },
         },
         'stateTo': {

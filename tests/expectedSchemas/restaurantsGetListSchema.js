@@ -117,6 +117,14 @@ module.exports = {
         ],
         'description': 'Sort by the specified property/properties (Start with a "-" to invert the sort order)',
       },
+      'type': {
+        'type': 'string',
+      },
+    },
+    'patternProperties': {
+      'coordinates\\.\\d+$': {
+        'type': 'number',
+      },
     },
     'additionalProperties': false,
   },
@@ -127,63 +135,60 @@ module.exports = {
       'items': {
         'type': 'object',
         'properties': {
-          'type': 'object',
-          'required': [
-            '_id',
-            'creatorId',
-            'createdAt',
-            'updaterId',
-            'updatedAt',
-            '__STATE__',
-          ],
-          'properties': {
-            '_id': {
+          '_id': {
+            'type': 'string',
+            'pattern': '^[a-fA-F0-9]{24}$',
+            'nullable': false,
+          },
+          '__STATE__': {
+            'type': 'string',
+            'enum': [
+              'PUBLIC',
+              'DRAFT',
+              'TRASH',
+              'DELETED',
+            ],
+            'nullable': false,
+          },
+          'creatorId': {
+            'type': 'string',
+            'nullable': false,
+          },
+          'createdAt': {
+            'type': 'string',
+            'format': 'date-time',
+            'nullable': false,
+          },
+          'updaterId': {
+            'type': 'string',
+            'nullable': false,
+          },
+          'updatedAt': {
+            'type': 'string',
+            'format': 'date-time',
+            'nullable': false,
+          },
+          'ingredients': {
+            'type': 'array',
+            'items': {
               'type': 'string',
-              'pattern': '^[a-fA-F0-9]{24}$',
             },
-            '__STATE__': {
-              'type': 'string',
-              'enum': [
-                'PUBLIC',
-                'DRAFT',
-                'TRASH',
-                'DELETED',
-              ],
-            },
-            'creatorId': {
-              'type': 'string',
-            },
-            'createdAt': {
-              'type': 'string',
-              'format': 'date-time',
-            },
-            'updaterId': {
-              'type': 'string',
-            },
-            'updatedAt': {
-              'type': 'string',
-              'format': 'date-time',
-            },
-            'ingredients': {
-              'type': 'array',
-              'items': {
+            'nullable': true,
+          },
+          'location': {
+            'type': 'object',
+            'properties': {
+              'type': {
                 'type': 'string',
               },
-            },
-            'location': {
-              'type': 'object',
-              'properties': {
-                'type': {
-                  'type': 'string',
-                },
-                'coordinates': {
-                  'type': 'array',
-                  'items': {
-                    'type': 'number',
-                  },
+              'coordinates': {
+                'type': 'array',
+                'items': {
+                  'type': 'number',
                 },
               },
             },
+            'nullable': true,
           },
         },
       },
