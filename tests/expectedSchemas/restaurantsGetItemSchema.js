@@ -57,24 +57,33 @@ module.exports = {
       },
       'createdAt': {
         'type': 'string',
+        'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
+        'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
+        'examples': [
+          '2020-09-16T12:00:00.000Z',
+        ],
       },
       'updaterId': {
         'type': 'string',
       },
       'updatedAt': {
         'type': 'string',
-      },
-      'ingredients': {
-        'type': 'array',
+        'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
+        'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
+        'examples': [
+          '2020-09-16T12:00:00.000Z',
+        ],
       },
       'name': {
         'type': 'string',
       },
-      'location': {
-        'type': 'object',
-      },
       'openedAt': {
         'type': 'string',
+        'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
+        'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
+        'examples': [
+          '2020-09-16T12:00:00.000Z',
+        ],
       },
       'type': {
         'type': 'string',
@@ -107,7 +116,10 @@ module.exports = {
         },
         'createdAt': {
           'type': 'string',
-          'nullable': false,
+          'format': 'date-time',
+          'examples': [
+            '2020-09-16T12:00:00.000Z',
+          ],
         },
         'updaterId': {
           'type': 'string',
@@ -115,7 +127,10 @@ module.exports = {
         },
         'updatedAt': {
           'type': 'string',
-          'nullable': false,
+          'format': 'date-time',
+          'examples': [
+            '2020-09-16T12:00:00.000Z',
+          ],
         },
         'ingredients': {
           'type': 'array',
@@ -126,12 +141,17 @@ module.exports = {
           'nullable': false,
         },
         'location': {
-          'type': 'object',
-          'nullable': true,
+          'type': 'array',
+          'items': {
+            'type': 'number',
+          },
         },
         'openedAt': {
           'type': 'string',
-          'nullable': true,
+          'format': 'date-time',
+          'examples': [
+            '2020-09-16T12:00:00.000Z',
+          ],
         },
       },
     },

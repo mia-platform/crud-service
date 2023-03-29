@@ -773,10 +773,6 @@ tap.test('MP4-462: default state ignored on /bulk when at least one document has
         },
         {
           ingredients: ['Orecchiette', 'Rape'],
-          location: {
-            type: 'Point',
-            coordinates: [69, 100],
-          },
           name: 'L\'Osteria del Tempo Perso',
         },
       ],

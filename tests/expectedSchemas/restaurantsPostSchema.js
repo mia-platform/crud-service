@@ -37,12 +37,20 @@ module.exports = {
         'nullable': false,
       },
       'location': {
-        'type': 'object',
-        'nullable': true,
+        'type': 'array',
+        'items': {
+          'type': 'number',
+        },
+        'minItems': 2,
+        'maxItems': 3,
       },
       'openedAt': {
         'type': 'string',
-        'nullable': true,
+        'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
+        'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
+        'examples': [
+          '2020-09-16T12:00:00.000Z',
+        ],
       },
       '__STATE__': {
         'type': 'string',
