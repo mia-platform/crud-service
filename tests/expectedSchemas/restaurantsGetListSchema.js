@@ -28,10 +28,10 @@ module.exports = {
     'properties': {
       '_id': {
         'type': 'string',
-        'pattern': '^(?!\\s*$).+',
-        'description': 'String identifier of the document in the collection',
+        'pattern': '^[a-fA-F\\d]{24}$',
+        'description': 'Hexadecimal identifier of the document in the collection',
         'examples': [
-          '00000000-0000-4000-0000-000000000000',
+          '000000000000000000000000',
         ],
       },
       '_p': {

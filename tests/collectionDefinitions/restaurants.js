@@ -37,6 +37,7 @@ module.exports = {
     properties: {
       _id: {
         type: 'string',
+        specialType: 'ObjectId',
         pattern: '^[a-fA-F0-9]{24}$',
       },
       __STATE__: {
@@ -79,6 +80,7 @@ module.exports = {
             },
           },
         },
+        specialType: 'GeoPoint',
       },
       openedAt: {
         type: 'string',

@@ -30,6 +30,7 @@ const {
   UPDATEDAT,
   CREATORID,
   CREATEDAT,
+  __STATE__,
 } = require('../lib/consts')
 
 tap.test('queryParser', t => {
@@ -67,7 +68,7 @@ tap.test('queryParser', t => {
       [UPDATEDAT]: 'Date',
       [CREATORID]: 'string',
       [CREATEDAT]: 'Date',
-      __STATE__: 'string',
+      [__STATE__]: 'string',
     })
   })
 
