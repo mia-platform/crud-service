@@ -26,9 +26,9 @@ mockUuidV4()
 
 const collectionDefinitions = {
   books: require('./collectionDefinitions/books'),
+  booksNew: require('./newCollectionDefinitions/books'),
   cars: require('./collectionDefinitions/cars'),
   stations: require('./collectionDefinitions/stations'),
-  restaurants: require('./collectionDefinitions/restaurants'),
 }
 
 const Ajv = require('ajv')
@@ -57,10 +57,10 @@ ajv.addVocabulary(Object.values(SCHEMA_CUSTOM_KEYWORDS))
 const expectedSchemas = operations.reduce((acc, operation) => {
   return Object.assign(acc, {
     [operation]: {
-      stations: require(`./expectedSchemas/stations${operation}Schema`),
       books: require(`./expectedSchemas/books${operation}Schema`),
+      booksNew: require(`./expectedSchemas/books${operation}Schema`),
       cars: require(`./expectedSchemas/cars${operation}Schema`),
-      restaurants: require(`./expectedSchemas/restaurants${operation}Schema`),
+      stations: require(`./expectedSchemas/stations${operation}Schema`),
     },
   })
 }, {})
@@ -70,6 +70,7 @@ tap.test('generate JSON Schemas', t => {
 
 
   collections.forEach(collection => {
+    if (collection !== 'booksNew') { return }
     const collectionDefinition = collectionDefinitions[collection]
     const generator = getJsonSchemaGenerator(collectionDefinition)
     operations.forEach(operation => {

@@ -25,6 +25,30 @@ module.exports = {
     'operationId': 'books__MIA__upsertOne__MIA__querystring',
     'type': 'object',
     'properties': {
+      'creatorId': {
+        'type': 'string',
+        'description': 'User id that has created this object',
+      },
+      'createdAt': {
+        'type': 'string',
+        'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
+        'description': 'Date of the request that has performed the object creation',
+        'examples': [
+          '2020-09-16T12:00:00.000Z',
+        ],
+      },
+      'updaterId': {
+        'type': 'string',
+        'description': 'User id that has requested the last change successfully',
+      },
+      'updatedAt': {
+        'type': 'string',
+        'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
+        'description': 'Date of the request that has performed the last change',
+        'examples': [
+          '2020-09-16T12:00:00.000Z',
+        ],
+      },
       'name': {
         'type': 'string',
         'description': 'The name of the book',
@@ -57,30 +81,6 @@ module.exports = {
         'type': 'string',
         'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
         'description': 'The date it was published',
-        'examples': [
-          '2020-09-16T12:00:00.000Z',
-        ],
-      },
-      'updaterId': {
-        'type': 'string',
-        'description': 'User id that has requested the last change successfully',
-      },
-      'updatedAt': {
-        'type': 'string',
-        'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
-        'description': 'Date of the request that has performed the last change',
-        'examples': [
-          '2020-09-16T12:00:00.000Z',
-        ],
-      },
-      'creatorId': {
-        'type': 'string',
-        'description': 'User id that has created this object',
-      },
-      'createdAt': {
-        'type': 'string',
-        'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
-        'description': 'Date of the request that has performed the object creation',
         'examples': [
           '2020-09-16T12:00:00.000Z',
         ],
@@ -955,6 +955,34 @@ module.exports = {
             '000000000000000000000000',
           ],
         },
+        '__STATE__': {
+          'type': 'string',
+          'description': 'The state of the document',
+        },
+        'creatorId': {
+          'type': 'string',
+          'description': 'User id that has created this object',
+        },
+        'createdAt': {
+          'type': 'string',
+          'format': 'date-time',
+          'examples': [
+            '2020-09-16T12:00:00.000Z',
+          ],
+          'description': 'Date of the request that has performed the object creation',
+        },
+        'updaterId': {
+          'type': 'string',
+          'description': 'User id that has requested the last change successfully',
+        },
+        'updatedAt': {
+          'type': 'string',
+          'format': 'date-time',
+          'examples': [
+            '2020-09-16T12:00:00.000Z',
+          ],
+          'description': 'Date of the request that has performed the last change',
+        },
         'name': {
           'type': 'string',
           'nullable': true,
@@ -1148,34 +1176,6 @@ module.exports = {
             'additionalProperties': true,
           },
           'nullable': true,
-        },
-        'updaterId': {
-          'type': 'string',
-          'description': 'User id that has requested the last change successfully',
-        },
-        'updatedAt': {
-          'type': 'string',
-          'format': 'date-time',
-          'examples': [
-            '2020-09-16T12:00:00.000Z',
-          ],
-          'description': 'Date of the request that has performed the last change',
-        },
-        'creatorId': {
-          'type': 'string',
-          'description': 'User id that has created this object',
-        },
-        'createdAt': {
-          'type': 'string',
-          'format': 'date-time',
-          'examples': [
-            '2020-09-16T12:00:00.000Z',
-          ],
-          'description': 'Date of the request that has performed the object creation',
-        },
-        '__STATE__': {
-          'type': 'string',
-          'description': 'The state of the document',
         },
       },
     },
