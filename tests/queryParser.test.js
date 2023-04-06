@@ -21,7 +21,7 @@ const { ObjectId } = require('mongodb')
 const logger = require('pino')({ level: 'silent' })
 
 const QueryParser = require('../lib/QueryParser')
-const collectionDefinition = require('./collectionDefinitions/books')
+const collectionDefinition = require('./newCollectionDefinitions/books')
 const projectsCollectionDefinition = require('./collectionDefinitions/projects')
 const generatePathFieldsForRawSchema = require('../lib/generatePathFieldsForRawSchema')
 
@@ -525,8 +525,7 @@ tap.test('queryParser', t => {
   })
 
   t.test('parseAndCastCommands', t => {
-    const ALL_FIELDS = collectionDefinition.fields
-      .map(f => f.name)
+    const ALL_FIELDS = Object.keys(collectionDefinition.schema.properties)
     const tests = [
       {
         name: 'empty',
