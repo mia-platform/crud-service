@@ -28,7 +28,9 @@ const collectionDefinitions = {
   books: require('./collectionDefinitions/books'),
   booksNew: require('./newCollectionDefinitions/books'),
   cars: require('./collectionDefinitions/cars'),
+  carsNew: require('./collectionDefinitions/cars'),
   stations: require('./collectionDefinitions/stations'),
+  stationsNew: require('./newCollectionDefinitions/stations'),
 }
 
 const Ajv = require('ajv')
@@ -60,7 +62,9 @@ const expectedSchemas = operations.reduce((acc, operation) => {
       books: require(`./expectedSchemas/books${operation}Schema`),
       booksNew: require(`./expectedSchemas/books${operation}Schema`),
       cars: require(`./expectedSchemas/cars${operation}Schema`),
+      carsNew: require(`./expectedSchemas/cars${operation}Schema`),
       stations: require(`./expectedSchemas/stations${operation}Schema`),
+      stationsNew: require(`./expectedSchemas/stations${operation}Schema`),
     },
   })
 }, {})
@@ -70,7 +74,6 @@ tap.test('generate JSON Schemas', t => {
 
 
   collections.forEach(collection => {
-    if (collection !== 'booksNew') { return }
     const collectionDefinition = collectionDefinitions[collection]
     const generator = getJsonSchemaGenerator(collectionDefinition)
     operations.forEach(operation => {
