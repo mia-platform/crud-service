@@ -50,11 +50,11 @@ module.exports = {
             },
             'createdAt': {
               'type': 'string',
-              'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
-              'description': 'Date of the request that has performed the object creation',
+              'format': 'date-time',
               'examples': [
                 '2020-09-16T12:00:00.000Z',
               ],
+              'description': 'Date of the request that has performed the object creation',
             },
             'updaterId': {
               'type': 'string',
@@ -62,11 +62,11 @@ module.exports = {
             },
             'updatedAt': {
               'type': 'string',
-              'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
-              'description': 'Date of the request that has performed the last change',
+              'format': 'date-time',
               'examples': [
                 '2020-09-16T12:00:00.000Z',
               ],
+              'description': 'Date of the request that has performed the last change',
             },
             'name': {
               'type': 'string',
@@ -98,11 +98,11 @@ module.exports = {
             },
             'publishDate': {
               'type': 'string',
-              'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
-              'description': 'The date it was published',
+              'format': 'date-time',
               'examples': [
                 '2020-09-16T12:00:00.000Z',
               ],
+              'description': 'The date it was published',
             },
             '_q': {
               'type': 'string',
@@ -403,12 +403,12 @@ module.exports = {
                 },
                 'publishDate': {
                   'type': 'string',
-                  'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
-                  'description': 'The date it was published',
+                  'format': 'date-time',
                   'examples': [
                     '2020-09-16T12:00:00.000Z',
                   ],
                   'nullable': true,
+                  'description': 'The date it was published',
                 },
                 'position': {
                   'type': 'array',

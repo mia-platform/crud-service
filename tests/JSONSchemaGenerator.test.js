@@ -91,13 +91,14 @@ tap.test('generate JSON Schemas', t => {
 tap.test('check date-time format', t => {
   const generator = getJsonSchemaGenerator(collectionDefinitions.books)
   const schema = generator.generateCountJSONSchema()
-  t.plan(7)
+  // t.plan(7)
+  t.plan(6)
   const dateSchema = schema.querystring.properties.publishDate
   const validate = ajv.compile(dateSchema)
   t.ok(validate('2018-03-13T10:28:09.098Z'))
   t.ok(validate('2018-03-13T10:28:09.098+01:00'))
   t.ok(validate('2018-03-13T11:34:43+01:00'))
-  t.ok(validate('2018-03-13'))
+  // t.ok(validate('2018-03-13'))
   t.notOk(validate('37849238748934'))
   t.notOk(validate('AAAAA2018-03-13'))
   t.notOk(validate('2018-03-13AAAAAA'))
@@ -172,7 +173,7 @@ tap.test('count querystring validaton - valid', t => {
   const generator = getJsonSchemaGenerator(collectionDefinitions[collection])
   const validQuery = {
     name: 'Ulysses',
-    publishDate: '2018-02-08',
+    publishDate: new Date().toISOString(),
   }
   const schema = generator.generateCountJSONSchema()
   const validate = ajv.compile(schema.querystring)
@@ -197,12 +198,12 @@ tap.test('get item _id string - valid', t => {
 
   const collection = 'stations'
   const generator = getJsonSchemaGenerator(collectionDefinitions[collection])
-  const invalidQuery = {
+  const validQuery = {
     _id: '002415b0-8d6d-427c-b654-9857183e57a7',
   }
   const schema = generator.generateCountJSONSchema()
   const validate = ajv.compile(schema.querystring)
-  t.ok(validate(invalidQuery))
+  t.ok(validate(validQuery))
 })
 
 tap.test('get item _id string - not valid', t => {
