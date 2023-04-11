@@ -40,11 +40,11 @@ module.exports = {
       },
       'createdAt': {
         'type': 'string',
-        'format': 'date-time',
+        'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
+        'description': 'Date of the request that has performed the object creation',
         'examples': [
           '2020-09-16T12:00:00.000Z',
         ],
-        'description': 'Date of the request that has performed the object creation',
       },
       'updaterId': {
         'type': 'string',
@@ -52,11 +52,11 @@ module.exports = {
       },
       'updatedAt': {
         'type': 'string',
-        'format': 'date-time',
+        'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
+        'description': 'Date of the request that has performed the last change',
         'examples': [
           '2020-09-16T12:00:00.000Z',
         ],
-        'description': 'Date of the request that has performed the last change',
       },
       'name': {
         'type': 'string',
@@ -88,11 +88,11 @@ module.exports = {
       },
       'publishDate': {
         'type': 'string',
-        'format': 'date-time',
+        'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
+        'description': 'The date it was published',
         'examples': [
           '2020-09-16T12:00:00.000Z',
         ],
-        'description': 'The date it was published',
       },
       '_q': {
         'type': 'string',

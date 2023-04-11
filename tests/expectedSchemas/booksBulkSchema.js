@@ -62,12 +62,12 @@ module.exports = {
         },
         'publishDate': {
           'type': 'string',
-          'format': 'date-time',
+          'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
+          'description': 'The date it was published',
           'examples': [
             '2020-09-16T12:00:00.000Z',
           ],
           'nullable': true,
-          'description': 'The date it was published',
         },
         'position': {
           'type': 'array',
