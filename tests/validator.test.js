@@ -20,13 +20,13 @@ const Ajv = require('ajv')
 const tap = require('tap')
 const { STATES } = require('../lib/consts')
 
-const { modelJsonSchema, deprecatedModelJsonSchema } = require('../lib/model.jsonschema')
+const { modelJsonSchema, compatibilityModelJsonSchema } = require('../lib/model.jsonschema')
 
 
 tap.test('validate schema', async t => {
   await t.test('should throw if partial Index has wrong filter', t => {
     const ajv = new Ajv({ useDefaults: true, coerceTypes: true })
-    const validate = ajv.compile(deprecatedModelJsonSchema)
+    const validate = ajv.compile(compatibilityModelJsonSchema)
 
     const jsonFile = {
       name: 'addresses',
@@ -109,7 +109,7 @@ tap.test('validate schema', async t => {
 
   await t.test('should validate old schema', t => {
     const ajv = new Ajv({ useDefaults: true, coerceTypes: true })
-    const validate = ajv.compile(deprecatedModelJsonSchema)
+    const validate = ajv.compile(compatibilityModelJsonSchema)
 
     const jsonFile = {
       name: 'addresses',
