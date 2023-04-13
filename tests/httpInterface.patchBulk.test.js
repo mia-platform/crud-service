@@ -673,7 +673,7 @@ tap.test('HTTP PATCH /bulk', async t => {
         t.end()
       })
 
-      t.test('should update the document without duplicates', async t => {
+      t.test('should update the document removing values from arrays', async t => {
         const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
 
         t.strictSame(docOnDb.tags, ['tag1', 'tag3'])
@@ -734,7 +734,7 @@ tap.test('HTTP PATCH /bulk', async t => {
         t.end()
       })
 
-      t.test('should update the document without duplicates', async t => {
+      t.test('should update the document removing values from arrays', async t => {
         const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
 
         t.strictSame(docOnDb.tags, ['tag1', 'tag3'])
