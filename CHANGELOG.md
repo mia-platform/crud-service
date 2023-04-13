@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## Added
+- Collections configuration based on standard JSONSchema
+
 ## 6.4.0 - 2023-03-21
 
 ## Added
