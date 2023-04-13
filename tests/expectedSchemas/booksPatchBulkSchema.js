@@ -905,49 +905,14 @@ module.exports = {
                 'attachments\\.\\d+\\.more\\.\\d+$': {
                   'type': 'string',
                 },
-                'metadata.somethingArrayObject.$.replace': {
-                  'type': 'object',
-                  'properties': {
-                    'arrayItemObjectChildNumber': {
-                      'type': 'number',
-                    },
-                    'anotherNumber': {
-                      'type': 'number',
-                    },
-                    'anotherObject': {
-                      'type': 'object',
-                      'nullable': true,
-                    },
-                  },
-                  'additionalProperties': true,
-                  'required': [
-                    'arrayItemObjectChildNumber',
-                  ],
+                'metadata\\.exampleArrayOfArray\\.\\d+\\.\\$\\.replace$': {
+                  'type': 'string',
                 },
-                'metadata.somethingArrayObject.$.merge': {
-                  'type': 'object',
-                  'properties': {
-                    'arrayItemObjectChildNumber': {
-                      'type': 'number',
-                    },
-                    'anotherNumber': {
-                      'type': 'number',
-                    },
-                    'anotherObject': {
-                      'type': 'object',
-                      'nullable': true,
-                    },
-                  },
-                  'additionalProperties': true,
-                },
-                'metadata.somethingArrayOfNumbers.$.replace': {
+                'attachments\\.\\d+\\.neastedArr\\.\\$\\.replace$': {
                   'type': 'number',
                 },
-                'metadata.exampleArrayOfArray.$.replace': {
-                  'type': 'array',
-                  'items': {
-                    'type': 'string',
-                  },
+                'attachments\\.\\d+\\.more\\.\\$\\.replace$': {
+                  'type': 'string',
                 },
               },
             },
