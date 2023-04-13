@@ -618,6 +618,12 @@ tap.test('queryParser', t => {
         editableFields: ALL_FIELDS,
       },
       {
+        name: '$pull - Array integer',
+        commands: { $pull: { tagIds: 33 } },
+        expected: { $pull: { tagIds: 33 } },
+        editableFields: ALL_FIELDS,
+      },
+      {
         name: '$addToSet - Array string',
         commands: { $addToSet: { tags: 'new-tag' } },
         expected: { $addToSet: { tags: 'new-tag' } },
@@ -713,6 +719,11 @@ tap.test('queryParser', t => {
           expected: { $push: { 'attachments.0.neastedArr': 55 } },
         },
         {
+          name: '$pull - raw schema - on nested fields is allowed',
+          commands: { $pull: { 'attachments.0.neastedArr': 55 } },
+          expected: { $pull: { 'attachments.0.neastedArr': 55 } },
+        },
+        {
           name: '$addToSet - raw schema - on nested fields is allowed',
           commands: { $addToSet: { 'attachments.0.neastedArr': 55 } },
           expected: { $addToSet: { 'attachments.0.neastedArr': 55 } },
@@ -728,6 +739,11 @@ tap.test('queryParser', t => {
           name: '$push - raw schema - array inside another array',
           commands: { $push: { 'attachments.0.neastedArr': 55 } },
           expected: { $push: { 'attachments.0.neastedArr': 55 } },
+        },
+        {
+          name: '$pull - raw schema - array inside another array',
+          commands: { $pull: { 'attachments.0.neastedArr': 55 } },
+          expected: { $pull: { 'attachments.0.neastedArr': 55 } },
         },
         {
           name: '$addToSet - raw schema - on nested object',

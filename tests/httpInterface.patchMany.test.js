@@ -184,6 +184,43 @@ tap.test('HTTP PATCH /', async t => {
           return rest
         }),
     },
+    {
+      name: 'support $pull on array properties',
+      url: `/?_id=${ID}`,
+      acl_rows: undefined,
+      command: { $pull: { tags: 'tag2' } },
+      expectedUpdatedDocuments: fixtures
+        .filter(doc => doc._id.toString() === ID)
+        .map(doc => ({ ...doc, tags: ['tag1'] })),
+    },
+    {
+      name: 'support $pull on nested array properties',
+      url: `/?_id=${ID}`,
+      acl_rows: undefined,
+      command: { $pull: { 'metadata.somethingArrayOfNumbers': 5 } },
+      expectedUpdatedDocuments: fixtures
+        .filter(doc => doc._id.toString() === ID)
+        .map(doc => ({
+          ...doc,
+          metadata: { ...doc.metadata, somethingArrayOfNumbers: [] },
+        })),
+    },
+    {
+      name: 'support $pull on array of objects',
+      url: `/?_id=${ID}`,
+      acl_rows: undefined,
+      command: { $pull: {
+        attachments: { name: 'another-note', other: 'stuff' },
+        'metadata.somethingArrayObject': { arrayItemObjectChildNumber: 4 },
+      } },
+      expectedUpdatedDocuments: fixtures
+        .filter(doc => doc._id.toString() === ID)
+        .map(doc => ({
+          ...doc,
+          metadata: { ...doc.metadata, somethingArrayObject: [] },
+          attachments: [{ name: 'note', neastedArr: [1, 2, 3], detail: { size: 9 } }],
+        })),
+    },
   ]
 
   const { fastify, collection, resetCollection } = await setUpTest(t)

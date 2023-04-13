@@ -190,8 +190,13 @@ tap.test('patchById', async t => {
     },
     {
       name: 'addToSet',
-      cmd: { $push: { tags: 'new-tag' } },
+      cmd: { $addToSet: { tags: 'new-tag' } },
       updatedFields: { tags: chosenDoc.tags.concat(['new-tag']), updatedAt: context.now, updaterId: newUpdaterId },
+    },
+    {
+      name: 'pull',
+      cmd: { $pull: { tags: 'tag3' } },
+      updatedFields: { tags: ['tag4'], updatedAt: context.now, updaterId: newUpdaterId },
     },
     {
       name: 'addToSet no duplicates',

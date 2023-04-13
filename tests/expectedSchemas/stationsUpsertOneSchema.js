@@ -199,6 +199,15 @@ module.exports = {
         },
         'additionalProperties': false,
       },
+      '$pull': {
+        'type': 'object',
+        'properties': {
+          'Direttrici': {
+            'type': 'string',
+          },
+        },
+        'additionalProperties': false,
+      },
       '$addToSet': {
         'type': 'object',
         'properties': {
