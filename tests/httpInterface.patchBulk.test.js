@@ -709,7 +709,7 @@ tap.test('HTTP PATCH /bulk', async t => {
       const UPDATE_COMMAND = {
         $pull: {
           'tags': 'tag2',
-          'attachments.0.neastedArr': {$in: [654, 321]},
+          'attachments.0.neastedArr': { $in: [654, 321] },
           'metadata.somethingArrayOfNumbers': 123,
         },
       }
