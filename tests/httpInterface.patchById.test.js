@@ -380,7 +380,7 @@ tap.test('HTTP PATCH /<id>', async t => {
         updaterId: newUpdaterId },
     },
     {
-      name: 'support $pull',
+      name: 'support $pull on array of objects',
       url: `/${ID}`,
       acl_rows: undefined,
       acl_read_columns: undefined,
@@ -399,7 +399,7 @@ tap.test('HTTP PATCH /<id>', async t => {
       },
     },
     {
-      name: 'support $pull no duplicates',
+      name: 'support $pull on simple arrays',
       url: `/${ID}`,
       acl_rows: undefined,
       acl_read_columns: undefined,
@@ -409,6 +409,21 @@ tap.test('HTTP PATCH /<id>', async t => {
       returnDoc: {
         ...HTTP_DOC,
         tags: ['tag2'],
+        tagIds: [5],
+        updaterId: newUpdaterId,
+      },
+    },
+    {
+      name: 'support $pull with mongo operators',
+      url: `/${ID}`,
+      acl_rows: undefined,
+      acl_read_columns: undefined,
+      found: true,
+      id: DOC._id,
+      command: { $pull: { tags: { $in: ['tag1', 'tag2'] }, tagIds: 1 } },
+      returnDoc: {
+        ...HTTP_DOC,
+        tags: [],
         tagIds: [5],
         updaterId: newUpdaterId,
       },
