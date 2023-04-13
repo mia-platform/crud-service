@@ -26,7 +26,6 @@ mockUuidV4()
 
 const collectionDefinitions = {
   books: require('./collectionDefinitions/books'),
-  books_encrypted: require('./collectionDefinitions/books_encrypted'),
   cars: require('./collectionDefinitions/cars'),
   stations: require('./collectionDefinitions/stations'),
 }
@@ -49,7 +48,6 @@ const expectedSchemasNames = operations.reduce((acc, operation) => {
   return Object.assign(acc, {
     [operation]: {
       books: `${expectedSchemaPath}books${operation}Schema.js`,
-      books_encrypted: `${expectedSchemaPath}books_encrypted${operation}Schema.js`,
       cars: `${expectedSchemaPath}cars${operation}Schema.js`,
       stations: `${expectedSchemaPath}stations${operation}Schema.js`,
     },

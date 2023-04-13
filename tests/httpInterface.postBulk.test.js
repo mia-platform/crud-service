@@ -764,19 +764,6 @@ tap.test('MP4-462: default state ignored on /bulk when at least one document has
         environments: [],
       }],
     },
-    restaurants: {
-      docs: [
-        {
-          __STATE__: STATES.PUBLIC,
-          ingredients: ['Rabarbaro', 'Barbabietola'],
-          name: 'Taverna a Mare',
-        },
-        {
-          ingredients: ['Orecchiette', 'Rape'],
-          name: 'L\'Osteria del Tempo Perso',
-        },
-      ],
-    },
   }
 
   const collections = readdirSync(path.join(__dirname, 'collectionDefinitions'))
