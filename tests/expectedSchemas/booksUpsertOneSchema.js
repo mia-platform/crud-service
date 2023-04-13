@@ -676,6 +676,87 @@ module.exports = {
         },
         'additionalProperties': false,
       },
+      '$pull': {
+        'type': 'object',
+        'properties': {
+          'tags': {
+            'oneOf': [
+              {
+                'type': 'string',
+              },
+              {
+                'type': 'object',
+                'patternProperties': {
+                  '^$': {},
+                },
+              },
+            ],
+          },
+          'tagIds': {
+            'oneOf': [
+              {
+                'type': 'number',
+              },
+              {
+                'type': 'object',
+                'patternProperties': {
+                  '^$': {},
+                },
+              },
+            ],
+          },
+          'attachments': {
+            'type': 'object',
+            'additionalProperties': false,
+            'properties': {
+              'name': {
+                'type': 'string',
+              },
+              'detail': {
+                'type': 'object',
+                'properties': {
+                  'size': {
+                    'type': 'number',
+                  },
+                },
+              },
+              'neastedArr': {
+                'type': 'array',
+                'items': {
+                  'type': 'number',
+                },
+              },
+              'additionalInfo': {
+                'type': 'object',
+                'additionalProperties': true,
+              },
+              'other': {
+                'type': 'string',
+              },
+              'size': {
+                'type': 'number',
+              },
+              'stuff': {
+                'type': 'number',
+              },
+              'more': {
+                'type': 'array',
+                'items': {
+                  'type': 'string',
+                },
+              },
+            },
+            'required': [
+              'name',
+            ],
+          },
+          'editionsDates': {
+            'type': 'object',
+            'additionalProperties': true,
+          },
+        },
+        'additionalProperties': false,
+      },
       '$addToSet': {
         'type': 'object',
         'properties': {

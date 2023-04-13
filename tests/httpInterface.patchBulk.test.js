@@ -632,6 +632,129 @@ tap.test('HTTP PATCH /bulk', async t => {
       t.end()
     })
 
+    t.test('$pull', async t => {
+      const DOC_TEST = {
+        ...fixtures[0],
+        tags: ['tag1', 'tag2', 'tag3'],
+        metadata: {
+          somethingString: 'the-saved-string',
+          somethingArrayOfNumbers: [123, 456, 678],
+        },
+        attachments: [{
+          name: 'note',
+          neastedArr: [987, 654, 321],
+        }],
+      }
+      const UPDATE_COMMAND = {
+        $pull: {
+          'tags': 'tag2',
+          'attachments.0.neastedArr': 321,
+          'metadata.somethingArrayOfNumbers': 123,
+        },
+      }
+
+      await resetCollection([DOC_TEST])
+
+      const response = await fastify.inject({
+        method: 'PATCH',
+        url: `${prefix}/bulk`,
+        payload: [
+          {
+            filter: {
+              _id: DOC_TEST._id,
+            },
+            update: UPDATE_COMMAND,
+          },
+        ],
+      })
+
+      t.test('should update one document', t => {
+        t.equal(JSON.parse(response.payload), 1)
+        t.end()
+      })
+
+      t.test('should update the document removing values from arrays', async t => {
+        const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
+
+        t.strictSame(docOnDb.tags, ['tag1', 'tag3'])
+        t.strictSame(docOnDb.metadata, {
+          somethingString: 'the-saved-string',
+          somethingArrayOfNumbers: [456, 678],
+        })
+
+        t.strictSame(docOnDb.attachments, [{
+          name: 'note',
+          neastedArr: [987, 654],
+        }])
+
+        t.end()
+      })
+
+      t.end()
+    })
+
+    t.test('$pull with mongo operator on path with pattern properties', async t => {
+      const DOC_TEST = {
+        ...fixtures[0],
+        tags: ['tag1', 'tag2', 'tag3'],
+        metadata: {
+          somethingString: 'the-saved-string',
+          somethingArrayOfNumbers: [123, 456, 678],
+        },
+        attachments: [{
+          name: 'note',
+          neastedArr: [987, 654, 321],
+        }],
+      }
+      const UPDATE_COMMAND = {
+        $pull: {
+          'tags': 'tag2',
+          'attachments.0.neastedArr': { $in: [654, 321] },
+          'metadata.somethingArrayOfNumbers': 123,
+        },
+      }
+
+      await resetCollection([DOC_TEST])
+
+      const response = await fastify.inject({
+        method: 'PATCH',
+        url: `${prefix}/bulk`,
+        payload: [
+          {
+            filter: {
+              _id: DOC_TEST._id,
+            },
+            update: UPDATE_COMMAND,
+          },
+        ],
+      })
+
+      t.test('should update one document', t => {
+        t.equal(JSON.parse(response.payload), 1)
+        t.end()
+      })
+
+      t.test('should update the document removing values from arrays', async t => {
+        const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
+
+        t.strictSame(docOnDb.tags, ['tag1', 'tag3'])
+        t.strictSame(docOnDb.metadata, {
+          somethingString: 'the-saved-string',
+          somethingArrayOfNumbers: [456, 678],
+        })
+
+        t.strictSame(docOnDb.attachments, [{
+          name: 'note',
+          neastedArr: [987],
+        }])
+
+        t.end()
+      })
+
+      t.end()
+    })
+
+
     t.test('$unset', async t => {
       const DOC_TO_UNSET = {
         ...fixtures[0],
