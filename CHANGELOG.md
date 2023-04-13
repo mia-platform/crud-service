@@ -7,12 +7,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-## Added
+### Added
+
+- $pull operator support
 - Collections configuration based on standard JSONSchema
 
 ## 6.4.0 - 2023-03-21
 
-## Added
+### Added
 
 - Support to [$addToSet](https://www.mongodb.com/docs/manual/reference/operator/update/addToSet/) operations for array fields
 

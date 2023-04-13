@@ -199,6 +199,25 @@ module.exports = {
         },
         'additionalProperties': false,
       },
+      '$pull': {
+        'type': 'object',
+        'properties': {
+          'Direttrici': {
+            'oneOf': [
+              {
+                'type': 'string',
+              },
+              {
+                'type': 'object',
+                'patternProperties': {
+                  '^$': {},
+                },
+              },
+            ],
+          },
+        },
+        'additionalProperties': false,
+      },
       '$addToSet': {
         'type': 'object',
         'properties': {

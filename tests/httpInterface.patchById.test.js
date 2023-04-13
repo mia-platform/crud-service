@@ -351,7 +351,7 @@ tap.test('HTTP PATCH /<id>', async t => {
       acl_read_columns: undefined,
       found: true,
       id: DOC._id,
-      command: { $push: { attachments: { name: 'new-note', detail: { size: '9999' } } } },
+      command: { $addToSet: { attachments: { name: 'new-note', detail: { size: '9999' } } } },
       returnDoc: { ...HTTP_DOC,
         attachments: HTTP_DOC.attachments.concat([{ name: 'new-note', detail: { size: 9999 } }]),
         updaterId: newUpdaterId },
@@ -378,6 +378,55 @@ tap.test('HTTP PATCH /<id>', async t => {
       returnDoc: { ...HTTP_DOC,
         attachments: HTTP_DOC.attachments.concat([{ name: 'new-note', detail: { size: 9999 } }]),
         updaterId: newUpdaterId },
+    },
+    {
+      name: 'support $pull on array of objects',
+      url: `/${ID}`,
+      acl_rows: undefined,
+      acl_read_columns: undefined,
+      found: true,
+      id: DOC._id,
+      command: {
+        $pull: { attachments: { name: 'note', neastedArr: [1, 2, 3], detail: { size: 9 } } },
+      },
+      returnDoc: {
+        ...HTTP_DOC,
+        attachments: [{
+          name: 'another-note',
+          other: 'stuff',
+        }],
+        updaterId: newUpdaterId,
+      },
+    },
+    {
+      name: 'support $pull on simple arrays',
+      url: `/${ID}`,
+      acl_rows: undefined,
+      acl_read_columns: undefined,
+      found: true,
+      id: DOC._id,
+      command: { $pull: { tags: 'tag1', tagIds: 1 } },
+      returnDoc: {
+        ...HTTP_DOC,
+        tags: ['tag2'],
+        tagIds: [5],
+        updaterId: newUpdaterId,
+      },
+    },
+    {
+      name: 'support $pull with mongo operators',
+      url: `/${ID}`,
+      acl_rows: undefined,
+      acl_read_columns: undefined,
+      found: true,
+      id: DOC._id,
+      command: { $pull: { tags: { $in: ['tag1', 'tag2'] }, tagIds: 1 } },
+      returnDoc: {
+        ...HTTP_DOC,
+        tags: [],
+        tagIds: [5],
+        updaterId: newUpdaterId,
+      },
     },
     {
       name: 'on document found with acl_read_columns',
@@ -571,7 +620,6 @@ tap.test('HTTP PATCH /<id>', async t => {
 
   tests.forEach(testConf => {
     const { name, found, ...conf } = testConf
-
     t.test(name, async t => {
       await resetCollection()
 

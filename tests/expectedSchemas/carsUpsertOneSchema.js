@@ -169,6 +169,11 @@ module.exports = {
         'properties': {},
         'additionalProperties': false,
       },
+      '$pull': {
+        'type': 'object',
+        'properties': {},
+        'additionalProperties': false,
+      },
       '$addToSet': {
         'type': 'object',
         'properties': {},
