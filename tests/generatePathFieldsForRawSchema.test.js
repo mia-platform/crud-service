@@ -147,5 +147,88 @@ tap.test('generatePathFieldsForRawSchema', t => {
     t.end()
   })
 
+  t.test('ok new', t => {
+    const logger = pino({ level: 'silent' })
+    const collectionDefinition = {
+      name: 'foo',
+      schema: {
+        type: 'object',
+        properties: {
+          field1: {
+            type: 'object',
+            properties: {
+              itemArray: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    leafString: { type: 'string' },
+                  },
+                },
+              },
+              itemArrayOfNumbers: {
+                type: 'array',
+                items: { type: 'number' },
+              },
+            },
+          },
+        },
+      },
+    }
+
+
+    t.strictSame(generatePathFieldsForRawSchema(logger, collectionDefinition), {
+      paths: {
+        'field1.itemArray': {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              leafString: { type: 'string' },
+            },
+          },
+        },
+        'field1.itemArrayOfNumbers': {
+          type: 'array',
+          items: { type: 'number' },
+        },
+      },
+      patternProperties: {
+        'field1\\.itemArray\\.\\d+$': {
+          type: 'object',
+          properties: {
+            leafString: { type: 'string' },
+          },
+        },
+        'field1\\.itemArray\\.\\d+\\.leafString$': { type: 'string' },
+        'field1\\.itemArrayOfNumbers\\.\\d+$': { type: 'number' },
+      },
+      pathsOperators: {
+        'field1.itemArray.$.replace': {
+          type: 'object',
+          properties: {
+            leafString: {
+              type: 'string',
+            },
+          },
+        },
+        'field1.itemArray.$.merge': {
+          type: 'object',
+          properties: {
+            leafString: {
+              type: 'string',
+            },
+          },
+        },
+        'field1.itemArrayOfNumbers.$.replace': {
+          type: 'number',
+        },
+      },
+      patternPropertiesOperators: {},
+    })
+
+    t.end()
+  })
+
   t.end()
 })

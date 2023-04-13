@@ -26,11 +26,13 @@ const peopleData = require('./fixtures/people')
 const filmsData = require('./fixtures/films')
 const addressesData = require('./fixtures/addresses')
 const addressStatisticsData = require('./fixtures/address_statistics')
+const booksData = require('./fixtures/books')
 
 const peopleDef = require('./collectionDefinitions/people')
 const filmsDef = require('./collectionDefinitions/films')
 const addressesDef = require('./collectionDefinitions/addresses')
 const addressStatisticsDef = require('./collectionDefinitions/address_statistics')
+const booksDefNew = require('./newCollectionDefinitions/books')
 
 const {
   getMongoDatabaseName,
@@ -59,24 +61,28 @@ tap.test('JoinService', async t => {
   const filmCollection = database.collection('films')
   const addressCollection = database.collection('addresses')
   const addressStatisticsCollection = database.collection('address-statistics')
+  const booksCollection = database.collection('books')
 
   try {
     await peopleCollection.drop()
     await filmCollection.drop()
     await addressCollection.drop()
     await addressStatisticsCollection.drop()
+    await booksCollection.drop()
   } catch (error) { /* NOOP - ignore errors when a resource is missing*/ }
 
   await peopleCollection.insertMany(peopleData)
   await filmCollection.insertMany(filmsData)
   await addressCollection.insertMany(addressesData)
   await addressStatisticsCollection.insertMany(addressStatisticsData)
+  await booksCollection.insertMany(booksData)
 
   const joinService = new JoinService(database, [
     { definition: peopleDef },
     { definition: filmsDef },
     { definition: addressesDef },
     { definition: addressStatisticsDef },
+    { definition: booksDefNew },
   ])
 
   t.test('joinManyToMany', t => {
@@ -1081,6 +1087,243 @@ tap.test('JoinService', async t => {
       t.end()
     })
 
+    t.end()
+  })
+
+  t.test('joinOneToOneNew', t => {
+    t.test('books join people', async t => {
+      const books = await joinService.joinOneToOne(context, {
+        from: 'books-endpoint',
+        to: 'people-endpoint',
+        fromQueryFilter: {},
+        toQueryFilter: {},
+        asField: 'stats',
+        localField: 'authorAddressId',
+        foreignField: '_id',
+      }, false).toArray()
+
+      t.strictSame(books, [
+        {
+          _id: new ObjectId('000000000000000000000000'),
+          name: 'fake name other-0',
+          isbn: 'fake isbn other-0',
+          authorAddressId: new ObjectId('111111111111111111111111'),
+          price: 10,
+          stats: {
+            _id: new ObjectId('111111111111111111111111'),
+            name: 'Luke, Skywalker',
+            height: 172,
+            films: [
+              new ObjectId('aaaaaaaaaaaaaaaaaaaaaaaa'),
+            ],
+          },
+        },
+        {
+          _id: new ObjectId('111111111111111111111111'),
+          name: 'fake name other-1',
+          isbn: 'fake isbn other-1',
+          authorAddressId: new ObjectId('444444444444444444444444'),
+          price: 11,
+          stats: {
+            _id: new ObjectId('444444444444444444444444'),
+            name: 'Darth Vader',
+            height: 202,
+            films: [
+              new ObjectId('aaaaaaaaaaaaaaaaaaaaaaaa'),
+              new ObjectId('bbbbbbbbbbbbbbbbbbbbbbbb'),
+              new ObjectId('cccccccccccccccccccccccc'),
+            ],
+          },
+        },
+        {
+          _id: new ObjectId('222222222222222222222222'),
+          name: 'fake name other-2',
+          isbn: 'fake isbn other-2',
+          authorAddressId: new ObjectId('222222222222222222222222'),
+          price: 2,
+          stats: {
+            _id: new ObjectId('222222222222222222222222'),
+            name: 'C-3PO',
+            height: 167,
+            films: [
+              new ObjectId('bbbbbbbbbbbbbbbbbbbbbbbb'),
+            ],
+          },
+        },
+      ])
+
+      t.end()
+    })
+
+    t.test('books.price > 10 join people', async t => {
+      const books = await joinService.joinOneToOne(context, {
+        from: 'books-endpoint',
+        to: 'people-endpoint',
+        fromQueryFilter: { price: { $gt: 10 } },
+        toQueryFilter: {},
+        asField: 'stats',
+        localField: 'authorAddressId',
+        foreignField: '_id',
+      }, false).toArray()
+
+      t.strictSame(books, [
+        {
+          _id: new ObjectId('111111111111111111111111'),
+          name: 'fake name other-1',
+          isbn: 'fake isbn other-1',
+          authorAddressId: new ObjectId('444444444444444444444444'),
+          price: 11,
+          stats: {
+            _id: new ObjectId('444444444444444444444444'),
+            name: 'Darth Vader',
+            height: 202,
+            films: [
+              new ObjectId('aaaaaaaaaaaaaaaaaaaaaaaa'),
+              new ObjectId('bbbbbbbbbbbbbbbbbbbbbbbb'),
+              new ObjectId('cccccccccccccccccccccccc'),
+            ],
+          },
+        },
+      ])
+
+      t.end()
+    })
+
+    t.test('books join people.name = \'Darth Vader\'', async t => {
+      const books = await joinService.joinOneToOne(context, {
+        from: 'books-endpoint',
+        to: 'people-endpoint',
+        fromQueryFilter: {},
+        toQueryFilter: { name: 'Darth Vader' },
+        asField: 'stats',
+        localField: 'authorAddressId',
+        foreignField: '_id',
+      }, false).toArray()
+
+      t.strictSame(books, [
+        {
+          _id: new ObjectId('000000000000000000000000'),
+          name: 'fake name other-0',
+          isbn: 'fake isbn other-0',
+          authorAddressId: new ObjectId('111111111111111111111111'),
+          price: 10,
+          stats: null,
+        },
+        {
+          _id: new ObjectId('111111111111111111111111'),
+          name: 'fake name other-1',
+          isbn: 'fake isbn other-1',
+          authorAddressId: new ObjectId('444444444444444444444444'),
+          price: 11,
+          stats: {
+            _id: new ObjectId('444444444444444444444444'),
+            name: 'Darth Vader',
+            height: 202,
+            films: [
+              new ObjectId('aaaaaaaaaaaaaaaaaaaaaaaa'),
+              new ObjectId('bbbbbbbbbbbbbbbbbbbbbbbb'),
+              new ObjectId('cccccccccccccccccccccccc'),
+            ],
+          },
+        },
+        {
+          _id: new ObjectId('222222222222222222222222'),
+          name: 'fake name other-2',
+          isbn: 'fake isbn other-2',
+          authorAddressId: new ObjectId('222222222222222222222222'),
+          price: 2,
+          stats: null,
+        },
+      ])
+
+      t.end()
+    })
+
+    t.test('books.price > 10 join people.name = \'Darth Vader\'', async t => {
+      const books = await joinService.joinOneToOne(context, {
+        from: 'books-endpoint',
+        to: 'people-endpoint',
+        fromQueryFilter: { price: { $gt: 10 } },
+        toQueryFilter: { name: 'Darth Vader' },
+        asField: 'stats',
+        localField: 'authorAddressId',
+        foreignField: '_id',
+      }, false).toArray()
+
+      t.strictSame(books, [
+        {
+          _id: new ObjectId('111111111111111111111111'),
+          name: 'fake name other-1',
+          isbn: 'fake isbn other-1',
+          authorAddressId: new ObjectId('444444444444444444444444'),
+          price: 11,
+          stats: {
+            _id: new ObjectId('444444444444444444444444'),
+            name: 'Darth Vader',
+            height: 202,
+            films: [
+              new ObjectId('aaaaaaaaaaaaaaaaaaaaaaaa'),
+              new ObjectId('bbbbbbbbbbbbbbbbbbbbbbbb'),
+              new ObjectId('cccccccccccccccccccccccc'),
+            ],
+          },
+        },
+      ])
+
+      t.end()
+    })
+
+    t.test('books join people merged', async t => {
+      const books = await joinService.joinOneToOne(context, {
+        from: 'books-endpoint',
+        to: 'people-endpoint',
+        fromQueryFilter: {},
+        toQueryFilter: {},
+        asField: 'stats',
+        localField: 'authorAddressId',
+        foreignField: '_id',
+      }, true).toArray()
+
+      t.strictSame(books, [
+        {
+          _id: new ObjectId('000000000000000000000000'),
+          name: 'fake name other-0',
+          isbn: 'fake isbn other-0',
+          authorAddressId: new ObjectId('111111111111111111111111'),
+          price: 10,
+          height: 172,
+          films: [
+            new ObjectId('aaaaaaaaaaaaaaaaaaaaaaaa'),
+          ],
+        },
+        {
+          _id: new ObjectId('111111111111111111111111'),
+          name: 'fake name other-1',
+          isbn: 'fake isbn other-1',
+          authorAddressId: new ObjectId('444444444444444444444444'),
+          price: 11,
+          height: 202,
+          films: [
+            new ObjectId('aaaaaaaaaaaaaaaaaaaaaaaa'),
+            new ObjectId('bbbbbbbbbbbbbbbbbbbbbbbb'),
+            new ObjectId('cccccccccccccccccccccccc'),
+          ],
+        },
+        {
+          _id: new ObjectId('222222222222222222222222'),
+          name: 'fake name other-2',
+          isbn: 'fake isbn other-2',
+          authorAddressId: new ObjectId('222222222222222222222222'),
+          price: 2,
+          height: 167,
+          films: [
+            new ObjectId('bbbbbbbbbbbbbbbbbbbbbbbb'),
+          ],
+        },
+      ])
+
+      t.end()
+    })
     t.end()
   })
 
