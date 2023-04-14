@@ -232,7 +232,17 @@ module.exports = {
         'type': 'object',
         'properties': {
           'Direttrici': {
-            'type': 'string',
+            'oneOf': [
+              {
+                'type': 'string',
+              },
+              {
+                'type': 'object',
+                'patternProperties': {
+                  '^$': {},
+                },
+              },
+            ],
           },
         },
         'additionalProperties': false,

@@ -1172,10 +1172,30 @@ module.exports = {
         'type': 'object',
         'properties': {
           'tags': {
-            'type': 'string',
+            'oneOf': [
+              {
+                'type': 'string',
+              },
+              {
+                'type': 'object',
+                'patternProperties': {
+                  '^$': {},
+                },
+              },
+            ],
           },
           'tagIds': {
-            'type': 'number',
+            'oneOf': [
+              {
+                'type': 'number',
+              },
+              {
+                'type': 'object',
+                'patternProperties': {
+                  '^$': {},
+                },
+              },
+            ],
           },
           'attachments': {
             'type': 'object',
@@ -1257,13 +1277,43 @@ module.exports = {
         },
         'patternProperties': {
           'metadata\\.exampleArrayOfArray\\.\\d+$': {
-            'type': 'string',
+            'oneOf': [
+              {
+                'type': 'string',
+              },
+              {
+                'type': 'object',
+                'patternProperties': {
+                  '^$': {},
+                },
+              },
+            ],
           },
           'attachments\\.\\d+\\.neastedArr$': {
-            'type': 'number',
+            'oneOf': [
+              {
+                'type': 'number',
+              },
+              {
+                'type': 'object',
+                'patternProperties': {
+                  '^$': {},
+                },
+              },
+            ],
           },
           'attachments\\.\\d+\\.more$': {
-            'type': 'string',
+            'oneOf': [
+              {
+                'type': 'string',
+              },
+              {
+                'type': 'object',
+                'patternProperties': {
+                  '^$': {},
+                },
+              },
+            ],
           },
         },
         'additionalProperties': false,
