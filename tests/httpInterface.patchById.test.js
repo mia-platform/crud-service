@@ -357,6 +357,18 @@ tap.test('HTTP PATCH /<id>', async t => {
         updaterId: newUpdaterId },
     },
     {
+      name: 'support $addToSet multiple items',
+      url: `/${ID}`,
+      acl_rows: undefined,
+      acl_read_columns: undefined,
+      found: true,
+      id: DOC._id,
+      command: { $addToSet: { tags: { $each: ['tag23', 'tag24'] } } },
+      returnDoc: { ...HTTP_DOC,
+        tags: HTTP_DOC.tags.concat(['tag23', 'tag24']),
+        updaterId: newUpdaterId },
+    },
+    {
       name: 'support $addToSet no duplicates',
       url: `/${ID}`,
       acl_rows: undefined,
