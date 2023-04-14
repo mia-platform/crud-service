@@ -761,10 +761,30 @@ module.exports = {
         'type': 'object',
         'properties': {
           'tags': {
-            'type': 'string',
+            'oneOf': [
+              {
+                'type': 'string',
+              },
+              {
+                'type': 'object',
+                'patternProperties': {
+                  '^$': {},
+                },
+              },
+            ],
           },
           'tagIds': {
-            'type': 'number',
+            'oneOf': [
+              {
+                'type': 'number',
+              },
+              {
+                'type': 'object',
+                'patternProperties': {
+                  '^$': {},
+                },
+              },
+            ],
           },
           'attachments': {
             'type': 'object',
