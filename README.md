@@ -159,15 +159,15 @@ When the Service is live, every HTTP request executed will be caught by the HTTP
 
 ### Define your collections
 
-#### Old
+#### Custom Fields configuration (deprecated)
 
 The collections should be included in separate JSON or JavaScript files in the folder defined with the environment variable `COLLECTION_DEFINITION_FOLDER`. Each collection object requires the following fields:
 
 | Name             | Type             | Required | Default value | Description                                                                                                                                                                                                                                  |
 |------------------|------------------|----------|---------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| id             | String           | Required | -             | The name of the collection, used as identifier                                                                                                                                                                                               |
+| id             | String           | Required | -             | Additional identifier that can be associated to the collection definition.                                                                                                                                                                      |
 | endpointBasePath | String           | Required | -             | The endpoint path, used as entry point to CRUD operations                                                                                                                                                                                    |
-| name     | String           | Required | -             | The MongoDB connection string.                                                                                                                                                                                                               |
+| name     | String           | Required | -             | The name of the collection on MongoDB.                                                                                                                                                                                                              |
 | defaultState             | String           | Required | `DRAFT`       | The default state assigned to a document when inserted. Can be one of the [\_\_STATE__ available values](#metadata-fields)                                                                                                                   |
 | fields           | Array of objects | Required | -             | The list of fields to be included in the collection object. A complete description of its fields can be found [in the _fields_ section of the collection JSON Schema](./lib/model.jsonschema.js#L77).                                        |
 | indexes          | Array of objects | Required | -             | The list of indexes to be created when starting the service and initializing all the collections. A complete description of its fields can be found [in the _indexes_ section of the collection JSON Schema](./lib/model.jsonschema.js#L240) |
@@ -179,15 +179,15 @@ The collections should be included in separate JSON or JavaScript files in the f
 Several examples of collections can be found in the [Collections Definitions folder](./tests/collectionDefinitions/),
 whereas the schema that defines and validate the data model definition can be found [here](./lib/model.jsonschema.js).
 
-#### New
+#### JSONSchema Configuration
 
 The collections should be included in separate JSON or JavaScript files in the folder defined with the environment variable `COLLECTION_DEFINITION_FOLDER`. Each collection object requires the following fields:
 
 | Name             | Type             | Required | Default value | Description                                                                                                                                                                                                                                  |
 |------------------|------------------|----------|---------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| id             | String           | Required | -             | The name of the collection, used as identifier                                                                                                                                                                                               |
+| id             | String           | Required | -             | Additional identifier that can be associated to the collection definition.                                                                                                                                                                      |
 | endpointBasePath | String           | Required | -             | The endpoint path, used as entry point to CRUD operations                                                                                                                                                                                    |
-| name     | String           | Required | -             | The MongoDB connection string.                                                                                                                                                                                                               |
+| name     | String           | Required | -             | The name of the collection on MongoDB.                                                                                                                                                                                                              |
 | defaultState             | String           | Required | `DRAFT`       | The default state assigned to a document when inserted. Can be one of the [\_\_STATE__ available values](#metadata-fields)                                                                                                                   |
 | schema           | JSONSchemaStandard | Required | -             | The JSON Schema configuration of the fields to be included in the collection object. A complete description of its fields can be found in the [ _schema_](./lib/model.jsonschema.js#L447)  section of the collection JSON Schema.                                        |
 | indexes          | Array of objects | Required | -             | The list of indexes to be created when starting the service and initializing all the collections. A complete description of its fields can be found [in the _indexes_ section of the collection JSON Schema](./lib/model.jsonschema.js#L240) |

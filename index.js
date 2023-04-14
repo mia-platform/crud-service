@@ -99,7 +99,7 @@ async function loadModels(fastify) {
   const models = {}
   for (const collectionDefinition of mergedCollections) {
     if (!collectionDefinition.schema && !compatibilityValidate(collectionDefinition)) {
-      fastify.log.warn({ collectionName: collectionDefinition.name }, 'collection using old configuration')
+      fastify.log.warn({ collectionName: collectionDefinition.name }, 'collection using custom fields configuration - which has been deprecated')
       fastify.log.error(compatibilityValidate.errors)
       throw new Error(`Invalid collection definition: ${collectionDefinition.name}`)
     }
