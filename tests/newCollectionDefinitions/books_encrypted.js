@@ -38,7 +38,9 @@ module.exports = {
       _id: {
         type: 'string',
         pattern: '^[a-fA-F0-9]{24}$',
-        specialType: 'ObjectId',
+        __mia_configuration: {
+          type: 'ObjectId',
+        },
         description: 'Hexadecimal identifier of the document in the collection',
       },
       __STATE__: {
@@ -91,7 +93,9 @@ module.exports = {
       },
       authorAddressId: {
         type: 'string',
-        specialType: 'ObjectId',
+        __mia_configuration: {
+          type: 'ObjectId',
+        },
         description: 'The address of the author',
       },
       isPromoted: {
@@ -106,7 +110,9 @@ module.exports = {
       },
       position: {
         type: 'object',
-        specialType: 'GeoPoint',
+        __mia_configuration: {
+          type: 'GeoPoint',
+        },
         description: 'The position of the book',
       },
       tags: {

@@ -37,7 +37,9 @@ module.exports = {
       _id: {
         type: 'string',
         pattern: '^[a-fA-F0-9]{24}$',
-        specialType: 'ObjectId',
+        __mia_configuration: {
+          type: 'ObjectId',
+        },
         description: 'Hexadecimal identifier of the document in the collection',
       },
       name: {
@@ -50,7 +52,9 @@ module.exports = {
       },
       position: {
         type: 'object',
-        specialType: 'GeoPoint',
+        __mia_configuration: {
+          type: 'GeoPoint',
+        },
         description: 'The car\'s price',
       },
       additionalInfo: {
