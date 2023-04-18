@@ -70,17 +70,21 @@ module.exports = {
         type: 'string',
         description: 'The name of the book',
         nullable: true,
-        encryption: {
-          enabled: true,
-          searchable: true,
+        __mia_configuration: {
+          encryption: {
+            enabled: true,
+            searchable: true,
+          },
         },
       },
       isbn: {
         type: 'string',
         description: 'The isbn code',
-        encryption: {
-          enabled: true,
-          searchable: false,
+        __mia_configuration: {
+          encryption: {
+            enabled: true,
+            searchable: false,
+          },
         },
       },
       price: {
@@ -136,9 +140,11 @@ module.exports = {
         properties: {
           somethingString: {
             type: 'string',
-            encryption: {
-              enabled: true,
-              searchable: true,
+            __mia_configuration: {
+              encryption: {
+                enabled: true,
+                searchable: true,
+              },
             },
           },
           somethingNumber: { type: 'number' },
@@ -161,9 +167,11 @@ module.exports = {
               childNumber: { type: 'number' },
             },
             additionalProperties: true,
-            encryption: {
-              enabled: true,
-              searchable: false,
+            __mia_configuration: {
+              encryption: {
+                enabled: true,
+                searchable: false,
+              },
             },
           },
           somethingArrayOfNumbers: {
