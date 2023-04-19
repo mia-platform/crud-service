@@ -55,11 +55,10 @@ module.exports = {
         __mia_configuration: {
           type: 'GeoPoint',
         },
-        description: 'The car\'s price',
+        description: 'The car\'s position',
       },
       additionalInfo: {
         type: 'object',
-        nullable: true,
       },
       updaterId: {
         type: 'string',

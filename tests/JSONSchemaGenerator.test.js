@@ -28,7 +28,7 @@ const collectionDefinitions = {
   books: require('./collectionDefinitions/books'),
   booksNew: require('./newCollectionDefinitions/books'),
   cars: require('./collectionDefinitions/cars'),
-  carsNew: require('./collectionDefinitions/cars'),
+  carsNew: require('./newCollectionDefinitions/cars'),
   stations: require('./collectionDefinitions/stations'),
   stationsNew: require('./newCollectionDefinitions/stations'),
 }
@@ -39,7 +39,7 @@ const ajvFormats = require('ajv-formats')
 const JSONSchemaGenerator = require('../lib/JSONSchemaGenerator')
 const generatePathFieldsForRawSchema = require('../lib/generatePathFieldsForRawSchema')
 const { sortRegex } = require('../lib/JSONSchemaGenerator')
-const { SCHEMA_CUSTOM_KEYWORDS, DATE_FORMATS } = require('../lib/consts')
+const { SCHEMA_CUSTOM_KEYWORDS } = require('../lib/consts')
 
 const collections = Object.keys(collectionDefinitions)
 const operations = ['GetList', 'GetItem', 'Post', 'Delete', 'Count', 'Bulk', 'Patch', 'PatchBulk', 'ChangeState', 'ChangeStateMany', 'Export']
@@ -60,11 +60,11 @@ const expectedSchemas = operations.reduce((acc, operation) => {
   return Object.assign(acc, {
     [operation]: {
       books: require(`./expectedSchemas/books${operation}Schema`),
-      booksNew: require(`./expectedSchemas/books${operation}Schema`),
+      booksNew: require(`./expectedSchemas/booksNew${operation}Schema`),
       cars: require(`./expectedSchemas/cars${operation}Schema`),
-      carsNew: require(`./expectedSchemas/cars${operation}Schema`),
+      carsNew: require(`./expectedSchemas/carsNew${operation}Schema`),
       stations: require(`./expectedSchemas/stations${operation}Schema`),
-      stationsNew: require(`./expectedSchemas/stations${operation}Schema`),
+      stationsNew: require(`./expectedSchemas/stationsNew${operation}Schema`),
     },
   })
 }, {})
@@ -80,20 +80,7 @@ tap.test('generate JSON Schemas', t => {
         t.plan(2)
         const method = operationToMethod[operation]
         const schema = generator[method]()
-        if (collection.endsWith('New')) {
-          const weakEqualSchema = Object
-            .keys(schema)
-            .filter(key => !(schema[key].type === 'string' && DATE_FORMATS.includes(schema[key].format)))
-            .reduce((acc, key) => ({ ...acc, [key]: schema[key] }), {})
-          const weakExpectedSchema = Object
-            .keys(expectedSchemas[operation][collection])
-            .filter(key => !(schema[key].type === 'string'
-            && schema[key].pattern === '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$'))
-            .reduce((acc, key) => ({ ...acc, [key]: schema[key] }), {})
-          t.strictSame(weakEqualSchema, weakExpectedSchema)
-        } else {
-          t.strictSame(schema, expectedSchemas[operation][collection])
-        }
+        t.strictSame(schema, expectedSchemas[operation][collection])
         t.ok(ajv.validateSchema(schema))
       })
     })
