@@ -14,252 +14,251 @@
  * limitations under the License.
  */
 
-      'use strict'
-      
-      module.exports = {
-  "summary": "Insert new items in the books collection.",
-  "tags": [
-    "Books Endpoint"
+'use strict'
+
+module.exports = {
+  'summary': 'Insert new items in the books collection.',
+  'tags': [
+    'Books Endpoint',
   ],
-  "body": {
-    "operationId": "books__MIA__postBulk__MIA__body",
-    "type": "array",
-    "items": {
-      "type": "object",
-      "required": [
-        "name",
-        "isbn"
+  'body': {
+    'operationId': 'books__MIA__postBulk__MIA__body',
+    'type': 'array',
+    'items': {
+      'type': 'object',
+      'required': [
+        'name',
+        'isbn',
       ],
-      "properties": {
-        "name": {
-          "type": "string",
-          "nullable": true,
-          "description": "The name of the book"
+      'properties': {
+        'name': {
+          'type': 'string',
+          'nullable': true,
+          'description': 'The name of the book',
         },
-        "isbn": {
-          "type": "string",
-          "description": "The isbn code"
+        'isbn': {
+          'type': 'string',
+          'description': 'The isbn code',
         },
-        "price": {
-          "type": "number",
-          "description": "The price of the book"
+        'price': {
+          'type': 'number',
+          'description': 'The price of the book',
         },
-        "author": {
-          "type": "string",
-          "description": "The author of the book"
+        'author': {
+          'type': 'string',
+          'description': 'The author of the book',
         },
-        "authorAddressId": {
-          "type": "string",
-          "pattern": "^[a-fA-F\\d]{24}$",
-          "description": "The address of the author",
-          "examples": [
-            "000000000000000000000000"
-          ]
-        },
-        "isPromoted": {
-          "type": "boolean",
-          "description": "If it's in promotion"
-        },
-        "publishDate": {
-          "type": "string",
-          "description": "The date it was published",
-          "examples": [
-            "2020-09-16T12:00:00.000Z"
+        'authorAddressId': {
+          'type': 'string',
+          'pattern': '^[a-fA-F\\d]{24}$',
+          'description': 'The address of the author',
+          'examples': [
+            '000000000000000000000000',
           ],
-          "nullable": true,
-          "format": "date-time"
         },
-        "position": {
-          "type": "array",
-          "items": {
-            "type": "number"
-          },
-          "minItems": 2,
-          "maxItems": 3,
-          "description": "The position of the book"
+        'isPromoted': {
+          'type': 'boolean',
+          'description': "If it's in promotion",
         },
-        "tags": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "description": "Tags"
-        },
-        "tagIds": {
-          "type": "array",
-          "items": {
-            "type": "number"
-          },
-          "description": "Tag identification numbers"
-        },
-        "additionalInfo": {
-          "type": "object",
-          "additionalProperties": true,
-          "nullable": true
-        },
-        "signature": {
-          "type": "object",
-          "additionalProperties": true,
-          "properties": {
-            "name": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "name"
+        'publishDate': {
+          'type': 'string',
+          'description': 'The date it was published',
+          'examples': [
+            '2020-09-16T12:00:00.000Z',
           ],
-          "nullable": true
+          'nullable': true,
+          'format': 'date-time',
         },
-        "metadata": {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "somethingString": {
-              "type": "string"
+        'position': {
+          'type': 'array',
+          'items': {
+            'type': 'number',
+          },
+          'minItems': 2,
+          'maxItems': 3,
+          'description': 'The position of the book',
+        },
+        'tags': {
+          'type': 'array',
+          'items': {
+            'type': 'string',
+          },
+          'description': 'Tags',
+        },
+        'tagIds': {
+          'type': 'array',
+          'items': {
+            'type': 'number',
+          },
+          'description': 'Tag identification numbers',
+        },
+        'additionalInfo': {
+          'type': 'object',
+          'additionalProperties': true,
+          'nullable': true,
+        },
+        'signature': {
+          'type': 'object',
+          'additionalProperties': true,
+          'properties': {
+            'name': {
+              'type': 'string',
             },
-            "somethingNumber": {
-              "type": "number"
+          },
+          'required': [
+            'name',
+          ],
+          'nullable': true,
+        },
+        'metadata': {
+          'type': 'object',
+          'additionalProperties': false,
+          'properties': {
+            'somethingString': {
+              'type': 'string',
             },
-            "somethingArrayObject": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "arrayItemObjectChildNumber": {
-                    "type": "number"
+            'somethingNumber': {
+              'type': 'number',
+            },
+            'somethingArrayObject': {
+              'type': 'array',
+              'items': {
+                'type': 'object',
+                'properties': {
+                  'arrayItemObjectChildNumber': {
+                    'type': 'number',
                   },
-                  "anotherNumber": {
-                    "type": "number"
+                  'anotherNumber': {
+                    'type': 'number',
                   },
-                  "anotherObject": {
-                    "type": "object",
-                    "nullable": true
-                  }
+                  'anotherObject': {
+                    'type': 'object',
+                    'nullable': true,
+                  },
                 },
-                "additionalProperties": true,
-                "required": [
-                  "arrayItemObjectChildNumber"
-                ]
-              }
-            },
-            "somethingObject": {
-              "type": "object",
-              "properties": {
-                "childNumber": {
-                  "type": "number"
-                }
+                'additionalProperties': true,
+                'required': [
+                  'arrayItemObjectChildNumber',
+                ],
               },
-              "additionalProperties": true
             },
-            "somethingArrayOfNumbers": {
-              "type": "array",
-              "items": {
-                "type": "number"
-              }
+            'somethingObject': {
+              'type': 'object',
+              'properties': {
+                'childNumber': {
+                  'type': 'number',
+                },
+              },
+              'additionalProperties': true,
             },
-            "exampleArrayOfArray": {
-              "type": "array",
-              "items": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              }
-            }
+            'somethingArrayOfNumbers': {
+              'type': 'array',
+              'items': {
+                'type': 'number',
+              },
+            },
+            'exampleArrayOfArray': {
+              'type': 'array',
+              'items': {
+                'type': 'array',
+                'items': {
+                  'type': 'string',
+                },
+              },
+            },
           },
-          "required": [
-            "somethingNumber"
-          ]
-        },
-        "attachments": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "name": {
-                "type": "string"
-              },
-              "detail": {
-                "type": "object",
-                "properties": {
-                  "size": {
-                    "type": "number"
-                  }
-                }
-              },
-              "neastedArr": {
-                "type": "array",
-                "items": {
-                  "type": "number"
-                }
-              },
-              "additionalInfo": {
-                "type": "object",
-                "additionalProperties": true
-              },
-              "other": {
-                "type": "string"
-              },
-              "size": {
-                "type": "number"
-              },
-              "stuff": {
-                "type": "number"
-              },
-              "more": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              }
-            },
-            "required": [
-              "name"
-            ]
-          }
-        },
-        "editionsDates": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": true
-          },
-          "nullable": true
-        },
-        "__STATE__": {
-          "type": "string",
-          "enum": [
-            "PUBLIC",
-            "DRAFT",
-            "TRASH",
-            "DELETED"
+          'required': [
+            'somethingNumber',
           ],
-          "description": "The state of the document",
-          "default": "DRAFT"
-        }
+        },
+        'attachments': {
+          'type': 'array',
+          'items': {
+            'type': 'object',
+            'additionalProperties': false,
+            'properties': {
+              'name': {
+                'type': 'string',
+              },
+              'detail': {
+                'type': 'object',
+                'properties': {
+                  'size': {
+                    'type': 'number',
+                  },
+                },
+              },
+              'neastedArr': {
+                'type': 'array',
+                'items': {
+                  'type': 'number',
+                },
+              },
+              'additionalInfo': {
+                'type': 'object',
+                'additionalProperties': true,
+              },
+              'other': {
+                'type': 'string',
+              },
+              'size': {
+                'type': 'number',
+              },
+              'stuff': {
+                'type': 'number',
+              },
+              'more': {
+                'type': 'array',
+                'items': {
+                  'type': 'string',
+                },
+              },
+            },
+            'required': [
+              'name',
+            ],
+          },
+        },
+        'editionsDates': {
+          'type': 'array',
+          'items': {
+            'type': 'object',
+            'additionalProperties': true,
+          },
+          'nullable': true,
+        },
+        '__STATE__': {
+          'type': 'string',
+          'enum': [
+            'PUBLIC',
+            'DRAFT',
+            'TRASH',
+            'DELETED',
+          ],
+          'description': 'The state of the document',
+          'default': 'DRAFT',
+        },
       },
-      "additionalProperties": false
-    }
+      'additionalProperties': false,
+    },
   },
-  "response": {
-    "200": {
-      "operationId": "books__MIA__postBulk__MIA__response.200",
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "_id": {
-            "type": "string",
-            "pattern": "^[a-fA-F\\d]{24}$",
-            "description": "Hexadecimal identifier of the document in the collection",
-            "examples": [
-              "000000000000000000000000"
-            ]
-          }
-        }
-      }
-    }
-  }
+  'response': {
+    '200': {
+      'operationId': 'books__MIA__postBulk__MIA__response.200',
+      'type': 'array',
+      'items': {
+        'type': 'object',
+        'properties': {
+          '_id': {
+            'type': 'string',
+            'pattern': '^[a-fA-F\\d]{24}$',
+            'description': 'Hexadecimal identifier of the document in the collection',
+            'examples': [
+              '000000000000000000000000',
+            ],
+          },
+        },
+      },
+    },
+  },
 }
-        

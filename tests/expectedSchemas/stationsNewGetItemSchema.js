@@ -14,156 +14,155 @@
  * limitations under the License.
  */
 
-      'use strict'
-      
-      module.exports = {
-  "summary": "Returns the item with specific ID from the stations collection.",
-  "tags": [
-    "Stations Endpoint"
+'use strict'
+
+module.exports = {
+  'summary': 'Returns the item with specific ID from the stations collection.',
+  'tags': [
+    'Stations Endpoint',
   ],
-  "params": {
-    "type": "object",
-    "properties": {
-      "id": {
-        "type": "string",
-        "description": "The ID of the item to retrieve information for"
-      }
+  'params': {
+    'type': 'object',
+    'properties': {
+      'id': {
+        'type': 'string',
+        'description': 'The ID of the item to retrieve information for',
+      },
     },
-    "operationId": "stations__MIA__getItem__MIA__params"
+    'operationId': 'stations__MIA__getItem__MIA__params',
   },
-  "querystring": {
-    "operationId": "stations__MIA__getItem__MIA__querystring",
-    "type": "object",
-    "properties": {
-      "updaterId": {
-        "type": "string",
-        "description": "User id that has requested the last change successfully"
+  'querystring': {
+    'operationId': 'stations__MIA__getItem__MIA__querystring',
+    'type': 'object',
+    'properties': {
+      'updaterId': {
+        'type': 'string',
+        'description': 'User id that has requested the last change successfully',
       },
-      "updatedAt": {
-        "type": "string",
-        "description": "Date of the request that has performed the last change",
-        "examples": [
-          "2020-09-16T12:00:00.000Z"
+      'updatedAt': {
+        'type': 'string',
+        'description': 'Date of the request that has performed the last change',
+        'examples': [
+          '2020-09-16T12:00:00.000Z',
         ],
-        "format": "date-time"
+        'format': 'date-time',
       },
-      "creatorId": {
-        "type": "string",
-        "description": "User id that has created this object"
+      'creatorId': {
+        'type': 'string',
+        'description': 'User id that has created this object',
       },
-      "createdAt": {
-        "type": "string",
-        "description": "Date of the request that has performed the object creation",
-        "examples": [
-          "2020-09-16T12:00:00.000Z"
+      'createdAt': {
+        'type': 'string',
+        'description': 'Date of the request that has performed the object creation',
+        'examples': [
+          '2020-09-16T12:00:00.000Z',
         ],
-        "format": "date-time"
+        'format': 'date-time',
       },
-      "Cap": {
-        "type": "number"
+      'Cap': {
+        'type': 'number',
       },
-      "CodiceMIR": {
-        "type": "string"
+      'CodiceMIR': {
+        'type': 'string',
       },
-      "Comune": {
-        "type": "string"
+      'Comune': {
+        'type': 'string',
       },
-      "Indirizzo": {
-        "type": "string"
+      'Indirizzo': {
+        'type': 'string',
       },
-      "country": {
-        "type": "string"
+      'country': {
+        'type': 'string',
       },
-      "_q": {
-        "type": "string",
-        "description": "Additional query part to forward to MongoDB"
+      '_q': {
+        'type': 'string',
+        'description': 'Additional query part to forward to MongoDB',
       },
-      "_p": {
-        "type": "string",
-        "description": "Return only the properties specified in a comma separated list",
-        "examples": [
-          "field1,field2,field3.nestedField"
-        ]
+      '_p': {
+        'type': 'string',
+        'description': 'Return only the properties specified in a comma separated list',
+        'examples': [
+          'field1,field2,field3.nestedField',
+        ],
       },
-      "_st": {
-        "type": "string",
-        "pattern": "(PUBLIC|DRAFT|TRASH|DELETED)(,(PUBLIC|DRAFT|TRASH|DELETED))*",
-        "default": "PUBLIC",
-        "description": "Filter by \\_\\_STATE__, multiple states can be specified in OR by providing a comma separated list"
+      '_st': {
+        'type': 'string',
+        'pattern': '(PUBLIC|DRAFT|TRASH|DELETED)(,(PUBLIC|DRAFT|TRASH|DELETED))*',
+        'default': 'PUBLIC',
+        'description': 'Filter by \\_\\_STATE__, multiple states can be specified in OR by providing a comma separated list',
       },
-      "_rawp": {
-        "type": "string",
-        "description": "Additional raw stringified projection for MongoDB"
-      }
+      '_rawp': {
+        'type': 'string',
+        'description': 'Additional raw stringified projection for MongoDB',
+      },
     },
-    "additionalProperties": false
+    'additionalProperties': false,
   },
-  "response": {
-    "200": {
-      "operationId": "stations__MIA__getItem__MIA__response.200",
-      "type": "object",
-      "properties": {
-        "_id": {
-          "type": "string",
-          "description": "_id"
+  'response': {
+    '200': {
+      'operationId': 'stations__MIA__getItem__MIA__response.200',
+      'type': 'object',
+      'properties': {
+        '_id': {
+          'type': 'string',
+          'description': '_id',
         },
-        "updaterId": {
-          "type": "string",
-          "description": "User id that has requested the last change successfully"
+        'updaterId': {
+          'type': 'string',
+          'description': 'User id that has requested the last change successfully',
         },
-        "updatedAt": {
-          "type": "string",
-          "format": "date-time",
-          "examples": [
-            "2020-09-16T12:00:00.000Z"
+        'updatedAt': {
+          'type': 'string',
+          'format': 'date-time',
+          'examples': [
+            '2020-09-16T12:00:00.000Z',
           ],
-          "description": "Date of the request that has performed the last change"
+          'description': 'Date of the request that has performed the last change',
         },
-        "creatorId": {
-          "type": "string",
-          "description": "User id that has created this object"
+        'creatorId': {
+          'type': 'string',
+          'description': 'User id that has created this object',
         },
-        "createdAt": {
-          "type": "string",
-          "format": "date-time",
-          "examples": [
-            "2020-09-16T12:00:00.000Z"
+        'createdAt': {
+          'type': 'string',
+          'format': 'date-time',
+          'examples': [
+            '2020-09-16T12:00:00.000Z',
           ],
-          "description": "Date of the request that has performed the object creation"
+          'description': 'Date of the request that has performed the object creation',
         },
-        "__STATE__": {
-          "type": "string",
-          "description": "The state of the document"
+        '__STATE__': {
+          'type': 'string',
+          'description': 'The state of the document',
         },
-        "Cap": {
-          "type": "number",
-          "nullable": true
+        'Cap': {
+          'type': 'number',
+          'nullable': true,
         },
-        "CodiceMIR": {
-          "type": "string",
-          "nullable": true
+        'CodiceMIR': {
+          'type': 'string',
+          'nullable': true,
         },
-        "Comune": {
-          "type": "string",
-          "nullable": true
+        'Comune': {
+          'type': 'string',
+          'nullable': true,
         },
-        "Direttrici": {
-          "type": "array",
-          "items": {
-            "type": "string"
+        'Direttrici': {
+          'type': 'array',
+          'items': {
+            'type': 'string',
           },
-          "nullable": true
+          'nullable': true,
         },
-        "Indirizzo": {
-          "type": "string",
-          "nullable": true
+        'Indirizzo': {
+          'type': 'string',
+          'nullable': true,
         },
-        "country": {
-          "type": "string",
-          "nullable": true
-        }
-      }
-    }
-  }
+        'country': {
+          'type': 'string',
+          'nullable': true,
+        },
+      },
+    },
+  },
 }
-        

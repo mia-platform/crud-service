@@ -14,107 +14,106 @@
  * limitations under the License.
  */
 
-      'use strict'
-      
-      module.exports = {
-  "summary": "Export the cars collection",
-  "description": "The exported documents are sent as newline separated JSON objects to facilitate large dataset streaming and parsing",
-  "tags": [
-    "Cars Endpoint"
+'use strict'
+
+module.exports = {
+  'summary': 'Export the cars collection',
+  'description': 'The exported documents are sent as newline separated JSON objects to facilitate large dataset streaming and parsing',
+  'tags': [
+    'Cars Endpoint',
   ],
-  "querystring": {
-    "operationId": "cars__MIA__export__MIA__querystring",
-    "type": "object",
-    "properties": {
-      "_id": {
-        "type": "string",
-        "pattern": "^[a-fA-F\\d]{24}$",
-        "description": "Hexadecimal identifier of the document in the collection",
-        "examples": [
-          "000000000000000000000000"
-        ]
-      },
-      "name": {
-        "type": "string",
-        "description": "The car's name"
-      },
-      "price": {
-        "type": "number",
-        "description": "The car's price"
-      },
-      "updaterId": {
-        "type": "string",
-        "description": "User id that has requested the last change successfully"
-      },
-      "updatedAt": {
-        "type": "string",
-        "description": "Date of the request that has performed the last change",
-        "examples": [
-          "2020-09-16T12:00:00.000Z"
+  'querystring': {
+    'operationId': 'cars__MIA__export__MIA__querystring',
+    'type': 'object',
+    'properties': {
+      '_id': {
+        'type': 'string',
+        'pattern': '^[a-fA-F\\d]{24}$',
+        'description': 'Hexadecimal identifier of the document in the collection',
+        'examples': [
+          '000000000000000000000000',
         ],
-        "format": "date-time"
       },
-      "creatorId": {
-        "type": "string",
-        "description": "User id that has created this object"
+      'name': {
+        'type': 'string',
+        'description': "The car's name",
       },
-      "createdAt": {
-        "type": "string",
-        "description": "Date of the request that has performed the object creation",
-        "examples": [
-          "2020-09-16T12:00:00.000Z"
+      'price': {
+        'type': 'number',
+        'description': "The car's price",
+      },
+      'updaterId': {
+        'type': 'string',
+        'description': 'User id that has requested the last change successfully',
+      },
+      'updatedAt': {
+        'type': 'string',
+        'description': 'Date of the request that has performed the last change',
+        'examples': [
+          '2020-09-16T12:00:00.000Z',
         ],
-        "format": "date-time"
+        'format': 'date-time',
       },
-      "_q": {
-        "type": "string",
-        "description": "Additional query part to forward to MongoDB"
+      'creatorId': {
+        'type': 'string',
+        'description': 'User id that has created this object',
       },
-      "_p": {
-        "type": "string",
-        "description": "Return only the properties specified in a comma separated list",
-        "examples": [
-          "field1,field2,field3.nestedField"
-        ]
+      'createdAt': {
+        'type': 'string',
+        'description': 'Date of the request that has performed the object creation',
+        'examples': [
+          '2020-09-16T12:00:00.000Z',
+        ],
+        'format': 'date-time',
       },
-      "_st": {
-        "type": "string",
-        "pattern": "(PUBLIC|DRAFT|TRASH|DELETED)(,(PUBLIC|DRAFT|TRASH|DELETED))*",
-        "default": "PUBLIC",
-        "description": "Filter by \\_\\_STATE__, multiple states can be specified in OR by providing a comma separated list"
+      '_q': {
+        'type': 'string',
+        'description': 'Additional query part to forward to MongoDB',
       },
-      "_rawp": {
-        "type": "string",
-        "description": "Additional raw stringified projection for MongoDB"
+      '_p': {
+        'type': 'string',
+        'description': 'Return only the properties specified in a comma separated list',
+        'examples': [
+          'field1,field2,field3.nestedField',
+        ],
       },
-      "_l": {
-        "type": "integer",
-        "minimum": 1,
-        "description": "Limits the number of documents"
+      '_st': {
+        'type': 'string',
+        'pattern': '(PUBLIC|DRAFT|TRASH|DELETED)(,(PUBLIC|DRAFT|TRASH|DELETED))*',
+        'default': 'PUBLIC',
+        'description': 'Filter by \\_\\_STATE__, multiple states can be specified in OR by providing a comma separated list',
       },
-      "_sk": {
-        "type": "integer",
-        "minimum": 0,
-        "description": "Skip the specified number of documents"
+      '_rawp': {
+        'type': 'string',
+        'description': 'Additional raw stringified projection for MongoDB',
       },
-      "_s": {
-        "anyOf": [
+      '_l': {
+        'type': 'integer',
+        'minimum': 1,
+        'description': 'Limits the number of documents',
+      },
+      '_sk': {
+        'type': 'integer',
+        'minimum': 0,
+        'description': 'Skip the specified number of documents',
+      },
+      '_s': {
+        'anyOf': [
           {
-            "type": "string",
-            "pattern": "^-?(_id|name|price|additionalInfo|updaterId|updatedAt|creatorId|createdAt|__STATE__)(\\.([^\\.,])+)*(,-?(_id|name|price|additionalInfo|updaterId|updatedAt|creatorId|createdAt|__STATE__)(\\.([^\\.,])+)*)*$"
+            'type': 'string',
+            'pattern': '^-?(_id|name|price|additionalInfo|updaterId|updatedAt|creatorId|createdAt|__STATE__)(\\.([^\\.,])+)*(,-?(_id|name|price|additionalInfo|updaterId|updatedAt|creatorId|createdAt|__STATE__)(\\.([^\\.,])+)*)*$',
           },
           {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "pattern": "^-?(_id|name|price|additionalInfo|updaterId|updatedAt|creatorId|createdAt|__STATE__)(\\.([^\\.,])+)*(,-?(_id|name|price|additionalInfo|updaterId|updatedAt|creatorId|createdAt|__STATE__)(\\.([^\\.,])+)*)*$"
-            }
-          }
+            'type': 'array',
+            'items': {
+              'type': 'string',
+              'pattern': '^-?(_id|name|price|additionalInfo|updaterId|updatedAt|creatorId|createdAt|__STATE__)(\\.([^\\.,])+)*(,-?(_id|name|price|additionalInfo|updaterId|updatedAt|creatorId|createdAt|__STATE__)(\\.([^\\.,])+)*)*$',
+            },
+          },
         ],
-        "description": "Sort by the specified property/properties (Start with a \"-\" to invert the sort order)"
-      }
+        'description': 'Sort by the specified property/properties (Start with a "-" to invert the sort order)',
+      },
     },
-    "additionalProperties": false
-  }
+    'additionalProperties': false,
+  },
 }
-        

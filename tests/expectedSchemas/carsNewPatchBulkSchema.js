@@ -14,200 +14,199 @@
  * limitations under the License.
  */
 
-      'use strict'
-      
-      module.exports = {
-  "summary": "Update multiple items of cars, each one with its own modifications",
-  "tags": [
-    "Cars Endpoint"
+'use strict'
+
+module.exports = {
+  'summary': 'Update multiple items of cars, each one with its own modifications',
+  'tags': [
+    'Cars Endpoint',
   ],
-  "body": {
-    "operationId": "cars__MIA__patchBulk__MIA__body",
-    "type": "array",
-    "items": {
-      "type": "object",
-      "properties": {
-        "filter": {
-          "type": "object",
-          "properties": {
-            "_id": {
-              "type": "string",
-              "pattern": "^[a-fA-F\\d]{24}$",
-              "description": "Hexadecimal identifier of the document in the collection",
-              "examples": [
-                "000000000000000000000000"
-              ]
-            },
-            "_st": {
-              "type": "string",
-              "pattern": "(PUBLIC|DRAFT|TRASH|DELETED)(,(PUBLIC|DRAFT|TRASH|DELETED))*",
-              "default": "PUBLIC",
-              "description": "Filter by \\_\\_STATE__, multiple states can be specified in OR by providing a comma separated list"
-            },
-            "name": {
-              "type": "string",
-              "description": "The car's name"
-            },
-            "price": {
-              "type": "number",
-              "description": "The car's price"
-            },
-            "updaterId": {
-              "type": "string",
-              "description": "User id that has requested the last change successfully"
-            },
-            "updatedAt": {
-              "type": "string",
-              "description": "Date of the request that has performed the last change",
-              "examples": [
-                "2020-09-16T12:00:00.000Z"
+  'body': {
+    'operationId': 'cars__MIA__patchBulk__MIA__body',
+    'type': 'array',
+    'items': {
+      'type': 'object',
+      'properties': {
+        'filter': {
+          'type': 'object',
+          'properties': {
+            '_id': {
+              'type': 'string',
+              'pattern': '^[a-fA-F\\d]{24}$',
+              'description': 'Hexadecimal identifier of the document in the collection',
+              'examples': [
+                '000000000000000000000000',
               ],
-              "format": "date-time"
             },
-            "creatorId": {
-              "type": "string",
-              "description": "User id that has created this object"
+            '_st': {
+              'type': 'string',
+              'pattern': '(PUBLIC|DRAFT|TRASH|DELETED)(,(PUBLIC|DRAFT|TRASH|DELETED))*',
+              'default': 'PUBLIC',
+              'description': 'Filter by \\_\\_STATE__, multiple states can be specified in OR by providing a comma separated list',
             },
-            "createdAt": {
-              "type": "string",
-              "description": "Date of the request that has performed the object creation",
-              "examples": [
-                "2020-09-16T12:00:00.000Z"
+            'name': {
+              'type': 'string',
+              'description': "The car's name",
+            },
+            'price': {
+              'type': 'number',
+              'description': "The car's price",
+            },
+            'updaterId': {
+              'type': 'string',
+              'description': 'User id that has requested the last change successfully',
+            },
+            'updatedAt': {
+              'type': 'string',
+              'description': 'Date of the request that has performed the last change',
+              'examples': [
+                '2020-09-16T12:00:00.000Z',
               ],
-              "format": "date-time"
+              'format': 'date-time',
             },
-            "_q": {
-              "type": "string",
-              "description": "Additional query part to forward to MongoDB"
+            'creatorId': {
+              'type': 'string',
+              'description': 'User id that has created this object',
             },
-            "_rawp": {
-              "type": "string",
-              "description": "Additional raw stringified projection for MongoDB"
-            }
+            'createdAt': {
+              'type': 'string',
+              'description': 'Date of the request that has performed the object creation',
+              'examples': [
+                '2020-09-16T12:00:00.000Z',
+              ],
+              'format': 'date-time',
+            },
+            '_q': {
+              'type': 'string',
+              'description': 'Additional query part to forward to MongoDB',
+            },
+            '_rawp': {
+              'type': 'string',
+              'description': 'Additional raw stringified projection for MongoDB',
+            },
           },
-          "additionalProperties": false
+          'additionalProperties': false,
         },
-        "update": {
-          "type": "object",
-          "properties": {
-            "$set": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string",
-                  "description": "The car's name"
+        'update': {
+          'type': 'object',
+          'properties': {
+            '$set': {
+              'type': 'object',
+              'properties': {
+                'name': {
+                  'type': 'string',
+                  'description': "The car's name",
                 },
-                "price": {
-                  "type": "number",
-                  "description": "The car's price"
+                'price': {
+                  'type': 'number',
+                  'description': "The car's price",
                 },
-                "position": {
-                  "type": "array",
-                  "items": {
-                    "type": "number"
+                'position': {
+                  'type': 'array',
+                  'items': {
+                    'type': 'number',
                   },
-                  "minItems": 2,
-                  "maxItems": 3,
-                  "description": "The car's position"
+                  'minItems': 2,
+                  'maxItems': 3,
+                  'description': "The car's position",
                 },
-                "additionalInfo": {
-                  "type": "object",
-                  "additionalProperties": true
-                }
-              },
-              "additionalProperties": false,
-              "patternProperties": {
-                "additionalInfo.": true
-              }
-            },
-            "$unset": {
-              "type": "object",
-              "properties": {
-                "price": {
-                  "type": "boolean",
-                  "enum": [
-                    true
-                  ]
+                'additionalInfo': {
+                  'type': 'object',
+                  'additionalProperties': true,
                 },
-                "position": {
-                  "type": "boolean",
-                  "enum": [
-                    true
-                  ]
+              },
+              'additionalProperties': false,
+              'patternProperties': {
+                'additionalInfo.': true,
+              },
+            },
+            '$unset': {
+              'type': 'object',
+              'properties': {
+                'price': {
+                  'type': 'boolean',
+                  'enum': [
+                    true,
+                  ],
                 },
-                "additionalInfo": {
-                  "type": "boolean",
-                  "enum": [
-                    true
-                  ]
-                }
+                'position': {
+                  'type': 'boolean',
+                  'enum': [
+                    true,
+                  ],
+                },
+                'additionalInfo': {
+                  'type': 'boolean',
+                  'enum': [
+                    true,
+                  ],
+                },
               },
-              "additionalProperties": false,
-              "patternProperties": {
-                "additionalInfo.": true
-              }
-            },
-            "$inc": {
-              "type": "object",
-              "properties": {
-                "price": {
-                  "type": "number"
-                }
+              'additionalProperties': false,
+              'patternProperties': {
+                'additionalInfo.': true,
               },
-              "additionalProperties": false,
-              "patternProperties": {
-                "additionalInfo.": true
-              }
             },
-            "$mul": {
-              "type": "object",
-              "properties": {
-                "price": {
-                  "type": "number"
-                }
+            '$inc': {
+              'type': 'object',
+              'properties': {
+                'price': {
+                  'type': 'number',
+                },
               },
-              "additionalProperties": false,
-              "patternProperties": {
-                "additionalInfo.": true
-              }
+              'additionalProperties': false,
+              'patternProperties': {
+                'additionalInfo.': true,
+              },
             },
-            "$currentDate": {
-              "type": "object",
-              "properties": {},
-              "additionalProperties": false
+            '$mul': {
+              'type': 'object',
+              'properties': {
+                'price': {
+                  'type': 'number',
+                },
+              },
+              'additionalProperties': false,
+              'patternProperties': {
+                'additionalInfo.': true,
+              },
             },
-            "$push": {
-              "type": "object",
-              "properties": {},
-              "additionalProperties": false
+            '$currentDate': {
+              'type': 'object',
+              'properties': {},
+              'additionalProperties': false,
             },
-            "$pull": {
-              "type": "object",
-              "properties": {},
-              "additionalProperties": false
+            '$push': {
+              'type': 'object',
+              'properties': {},
+              'additionalProperties': false,
             },
-            "$addToSet": {
-              "type": "object",
-              "properties": {},
-              "additionalProperties": false
-            }
+            '$pull': {
+              'type': 'object',
+              'properties': {},
+              'additionalProperties': false,
+            },
+            '$addToSet': {
+              'type': 'object',
+              'properties': {},
+              'additionalProperties': false,
+            },
           },
-          "additionalProperties": false
-        }
+          'additionalProperties': false,
+        },
       },
-      "required": [
-        "filter",
-        "update"
-      ]
+      'required': [
+        'filter',
+        'update',
+      ],
     },
-    "minItems": 1
+    'minItems': 1,
   },
-  "response": {
-    "200": {
-      "operationId": "cars__MIA__patchBulk__MIA__response.200",
-      "type": "integer",
-      "minimum": 0
-    }
-  }
+  'response': {
+    '200': {
+      'operationId': 'cars__MIA__patchBulk__MIA__response.200',
+      'type': 'integer',
+      'minimum': 0,
+    },
+  },
 }
-        

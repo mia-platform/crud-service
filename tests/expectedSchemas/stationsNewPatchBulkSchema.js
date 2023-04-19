@@ -14,258 +14,257 @@
  * limitations under the License.
  */
 
-      'use strict'
-      
-      module.exports = {
-  "summary": "Update multiple items of stations, each one with its own modifications",
-  "tags": [
-    "Stations Endpoint"
+'use strict'
+
+module.exports = {
+  'summary': 'Update multiple items of stations, each one with its own modifications',
+  'tags': [
+    'Stations Endpoint',
   ],
-  "body": {
-    "operationId": "stations__MIA__patchBulk__MIA__body",
-    "type": "array",
-    "items": {
-      "type": "object",
-      "properties": {
-        "filter": {
-          "type": "object",
-          "properties": {
-            "_id": {
-              "type": "string",
-              "pattern": "^(?!\\s*$).+",
-              "description": "String identifier of the document in the collection",
-              "examples": [
-                "00000000-0000-4000-0000-000000000000"
-              ]
-            },
-            "_st": {
-              "type": "string",
-              "pattern": "(PUBLIC|DRAFT|TRASH|DELETED)(,(PUBLIC|DRAFT|TRASH|DELETED))*",
-              "default": "PUBLIC",
-              "description": "Filter by \\_\\_STATE__, multiple states can be specified in OR by providing a comma separated list"
-            },
-            "updaterId": {
-              "type": "string",
-              "description": "User id that has requested the last change successfully"
-            },
-            "updatedAt": {
-              "type": "string",
-              "description": "Date of the request that has performed the last change",
-              "examples": [
-                "2020-09-16T12:00:00.000Z"
+  'body': {
+    'operationId': 'stations__MIA__patchBulk__MIA__body',
+    'type': 'array',
+    'items': {
+      'type': 'object',
+      'properties': {
+        'filter': {
+          'type': 'object',
+          'properties': {
+            '_id': {
+              'type': 'string',
+              'pattern': '^(?!\\s*$).+',
+              'description': 'String identifier of the document in the collection',
+              'examples': [
+                '00000000-0000-4000-0000-000000000000',
               ],
-              "format": "date-time"
             },
-            "creatorId": {
-              "type": "string",
-              "description": "User id that has created this object"
+            '_st': {
+              'type': 'string',
+              'pattern': '(PUBLIC|DRAFT|TRASH|DELETED)(,(PUBLIC|DRAFT|TRASH|DELETED))*',
+              'default': 'PUBLIC',
+              'description': 'Filter by \\_\\_STATE__, multiple states can be specified in OR by providing a comma separated list',
             },
-            "createdAt": {
-              "type": "string",
-              "description": "Date of the request that has performed the object creation",
-              "examples": [
-                "2020-09-16T12:00:00.000Z"
+            'updaterId': {
+              'type': 'string',
+              'description': 'User id that has requested the last change successfully',
+            },
+            'updatedAt': {
+              'type': 'string',
+              'description': 'Date of the request that has performed the last change',
+              'examples': [
+                '2020-09-16T12:00:00.000Z',
               ],
-              "format": "date-time"
+              'format': 'date-time',
             },
-            "Cap": {
-              "type": "number"
+            'creatorId': {
+              'type': 'string',
+              'description': 'User id that has created this object',
             },
-            "CodiceMIR": {
-              "type": "string"
+            'createdAt': {
+              'type': 'string',
+              'description': 'Date of the request that has performed the object creation',
+              'examples': [
+                '2020-09-16T12:00:00.000Z',
+              ],
+              'format': 'date-time',
             },
-            "Comune": {
-              "type": "string"
+            'Cap': {
+              'type': 'number',
             },
-            "Indirizzo": {
-              "type": "string"
+            'CodiceMIR': {
+              'type': 'string',
             },
-            "country": {
-              "type": "string"
+            'Comune': {
+              'type': 'string',
             },
-            "_q": {
-              "type": "string",
-              "description": "Additional query part to forward to MongoDB"
+            'Indirizzo': {
+              'type': 'string',
             },
-            "_rawp": {
-              "type": "string",
-              "description": "Additional raw stringified projection for MongoDB"
-            }
+            'country': {
+              'type': 'string',
+            },
+            '_q': {
+              'type': 'string',
+              'description': 'Additional query part to forward to MongoDB',
+            },
+            '_rawp': {
+              'type': 'string',
+              'description': 'Additional raw stringified projection for MongoDB',
+            },
           },
-          "additionalProperties": false
+          'additionalProperties': false,
         },
-        "update": {
-          "type": "object",
-          "properties": {
-            "$set": {
-              "type": "object",
-              "properties": {
-                "Cap": {
-                  "type": "number",
-                  "nullable": true
+        'update': {
+          'type': 'object',
+          'properties': {
+            '$set': {
+              'type': 'object',
+              'properties': {
+                'Cap': {
+                  'type': 'number',
+                  'nullable': true,
                 },
-                "CodiceMIR": {
-                  "type": "string",
-                  "nullable": true
+                'CodiceMIR': {
+                  'type': 'string',
+                  'nullable': true,
                 },
-                "Comune": {
-                  "type": "string",
-                  "nullable": true
+                'Comune': {
+                  'type': 'string',
+                  'nullable': true,
                 },
-                "Direttrici": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
+                'Direttrici': {
+                  'type': 'array',
+                  'items': {
+                    'type': 'string',
                   },
-                  "nullable": true
+                  'nullable': true,
                 },
-                "Indirizzo": {
-                  "type": "string",
-                  "nullable": true
+                'Indirizzo': {
+                  'type': 'string',
+                  'nullable': true,
                 },
-                "country": {
-                  "type": "string",
-                  "nullable": true
+                'country': {
+                  'type': 'string',
+                  'nullable': true,
                 },
-                "Direttrici.$.replace": {
-                  "type": "string"
-                }
+                'Direttrici.$.replace': {
+                  'type': 'string',
+                },
               },
-              "additionalProperties": false,
-              "patternProperties": {}
+              'additionalProperties': false,
+              'patternProperties': {},
             },
-            "$unset": {
-              "type": "object",
-              "properties": {
-                "Cap": {
-                  "type": "boolean",
-                  "enum": [
-                    true
-                  ]
+            '$unset': {
+              'type': 'object',
+              'properties': {
+                'Cap': {
+                  'type': 'boolean',
+                  'enum': [
+                    true,
+                  ],
                 },
-                "CodiceMIR": {
-                  "type": "boolean",
-                  "enum": [
-                    true
-                  ]
+                'CodiceMIR': {
+                  'type': 'boolean',
+                  'enum': [
+                    true,
+                  ],
                 },
-                "Comune": {
-                  "type": "boolean",
-                  "enum": [
-                    true
-                  ]
+                'Comune': {
+                  'type': 'boolean',
+                  'enum': [
+                    true,
+                  ],
                 },
-                "Direttrici": {
-                  "type": "boolean",
-                  "enum": [
-                    true
-                  ]
+                'Direttrici': {
+                  'type': 'boolean',
+                  'enum': [
+                    true,
+                  ],
                 },
-                "Indirizzo": {
-                  "type": "boolean",
-                  "enum": [
-                    true
-                  ]
+                'Indirizzo': {
+                  'type': 'boolean',
+                  'enum': [
+                    true,
+                  ],
                 },
-                "country": {
-                  "type": "boolean",
-                  "enum": [
-                    true
-                  ]
-                }
+                'country': {
+                  'type': 'boolean',
+                  'enum': [
+                    true,
+                  ],
+                },
               },
-              "additionalProperties": false,
-              "patternProperties": {}
+              'additionalProperties': false,
+              'patternProperties': {},
             },
-            "$inc": {
-              "type": "object",
-              "properties": {
-                "Cap": {
-                  "type": "number"
-                }
+            '$inc': {
+              'type': 'object',
+              'properties': {
+                'Cap': {
+                  'type': 'number',
+                },
               },
-              "additionalProperties": false,
-              "patternProperties": {}
+              'additionalProperties': false,
+              'patternProperties': {},
             },
-            "$mul": {
-              "type": "object",
-              "properties": {
-                "Cap": {
-                  "type": "number"
-                }
+            '$mul': {
+              'type': 'object',
+              'properties': {
+                'Cap': {
+                  'type': 'number',
+                },
               },
-              "additionalProperties": false,
-              "patternProperties": {}
+              'additionalProperties': false,
+              'patternProperties': {},
             },
-            "$currentDate": {
-              "type": "object",
-              "properties": {},
-              "additionalProperties": false
+            '$currentDate': {
+              'type': 'object',
+              'properties': {},
+              'additionalProperties': false,
             },
-            "$push": {
-              "type": "object",
-              "properties": {
-                "Direttrici": {
-                  "type": "string"
-                }
+            '$push': {
+              'type': 'object',
+              'properties': {
+                'Direttrici': {
+                  'type': 'string',
+                },
               },
-              "additionalProperties": false
+              'additionalProperties': false,
             },
-            "$pull": {
-              "type": "object",
-              "properties": {
-                "Direttrici": {
-                  "oneOf": [
+            '$pull': {
+              'type': 'object',
+              'properties': {
+                'Direttrici': {
+                  'oneOf': [
                     {
-                      "type": "string"
+                      'type': 'string',
                     },
                     {
-                      "type": "object",
-                      "patternProperties": {
-                        "^$": {}
-                      }
-                    }
-                  ]
-                }
+                      'type': 'object',
+                      'patternProperties': {
+                        '^$': {},
+                      },
+                    },
+                  ],
+                },
               },
-              "additionalProperties": false
+              'additionalProperties': false,
             },
-            "$addToSet": {
-              "type": "object",
-              "properties": {
-                "Direttrici": {
-                  "oneOf": [
+            '$addToSet': {
+              'type': 'object',
+              'properties': {
+                'Direttrici': {
+                  'oneOf': [
                     {
-                      "type": "string"
+                      'type': 'string',
                     },
                     {
-                      "type": "object",
-                      "patternProperties": {
-                        "^$": {}
-                      }
-                    }
-                  ]
-                }
+                      'type': 'object',
+                      'patternProperties': {
+                        '^$': {},
+                      },
+                    },
+                  ],
+                },
               },
-              "additionalProperties": false
-            }
+              'additionalProperties': false,
+            },
           },
-          "additionalProperties": false
-        }
+          'additionalProperties': false,
+        },
       },
-      "required": [
-        "filter",
-        "update"
-      ]
+      'required': [
+        'filter',
+        'update',
+      ],
     },
-    "minItems": 1
+    'minItems': 1,
   },
-  "response": {
-    "200": {
-      "operationId": "stations__MIA__patchBulk__MIA__response.200",
-      "type": "integer",
-      "minimum": 0
-    }
-  }
+  'response': {
+    '200': {
+      'operationId': 'stations__MIA__patchBulk__MIA__response.200',
+      'type': 'integer',
+      'minimum': 0,
+    },
+  },
 }
-        

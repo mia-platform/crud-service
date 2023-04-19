@@ -14,94 +14,93 @@
  * limitations under the License.
  */
 
-      'use strict'
-      
-      module.exports = {
-  "summary": "Change state of an item of stations collection.",
-  "tags": [
-    "Stations Endpoint"
+'use strict'
+
+module.exports = {
+  'summary': 'Change state of an item of stations collection.',
+  'tags': [
+    'Stations Endpoint',
   ],
-  "params": {
-    "operationId": "stations__MIA__changeState__MIA__params",
-    "properties": {
-      "id": {
-        "type": "string",
-        "description": "the ID of the item to have the property __STATE__ updated"
-      }
+  'params': {
+    'operationId': 'stations__MIA__changeState__MIA__params',
+    'properties': {
+      'id': {
+        'type': 'string',
+        'description': 'the ID of the item to have the property __STATE__ updated',
+      },
     },
-    "type": "object"
+    'type': 'object',
   },
-  "querystring": {
-    "operationId": "stations__MIA__changeState__MIA__querystring",
-    "type": "object",
-    "properties": {
-      "updaterId": {
-        "type": "string",
-        "description": "User id that has requested the last change successfully"
+  'querystring': {
+    'operationId': 'stations__MIA__changeState__MIA__querystring',
+    'type': 'object',
+    'properties': {
+      'updaterId': {
+        'type': 'string',
+        'description': 'User id that has requested the last change successfully',
       },
-      "updatedAt": {
-        "type": "string",
-        "pattern": "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$",
-        "description": "Date of the request that has performed the last change",
-        "examples": [
-          "2020-09-16T12:00:00.000Z"
-        ]
+      'updatedAt': {
+        'type': 'string',
+        'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
+        'description': 'Date of the request that has performed the last change',
+        'examples': [
+          '2020-09-16T12:00:00.000Z',
+        ],
       },
-      "creatorId": {
-        "type": "string",
-        "description": "User id that has created this object"
+      'creatorId': {
+        'type': 'string',
+        'description': 'User id that has created this object',
       },
-      "createdAt": {
-        "type": "string",
-        "pattern": "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$",
-        "description": "Date of the request that has performed the object creation",
-        "examples": [
-          "2020-09-16T12:00:00.000Z"
-        ]
+      'createdAt': {
+        'type': 'string',
+        'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
+        'description': 'Date of the request that has performed the object creation',
+        'examples': [
+          '2020-09-16T12:00:00.000Z',
+        ],
       },
-      "Cap": {
-        "type": "number"
+      'Cap': {
+        'type': 'number',
       },
-      "CodiceMIR": {
-        "type": "string"
+      'CodiceMIR': {
+        'type': 'string',
       },
-      "Comune": {
-        "type": "string"
+      'Comune': {
+        'type': 'string',
       },
-      "Indirizzo": {
-        "type": "string"
+      'Indirizzo': {
+        'type': 'string',
       },
-      "country": {
-        "type": "string"
+      'country': {
+        'type': 'string',
       },
-      "_q": {
-        "type": "string",
-        "description": "Additional query part to forward to MongoDB"
+      '_q': {
+        'type': 'string',
+        'description': 'Additional query part to forward to MongoDB',
       },
-      "_rawp": {
-        "type": "string",
-        "description": "Additional raw stringified projection for MongoDB"
-      }
+      '_rawp': {
+        'type': 'string',
+        'description': 'Additional raw stringified projection for MongoDB',
+      },
     },
-    "additionalProperties": false
+    'additionalProperties': false,
   },
-  "body": {
-    "operationId": "stations__MIA__changeState__MIA__body",
-    "type": "object",
-    "required": [
-      "stateTo"
+  'body': {
+    'operationId': 'stations__MIA__changeState__MIA__body',
+    'type': 'object',
+    'required': [
+      'stateTo',
     ],
-    "properties": {
-      "stateTo": {
-        "type": "string",
-        "enum": [
-          "PUBLIC",
-          "TRASH",
-          "DRAFT",
-          "DELETED"
-        ]
-      }
-    }
-  }
+    'properties': {
+      'stateTo': {
+        'type': 'string',
+        'enum': [
+          'PUBLIC',
+          'TRASH',
+          'DRAFT',
+          'DELETED',
+        ],
+      },
+    },
+  },
 }
-        

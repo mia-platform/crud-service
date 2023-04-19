@@ -14,87 +14,86 @@
  * limitations under the License.
  */
 
-      'use strict'
-      
-      module.exports = {
-  "summary": "Change state of an item of cars collection.",
-  "tags": [
-    "Cars Endpoint"
+'use strict'
+
+module.exports = {
+  'summary': 'Change state of an item of cars collection.',
+  'tags': [
+    'Cars Endpoint',
   ],
-  "params": {
-    "operationId": "cars__MIA__changeState__MIA__params",
-    "properties": {
-      "id": {
-        "type": "string",
-        "description": "the ID of the item to have the property __STATE__ updated"
-      }
+  'params': {
+    'operationId': 'cars__MIA__changeState__MIA__params',
+    'properties': {
+      'id': {
+        'type': 'string',
+        'description': 'the ID of the item to have the property __STATE__ updated',
+      },
     },
-    "type": "object"
+    'type': 'object',
   },
-  "querystring": {
-    "operationId": "cars__MIA__changeState__MIA__querystring",
-    "type": "object",
-    "properties": {
-      "name": {
-        "type": "string",
-        "description": "The car's name"
+  'querystring': {
+    'operationId': 'cars__MIA__changeState__MIA__querystring',
+    'type': 'object',
+    'properties': {
+      'name': {
+        'type': 'string',
+        'description': "The car's name",
       },
-      "price": {
-        "type": "number",
-        "description": "The car's price"
+      'price': {
+        'type': 'number',
+        'description': "The car's price",
       },
-      "updaterId": {
-        "type": "string",
-        "description": "User id that has requested the last change successfully"
+      'updaterId': {
+        'type': 'string',
+        'description': 'User id that has requested the last change successfully',
       },
-      "updatedAt": {
-        "type": "string",
-        "description": "Date of the request that has performed the last change",
-        "examples": [
-          "2020-09-16T12:00:00.000Z"
+      'updatedAt': {
+        'type': 'string',
+        'description': 'Date of the request that has performed the last change',
+        'examples': [
+          '2020-09-16T12:00:00.000Z',
         ],
-        "format": "date-time"
+        'format': 'date-time',
       },
-      "creatorId": {
-        "type": "string",
-        "description": "User id that has created this object"
+      'creatorId': {
+        'type': 'string',
+        'description': 'User id that has created this object',
       },
-      "createdAt": {
-        "type": "string",
-        "description": "Date of the request that has performed the object creation",
-        "examples": [
-          "2020-09-16T12:00:00.000Z"
+      'createdAt': {
+        'type': 'string',
+        'description': 'Date of the request that has performed the object creation',
+        'examples': [
+          '2020-09-16T12:00:00.000Z',
         ],
-        "format": "date-time"
+        'format': 'date-time',
       },
-      "_q": {
-        "type": "string",
-        "description": "Additional query part to forward to MongoDB"
+      '_q': {
+        'type': 'string',
+        'description': 'Additional query part to forward to MongoDB',
       },
-      "_rawp": {
-        "type": "string",
-        "description": "Additional raw stringified projection for MongoDB"
-      }
+      '_rawp': {
+        'type': 'string',
+        'description': 'Additional raw stringified projection for MongoDB',
+      },
     },
-    "additionalProperties": false
+    'additionalProperties': false,
   },
-  "body": {
-    "operationId": "cars__MIA__changeState__MIA__body",
-    "type": "object",
-    "required": [
-      "stateTo"
+  'body': {
+    'operationId': 'cars__MIA__changeState__MIA__body',
+    'type': 'object',
+    'required': [
+      'stateTo',
     ],
-    "properties": {
-      "stateTo": {
-        "type": "string",
-        "enum": [
-          "PUBLIC",
-          "TRASH",
-          "DRAFT",
-          "DELETED"
-        ]
-      }
-    }
-  }
+    'properties': {
+      'stateTo': {
+        'type': 'string',
+        'enum': [
+          'PUBLIC',
+          'TRASH',
+          'DRAFT',
+          'DELETED',
+        ],
+      },
+    },
+  },
 }
-        

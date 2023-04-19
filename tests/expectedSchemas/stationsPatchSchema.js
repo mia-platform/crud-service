@@ -14,308 +14,307 @@
  * limitations under the License.
  */
 
-      'use strict'
-      
-      module.exports = {
-  "summary": "Update the item with specific ID in the stations collection.",
-  "tags": [
-    "Stations Endpoint"
+'use strict'
+
+module.exports = {
+  'summary': 'Update the item with specific ID in the stations collection.',
+  'tags': [
+    'Stations Endpoint',
   ],
-  "params": {
-    "properties": {
-      "id": {
-        "type": "string",
-        "description": "The ID of the item to update information for"
-      }
+  'params': {
+    'properties': {
+      'id': {
+        'type': 'string',
+        'description': 'The ID of the item to update information for',
+      },
     },
-    "type": "object",
-    "operationId": "stations__MIA__patchItem__MIA__params"
+    'type': 'object',
+    'operationId': 'stations__MIA__patchItem__MIA__params',
   },
-  "querystring": {
-    "operationId": "stations__MIA__patchItem__MIA__querystring",
-    "type": "object",
-    "properties": {
-      "updaterId": {
-        "type": "string",
-        "description": "User id that has requested the last change successfully"
+  'querystring': {
+    'operationId': 'stations__MIA__patchItem__MIA__querystring',
+    'type': 'object',
+    'properties': {
+      'updaterId': {
+        'type': 'string',
+        'description': 'User id that has requested the last change successfully',
       },
-      "updatedAt": {
-        "type": "string",
-        "pattern": "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$",
-        "description": "Date of the request that has performed the last change",
-        "examples": [
-          "2020-09-16T12:00:00.000Z"
-        ]
+      'updatedAt': {
+        'type': 'string',
+        'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
+        'description': 'Date of the request that has performed the last change',
+        'examples': [
+          '2020-09-16T12:00:00.000Z',
+        ],
       },
-      "creatorId": {
-        "type": "string",
-        "description": "User id that has created this object"
+      'creatorId': {
+        'type': 'string',
+        'description': 'User id that has created this object',
       },
-      "createdAt": {
-        "type": "string",
-        "pattern": "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$",
-        "description": "Date of the request that has performed the object creation",
-        "examples": [
-          "2020-09-16T12:00:00.000Z"
-        ]
+      'createdAt': {
+        'type': 'string',
+        'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
+        'description': 'Date of the request that has performed the object creation',
+        'examples': [
+          '2020-09-16T12:00:00.000Z',
+        ],
       },
-      "Cap": {
-        "type": "number"
+      'Cap': {
+        'type': 'number',
       },
-      "CodiceMIR": {
-        "type": "string"
+      'CodiceMIR': {
+        'type': 'string',
       },
-      "Comune": {
-        "type": "string"
+      'Comune': {
+        'type': 'string',
       },
-      "Indirizzo": {
-        "type": "string"
+      'Indirizzo': {
+        'type': 'string',
       },
-      "country": {
-        "type": "string"
+      'country': {
+        'type': 'string',
       },
-      "_q": {
-        "type": "string",
-        "description": "Additional query part to forward to MongoDB"
+      '_q': {
+        'type': 'string',
+        'description': 'Additional query part to forward to MongoDB',
       },
-      "_st": {
-        "type": "string",
-        "pattern": "(PUBLIC|DRAFT|TRASH|DELETED)(,(PUBLIC|DRAFT|TRASH|DELETED))*",
-        "default": "PUBLIC",
-        "description": "Filter by \\_\\_STATE__, multiple states can be specified in OR by providing a comma separated list"
+      '_st': {
+        'type': 'string',
+        'pattern': '(PUBLIC|DRAFT|TRASH|DELETED)(,(PUBLIC|DRAFT|TRASH|DELETED))*',
+        'default': 'PUBLIC',
+        'description': 'Filter by \\_\\_STATE__, multiple states can be specified in OR by providing a comma separated list',
       },
-      "_rawp": {
-        "type": "string",
-        "description": "Additional raw stringified projection for MongoDB"
-      }
+      '_rawp': {
+        'type': 'string',
+        'description': 'Additional raw stringified projection for MongoDB',
+      },
     },
-    "additionalProperties": false
+    'additionalProperties': false,
   },
-  "body": {
-    "operationId": "stations__MIA__patchItem__MIA__body",
-    "type": "object",
-    "properties": {
-      "$set": {
-        "type": "object",
-        "properties": {
-          "Cap": {
-            "type": "number",
-            "nullable": true
+  'body': {
+    'operationId': 'stations__MIA__patchItem__MIA__body',
+    'type': 'object',
+    'properties': {
+      '$set': {
+        'type': 'object',
+        'properties': {
+          'Cap': {
+            'type': 'number',
+            'nullable': true,
           },
-          "CodiceMIR": {
-            "type": "string",
-            "nullable": true
+          'CodiceMIR': {
+            'type': 'string',
+            'nullable': true,
           },
-          "Comune": {
-            "type": "string",
-            "nullable": true
+          'Comune': {
+            'type': 'string',
+            'nullable': true,
           },
-          "Direttrici": {
-            "type": "array",
-            "items": {
-              "type": "string"
+          'Direttrici': {
+            'type': 'array',
+            'items': {
+              'type': 'string',
             },
-            "nullable": true
+            'nullable': true,
           },
-          "Indirizzo": {
-            "type": "string",
-            "nullable": true
+          'Indirizzo': {
+            'type': 'string',
+            'nullable': true,
           },
-          "country": {
-            "type": "string",
-            "nullable": true
+          'country': {
+            'type': 'string',
+            'nullable': true,
           },
-          "Direttrici.$.replace": {
-            "type": "string"
-          }
+          'Direttrici.$.replace': {
+            'type': 'string',
+          },
         },
-        "additionalProperties": false,
-        "patternProperties": {}
+        'additionalProperties': false,
+        'patternProperties': {},
       },
-      "$unset": {
-        "type": "object",
-        "properties": {
-          "Cap": {
-            "type": "boolean",
-            "enum": [
-              true
-            ]
+      '$unset': {
+        'type': 'object',
+        'properties': {
+          'Cap': {
+            'type': 'boolean',
+            'enum': [
+              true,
+            ],
           },
-          "CodiceMIR": {
-            "type": "boolean",
-            "enum": [
-              true
-            ]
+          'CodiceMIR': {
+            'type': 'boolean',
+            'enum': [
+              true,
+            ],
           },
-          "Comune": {
-            "type": "boolean",
-            "enum": [
-              true
-            ]
+          'Comune': {
+            'type': 'boolean',
+            'enum': [
+              true,
+            ],
           },
-          "Direttrici": {
-            "type": "boolean",
-            "enum": [
-              true
-            ]
+          'Direttrici': {
+            'type': 'boolean',
+            'enum': [
+              true,
+            ],
           },
-          "Indirizzo": {
-            "type": "boolean",
-            "enum": [
-              true
-            ]
+          'Indirizzo': {
+            'type': 'boolean',
+            'enum': [
+              true,
+            ],
           },
-          "country": {
-            "type": "boolean",
-            "enum": [
-              true
-            ]
-          }
+          'country': {
+            'type': 'boolean',
+            'enum': [
+              true,
+            ],
+          },
         },
-        "additionalProperties": false,
-        "patternProperties": {}
+        'additionalProperties': false,
+        'patternProperties': {},
       },
-      "$inc": {
-        "type": "object",
-        "properties": {
-          "Cap": {
-            "type": "number"
-          }
+      '$inc': {
+        'type': 'object',
+        'properties': {
+          'Cap': {
+            'type': 'number',
+          },
         },
-        "additionalProperties": false,
-        "patternProperties": {}
+        'additionalProperties': false,
+        'patternProperties': {},
       },
-      "$mul": {
-        "type": "object",
-        "properties": {
-          "Cap": {
-            "type": "number"
-          }
+      '$mul': {
+        'type': 'object',
+        'properties': {
+          'Cap': {
+            'type': 'number',
+          },
         },
-        "additionalProperties": false,
-        "patternProperties": {}
+        'additionalProperties': false,
+        'patternProperties': {},
       },
-      "$currentDate": {
-        "type": "object",
-        "properties": {},
-        "additionalProperties": false
+      '$currentDate': {
+        'type': 'object',
+        'properties': {},
+        'additionalProperties': false,
       },
-      "$push": {
-        "type": "object",
-        "properties": {
-          "Direttrici": {
-            "type": "string"
-          }
+      '$push': {
+        'type': 'object',
+        'properties': {
+          'Direttrici': {
+            'type': 'string',
+          },
         },
-        "additionalProperties": false
+        'additionalProperties': false,
       },
-      "$pull": {
-        "type": "object",
-        "properties": {
-          "Direttrici": {
-            "oneOf": [
+      '$pull': {
+        'type': 'object',
+        'properties': {
+          'Direttrici': {
+            'oneOf': [
               {
-                "type": "string"
+                'type': 'string',
               },
               {
-                "type": "object",
-                "patternProperties": {
-                  "^$": {}
-                }
-              }
-            ]
-          }
+                'type': 'object',
+                'patternProperties': {
+                  '^$': {},
+                },
+              },
+            ],
+          },
         },
-        "additionalProperties": false
+        'additionalProperties': false,
       },
-      "$addToSet": {
-        "type": "object",
-        "properties": {
-          "Direttrici": {
-            "oneOf": [
+      '$addToSet': {
+        'type': 'object',
+        'properties': {
+          'Direttrici': {
+            'oneOf': [
               {
-                "type": "string"
+                'type': 'string',
               },
               {
-                "type": "object",
-                "patternProperties": {
-                  "^$": {}
-                }
-              }
-            ]
-          }
+                'type': 'object',
+                'patternProperties': {
+                  '^$': {},
+                },
+              },
+            ],
+          },
         },
-        "additionalProperties": false
-      }
+        'additionalProperties': false,
+      },
     },
-    "additionalProperties": false
+    'additionalProperties': false,
   },
-  "response": {
-    "200": {
-      "operationId": "stations__MIA__patchItem__MIA__response.200",
-      "type": "object",
-      "properties": {
-        "_id": {
-          "type": "string",
-          "description": "_id"
+  'response': {
+    '200': {
+      'operationId': 'stations__MIA__patchItem__MIA__response.200',
+      'type': 'object',
+      'properties': {
+        '_id': {
+          'type': 'string',
+          'description': '_id',
         },
-        "updaterId": {
-          "type": "string",
-          "description": "User id that has requested the last change successfully"
+        'updaterId': {
+          'type': 'string',
+          'description': 'User id that has requested the last change successfully',
         },
-        "updatedAt": {
-          "type": "string",
-          "format": "date-time",
-          "examples": [
-            "2020-09-16T12:00:00.000Z"
+        'updatedAt': {
+          'type': 'string',
+          'format': 'date-time',
+          'examples': [
+            '2020-09-16T12:00:00.000Z',
           ],
-          "description": "Date of the request that has performed the last change"
+          'description': 'Date of the request that has performed the last change',
         },
-        "creatorId": {
-          "type": "string",
-          "description": "User id that has created this object"
+        'creatorId': {
+          'type': 'string',
+          'description': 'User id that has created this object',
         },
-        "createdAt": {
-          "type": "string",
-          "format": "date-time",
-          "examples": [
-            "2020-09-16T12:00:00.000Z"
+        'createdAt': {
+          'type': 'string',
+          'format': 'date-time',
+          'examples': [
+            '2020-09-16T12:00:00.000Z',
           ],
-          "description": "Date of the request that has performed the object creation"
+          'description': 'Date of the request that has performed the object creation',
         },
-        "__STATE__": {
-          "type": "string",
-          "description": "The state of the document"
+        '__STATE__': {
+          'type': 'string',
+          'description': 'The state of the document',
         },
-        "Cap": {
-          "type": "number",
-          "nullable": true
+        'Cap': {
+          'type': 'number',
+          'nullable': true,
         },
-        "CodiceMIR": {
-          "type": "string",
-          "nullable": true
+        'CodiceMIR': {
+          'type': 'string',
+          'nullable': true,
         },
-        "Comune": {
-          "type": "string",
-          "nullable": true
+        'Comune': {
+          'type': 'string',
+          'nullable': true,
         },
-        "Direttrici": {
-          "type": "array",
-          "items": {
-            "type": "string"
+        'Direttrici': {
+          'type': 'array',
+          'items': {
+            'type': 'string',
           },
-          "nullable": true
+          'nullable': true,
         },
-        "Indirizzo": {
-          "type": "string",
-          "nullable": true
+        'Indirizzo': {
+          'type': 'string',
+          'nullable': true,
         },
-        "country": {
-          "type": "string",
-          "nullable": true
-        }
-      }
-    }
-  }
+        'country': {
+          'type': 'string',
+          'nullable': true,
+        },
+      },
+    },
+  },
 }
-        

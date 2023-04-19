@@ -14,93 +14,92 @@
  * limitations under the License.
  */
 
-      'use strict'
-      
-      module.exports = {
-  "summary": "Change state of multiple items of cars.",
-  "tags": [
-    "Cars Endpoint"
+'use strict'
+
+module.exports = {
+  'summary': 'Change state of multiple items of cars.',
+  'tags': [
+    'Cars Endpoint',
   ],
-  "body": {
-    "operationId": "cars__MIA__changeStateMany__MIA__body",
-    "type": "array",
-    "items": {
-      "type": "object",
-      "properties": {
-        "filter": {
-          "type": "object",
-          "properties": {
-            "_id": {
-              "type": "string",
-              "pattern": "^[a-fA-F\\d]{24}$",
-              "description": "Hexadecimal identifier of the document in the collection",
-              "examples": [
-                "000000000000000000000000"
-              ]
+  'body': {
+    'operationId': 'cars__MIA__changeStateMany__MIA__body',
+    'type': 'array',
+    'items': {
+      'type': 'object',
+      'properties': {
+        'filter': {
+          'type': 'object',
+          'properties': {
+            '_id': {
+              'type': 'string',
+              'pattern': '^[a-fA-F\\d]{24}$',
+              'description': 'Hexadecimal identifier of the document in the collection',
+              'examples': [
+                '000000000000000000000000',
+              ],
             },
-            "name": {
-              "type": "string",
-              "description": "The car's name"
+            'name': {
+              'type': 'string',
+              'description': "The car's name",
             },
-            "price": {
-              "type": "number",
-              "description": "The car's price"
+            'price': {
+              'type': 'number',
+              'description': "The car's price",
             },
-            "additionalInfo": {
-              "type": "object",
-              "additionalProperties": true
+            'additionalInfo': {
+              'type': 'object',
+              'additionalProperties': true,
             },
-            "updaterId": {
-              "type": "string",
-              "description": "User id that has requested the last change successfully"
+            'updaterId': {
+              'type': 'string',
+              'description': 'User id that has requested the last change successfully',
             },
-            "updatedAt": {
-              "type": "string",
-              "pattern": "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$",
-              "description": "Date of the request that has performed the last change",
-              "examples": [
-                "2020-09-16T12:00:00.000Z"
-              ]
+            'updatedAt': {
+              'type': 'string',
+              'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
+              'description': 'Date of the request that has performed the last change',
+              'examples': [
+                '2020-09-16T12:00:00.000Z',
+              ],
             },
-            "creatorId": {
-              "type": "string",
-              "description": "User id that has created this object"
+            'creatorId': {
+              'type': 'string',
+              'description': 'User id that has created this object',
             },
-            "createdAt": {
-              "type": "string",
-              "pattern": "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$",
-              "description": "Date of the request that has performed the object creation",
-              "examples": [
-                "2020-09-16T12:00:00.000Z"
-              ]
-            }
-          }
+            'createdAt': {
+              'type': 'string',
+              'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
+              'description': 'Date of the request that has performed the object creation',
+              'examples': [
+                '2020-09-16T12:00:00.000Z',
+              ],
+            },
+          },
         },
-        "stateTo": {
-          "type": "string",
-          "enum": [
-            "PUBLIC",
-            "DRAFT",
-            "TRASH",
-            "DELETED"
-          ]
-        }
+        'stateTo': {
+          'type': 'string',
+          'enum': [
+            'PUBLIC',
+            'DRAFT',
+            'TRASH',
+            'DELETED',
+          ],
+        },
       },
-      "required": [
-        "filter",
-        "stateTo"
+      'required': [
+        'filter',
+        'stateTo',
       ],
-      "additionalProperties": false
+      'additionalProperties': false,
     },
-    "minItems": 1
+    'minItems': 1,
   },
-  "response": {
-    "200": {
-      "operationId": "cars__MIA__changeStateMany__MIA__response.200",
-      "type": "integer",
-      "minimum": 0,
-      "description": "Number of updated cars"
-    }
-  }
+  'response': {
+    '200': {
+      'operationId': 'cars__MIA__changeStateMany__MIA__response.200',
+      'type': 'integer',
+      'minimum': 0,
+      'description': 'Number of updated cars',
+    },
+  },
 }
-        

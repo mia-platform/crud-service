@@ -14,65 +14,64 @@
  * limitations under the License.
  */
 
-      'use strict'
-      
-      module.exports = {
-  "summary": "Delete multiple items from the cars collection.",
-  "tags": [
-    "Cars Endpoint"
+'use strict'
+
+module.exports = {
+  'summary': 'Delete multiple items from the cars collection.',
+  'tags': [
+    'Cars Endpoint',
   ],
-  "querystring": {
-    "operationId": "cars__MIA__deleteList__MIA__querystring",
-    "type": "object",
-    "properties": {
-      "name": {
-        "type": "string",
-        "description": "The car's name"
+  'querystring': {
+    'operationId': 'cars__MIA__deleteList__MIA__querystring',
+    'type': 'object',
+    'properties': {
+      'name': {
+        'type': 'string',
+        'description': "The car's name",
       },
-      "price": {
-        "type": "number",
-        "description": "The car's price"
+      'price': {
+        'type': 'number',
+        'description': "The car's price",
       },
-      "updaterId": {
-        "type": "string",
-        "description": "User id that has requested the last change successfully"
+      'updaterId': {
+        'type': 'string',
+        'description': 'User id that has requested the last change successfully',
       },
-      "updatedAt": {
-        "type": "string",
-        "description": "Date of the request that has performed the last change",
-        "examples": [
-          "2020-09-16T12:00:00.000Z"
+      'updatedAt': {
+        'type': 'string',
+        'description': 'Date of the request that has performed the last change',
+        'examples': [
+          '2020-09-16T12:00:00.000Z',
         ],
-        "format": "date-time"
+        'format': 'date-time',
       },
-      "creatorId": {
-        "type": "string",
-        "description": "User id that has created this object"
+      'creatorId': {
+        'type': 'string',
+        'description': 'User id that has created this object',
       },
-      "createdAt": {
-        "type": "string",
-        "description": "Date of the request that has performed the object creation",
-        "examples": [
-          "2020-09-16T12:00:00.000Z"
+      'createdAt': {
+        'type': 'string',
+        'description': 'Date of the request that has performed the object creation',
+        'examples': [
+          '2020-09-16T12:00:00.000Z',
         ],
-        "format": "date-time"
+        'format': 'date-time',
       },
-      "_q": {
-        "type": "string",
-        "description": "Additional query part to forward to MongoDB"
+      '_q': {
+        'type': 'string',
+        'description': 'Additional query part to forward to MongoDB',
       },
-      "_st": {
-        "type": "string",
-        "pattern": "(PUBLIC|DRAFT|TRASH|DELETED)(,(PUBLIC|DRAFT|TRASH|DELETED))*",
-        "default": "PUBLIC",
-        "description": "Filter by \\_\\_STATE__, multiple states can be specified in OR by providing a comma separated list"
+      '_st': {
+        'type': 'string',
+        'pattern': '(PUBLIC|DRAFT|TRASH|DELETED)(,(PUBLIC|DRAFT|TRASH|DELETED))*',
+        'default': 'PUBLIC',
+        'description': 'Filter by \\_\\_STATE__, multiple states can be specified in OR by providing a comma separated list',
       },
-      "_rawp": {
-        "type": "string",
-        "description": "Additional raw stringified projection for MongoDB"
-      }
+      '_rawp': {
+        'type': 'string',
+        'description': 'Additional raw stringified projection for MongoDB',
+      },
     },
-    "additionalProperties": false
-  }
+    'additionalProperties': false,
+  },
 }
-        

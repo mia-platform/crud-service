@@ -14,76 +14,75 @@
  * limitations under the License.
  */
 
-      'use strict'
-      
-      module.exports = {
-  "summary": "Insert new items in the cars collection.",
-  "tags": [
-    "Cars Endpoint"
+'use strict'
+
+module.exports = {
+  'summary': 'Insert new items in the cars collection.',
+  'tags': [
+    'Cars Endpoint',
   ],
-  "body": {
-    "operationId": "cars__MIA__postBulk__MIA__body",
-    "type": "array",
-    "items": {
-      "type": "object",
-      "required": [
-        "name"
+  'body': {
+    'operationId': 'cars__MIA__postBulk__MIA__body',
+    'type': 'array',
+    'items': {
+      'type': 'object',
+      'required': [
+        'name',
       ],
-      "properties": {
-        "name": {
-          "type": "string",
-          "description": "The car's name"
+      'properties': {
+        'name': {
+          'type': 'string',
+          'description': "The car's name",
         },
-        "price": {
-          "type": "number",
-          "description": "The car's price"
+        'price': {
+          'type': 'number',
+          'description': "The car's price",
         },
-        "position": {
-          "type": "array",
-          "items": {
-            "type": "number"
+        'position': {
+          'type': 'array',
+          'items': {
+            'type': 'number',
           },
-          "minItems": 2,
-          "maxItems": 3,
-          "description": "The car's position"
+          'minItems': 2,
+          'maxItems': 3,
+          'description': "The car's position",
         },
-        "additionalInfo": {
-          "type": "object",
-          "additionalProperties": true
+        'additionalInfo': {
+          'type': 'object',
+          'additionalProperties': true,
         },
-        "__STATE__": {
-          "type": "string",
-          "enum": [
-            "PUBLIC",
-            "DRAFT",
-            "TRASH",
-            "DELETED"
+        '__STATE__': {
+          'type': 'string',
+          'enum': [
+            'PUBLIC',
+            'DRAFT',
+            'TRASH',
+            'DELETED',
           ],
-          "description": "The state of the document",
-          "default": "PUBLIC"
-        }
+          'description': 'The state of the document',
+          'default': 'PUBLIC',
+        },
       },
-      "additionalProperties": false
-    }
+      'additionalProperties': false,
+    },
   },
-  "response": {
-    "200": {
-      "operationId": "cars__MIA__postBulk__MIA__response.200",
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "_id": {
-            "type": "string",
-            "pattern": "^[a-fA-F\\d]{24}$",
-            "description": "Hexadecimal identifier of the document in the collection",
-            "examples": [
-              "000000000000000000000000"
-            ]
-          }
-        }
-      }
-    }
-  }
+  'response': {
+    '200': {
+      'operationId': 'cars__MIA__postBulk__MIA__response.200',
+      'type': 'array',
+      'items': {
+        'type': 'object',
+        'properties': {
+          '_id': {
+            'type': 'string',
+            'pattern': '^[a-fA-F\\d]{24}$',
+            'description': 'Hexadecimal identifier of the document in the collection',
+            'examples': [
+              '000000000000000000000000',
+            ],
+          },
+        },
+      },
+    },
+  },
 }
-        
