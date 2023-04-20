@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fixed
+
+- encryption not working with JSON Schema collection definition
+
 ## 6.5.0 - 2023-04-20
 
 ### Added

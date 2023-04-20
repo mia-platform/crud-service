@@ -96,7 +96,7 @@ tap.test('integration', async t => {
   t.end()
 })
 
-tap.test('new version integration', async t => {
+tap.test('JSON Schema collection definition integration', async t => {
   const databaseName = getMongoDatabaseName()
   const mongoURL = getMongoURL(databaseName)
 
@@ -444,7 +444,7 @@ tap.test('encryption integration', async t => {
   })
 })
 
-tap.test('new encryption integration', async t => {
+tap.test('JSON Schema collection definition encryption integration', async t => {
   const databaseName = getMongoDatabaseName()
   const mongoURL = getMongoURL(databaseName)
 
