@@ -52,7 +52,7 @@
   "devDependencies": {
     "@mia-platform/eslint-config-mia": "^3.0.0",
     "abstract-logging": "^2.0.1",
-    "eslint": "^8.36.0",
+    "eslint": "^8.38.0",
     "fastbench": "^1.0.1",
     "lodash.set": "^4.3.2",
     "mock-require": "^3.0.3",
