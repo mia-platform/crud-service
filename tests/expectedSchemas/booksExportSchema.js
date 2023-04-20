@@ -34,6 +34,30 @@ module.exports = {
           '000000000000000000000000',
         ],
       },
+      'creatorId': {
+        'type': 'string',
+        'description': 'User id that has created this object',
+      },
+      'createdAt': {
+        'type': 'string',
+        'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
+        'description': 'Date of the request that has performed the object creation',
+        'examples': [
+          '2020-09-16T12:00:00.000Z',
+        ],
+      },
+      'updaterId': {
+        'type': 'string',
+        'description': 'User id that has requested the last change successfully',
+      },
+      'updatedAt': {
+        'type': 'string',
+        'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
+        'description': 'Date of the request that has performed the last change',
+        'examples': [
+          '2020-09-16T12:00:00.000Z',
+        ],
+      },
       'name': {
         'type': 'string',
         'description': 'The name of the book',
@@ -66,30 +90,6 @@ module.exports = {
         'type': 'string',
         'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
         'description': 'The date it was published',
-        'examples': [
-          '2020-09-16T12:00:00.000Z',
-        ],
-      },
-      'updaterId': {
-        'type': 'string',
-        'description': 'User id that has requested the last change successfully',
-      },
-      'updatedAt': {
-        'type': 'string',
-        'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
-        'description': 'Date of the request that has performed the last change',
-        'examples': [
-          '2020-09-16T12:00:00.000Z',
-        ],
-      },
-      'creatorId': {
-        'type': 'string',
-        'description': 'User id that has created this object',
-      },
-      'createdAt': {
-        'type': 'string',
-        'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
-        'description': 'Date of the request that has performed the object creation',
         'examples': [
           '2020-09-16T12:00:00.000Z',
         ],
@@ -129,13 +129,13 @@ module.exports = {
         'anyOf': [
           {
             'type': 'string',
-            'pattern': '^-?(_id|name|isbn|price|author|authorAddressId|isPromoted|publishDate|tags|tagIds|additionalInfo|signature|metadata|attachments|editionsDates|updaterId|updatedAt|creatorId|createdAt|__STATE__)(\\.([^\\.,])+)*(,-?(_id|name|isbn|price|author|authorAddressId|isPromoted|publishDate|tags|tagIds|additionalInfo|signature|metadata|attachments|editionsDates|updaterId|updatedAt|creatorId|createdAt|__STATE__)(\\.([^\\.,])+)*)*$',
+            'pattern': '^-?(_id|__STATE__|creatorId|createdAt|updaterId|updatedAt|name|isbn|price|author|authorAddressId|isPromoted|publishDate|tags|tagIds|additionalInfo|signature|metadata|attachments|editionsDates)(\\.([^\\.,])+)*(,-?(_id|__STATE__|creatorId|createdAt|updaterId|updatedAt|name|isbn|price|author|authorAddressId|isPromoted|publishDate|tags|tagIds|additionalInfo|signature|metadata|attachments|editionsDates)(\\.([^\\.,])+)*)*$',
           },
           {
             'type': 'array',
             'items': {
               'type': 'string',
-              'pattern': '^-?(_id|name|isbn|price|author|authorAddressId|isPromoted|publishDate|tags|tagIds|additionalInfo|signature|metadata|attachments|editionsDates|updaterId|updatedAt|creatorId|createdAt|__STATE__)(\\.([^\\.,])+)*(,-?(_id|name|isbn|price|author|authorAddressId|isPromoted|publishDate|tags|tagIds|additionalInfo|signature|metadata|attachments|editionsDates|updaterId|updatedAt|creatorId|createdAt|__STATE__)(\\.([^\\.,])+)*)*$',
+              'pattern': '^-?(_id|__STATE__|creatorId|createdAt|updaterId|updatedAt|name|isbn|price|author|authorAddressId|isPromoted|publishDate|tags|tagIds|additionalInfo|signature|metadata|attachments|editionsDates)(\\.([^\\.,])+)*(,-?(_id|__STATE__|creatorId|createdAt|updaterId|updatedAt|name|isbn|price|author|authorAddressId|isPromoted|publishDate|tags|tagIds|additionalInfo|signature|metadata|attachments|editionsDates)(\\.([^\\.,])+)*)*$',
             },
           },
         ],

@@ -632,7 +632,6 @@ tap.test('HTTP PATCH /<id>', async t => {
 
   tests.forEach(testConf => {
     const { name, found, ...conf } = testConf
-
     t.test(name, async t => {
       await resetCollection()
 

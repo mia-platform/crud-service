@@ -26,8 +26,11 @@ mockUuidV4()
 
 const collectionDefinitions = {
   books: require('./collectionDefinitions/books'),
+  booksNew: require('./newCollectionDefinitions/books'),
   cars: require('./collectionDefinitions/cars'),
+  carsNew: require('./newCollectionDefinitions/cars'),
   stations: require('./collectionDefinitions/stations'),
+  stationsNew: require('./newCollectionDefinitions/stations'),
 }
 
 const Ajv = require('ajv')
@@ -56,16 +59,18 @@ ajv.addVocabulary(Object.values(SCHEMA_CUSTOM_KEYWORDS))
 const expectedSchemas = operations.reduce((acc, operation) => {
   return Object.assign(acc, {
     [operation]: {
-      stations: require(`./expectedSchemas/stations${operation}Schema`),
       books: require(`./expectedSchemas/books${operation}Schema`),
+      booksNew: require(`./expectedSchemas/booksNew${operation}Schema`),
       cars: require(`./expectedSchemas/cars${operation}Schema`),
+      carsNew: require(`./expectedSchemas/carsNew${operation}Schema`),
+      stations: require(`./expectedSchemas/stations${operation}Schema`),
+      stationsNew: require(`./expectedSchemas/stationsNew${operation}Schema`),
     },
   })
 }, {})
 
 tap.test('generate JSON Schemas', t => {
   t.plan(collections.length * operations.length)
-
 
   collections.forEach(collection => {
     const collectionDefinition = collectionDefinitions[collection]
@@ -166,7 +171,7 @@ tap.test('count querystring validaton - valid', t => {
   const generator = getJsonSchemaGenerator(collectionDefinitions[collection])
   const validQuery = {
     name: 'Ulysses',
-    publishDate: '2018-02-08',
+    publishDate: new Date().toISOString(),
   }
   const schema = generator.generateCountJSONSchema()
   const validate = ajv.compile(schema.querystring)
@@ -191,12 +196,12 @@ tap.test('get item _id string - valid', t => {
 
   const collection = 'stations'
   const generator = getJsonSchemaGenerator(collectionDefinitions[collection])
-  const invalidQuery = {
+  const validQuery = {
     _id: '002415b0-8d6d-427c-b654-9857183e57a7',
   }
   const schema = generator.generateCountJSONSchema()
   const validate = ajv.compile(schema.querystring)
-  t.ok(validate(invalidQuery))
+  t.ok(validate(validQuery))
 })
 
 tap.test('get item _id string - not valid', t => {

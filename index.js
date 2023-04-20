@@ -42,11 +42,12 @@ const generatePathFieldsForRawSchema = require('./lib/generatePathFieldsForRawSc
 const { getIdType, registerMongoInstances } = require('./lib/mongo/mongo-plugin')
 const mergeViewsInCollections = require('./lib/mergeViewsInCollections')
 
-const modelJsonSchema = require('./lib/model.jsonschema')
+const { compatibilityModelJsonSchema, modelJsonSchema } = require('./lib/model.jsonschema')
 const fastifyEnvSchema = require('./envSchema')
 
 const ajv = new Ajv({ useDefaults: true })
 ajvFormats(ajv)
+const compatibilityValidate = ajv.compile(compatibilityModelJsonSchema)
 const validate = ajv.compile(modelJsonSchema)
 
 const PREFIX_OF_INDEX_NAMES_TO_PRESERVE = 'preserve_'
@@ -97,27 +98,41 @@ async function loadModels(fastify) {
 
   const models = {}
   for (const collectionDefinition of mergedCollections) {
-    const valid = validate(collectionDefinition)
-    if (!valid) {
-      fastify.log.debug(validate.errors)
+    if (!collectionDefinition.schema && !compatibilityValidate(collectionDefinition)) {
+      fastify.log.warn({ collectionName: collectionDefinition.name }, 'collection using custom fields configuration - which has been deprecated')
+      fastify.log.error(compatibilityValidate.errors)
       throw new Error(`Invalid collection definition: ${collectionDefinition.name}`)
     }
 
-    const collectionName = collectionDefinition.name
-    const collectionEndpoint = collectionDefinition.endpointBasePath
-    const isView = collectionDefinition.type === VIEW_TYPE
+    if (collectionDefinition.schema && !validate(collectionDefinition)) {
+      fastify.log.error(validate.errors)
+      throw new Error(`Invalid collection definition: ${collectionDefinition.name}`)
+    }
+
+    const {
+      name: collectionName,
+      endpointBasePath: collectionEndpoint,
+      type: collectionType,
+      schema: collectionSchema,
+      fields: deprecatedCollectionSchema,
+      defaultState,
+      indexes,
+    } = collectionDefinition
+    const isView = collectionType === VIEW_TYPE
 
     fastify.log.trace({ collectionEndpoint, collectionName }, 'Registering CRUD')
-    const collectionType = getIdType(collectionDefinition)
-    const collection = fastify.mongo[getDatabaseNameByType(collectionType)].db.collection(collectionName)
+    const collectionIdType = getIdType(collectionDefinition)
+    const collection = fastify.mongo[getDatabaseNameByType(collectionIdType)].db.collection(collectionName)
 
-    const allFieldNames = collectionDefinition.fields.map(field => field.name)
+    const allFieldNames = !collectionSchema
+      ? deprecatedCollectionSchema.map(({ name }) => name)
+      : Object.keys(collectionDefinition.schema.properties)
     const pathsForRawSchema = generatePathFieldsForRawSchema(fastify.log, collectionDefinition)
 
     // TODO: make this configurable
     const crudService = new CrudService(
       collection,
-      collectionDefinition.defaultState,
+      defaultState,
       { allowDiskUse: fastify.config.ALLOW_DISK_USE_IN_QUERIES },
     )
     const queryParser = new QueryParser(collectionDefinition, pathsForRawSchema)
@@ -136,7 +151,7 @@ async function loadModels(fastify) {
     )
 
     if (isView) {
-      const existingCollectionCursor = await fastify.mongo[getDatabaseNameByType(collectionType)].db.listCollections(
+      const existingCollectionCursor = await fastify.mongo[getDatabaseNameByType(collectionIdType)].db.listCollections(
         {
           name: collectionName,
         },
@@ -146,13 +161,13 @@ async function loadModels(fastify) {
       const retrievedCollection = await existingCollectionCursor.next()
       if (retrievedCollection) {
         try {
-          await fastify.mongo[getDatabaseNameByType(collectionType)].db.collection(collectionName).drop()
+          await fastify.mongo[getDatabaseNameByType(collectionIdType)].db.collection(collectionName).drop()
         } catch (error) {
           throw new Error('Failed to delete view', { cause: error })
         }
       }
       try {
-        await fastify.mongo[getDatabaseNameByType(collectionType)].db.createCollection(
+        await fastify.mongo[getDatabaseNameByType(collectionIdType)].db.createCollection(
           collectionName,
           {
             viewOn: collectionDefinition.source,
@@ -163,7 +178,7 @@ async function loadModels(fastify) {
         throw new Error('Failed to create view', { cause: error })
       }
     } else {
-      await createIndexes(collection, collectionDefinition.indexes || [], PREFIX_OF_INDEX_NAMES_TO_PRESERVE)
+      await createIndexes(collection, indexes || [], PREFIX_OF_INDEX_NAMES_TO_PRESERVE)
     }
 
     models[getCollectionNameFromEndpoint(collectionEndpoint)] = {
