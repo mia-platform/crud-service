@@ -243,16 +243,8 @@ tap.test('validate schema', async t => {
           },
           location: {
             type: 'object',
-            properties: {
-              type: {
-                type: 'string',
-              },
-              coordinates: {
-                type: 'array',
-                items: {
-                  type: 'number',
-                },
-              },
+            __mia_configuration: {
+              type: 'GeoPoint',
             },
           },
           openedAt: {
