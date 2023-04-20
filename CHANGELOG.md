@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## 6.5.0 - 2023-04-20
+
 ### Added
 
 - Collections configuration files can now accept a new field `schema` which allows to define the collection data model by means of a JSON Schema.
