@@ -32,6 +32,7 @@ const {
 const animalsFixtures = require('./fixtures/animals')
 
 const COLLECTION_DEFINITION_FOLDER = path.join(__dirname, 'collectionDefinitions')
+const NEW_COLLECTION_DEFINITION_FOLDER = path.join(__dirname, 'newCollectionDefinitions')
 const VIEWS_DEFINITION_FOLDER = path.join(__dirname, 'viewsDefinitions')
 
 tap.test('integration', async t => {
@@ -76,6 +77,56 @@ tap.test('integration', async t => {
     const response = await fastify.inject({
       method: 'GET',
       url: '/internal/books-endpoint/',
+    })
+
+    t.strictSame(response.statusCode, 200)
+  })
+
+  t.test('car is up', async t => {
+    t.plan(1)
+
+    const response = await fastify.inject({
+      method: 'GET',
+      url: '/cars-endpoint/',
+    })
+
+    t.strictSame(response.statusCode, 200)
+  })
+
+  t.end()
+})
+
+tap.test('JSON Schema collection definition integration', async t => {
+  const databaseName = getMongoDatabaseName()
+  const mongoURL = getMongoURL(databaseName)
+
+  const client = await MongoClient.connect(mongoURL)
+  const database = client.db(databaseName)
+  const collection = database.collection(BOOKS_COLLECTION_NAME)
+  await clearCollectionAndInsertFixtures(collection)
+
+  const fastify = await lc39('./index.js', {
+    envVariables: {
+      MONGODB_URL: mongoURL,
+      COLLECTION_DEFINITION_FOLDER: NEW_COLLECTION_DEFINITION_FOLDER,
+      USER_ID_HEADER_KEY: 'userid',
+      VIEWS_DEFINITION_FOLDER,
+    },
+    logLevel: 'silent',
+  })
+
+  t.teardown(async() => {
+    await database.dropDatabase()
+    await client.close()
+    await fastify.close()
+  })
+
+  t.test('book is up', async t => {
+    t.plan(1)
+
+    const response = await fastify.inject({
+      method: 'GET',
+      url: '/books-endpoint/',
     })
 
     t.strictSame(response.statusCode, 200)
@@ -299,6 +350,125 @@ tap.test('encryption integration', async t => {
     envVariables: {
       MONGODB_URL: mongoURL,
       COLLECTION_DEFINITION_FOLDER,
+      USER_ID_HEADER_KEY: 'userid',
+      KMS_PROVIDER: 'local',
+      LOCAL_MASTER_KEY_PATH: path.join(__dirname, '/lib/mongo/test-master-key.txt'),
+      KEY_VAULT_NAMESPACE: 'encryption.ns',
+    },
+    logLevel: 'silent',
+  })
+
+  t.teardown(async() => {
+    await client.close()
+    await fastify.close()
+  })
+
+  t.test('book is up', async t => {
+    t.plan(1)
+
+    const response = await fastify.inject({
+      method: 'GET',
+      url: '/books-endpoint/',
+    })
+
+    t.strictSame(response.statusCode, 200)
+  })
+
+  t.test('book encrypted is up', async t => {
+    t.plan(1)
+
+    const response = await fastify.inject({
+      method: 'GET',
+      url: '/books-encrypted-endpoint/',
+    })
+
+    t.strictSame(response.statusCode, 200)
+  })
+
+  t.test('car is up', async t => {
+    t.plan(1)
+
+    const response = await fastify.inject({
+      method: 'GET',
+      url: '/cars-endpoint/',
+    })
+
+    t.strictSame(response.statusCode, 200)
+  })
+
+  t.test('books-encrypted is really encrypted', async t => {
+    const postResponse = await fastify.inject({
+      method: 'POST',
+      url: '/books-encrypted-endpoint/',
+      payload: {
+        name: 'Crypted name',
+        isbn: 'Crypted isbn',
+        author: 'Uncrypted author',
+        metadata: {
+          somethingString: 'String something',
+          somethingNumber: 3,
+          somethingObject: {
+            childNumber: 3,
+          },
+        },
+      },
+    })
+
+    t.strictSame(postResponse.statusCode, 200)
+
+    const book = await collection.findOne()
+
+    t.not(book.name, 'Crypted name')
+    t.not(book.isbn, 'Crypted isbn')
+    t.equal(book.author, 'Uncrypted author')
+    t.not(book.metadata.somethingString, 'String something')
+    t.not(book.metadata.somethingObject.childNumber, 3)
+    t.equal(book.metadata.somethingNumber, 3)
+
+    const getResponse = await fastify.inject({
+      method: 'GET',
+      url: '/books-encrypted-endpoint/',
+    })
+
+    const [responsePayload] = JSON.parse(getResponse.payload)
+
+    t.strictSame(getResponse.statusCode, 200)
+    t.equal(responsePayload.name, 'Crypted name')
+    t.equal(responsePayload.isbn, 'Crypted isbn')
+    t.equal(responsePayload.author, 'Uncrypted author')
+    t.equal(responsePayload.metadata.somethingString, 'String something')
+    t.equal(responsePayload.metadata.somethingObject.childNumber, 3)
+    t.equal(responsePayload.metadata.somethingNumber, 3)
+
+    t.end()
+  })
+})
+
+tap.test('JSON Schema collection definition encryption integration', async t => {
+  const databaseName = getMongoDatabaseName()
+  const mongoURL = getMongoURL(databaseName)
+
+  const client = await MongoClient.connect(mongoURL)
+  const database = client.db(databaseName)
+
+  const isEncryptionSupported = process.env.MONGO_VERSION >= '4.2'
+
+  if (!isEncryptionSupported) {
+    t.comment('For this mongo version encryption is not supported, I will skip this test')
+    await client.close()
+    t.end()
+    return
+  }
+
+  const collection = database.collection('books-encrypted')
+  try {
+    await collection.drop()
+  } catch (error) { /* ignore errors raised while removing records from collection */ }
+
+  const fastify = await lc39('./index.js', {
+    envVariables: {
+      MONGODB_URL: mongoURL,
+      COLLECTION_DEFINITION_FOLDER: NEW_COLLECTION_DEFINITION_FOLDER,
       USER_ID_HEADER_KEY: 'userid',
       KMS_PROVIDER: 'local',
       LOCAL_MASTER_KEY_PATH: path.join(__dirname, '/lib/mongo/test-master-key.txt'),

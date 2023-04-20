@@ -21,7 +21,7 @@ const { STATES } = require('../../lib/consts')
 module.exports = {
   name: 'books-encrypted',
   endpointBasePath: '/books-encrypted-endpoint',
-  defaultState: 'DRAFT',
+  defaultState: 'PUBLIC',
   schema: {
     type: 'object',
     required: [
@@ -164,15 +164,18 @@ module.exports = {
           somethingObject: {
             type: 'object',
             properties: {
-              childNumber: { type: 'number' },
-            },
-            additionalProperties: true,
-            __mia_configuration: {
-              encryption: {
-                enabled: true,
-                searchable: false,
+              childNumber: {
+                type: 'number',
+                __mia_configuration: {
+                  encryption: {
+                    enabled: true,
+                    searchable: false,
+                  },
+                },
               },
             },
+            additionalProperties: true,
+
           },
           somethingArrayOfNumbers: {
             type: 'array',
