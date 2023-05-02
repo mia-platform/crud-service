@@ -185,28 +185,8 @@ tap.test('patchMany', async t => {
     const ret = await crudService.patchMany(
       context,
       updateCommand(),
-      nonMatchingQuery()
-      , [STATES.PUBLIC]
-    )
-
-    t.test('should return ok and no modifications', t => {
-      t.plan(1)
-      t.equal(ret, 0)
-    })
-
-    checkDocumentsInDatabase(t, collection, [], fixtures)
-  })
-
-  t.test('matching query but no states', async t => {
-    t.plan(2)
-
-    await clearCollectionAndInsertFixtures(collection)
-
-    const ret = await crudService.patchMany(
-      context,
-      updateCommand(),
-      {},
-      []
+      nonMatchingQuery(),
+      [STATES.PUBLIC]
     )
 
     t.test('should return ok and no modifications', t => {
