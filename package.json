@@ -41,7 +41,7 @@
     "lodash.get": "^4.4.2",
     "mongodb-client-encryption": "^2.6.0",
     "pino": "^8.11.0",
-    "ramda": "^0.28.0",
+    "ramda": "^0.29.0",
     "through2": "^4.0.2",
     "uuid": "^9.0.0"
   },
