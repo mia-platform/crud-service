@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+
+- optimization of the __STATE__ query sent to MongoDB: $in operator has been removed when not necessary
+
 ## 6.5.1 - 2023-04-20
 
 ### Fixed
