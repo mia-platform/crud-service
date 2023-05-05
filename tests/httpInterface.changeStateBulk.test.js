@@ -518,7 +518,7 @@ tap.test('HTTP POST /state', async t => {
             _id: publicFixtures[0]._id,
             metadata: {
               somethingNumber: '3',
-              uknownField: 2,
+              unknownField: 2,
             },
           },
           stateTo: STATES.DRAFT,
@@ -532,7 +532,7 @@ tap.test('HTTP POST /state', async t => {
       t.strictSame(JSON.parse(response.payload), {
         statusCode: 400,
         error: 'Bad Request',
-        message: 'body must NOT have additional properties',
+        message: 'body must NOT have additional properties. Property "unknownField" is not defined in validation schema',
       })
 
       t.end()
