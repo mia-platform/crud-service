@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## 6.5.2 - 2023-05-08
+
 ### Changed
 
 - `__mia_configuration` property in a collection `schema` now accepts additional properties

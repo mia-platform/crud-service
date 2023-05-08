@@ -42,7 +42,7 @@ LABEL maintainer="Mia Platform Core Team<core@mia-platform.eu>" \
     name="CRUD Service" \
     description="HTTP interface to perform CRUD operations on configured MongoDB collections" \
     eu.mia-platform.url="https://www.mia-platform.eu" \
-    eu.mia-platform.version="6.5.1"
+    eu.mia-platform.version="6.5.2"
 
 ENV NODE_ENV=production
 ENV LOG_LEVEL=info
