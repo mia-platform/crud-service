@@ -659,5 +659,76 @@ tap.test('validate schema', async t => {
     t.end()
   })
 
+  await t.test('should validate with additional property in __mia_configuration schema', t => {
+    const ajv = new Ajv({ useDefaults: true, coerceTypes: true })
+    const validate = ajv.compile(modelJsonSchema)
+
+    const jsonFile = {
+      name: 'restaurants',
+      type: 'collection',
+      defaultState: 'PUBLIC',
+      endpointBasePath: '/restaurants-endpoint',
+      schema: {
+        type: 'object',
+        required: [
+          '_id',
+          'creatorId',
+          'createdAt',
+          'updaterId',
+          'updatedAt',
+          '__STATE__',
+          'name',
+        ],
+        properties: {
+          _id: {
+            type: 'string',
+            pattern: '^[a-fA-F0-9]{24}$',
+          },
+          __STATE__: {
+            type: 'string',
+            enum: Object.keys(STATES),
+          },
+          creatorId: {
+            type: 'string',
+          },
+          createdAt: {
+            type: 'string',
+            format: 'date-time',
+          },
+          updaterId: {
+            type: 'string',
+          },
+          updatedAt: {
+            type: 'string',
+            format: 'date-time',
+          },
+          ingredients: {
+            type: 'array',
+            items: {
+              type: 'string',
+            },
+          },
+          name: {
+            type: 'string',
+          },
+          location: {
+            type: 'object',
+            __mia_configuration: {
+              type: 'GeoPoint',
+              foo: 'bar',
+            },
+          },
+          openedAt: {
+            type: 'string',
+            format: 'date-time',
+          },
+        },
+      },
+    }
+
+    t.strictSame(validate(jsonFile), true)
+    t.end()
+  })
+
   t.end()
 })
