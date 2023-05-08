@@ -659,7 +659,7 @@ tap.test('validate schema', async t => {
     t.end()
   })
 
-  await t.test('should not validate invalid new schema', t => {
+  await t.test('should validate with additional property in __mia_configuration schema', t => {
     const ajv = new Ajv({ useDefaults: true, coerceTypes: true })
     const validate = ajv.compile(modelJsonSchema)
 
@@ -714,7 +714,8 @@ tap.test('validate schema', async t => {
           location: {
             type: 'object',
             __mia_configuration: {
-              invalidType: 'GeoPoint',
+              type: 'GeoPoint',
+              foo: 'bar',
             },
           },
           openedAt: {
@@ -725,7 +726,7 @@ tap.test('validate schema', async t => {
       },
     }
 
-    t.strictSame(validate(jsonFile), false)
+    t.strictSame(validate(jsonFile), true)
     t.end()
   })
 
