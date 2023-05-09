@@ -67,7 +67,6 @@ async function registerCrud(fastify, { modelName, isView }) {
   fastify.decorate('castItem', model.castItem)
   fastify.decorate('allFieldNames', model.allFieldNames)
   fastify.decorate('jsonSchemaGenerator', model.jsonSchemaGenerator)
-  fastify.decorate('jsonSchemaGeneratorWithNested', model.jsonSchemaGeneratorWithNested)
   fastify.decorate('modelName', modelName)
   const prefix = model.definition.endpointBasePath
   fastify.register(httpInterface, { prefix, isView })
@@ -139,12 +138,6 @@ async function loadModels(fastify) {
     const resultCaster = new ResultCaster(collectionDefinition)
     const jsonSchemaGenerator = new JSONSchemaGenerator(
       collectionDefinition,
-      {},
-      fastify.config.CRUD_LIMIT_CONSTRAINT_ENABLED,
-      fastify.config.CRUD_MAX_LIMIT
-    )
-    const jsonSchemaGeneratorWithNested = new JSONSchemaGenerator(
-      collectionDefinition,
       pathsForRawSchema,
       fastify.config.CRUD_LIMIT_CONSTRAINT_ENABLED,
       fastify.config.CRUD_MAX_LIMIT
@@ -157,7 +150,8 @@ async function loadModels(fastify) {
         },
         {
           nameOnly: true,
-        })
+        }
+      )
       const retrievedCollection = await existingCollectionCursor.next()
       if (retrievedCollection) {
         try {
@@ -189,7 +183,6 @@ async function loadModels(fastify) {
       castItem: (item) => resultCaster.castItem(item),
       allFieldNames,
       jsonSchemaGenerator,
-      jsonSchemaGeneratorWithNested,
       isView,
     }
   }
