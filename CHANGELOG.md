@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+- add option to enable tracing
+
+### Changed
+
+- upgrade lc39 to v7, which upgrade fastify to v4
+
 ## 6.5.2 - 2023-05-08
 
 ### Changed

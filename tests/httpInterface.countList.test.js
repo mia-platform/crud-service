@@ -141,7 +141,7 @@ tap.test('HTTP GET /count', async t => {
       })
 
       t.test('should return 200', t => {
-        t.strictSame(response.statusCode, 200)
+        t.strictSame(response.statusCode, 200, response.payload)
         t.end()
       })
 

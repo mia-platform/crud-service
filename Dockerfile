@@ -49,6 +49,7 @@ ENV LOG_LEVEL=info
 ENV HTTP_PORT=3000
 ENV SERVICE_PREFIX=/
 ENV EXPOSE_METRICS=true
+ENV ENABLE_TRACING=false
 
 EXPOSE ${HTTP_PORT}
 
@@ -62,7 +63,7 @@ USER node
 
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
-CMD ./node_modules/.bin/lc39 ./index.js --port=${HTTP_PORT} --log-level=${LOG_LEVEL} --prefix=${SERVICE_PREFIX} --expose-metrics ${EXPOSE_METRICS}
+CMD ./node_modules/.bin/lc39 ./index.js --port=${HTTP_PORT} --log-level=${LOG_LEVEL} --prefix=${SERVICE_PREFIX} --expose-metrics ${EXPOSE_METRICS} --enable-tracing=${ENABLE_TRACING}
 
 ########################################################################################################################
 

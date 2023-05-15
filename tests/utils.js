@@ -477,7 +477,7 @@ function sortByAttachmentsName(a, b, sortType) {
   return sortByName(a.attachments[aIndex], b.attachments[bIndex], sortType)
 }
 
-const mongoHost = process.env.MONGO_HOST ?? 'mongodb://localhost:27017'
+const mongoHost = process.env.MONGO_HOST ?? '127.0.0.1:27017'
 
 /**
  * It creates a unique name for a Database to be used in tests. The name will include a series
