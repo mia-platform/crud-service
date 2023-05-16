@@ -501,7 +501,8 @@ tap.test('HTTP POST /state', async t => {
       t.strictSame(JSON.parse(response.payload), {
         statusCode: 400,
         error: 'Bad Request',
-        message: "body must have required property 'somethingNumber'",
+        message: "body/0/filter/metadata must have required property 'somethingNumber'",
+        code: 'FST_ERR_VALIDATION',
       })
 
       t.end()
@@ -532,7 +533,7 @@ tap.test('HTTP POST /state', async t => {
       t.strictSame(JSON.parse(response.payload), {
         statusCode: 400,
         error: 'Bad Request',
-        message: 'body must NOT have additional properties. Property "unknownField" is not defined in validation schema',
+        message: 'body/0/filter/metadata must NOT have additional properties. Property "unknownField" is not defined in validation schema',
       })
 
       t.end()
