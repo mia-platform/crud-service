@@ -468,10 +468,251 @@ module.exports = {
             'type': 'object',
             'additionalProperties': true,
           },
+          'signature.name': {
+            'type': 'string',
+          },
+          'metadata.somethingString': {
+            'type': 'string',
+          },
+          'metadata.somethingNumber': {
+            'type': 'number',
+          },
+          'metadata.somethingArrayObject': {
+            'type': 'array',
+            'items': {
+              'type': 'object',
+              'properties': {
+                'arrayItemObjectChildNumber': {
+                  'type': 'number',
+                },
+                'anotherNumber': {
+                  'type': 'number',
+                },
+                'anotherObject': {
+                  'type': 'object',
+                  'nullable': true,
+                },
+              },
+              'additionalProperties': true,
+              'required': [
+                'arrayItemObjectChildNumber',
+              ],
+            },
+          },
+          'metadata.somethingObject': {
+            'type': 'object',
+            'properties': {
+              'childNumber': {
+                'type': 'number',
+              },
+            },
+            'additionalProperties': true,
+          },
+          'metadata.somethingObject.childNumber': {
+            'type': 'number',
+          },
+          'metadata.somethingArrayOfNumbers': {
+            'type': 'array',
+            'items': {
+              'type': 'number',
+            },
+          },
+          'metadata.exampleArrayOfArray': {
+            'type': 'array',
+            'items': {
+              'type': 'array',
+              'items': {
+                'type': 'string',
+              },
+            },
+          },
+          'metadata.somethingArrayObject.$.replace': {
+            'type': 'object',
+            'properties': {
+              'arrayItemObjectChildNumber': {
+                'type': 'number',
+              },
+              'anotherNumber': {
+                'type': 'number',
+              },
+              'anotherObject': {
+                'type': 'object',
+                'nullable': true,
+              },
+            },
+            'additionalProperties': true,
+            'required': [
+              'arrayItemObjectChildNumber',
+            ],
+          },
+          'metadata.somethingArrayObject.$.merge': {
+            'type': 'object',
+            'properties': {
+              'arrayItemObjectChildNumber': {
+                'type': 'number',
+              },
+              'anotherNumber': {
+                'type': 'number',
+              },
+              'anotherObject': {
+                'type': 'object',
+                'nullable': true,
+              },
+            },
+            'additionalProperties': true,
+          },
+          'metadata.somethingArrayOfNumbers.$.replace': {
+            'type': 'number',
+          },
+          'metadata.exampleArrayOfArray.$.replace': {
+            'type': 'array',
+            'items': {
+              'type': 'string',
+            },
+          },
         },
         'additionalProperties': false,
         'patternProperties': {
           'additionalInfo.': true,
+          'metadata\\.somethingArrayObject\\.\\d+$': {
+            'type': 'object',
+            'properties': {
+              'arrayItemObjectChildNumber': {
+                'type': 'number',
+              },
+              'anotherNumber': {
+                'type': 'number',
+              },
+              'anotherObject': {
+                'type': 'object',
+                'nullable': true,
+              },
+            },
+            'additionalProperties': true,
+            'required': [
+              'arrayItemObjectChildNumber',
+            ],
+          },
+          'metadata\\.somethingArrayObject\\.\\d+\\..+$': true,
+          'metadata\\.somethingArrayObject\\.\\d+\\.arrayItemObjectChildNumber$': {
+            'type': 'number',
+          },
+          'metadata\\.somethingArrayObject\\.\\d+\\.anotherNumber$': {
+            'type': 'number',
+          },
+          'metadata\\.somethingArrayObject\\.\\d+\\.anotherObject$': {
+            'type': 'object',
+            'nullable': true,
+          },
+          'metadata\\.somethingObject\\..+$': true,
+          'metadata\\.somethingArrayOfNumbers\\.\\d+$': {
+            'type': 'number',
+          },
+          'metadata\\.exampleArrayOfArray\\.\\d+$': {
+            'type': 'array',
+            'items': {
+              'type': 'string',
+            },
+          },
+          'metadata\\.exampleArrayOfArray\\.\\d+\\.\\d+$': {
+            'type': 'string',
+          },
+          'attachments\\.\\d+$': {
+            'type': 'object',
+            'properties': {
+              'name': {
+                'type': 'string',
+              },
+              'detail': {
+                'type': 'object',
+                'properties': {
+                  'size': {
+                    'type': 'number',
+                  },
+                },
+              },
+              'neastedArr': {
+                'type': 'array',
+                'items': {
+                  'type': 'number',
+                },
+              },
+              'additionalInfo': {
+                'type': 'object',
+                'additionalProperties': true,
+              },
+              'other': {
+                'type': 'string',
+              },
+              'size': {
+                'type': 'number',
+              },
+              'stuff': {
+                'type': 'number',
+              },
+              'more': {
+                'type': 'array',
+                'items': {
+                  'type': 'string',
+                },
+              },
+            },
+          },
+          'attachments\\.\\d+\\.name$': {
+            'type': 'string',
+          },
+          'attachments\\.\\d+\\.detail$': {
+            'type': 'object',
+            'properties': {
+              'size': {
+                'type': 'number',
+              },
+            },
+          },
+          'attachments\\.\\d+\\.detail\\.size$': {
+            'type': 'number',
+          },
+          'attachments\\.\\d+\\.neastedArr$': {
+            'type': 'array',
+            'items': {
+              'type': 'number',
+            },
+          },
+          'attachments\\.\\d+\\.neastedArr\\.\\d+$': {
+            'type': 'number',
+          },
+          'attachments\\.\\d+\\.additionalInfo$': {
+            'type': 'object',
+            'additionalProperties': true,
+          },
+          'attachments\\.\\d+\\.additionalInfo\\..+$': true,
+          'attachments\\.\\d+\\.other$': {
+            'type': 'string',
+          },
+          'attachments\\.\\d+\\.size$': {
+            'type': 'number',
+          },
+          'attachments\\.\\d+\\.stuff$': {
+            'type': 'number',
+          },
+          'attachments\\.\\d+\\.more$': {
+            'type': 'array',
+            'items': {
+              'type': 'string',
+            },
+          },
+          'attachments\\.\\d+\\.more\\.\\d+$': {
+            'type': 'string',
+          },
+          'metadata\\.exampleArrayOfArray\\.\\d+\\.\\$\\.replace$': {
+            'type': 'string',
+          },
+          'attachments\\.\\d+\\.neastedArr\\.\\$\\.replace$': {
+            'type': 'number',
+          },
+          'attachments\\.\\d+\\.more\\.\\$\\.replace$': {
+            'type': 'string',
+          },
         },
       },
       '$unset': {
@@ -585,10 +826,37 @@ module.exports = {
           'price': {
             'type': 'number',
           },
+          'metadata.somethingNumber': {
+            'type': 'number',
+          },
+          'metadata.somethingObject.childNumber': {
+            'type': 'number',
+          },
         },
         'additionalProperties': false,
         'patternProperties': {
           'additionalInfo.': true,
+          'metadata\\.somethingArrayObject\\.\\d+\\.arrayItemObjectChildNumber$': {
+            'type': 'number',
+          },
+          'metadata\\.somethingArrayObject\\.\\d+\\.anotherNumber$': {
+            'type': 'number',
+          },
+          'metadata\\.somethingArrayOfNumbers\\.\\d+$': {
+            'type': 'number',
+          },
+          'attachments\\.\\d+\\.detail\\.size$': {
+            'type': 'number',
+          },
+          'attachments\\.\\d+\\.neastedArr\\.\\d+$': {
+            'type': 'number',
+          },
+          'attachments\\.\\d+\\.size$': {
+            'type': 'number',
+          },
+          'attachments\\.\\d+\\.stuff$': {
+            'type': 'number',
+          },
         },
       },
       '$mul': {
@@ -597,10 +865,37 @@ module.exports = {
           'price': {
             'type': 'number',
           },
+          'metadata.somethingNumber': {
+            'type': 'number',
+          },
+          'metadata.somethingObject.childNumber': {
+            'type': 'number',
+          },
         },
         'additionalProperties': false,
         'patternProperties': {
           'additionalInfo.': true,
+          'metadata\\.somethingArrayObject\\.\\d+\\.arrayItemObjectChildNumber$': {
+            'type': 'number',
+          },
+          'metadata\\.somethingArrayObject\\.\\d+\\.anotherNumber$': {
+            'type': 'number',
+          },
+          'metadata\\.somethingArrayOfNumbers\\.\\d+$': {
+            'type': 'number',
+          },
+          'attachments\\.\\d+\\.detail\\.size$': {
+            'type': 'number',
+          },
+          'attachments\\.\\d+\\.neastedArr\\.\\d+$': {
+            'type': 'number',
+          },
+          'attachments\\.\\d+\\.size$': {
+            'type': 'number',
+          },
+          'attachments\\.\\d+\\.stuff$': {
+            'type': 'number',
+          },
         },
       },
       '$currentDate': {
@@ -672,6 +967,45 @@ module.exports = {
           'editionsDates': {
             'type': 'object',
             'additionalProperties': true,
+          },
+          'metadata.somethingArrayObject': {
+            'type': 'object',
+            'properties': {
+              'arrayItemObjectChildNumber': {
+                'type': 'number',
+              },
+              'anotherNumber': {
+                'type': 'number',
+              },
+              'anotherObject': {
+                'type': 'object',
+                'nullable': true,
+              },
+            },
+            'additionalProperties': true,
+            'required': [
+              'arrayItemObjectChildNumber',
+            ],
+          },
+          'metadata.somethingArrayOfNumbers': {
+            'type': 'number',
+          },
+          'metadata.exampleArrayOfArray': {
+            'type': 'array',
+            'items': {
+              'type': 'string',
+            },
+          },
+        },
+        'patternProperties': {
+          'metadata\\.exampleArrayOfArray\\.\\d+$': {
+            'type': 'string',
+          },
+          'attachments\\.\\d+\\.neastedArr$': {
+            'type': 'number',
+          },
+          'attachments\\.\\d+\\.more$': {
+            'type': 'string',
           },
         },
         'additionalProperties': false,
@@ -754,6 +1088,75 @@ module.exports = {
             'type': 'object',
             'additionalProperties': true,
           },
+          'metadata.somethingArrayObject': {
+            'type': 'object',
+            'properties': {
+              'arrayItemObjectChildNumber': {
+                'type': 'number',
+              },
+              'anotherNumber': {
+                'type': 'number',
+              },
+              'anotherObject': {
+                'type': 'object',
+                'nullable': true,
+              },
+            },
+            'additionalProperties': true,
+            'required': [
+              'arrayItemObjectChildNumber',
+            ],
+          },
+          'metadata.somethingArrayOfNumbers': {
+            'type': 'number',
+          },
+          'metadata.exampleArrayOfArray': {
+            'type': 'array',
+            'items': {
+              'type': 'string',
+            },
+          },
+        },
+        'patternProperties': {
+          'metadata\\.exampleArrayOfArray\\.\\d+$': {
+            'oneOf': [
+              {
+                'type': 'string',
+              },
+              {
+                'type': 'object',
+                'patternProperties': {
+                  '^$': {},
+                },
+              },
+            ],
+          },
+          'attachments\\.\\d+\\.neastedArr$': {
+            'oneOf': [
+              {
+                'type': 'number',
+              },
+              {
+                'type': 'object',
+                'patternProperties': {
+                  '^$': {},
+                },
+              },
+            ],
+          },
+          'attachments\\.\\d+\\.more$': {
+            'oneOf': [
+              {
+                'type': 'string',
+              },
+              {
+                'type': 'object',
+                'patternProperties': {
+                  '^$': {},
+                },
+              },
+            ],
+          },
         },
         'additionalProperties': false,
       },
@@ -834,6 +1237,75 @@ module.exports = {
           'editionsDates': {
             'type': 'object',
             'additionalProperties': true,
+          },
+          'metadata.somethingArrayObject': {
+            'type': 'object',
+            'properties': {
+              'arrayItemObjectChildNumber': {
+                'type': 'number',
+              },
+              'anotherNumber': {
+                'type': 'number',
+              },
+              'anotherObject': {
+                'type': 'object',
+                'nullable': true,
+              },
+            },
+            'additionalProperties': true,
+            'required': [
+              'arrayItemObjectChildNumber',
+            ],
+          },
+          'metadata.somethingArrayOfNumbers': {
+            'type': 'number',
+          },
+          'metadata.exampleArrayOfArray': {
+            'type': 'array',
+            'items': {
+              'type': 'string',
+            },
+          },
+        },
+        'patternProperties': {
+          'metadata\\.exampleArrayOfArray\\.\\d+$': {
+            'oneOf': [
+              {
+                'type': 'string',
+              },
+              {
+                'type': 'object',
+                'patternProperties': {
+                  '^$': {},
+                },
+              },
+            ],
+          },
+          'attachments\\.\\d+\\.neastedArr$': {
+            'oneOf': [
+              {
+                'type': 'number',
+              },
+              {
+                'type': 'object',
+                'patternProperties': {
+                  '^$': {},
+                },
+              },
+            ],
+          },
+          'attachments\\.\\d+\\.more$': {
+            'oneOf': [
+              {
+                'type': 'string',
+              },
+              {
+                'type': 'object',
+                'patternProperties': {
+                  '^$': {},
+                },
+              },
+            ],
           },
         },
         'additionalProperties': false,
