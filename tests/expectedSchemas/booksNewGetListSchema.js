@@ -34,32 +34,9 @@ module.exports = {
           '000000000000000000000000',
         ],
       },
-      'creatorId': {
-        'type': 'string',
-        'description': 'User id that has created this object',
-      },
-      'createdAt': {
-        'type': 'string',
-        'description': 'Date of the request that has performed the object creation',
-        'examples': [
-          '2020-09-16T12:00:00.000Z',
-        ],
-        'format': 'date-time',
-      },
-      'updaterId': {
-        'type': 'string',
-        'description': 'User id that has requested the last change successfully',
-      },
-      'updatedAt': {
-        'type': 'string',
-        'description': 'Date of the request that has performed the last change',
-        'examples': [
-          '2020-09-16T12:00:00.000Z',
-        ],
-        'format': 'date-time',
-      },
       'name': {
         'type': 'string',
+        'nullable': true,
         'description': 'The name of the book',
       },
       'isbn': {
@@ -92,11 +69,8 @@ module.exports = {
         'examples': [
           '2020-09-16T12:00:00.000Z',
         ],
+        'nullable': true,
         'format': 'date-time',
-      },
-      '_q': {
-        'type': 'string',
-        'description': 'Additional query part to forward to MongoDB',
       },
       '_p': {
         'type': 'string',
@@ -126,6 +100,10 @@ module.exports = {
         'type': 'integer',
         'minimum': 0,
         'description': 'Skip the specified number of documents',
+      },
+      '_q': {
+        'type': 'string',
+        'description': 'Additional query part to forward to MongoDB',
       },
       '_s': {
         'anyOf': [

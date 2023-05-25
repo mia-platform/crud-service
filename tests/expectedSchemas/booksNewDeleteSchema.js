@@ -35,32 +35,9 @@ module.exports = {
     'operationId': 'books__MIA__deleteItem__MIA__querystring',
     'type': 'object',
     'properties': {
-      'creatorId': {
-        'type': 'string',
-        'description': 'User id that has created this object',
-      },
-      'createdAt': {
-        'type': 'string',
-        'description': 'Date of the request that has performed the object creation',
-        'examples': [
-          '2020-09-16T12:00:00.000Z',
-        ],
-        'format': 'date-time',
-      },
-      'updaterId': {
-        'type': 'string',
-        'description': 'User id that has requested the last change successfully',
-      },
-      'updatedAt': {
-        'type': 'string',
-        'description': 'Date of the request that has performed the last change',
-        'examples': [
-          '2020-09-16T12:00:00.000Z',
-        ],
-        'format': 'date-time',
-      },
       'name': {
         'type': 'string',
+        'nullable': true,
         'description': 'The name of the book',
       },
       'isbn': {
@@ -93,11 +70,8 @@ module.exports = {
         'examples': [
           '2020-09-16T12:00:00.000Z',
         ],
+        'nullable': true,
         'format': 'date-time',
-      },
-      '_q': {
-        'type': 'string',
-        'description': 'Additional query part to forward to MongoDB',
       },
       '_st': {
         'type': 'string',
