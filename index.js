@@ -173,7 +173,8 @@ async function loadModels(fastify) {
         : existingStringCollection.includes(collectionName)
       if (alreadyExist) {
         try {
-          await fastify.mongo[getDatabaseNameByType(collectionIdType)]
+          await fastify
+            .mongo[getDatabaseNameByType(collectionIdType)]
             .db
             .collection(collectionName)
             .drop()
@@ -196,9 +197,9 @@ async function loadModels(fastify) {
         throw new Error('Failed to create view', { cause: error })
       }
     }
-    return createIndexes(collection, indexes, PREFIX_OF_INDEX_NAMES_TO_PRESERVE)
+    await createIndexes(collection, indexes, PREFIX_OF_INDEX_NAMES_TO_PRESERVE)
   })
-  await Promise.all(promises)
+  await Promise.allSettled(promises)
   fastify.decorate('models', models)
 }
 
