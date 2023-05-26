@@ -101,13 +101,13 @@ module.exports = {
         'anyOf': [
           {
             'type': 'string',
-            'pattern': '^-?(_id|name|price|additionalInfo|updaterId|updatedAt|creatorId|createdAt|__STATE__)(\\.([^\\.,])+)*(,-?(_id|name|price|additionalInfo|updaterId|updatedAt|creatorId|createdAt|__STATE__)(\\.([^\\.,])+)*)*$',
+            'pattern': '^-?(_id|updaterId|updatedAt|creatorId|createdAt|__STATE__|name|price|additionalInfo)(\\.([^\\.,])+)*(,-?(_id|updaterId|updatedAt|creatorId|createdAt|__STATE__|name|price|additionalInfo)(\\.([^\\.,])+)*)*$',
           },
           {
             'type': 'array',
             'items': {
               'type': 'string',
-              'pattern': '^-?(_id|name|price|additionalInfo|updaterId|updatedAt|creatorId|createdAt|__STATE__)(\\.([^\\.,])+)*(,-?(_id|name|price|additionalInfo|updaterId|updatedAt|creatorId|createdAt|__STATE__)(\\.([^\\.,])+)*)*$',
+              'pattern': '^-?(_id|updaterId|updatedAt|creatorId|createdAt|__STATE__|name|price|additionalInfo)(\\.([^\\.,])+)*(,-?(_id|updaterId|updatedAt|creatorId|createdAt|__STATE__|name|price|additionalInfo)(\\.([^\\.,])+)*)*$',
             },
           },
         ],

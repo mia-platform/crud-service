@@ -133,13 +133,13 @@ module.exports = {
         'anyOf': [
           {
             'type': 'string',
-            'pattern': '^-?(_id|__STATE__|creatorId|createdAt|updaterId|updatedAt|name|isbn|price|author|authorAddressId|isPromoted|publishDate|tags|tagIds|additionalInfo|signature|metadata|attachments|editionsDates)(\\.([^\\.,])+)*(,-?(_id|__STATE__|creatorId|createdAt|updaterId|updatedAt|name|isbn|price|author|authorAddressId|isPromoted|publishDate|tags|tagIds|additionalInfo|signature|metadata|attachments|editionsDates)(\\.([^\\.,])+)*)*$',
+            'pattern': '^-?(_id|updaterId|updatedAt|creatorId|createdAt|__STATE__|name|isbn|price|author|authorAddressId|isPromoted|publishDate|tags|tagIds|additionalInfo|signature|metadata|attachments|editionsDates)(\\.([^\\.,])+)*(,-?(_id|updaterId|updatedAt|creatorId|createdAt|__STATE__|name|isbn|price|author|authorAddressId|isPromoted|publishDate|tags|tagIds|additionalInfo|signature|metadata|attachments|editionsDates)(\\.([^\\.,])+)*)*$',
           },
           {
             'type': 'array',
             'items': {
               'type': 'string',
-              'pattern': '^-?(_id|__STATE__|creatorId|createdAt|updaterId|updatedAt|name|isbn|price|author|authorAddressId|isPromoted|publishDate|tags|tagIds|additionalInfo|signature|metadata|attachments|editionsDates)(\\.([^\\.,])+)*(,-?(_id|__STATE__|creatorId|createdAt|updaterId|updatedAt|name|isbn|price|author|authorAddressId|isPromoted|publishDate|tags|tagIds|additionalInfo|signature|metadata|attachments|editionsDates)(\\.([^\\.,])+)*)*$',
+              'pattern': '^-?(_id|updaterId|updatedAt|creatorId|createdAt|__STATE__|name|isbn|price|author|authorAddressId|isPromoted|publishDate|tags|tagIds|additionalInfo|signature|metadata|attachments|editionsDates)(\\.([^\\.,])+)*(,-?(_id|updaterId|updatedAt|creatorId|createdAt|__STATE__|name|isbn|price|author|authorAddressId|isPromoted|publishDate|tags|tagIds|additionalInfo|signature|metadata|attachments|editionsDates)(\\.([^\\.,])+)*)*$',
             },
           },
         ],
