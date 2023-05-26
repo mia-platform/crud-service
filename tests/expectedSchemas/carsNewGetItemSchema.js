@@ -43,6 +43,30 @@ module.exports = {
         'type': 'number',
         'description': "The car's price",
       },
+      'updaterId': {
+        'type': 'string',
+        'description': 'User id that has requested the last change successfully',
+      },
+      'updatedAt': {
+        'type': 'string',
+        'description': 'Date of the request that has performed the last change',
+        'examples': [
+          '2020-09-16T12:00:00.000Z',
+        ],
+        'format': 'date-time',
+      },
+      'creatorId': {
+        'type': 'string',
+        'description': 'User id that has created this object',
+      },
+      'createdAt': {
+        'type': 'string',
+        'description': 'Date of the request that has performed the object creation',
+        'examples': [
+          '2020-09-16T12:00:00.000Z',
+        ],
+        'format': 'date-time',
+      },
       '_p': {
         'type': 'string',
         'description': 'Return only the properties specified in a comma separated list',
@@ -59,6 +83,10 @@ module.exports = {
       '_rawp': {
         'type': 'string',
         'description': 'Additional raw stringified projection for MongoDB',
+      },
+      '_q': {
+        'type': 'string',
+        'description': 'Additional query part to forward to MongoDB',
       },
     },
     'patternProperties': {
