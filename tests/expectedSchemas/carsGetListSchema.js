@@ -42,6 +42,10 @@ module.exports = {
         'type': 'number',
         'description': "The car's price",
       },
+      '_q': {
+        'type': 'string',
+        'description': 'Additional query part to forward to MongoDB',
+      },
       'updaterId': {
         'type': 'string',
         'description': 'User id that has requested the last change successfully',
@@ -82,10 +86,6 @@ module.exports = {
       '_rawp': {
         'type': 'string',
         'description': 'Additional raw stringified projection for MongoDB',
-      },
-      '_q': {
-        'type': 'string',
-        'description': 'Additional query part to forward to MongoDB',
       },
       '_l': {
         'type': 'integer',
