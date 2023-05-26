@@ -38,18 +38,6 @@ module.exports = {
                 '000000000000000000000000',
               ],
             },
-            'creatorId': {
-              'type': 'string',
-              'description': 'User id that has created this object',
-            },
-            'createdAt': {
-              'type': 'string',
-              'description': 'Date of the request that has performed the object creation',
-              'examples': [
-                '2020-09-16T12:00:00.000Z',
-              ],
-              'format': 'date-time',
-            },
             'updaterId': {
               'type': 'string',
               'description': 'User id that has requested the last change successfully',
@@ -57,6 +45,18 @@ module.exports = {
             'updatedAt': {
               'type': 'string',
               'description': 'Date of the request that has performed the last change',
+              'examples': [
+                '2020-09-16T12:00:00.000Z',
+              ],
+              'format': 'date-time',
+            },
+            'creatorId': {
+              'type': 'string',
+              'description': 'User id that has created this object',
+            },
+            'createdAt': {
+              'type': 'string',
+              'description': 'Date of the request that has performed the object creation',
               'examples': [
                 '2020-09-16T12:00:00.000Z',
               ],
@@ -96,11 +96,13 @@ module.exports = {
               'examples': [
                 '2020-09-16T12:00:00.000Z',
               ],
+              'nullable': true,
               'format': 'date-time',
             },
             'additionalInfo': {
               'type': 'object',
               'additionalProperties': true,
+              'nullable': true,
             },
             'signature': {
               'type': 'object',
@@ -113,6 +115,7 @@ module.exports = {
               'required': [
                 'name',
               ],
+              'nullable': true,
             },
             'metadata': {
               'type': 'object',
@@ -229,6 +232,7 @@ module.exports = {
                 'type': 'object',
                 'additionalProperties': true,
               },
+              'nullable': true,
             },
             'signature.name': {
               'type': 'string',

@@ -38,18 +38,6 @@ module.exports = {
                 '000000000000000000000000',
               ],
             },
-            'name': {
-              'type': 'string',
-              'description': "The car's name",
-            },
-            'price': {
-              'type': 'number',
-              'description': "The car's price",
-            },
-            'additionalInfo': {
-              'type': 'object',
-              'additionalProperties': true,
-            },
             'updaterId': {
               'type': 'string',
               'description': 'User id that has requested the last change successfully',
@@ -73,6 +61,18 @@ module.exports = {
                 '2020-09-16T12:00:00.000Z',
               ],
               'format': 'date-time',
+            },
+            'name': {
+              'type': 'string',
+              'description': "The car's name",
+            },
+            'price': {
+              'type': 'number',
+              'description': "The car's price",
+            },
+            'additionalInfo': {
+              'type': 'object',
+              'additionalProperties': true,
             },
           },
         },
