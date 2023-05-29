@@ -21,7 +21,6 @@ const fp = require('fastify-plugin')
 const fastifyEnv = require('@fastify/env')
 
 const Ajv = require('ajv')
-const AjvCompiler = require('@fastify/ajv-compiler')
 const ajvFormats = require('ajv-formats')
 
 const { readdirSync } = require('fs')
@@ -36,7 +35,7 @@ const httpInterface = require('./lib/httpInterface')
 const JSONSchemaGenerator = require('./lib/JSONSchemaGenerator')
 const createIndexes = require('./lib/createIndexes')
 const { castCollectionId, getDatabaseNameByType } = require('./lib/pkFactories')
-const { SCHEMA_CUSTOM_KEYWORDS, OBJECTID } = require('./lib/consts')
+const { SCHEMA_CUSTOM_KEYWORDS } = require('./lib/consts')
 const joinPlugin = require('./lib/joinPlugin')
 const generatePathFieldsForRawSchema = require('./lib/generatePathFieldsForRawSchema')
 const { getIdType, registerMongoInstances } = require('./lib/mongo/mongo-plugin')
@@ -88,54 +87,43 @@ async function iterateOverCollectionDefinitionAndRegisterCruds(fastify) {
 
 // eslint-disable-next-line max-statements
 async function loadModels(fastify) {
-  const { collections, views = [] } = fastify
+  const { collections } = fastify
+  const views = fastify.views || []
+
   const mergedCollections = mergeViewsInCollections(collections, views)
 
   fastify.log.trace({ collectionNames: mergedCollections.map(coll => coll.name) }, 'Registering CRUDs and Views')
 
   const models = {}
-  const existingStringCollection = (await fastify
-    .mongo[getDatabaseNameByType('string')]
-    .db
-    .listCollections()
-    .toArray()
-  ).map(({ name }) => name)
-  const existingObjectIdCollection = (await fastify
-    .mongo[getDatabaseNameByType(OBJECTID)]
-    .db
-    .listCollections()
-    .toArray()
-  ).map(({ name }) => name)
+  for (const collectionDefinition of mergedCollections) {
+    if (!collectionDefinition.schema && !compatibilityValidate(collectionDefinition)) {
+      fastify.log.warn({ collectionName: collectionDefinition.name }, 'collection using custom fields configuration - which has been deprecated')
+      fastify.log.error(compatibilityValidate.errors)
+      throw new Error(`Invalid collection definition: ${collectionDefinition.name}`)
+    }
 
-  const compatibilityValidation = compatibilityValidate(mergedCollections)
-  const validation = validate(mergedCollections)
-  if (!validation && !compatibilityValidation) {
-    fastify.log.error(compatibilityValidate.errors ?? validate.errors)
-    throw new Error(`Invalid collection definition: ${compatibilityValidate.errors ?? validate.errors}`)
-  }
+    if (collectionDefinition.schema && !validate(collectionDefinition)) {
+      fastify.log.error(validate.errors)
+      throw new Error(`Invalid collection definition: ${collectionDefinition.name}`)
+    }
 
-  // eslint-disable-next-line max-statements
-  const promises = mergedCollections.map(async(collectionDefinition) => {
     const {
       name: collectionName,
       endpointBasePath: collectionEndpoint,
-      type,
+      type: collectionType,
+      schema: collectionSchema,
+      fields: deprecatedCollectionSchema,
       defaultState,
-      indexes = [],
-      source,
-      pipeline,
-    } = collectionDefinition ?? {}
-    const isView = type === VIEW_TYPE
+      indexes,
+    } = collectionDefinition
+    const isView = collectionType === VIEW_TYPE
 
     fastify.log.trace({ collectionEndpoint, collectionName }, 'Registering CRUD')
     const collectionIdType = getIdType(collectionDefinition)
-    const collection = await fastify
-      .mongo[getDatabaseNameByType(collectionIdType)]
-      .db
-      .collection(collectionName)
+    const collection = fastify.mongo[getDatabaseNameByType(collectionIdType)].db.collection(collectionName)
 
-    const allFieldNames = collectionDefinition.fields
-      ? collectionDefinition.fields.map(field => field.name)
+    const allFieldNames = !collectionSchema
+      ? deprecatedCollectionSchema.map(({ name }) => name)
       : Object.keys(collectionDefinition.schema.properties)
     const pathsForRawSchema = generatePathFieldsForRawSchema(fastify.log, collectionDefinition)
 
@@ -143,9 +131,7 @@ async function loadModels(fastify) {
     const crudService = new CrudService(
       collection,
       defaultState,
-      {
-        allowDiskUse: fastify.config.ALLOW_DISK_USE_IN_QUERIES,
-      },
+      { allowDiskUse: fastify.config.ALLOW_DISK_USE_IN_QUERIES },
     )
     const queryParser = new QueryParser(collectionDefinition, pathsForRawSchema)
     const resultCaster = new ResultCaster(collectionDefinition)
@@ -155,6 +141,37 @@ async function loadModels(fastify) {
       fastify.config.CRUD_LIMIT_CONSTRAINT_ENABLED,
       fastify.config.CRUD_MAX_LIMIT
     )
+
+    if (isView) {
+      const existingCollectionCursor = await fastify.mongo[getDatabaseNameByType(collectionIdType)].db.listCollections(
+        {
+          name: collectionName,
+        },
+        {
+          nameOnly: true,
+        })
+      const retrievedCollection = await existingCollectionCursor.next()
+      if (retrievedCollection) {
+        try {
+          await fastify.mongo[getDatabaseNameByType(collectionIdType)].db.collection(collectionName).drop()
+        } catch (error) {
+          throw new Error('Failed to delete view', { cause: error })
+        }
+      }
+      try {
+        await fastify.mongo[getDatabaseNameByType(collectionIdType)].db.createCollection(
+          collectionName,
+          {
+            viewOn: collectionDefinition.source,
+            pipeline: collectionDefinition.pipeline,
+          }
+        )
+      } catch (error) {
+        throw new Error('Failed to create view', { cause: error })
+      }
+    } else {
+      await createIndexes(collection, indexes || [], PREFIX_OF_INDEX_NAMES_TO_PRESERVE)
+    }
 
     models[getCollectionNameFromEndpoint(collectionEndpoint)] = {
       definition: collectionDefinition,
@@ -166,40 +183,7 @@ async function loadModels(fastify) {
       jsonSchemaGenerator,
       isView,
     }
-
-    if (isView) {
-      const alreadyExist = collectionIdType === OBJECTID
-        ? existingObjectIdCollection.includes(collectionName)
-        : existingStringCollection.includes(collectionName)
-      if (alreadyExist) {
-        try {
-          await fastify
-            .mongo[getDatabaseNameByType(collectionIdType)]
-            .db
-            .collection(collectionName)
-            .drop()
-        } catch (error) {
-          throw new Error('Failed to delete view', { cause: error })
-        }
-      }
-      try {
-        return fastify
-          .mongo[getDatabaseNameByType(collectionIdType)]
-          .db
-          .createCollection(
-            collectionName,
-            {
-              viewOn: source,
-              pipeline,
-            }
-          )
-      } catch (error) {
-        throw new Error('Failed to create view', { cause: error })
-      }
-    }
-    await createIndexes(collection, indexes, PREFIX_OF_INDEX_NAMES_TO_PRESERVE)
-  })
-  await Promise.allSettled(promises)
+  }
   fastify.decorate('models', models)
 }
 
@@ -251,12 +235,6 @@ module.exports.options = {
       validateFormats: true,
     },
     plugins: [ajvFormats],
-  },
-  // configure Fastify v3 to use Ajv 8 (AjvCompiler v2.x => Ajv 8)
-  schemaController: {
-    compilersFactory: {
-      buildValidator: AjvCompiler(),
-    },
   },
 }
 
