@@ -20,7 +20,7 @@ module.exports = {
   name: 'orders-details',
   source: 'orders',
   type: 'view',
-  optionalEndpoint: true,
+  enableLookup: true,
   pipeline: [
     {
       $lookup: {

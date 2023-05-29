@@ -23,10 +23,12 @@ const {
   lookupAddressPrefix,
   expectedRidersLookup,
   riderObjectToLookup,
+  ridersFixture,
 } = require('./viewUtils.utils')
 
 const ridersData = require('./fixtures/riders')
 const ordersData = require('./fixtures/orders')
+const { STATES, __STATE__ } = require('../lib/consts')
 
 const HTTP_PUBLIC_FIXTURES = JSON.parse(JSON.stringify(expectedRidersLookup))
 
@@ -56,13 +58,101 @@ tap.test('HTTP GET /orders-details-endpoint/lookup/rider', async t => {
       url: '/?_s=label',
       acl_rows: undefined,
       found: HTTP_PUBLIC_FIXTURES.concat([])
-        .sort((a, b) => b.label - a.label),
+        .sort((a, b) => a.label.localeCompare(b.label)),
+    },
+    {
+      name: 'with invert sorting',
+      url: '/?_s=-label',
+      acl_rows: undefined,
+      found: HTTP_PUBLIC_FIXTURES.concat([])
+        .sort((a, b) => b.label.localeCompare(a.label)),
+    },
+    {
+      name: 'with skip and limit',
+      url: '/?_l=2&_sk=1',
+      found: HTTP_PUBLIC_FIXTURES.concat([]).sort((a, b) => {
+        if (a._id === b._id) {
+          return 0
+        }
+        return a._id >= b._id ? 1 : -1
+      })
+        .slice(1, 3),
+    },
+    {
+      name: 'with query filter',
+      url: `/?label=${expectedRidersLookup[0].label}`,
+      acl_rows: undefined,
+      found: HTTP_PUBLIC_FIXTURES.filter(f => f.label === expectedRidersLookup[0].label),
     },
     {
       name: 'with filter regex',
       url: `/?_q=${JSON.stringify({ label: { $regex: 'Mar', $options: 'i' } })}`,
       acl_rows: undefined,
       found: HTTP_PUBLIC_FIXTURES.filter(f => /Mar/i.test(f.label)),
+    },
+    {
+      name: 'with non-matching filter',
+      url: `/?_q=${JSON.stringify({ label: { $regex: 'notExisting', $options: 'i' } })}`,
+      acl_rows: undefined,
+      found: [],
+    },
+    {
+      name: 'with filter with null values',
+      url: `/?_q=${JSON.stringify({ label: null })}`,
+      acl_rows: undefined,
+      found: [],
+    },
+    {
+      name: 'with acl_rows',
+      url: '/',
+      acl_rows: [{ label: { $regex: 'Harry', $options: 'i' } }],
+      found: HTTP_PUBLIC_FIXTURES.filter(f => f.label.toLowerCase().includes('harry')),
+    },
+    {
+      name: 'with acl_rows and query filter',
+      url: `/?label=${expectedRidersLookup[0].label}`,
+      acl_rows: [{ label: { $regex: 'ar', $options: 'i' } }],
+      found: HTTP_PUBLIC_FIXTURES.filter(f => f.label === expectedRidersLookup[0].label),
+    },
+    {
+      name: 'with acl_rows and filter',
+      url: `/?_q=${JSON.stringify({ label: { $regex: 'Potter' } })}`,
+      acl_rows: [{ label: { $regex: 'Harry' } }],
+      found: HTTP_PUBLIC_FIXTURES.filter(f => f.label.includes('Harry') && f.label.includes('Potter')),
+    },
+    {
+      name: 'with acl_read_columns',
+      url: '/',
+      acl_rows: undefined,
+      acl_read_columns: ['label'],
+      found: HTTP_PUBLIC_FIXTURES.map(f => ({ label: f.label })),
+    },
+    {
+      name: 'with state',
+      url: `/?_st=${STATES.PUBLIC}`,
+      acl_rows: undefined,
+      acl_read_columns: undefined,
+      found: JSON.parse(JSON.stringify(ridersFixture
+        .filter(f => f[__STATE__] === STATES.PUBLIC)
+        .map(riderObjectToLookup))),
+    },
+    {
+      name: 'with state DRAFT',
+      url: `/?_st=${STATES.DRAFT}`,
+      acl_rows: undefined,
+      acl_read_columns: undefined,
+      found: JSON.parse(JSON.stringify(ridersFixture
+        .filter(f => f[__STATE__] === STATES.DRAFT)
+        .map(riderObjectToLookup))),
+    },
+    {
+      name: 'with state DRAFT,PUBLIC',
+      url: `/?_st=${STATES.DRAFT},${STATES.PUBLIC}`,
+      acl_rows: undefined,
+      acl_read_columns: undefined,
+      found: JSON.parse(JSON.stringify(ridersFixture
+        .filter(f => [STATES.DRAFT, STATES.PUBLIC].includes(f[__STATE__]))
+        .map(riderObjectToLookup))),
     },
   ]
 

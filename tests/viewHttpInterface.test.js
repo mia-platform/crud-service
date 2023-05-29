@@ -24,23 +24,25 @@ const {
   expectedOrderDetailsViewDocsPublic,
   ordersFixture,
   ridersFixture,
+  expectedRidersLookup,
 } = require('./viewUtils.utils')
 
 const { ObjectId } = require('mongodb')
 
 const HTTP_PUBLIC_FIXTURES = JSON.parse(JSON.stringify(expectedOrderDetailsViewDocsPublic))
 
-tap.test('Writable views (optionalEndpoints: true)', async t => {
+tap.test('Writable views (enableLookups: true)', async t => {
   const { fastify, database } = await setUpTest(t)
 
   const ridersCollection = database.collection('riders')
   const ordersCollection = database.collection('orders')
   const orderDetailsCollection = database.collection('orders-details')
 
+  const [newRider] = expectedRidersLookup
   const DOC = {
     rider: {
-      value: '999999999999999999999999',
-      label: 'Awesome rider',
+      value: newRider.value,
+      label: newRider.label,
     },
     items: ['lasagna'],
   }
@@ -53,17 +55,6 @@ tap.test('Writable views (optionalEndpoints: true)', async t => {
 
     await ordersCollection.insertMany(ordersFixture)
     await ridersCollection.insertMany(ridersFixture)
-  })
-
-  t.teardown(async() => {
-    await ridersCollection.drop()
-    await ordersCollection.drop()
-
-    await ridersCollection.close()
-    await ordersCollection.close()
-    await orderDetailsCollection.close()
-
-    await fastify.close()
   })
 
   t.test('HTTP GET /orders-details-endpoint/', async t => {
@@ -140,14 +131,16 @@ tap.test('Writable views (optionalEndpoints: true)', async t => {
       const body = JSON.parse(response.payload)
       const viewDoc = await orderDetailsCollection.findOne({ _id: new ObjectId(body._id) })
       t.strictSame(viewDoc.rider, {
-        value: ObjectId.createFromHexString('999999999999999999999999'),
-        label: 'Awesome rider',
+        value: newRider.value,
+        label: newRider.label,
       })
       t.strictSame(viewDoc.items, ['lasagna'])
+      t.notHas(viewDoc, 'id_rider')
 
       const orderDoc = await ordersCollection.findOne({ _id: new ObjectId(body._id) })
-      t.strictSame(orderDoc.id_rider, ObjectId.createFromHexString('999999999999999999999999'))
+      t.strictSame(orderDoc.id_rider, newRider.value)
       t.strictSame(orderDoc.items, ['lasagna'])
+      t.notHas(orderDoc, 'rider')
 
       t.end()
     })
@@ -171,21 +164,23 @@ tap.test('Writable views (optionalEndpoints: true)', async t => {
 
       const body = JSON.parse(response.payload)
       t.strictSame(body.rider, {
-        value: '999999999999999999999999',
-        label: 'Awesome rider',
+        value: newRider.value.toString(),
+        label: newRider.label,
       })
       t.strictSame(body.items, items)
 
       const viewDoc = await orderDetailsCollection.findOne({ _id })
       t.strictSame(viewDoc.rider, {
-        value: ObjectId.createFromHexString('999999999999999999999999'),
-        label: 'Awesome rider',
+        value: newRider.value,
+        label: newRider.label,
       })
       t.strictSame(viewDoc.items, items)
+      t.notHas(viewDoc, 'id_rider')
 
       const orderDoc = await ordersCollection.findOne({ _id })
-      t.strictSame(orderDoc.id_rider, ObjectId.createFromHexString('999999999999999999999999'))
+      t.strictSame(orderDoc.id_rider, newRider.value)
       t.strictSame(orderDoc.items, items)
+      t.notHas(orderDoc, 'rider')
 
       t.end()
     })
@@ -200,13 +195,13 @@ tap.test('Writable views (optionalEndpoints: true)', async t => {
         url: `${viewPrefix}/${_id.toHexString()}`,
       })
 
-      t.strictSame(response.statusCode, 200)
+      t.strictSame(response.statusCode, 204)
 
       const viewDoc = await orderDetailsCollection.findOne({ _id })
-      t.strictSame(viewDoc, {})
+      t.strictSame(viewDoc, null)
 
       const orderDoc = await ordersCollection.findOne({ _id })
-      t.strictSame(orderDoc, {})
+      t.strictSame(orderDoc, null)
 
       t.end()
     })
@@ -218,6 +213,7 @@ tap.test('Writable views (optionalEndpoints: true)', async t => {
       })
 
       t.strictSame(response.statusCode, 200)
+      t.strictSame(response.payload, '3')
 
       const viewDoc = await orderDetailsCollection.find().toArray()
       t.strictSame(viewDoc, [])
