@@ -79,7 +79,7 @@ tap.test('Writable views (optionalEndpoints: true)', async t => {
         url: '/?_s=rider.label',
         acl_rows: undefined,
         found: HTTP_PUBLIC_FIXTURES.concat([])
-          .sort((a, b) => b.rider.label - a.rider.label),
+          .sort((a, b) => a.rider.label.localeCompare(b.rider.label)),
       },
       {
         name: 'with filter regex',
@@ -114,14 +114,14 @@ tap.test('Writable views (optionalEndpoints: true)', async t => {
           t.end()
         })
 
-        t.test('should keep the document as is in database', async t => {
-          const documents = await orderDetailsCollection.find().toArray()
-          t.strictSame(documents, expectedOrderDetailsViewDocsPublic)
-          t.end()
-        })
-
         t.end()
       })
+    })
+
+    t.test('should keep the document as is in database', async t => {
+      const documents = await orderDetailsCollection.find().toArray()
+      t.strictSame(documents, expectedOrderDetailsViewDocsPublic)
+      t.end()
     })
   })
 
