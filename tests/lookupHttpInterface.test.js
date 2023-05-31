@@ -85,6 +85,12 @@ tap.test('HTTP GET /orders-details-endpoint/lookup/rider', async t => {
         .slice(1, 3),
     },
     {
+      name: 'with projection',
+      url: '/?_p=value',
+      acl_rows: undefined,
+      found: HTTP_PUBLIC_FIXTURES.map(f => ({ value: f.value })),
+    },
+    {
       name: 'with query filter',
       url: `/?label=${expectedRidersLookup[0].label}`,
       acl_rows: undefined,
@@ -132,6 +138,20 @@ tap.test('HTTP GET /orders-details-endpoint/lookup/rider', async t => {
       acl_rows: undefined,
       acl_read_columns: ['label'],
       found: HTTP_PUBLIC_FIXTURES.map(f => ({ label: f.label })),
+    },
+    {
+      name: 'with acl_read_columns > projection',
+      url: '/?_p=value',
+      acl_rows: undefined,
+      acl_read_columns: ['value', 'label'],
+      found: HTTP_PUBLIC_FIXTURES.map(f => ({ value: f.value })),
+    },
+    {
+      name: 'with acl_read_columns < projection',
+      url: '/?_p=value,label',
+      acl_rows: undefined,
+      acl_read_columns: ['value'],
+      found: HTTP_PUBLIC_FIXTURES.map(f => ({ value: f.value })),
     },
     {
       name: 'with state',
@@ -195,5 +215,31 @@ tap.test('HTTP GET /orders-details-endpoint/lookup/rider', async t => {
 
       t.end()
     })
+  })
+
+  t.test('with acl_read_columns not intersect projection', async t => {
+    const response = await fastify.inject({
+      method: 'GET',
+      url: `${lookupAddressPrefix}/?_p=label`,
+      headers: getHeaders({
+        acl_rows: undefined,
+        acl_read_columns: ['value'],
+      }),
+    })
+
+    t.test('should return 400', t => {
+      t.strictSame(response.statusCode, 400, response.payload)
+      t.end()
+    })
+
+    t.test('should return "application/json"', t => {
+      t.strictSame(JSON.parse(response.payload), {
+        statusCode: 400,
+        error: 'Bad Request',
+        message: 'No allowed colums',
+      })
+      t.end()
+    })
+    t.end()
   })
 })
