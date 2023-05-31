@@ -21,7 +21,6 @@ const fp = require('fastify-plugin')
 const fastifyEnv = require('@fastify/env')
 
 const Ajv = require('ajv')
-const AjvCompiler = require('@fastify/ajv-compiler')
 const ajvFormats = require('ajv-formats')
 
 const { readdirSync } = require('fs')
@@ -259,12 +258,6 @@ module.exports.options = {
       validateFormats: true,
     },
     plugins: [ajvFormats],
-  },
-  // configure Fastify v3 to use Ajv 8 (AjvCompiler v2.x => Ajv 8)
-  schemaController: {
-    compilersFactory: {
-      buildValidator: AjvCompiler(),
-    },
   },
 }
 

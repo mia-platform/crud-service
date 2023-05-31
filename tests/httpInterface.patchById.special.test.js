@@ -659,7 +659,8 @@ tap.test('HTTP PATCH /<id> - nested object', async t => {
       t.strictSame(JSON.parse(response.payload), {
         statusCode: 400,
         error: 'Bad Request',
-        message: "body must have required property 'name'",
+        message: "body/$push/attachments must have required property 'name'",
+        code: 'FST_ERR_VALIDATION',
       })
 
       t.end()
@@ -690,7 +691,7 @@ tap.test('HTTP PATCH /<id> - nested object', async t => {
       t.strictSame(JSON.parse(response.payload), {
         statusCode: 400,
         error: 'Bad Request',
-        message: 'body must NOT have additional properties. Property "unknownField" is not defined in validation schema',
+        message: 'body/$push/attachments must NOT have additional properties. Property "unknownField" is not defined in validation schema',
       })
 
       t.end()
@@ -890,7 +891,8 @@ tap.test('HTTP PATCH /<id> - nested object', async t => {
       t.strictSame(JSON.parse(response.payload), {
         statusCode: 400,
         error: 'Bad Request',
-        message: "body must have required property 'name'",
+        message: "body/$addToSet/attachments must have required property 'name'",
+        code: 'FST_ERR_VALIDATION',
       })
       t.end()
     })
@@ -919,7 +921,7 @@ tap.test('HTTP PATCH /<id> - nested object', async t => {
       t.strictSame(JSON.parse(response.payload), {
         statusCode: 400,
         error: 'Bad Request',
-        message: 'body must NOT have additional properties. Property "unknownField" is not defined in validation schema',
+        message: 'body/$addToSet/attachments must NOT have additional properties. Property "unknownField" is not defined in validation schema',
       })
       t.end()
     })
@@ -944,7 +946,7 @@ tap.test('HTTP PATCH /<id> - nested object', async t => {
       t.strictSame(JSON.parse(response.payload), {
         statusCode: 400,
         error: 'Bad Request',
-        message: 'body must NOT have additional properties. Property "name" is not defined in validation schema',
+        message: 'body/$addToSet must NOT have additional properties. Property "name" is not defined in validation schema',
       })
       t.end()
     })
@@ -1181,7 +1183,7 @@ tap.test('HTTP PATCH /<id> - ', async t => {
       t.end()
     })
     t.test('body should be "Bad Request" error message', t => {
-      const expectedBody = '{"statusCode":400,"error":"Bad Request","message":"body must NOT have additional properties. Property \\"tagIds.$.merge\\" is not defined in validation schema"}'
+      const expectedBody = '{"statusCode":400,"error":"Bad Request","message":"body/$set must NOT have additional properties. Property \\"tagIds.$.merge\\" is not defined in validation schema"}'
       t.strictSame(response.body, expectedBody)
       t.end()
     })
@@ -1230,7 +1232,7 @@ tap.test('HTTP PATCH /<id> - ', async t => {
       t.end()
     })
     t.test('body.$set["tagIds.$.replace"] should be number', t => {
-      const expectedErrorMessage = 'body must be number'
+      const expectedErrorMessage = 'body/$set/tagIds.$.replace must be number'
       t.strictSame(JSON.parse(response.body)?.message, expectedErrorMessage)
       t.end()
     })

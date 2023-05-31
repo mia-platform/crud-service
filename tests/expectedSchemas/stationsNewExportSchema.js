@@ -34,30 +34,6 @@ module.exports = {
           '00000000-0000-4000-0000-000000000000',
         ],
       },
-      'Cap': {
-        'type': 'number',
-        'nullable': true,
-      },
-      'CodiceMIR': {
-        'type': 'string',
-        'nullable': true,
-      },
-      'Comune': {
-        'type': 'string',
-        'nullable': true,
-      },
-      'Indirizzo': {
-        'type': 'string',
-        'nullable': true,
-      },
-      'country': {
-        'type': 'string',
-        'nullable': true,
-      },
-      '_q': {
-        'type': 'string',
-        'description': 'Additional query part to forward to MongoDB',
-      },
       'updaterId': {
         'type': 'string',
         'description': 'User id that has requested the last change successfully',
@@ -81,6 +57,30 @@ module.exports = {
           '2020-09-16T12:00:00.000Z',
         ],
         'format': 'date-time',
+      },
+      'Cap': {
+        'type': 'number',
+        'nullable': true,
+      },
+      'CodiceMIR': {
+        'type': 'string',
+        'nullable': true,
+      },
+      'Comune': {
+        'type': 'string',
+        'nullable': true,
+      },
+      'Indirizzo': {
+        'type': 'string',
+        'nullable': true,
+      },
+      'country': {
+        'type': 'string',
+        'nullable': true,
+      },
+      '_q': {
+        'type': 'string',
+        'description': 'Additional query part to forward to MongoDB',
       },
       '_p': {
         'type': 'string',

@@ -611,7 +611,7 @@ tap.test('HTTP GET /', async t => {
       })
 
       t.test('should return 200', t => {
-        t.strictSame(response.statusCode, 200)
+        t.strictSame(response.statusCode, 200, response.payload)
         t.end()
       })
 
@@ -877,7 +877,7 @@ tap.test('HTTP GET / ', async t => {
     t.strictSame(JSON.parse(response.payload), {
       statusCode: 400,
       error: 'Bad Request',
-      message: 'querystring must NOT have additional properties',
+      message: 'querystring must NOT have additional properties. Property "metadata" is not defined in validation schema',
     })
 
     t.end()

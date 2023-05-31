@@ -29,18 +29,17 @@
     "version": "npm run update-changelog && npm run update-docker-version && rm -fr Dockerfile.bck && git add CHANGELOG.md Dockerfile"
   },
   "dependencies": {
-    "@fastify/ajv-compiler": "^2.1.0",
-    "@fastify/env": "^3.0.0",
-    "@fastify/mongodb": "^5.0.0",
-    "@mia-platform/lc39": "^6.0.2",
+    "@fastify/env": "^4.2.0",
+    "@fastify/mongodb": "^6.2.0",
+    "@mia-platform/lc39": "^7.0.0",
     "@mia-platform/mongodb-healthchecker": "^1.0.1",
     "ajv-formats": "^2.1.1",
-    "fastify-plugin": "^3.0.1",
+    "fastify-plugin": "^4.5.0",
     "jsonpath-plus": "^7.2.0",
     "JSONStream": "^1.3.5",
     "lodash.get": "^4.4.2",
     "mongodb-client-encryption": "^2.7.1",
-    "pino": "^8.11.0",
+    "pino": "^8.14.1",
     "ramda": "^0.29.0",
     "through2": "^4.0.2",
     "uuid": "^9.0.0"
@@ -52,7 +51,7 @@
   "devDependencies": {
     "@mia-platform/eslint-config-mia": "^3.0.0",
     "abstract-logging": "^2.0.1",
-    "eslint": "^8.36.0",
+    "eslint": "^8.40.0",
     "fastbench": "^1.0.1",
     "lodash.set": "^4.3.2",
     "mock-require": "^3.0.3",

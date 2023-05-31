@@ -351,7 +351,8 @@ tap.test('HTTP POST /', async t => {
       t.strictSame(JSON.parse(response.payload), {
         statusCode: 400,
         error: 'Bad Request',
-        message: "body must have required property 'somethingNumber'",
+        message: "body/metadata must have required property 'somethingNumber'",
+        code: 'FST_ERR_VALIDATION',
       })
       t.end()
     })
@@ -389,7 +390,7 @@ tap.test('HTTP POST /', async t => {
       t.strictSame(JSON.parse(response.payload), {
         statusCode: 400,
         error: 'Bad Request',
-        message: 'body must NOT have additional properties. Property "unexpectedField" is not defined in validation schema',
+        message: 'body/metadata must NOT have additional properties. Property "unexpectedField" is not defined in validation schema',
       })
 
       t.end()
@@ -428,7 +429,8 @@ tap.test('HTTP POST /', async t => {
       t.strictSame(JSON.parse(response.payload), {
         statusCode: 400,
         error: 'Bad Request',
-        message: "body must have required property 'name'",
+        message: "body/attachments/0 must have required property 'name'",
+        code: 'FST_ERR_VALIDATION',
       })
       t.end()
     })
@@ -466,7 +468,7 @@ tap.test('HTTP POST /', async t => {
       t.strictSame(JSON.parse(response.payload), {
         statusCode: 400,
         error: 'Bad Request',
-        message: 'body must NOT have additional properties. Property "unexpectedField" is not defined in validation schema',
+        message: 'body/attachments/0 must NOT have additional properties. Property "unexpectedField" is not defined in validation schema',
       })
       t.end()
     })

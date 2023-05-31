@@ -35,18 +35,6 @@ module.exports = {
     'operationId': 'cars__MIA__changeState__MIA__querystring',
     'type': 'object',
     'properties': {
-      'name': {
-        'type': 'string',
-        'description': "The car's name",
-      },
-      'price': {
-        'type': 'number',
-        'description': "The car's price",
-      },
-      '_q': {
-        'type': 'string',
-        'description': 'Additional query part to forward to MongoDB',
-      },
       'updaterId': {
         'type': 'string',
         'description': 'User id that has requested the last change successfully',
@@ -70,6 +58,18 @@ module.exports = {
           '2020-09-16T12:00:00.000Z',
         ],
         'format': 'date-time',
+      },
+      'name': {
+        'type': 'string',
+        'description': "The car's name",
+      },
+      'price': {
+        'type': 'number',
+        'description': "The car's price",
+      },
+      '_q': {
+        'type': 'string',
+        'description': 'Additional query part to forward to MongoDB',
       },
       '_rawp': {
         'type': 'string',

@@ -35,6 +35,7 @@ Below you can find all the environment variables that you can edit.
 | LOG_LEVEL                     | String  | Optional | `info`                                    | Level of the log. It can be one of the following: `trace`, `debug`, `info`, `warn`, `error`, `fatal`.                                                                          |
 | EXPOSE_METRICS                | Boolean | Optional | `false`                                   | Specifies if Prometheus metrics should be exposed or not.                                                                                                                      |
 | ALLOW_DISK_USE_IN_QUERIES     | Boolean | Optional | -                                         | Sets the `allowDiskUse` option in the MongoDB queries. It is useful when working with MongoDB Views requiring heavy aggregations (added in v6.0.2, works with MongoDB >= 4.4). |
+| ENABLE_TRACING                | Boolean | Optional | `false`                                   | Specifies if OpenTelemetry tracing should be enabled. It is possible to find more documentation [here](https://docs.mia-platform.eu/docs/runtime_suite_libraries/lc39/main-entrypoint#opentelemetry-tracing-experimental) |
 
 :::warning
 Using `ALLOW_DISK_USE_IN_QUERIES` (either with `true` or `false` values) with a MongoDB version lower than 4.4 will make all the GET calls unusable since the MongoDB cluster will raise an error for the unrecognized option `allowDiskUse`.
