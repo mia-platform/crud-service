@@ -51,8 +51,8 @@ module.exports = {
       },
       'name': {
         'type': 'string',
-        'nullable': true,
         'description': 'The name of the book',
+        'nullable': true,
       },
       'isbn': {
         'type': 'string',

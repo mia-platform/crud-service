@@ -60,8 +60,8 @@ module.exports = {
       },
       'name': {
         'type': 'string',
-        'nullable': true,
         'description': 'The name of the book',
+        'nullable': true,
       },
       'isbn': {
         'type': 'string',
@@ -255,8 +255,8 @@ module.exports = {
           },
           'name': {
             'type': 'string',
-            'nullable': true,
             'description': 'The name of the book',
+            'nullable': true,
           },
           'isbn': {
             'type': 'string',
@@ -288,8 +288,8 @@ module.exports = {
             'examples': [
               '2020-09-16T12:00:00.000Z',
             ],
-            'nullable': true,
             'description': 'The date it was published',
+            'nullable': true,
           },
           'position': {
             'type': 'array',

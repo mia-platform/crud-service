@@ -97,12 +97,10 @@ module.exports = {
               'examples': [
                 '2020-09-16T12:00:00.000Z',
               ],
-              'nullable': true,
             },
             'additionalInfo': {
               'type': 'object',
               'additionalProperties': true,
-              'nullable': true,
             },
             'signature': {
               'type': 'object',
@@ -115,7 +113,6 @@ module.exports = {
               'required': [
                 'name',
               ],
-              'nullable': true,
             },
             'metadata': {
               'type': 'object',
@@ -232,7 +229,6 @@ module.exports = {
                 'type': 'object',
                 'additionalProperties': true,
               },
-              'nullable': true,
             },
             'signature.name': {
               'type': 'string',
