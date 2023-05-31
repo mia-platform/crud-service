@@ -1,0 +1,29 @@
+services:
+  mongo:
+    image: mongo:6.0
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo:/data/db
+
+  crud-service:
+    image: crud-service:latest
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - LOG_LEVEL=info
+      - MONGODB_URL=mongodb://mongo:27017/crud
+      - COLLECTION_DEFINITION_FOLDER=/home/node/app/collections
+      - USER_ID_HEADER_KEY=userid
+      - CRUD_LIMIT_CONSTRAINT_ENABLED=true
+      - CRUD_MAX_LIMIT=200
+    mem_limit: 300m
+    volumes:
+      - "./tests/performance:/home/node/app/collections"
+
+volumes:
+  mongo:
+    driver: local
