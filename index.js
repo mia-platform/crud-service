@@ -169,12 +169,15 @@ async function loadModels(fastify) {
       const existingCollections = collectionIdType === OBJECTID ? existingObjectIdCollection : existingStringCollection
       if (existingCollections.length === 0) {
         existingCollections.push(
-          ...(await fastify
-            .mongo[getDatabaseNameByType(collectionIdType)]
-            .db
-            .listCollections({}, { nameOnly: true })
-            .toArray()
+          ...(
+            await fastify
+              .mongo[getDatabaseNameByType(collectionIdType)]
+              .db
+              .listCollections({}, { nameOnly: true })
+              .toArray()
           )
+            .filter(({ type: collectionType }) => collectionType === VIEW_TYPE)
+            .map(({ name }) => name)
         )
       }
 
