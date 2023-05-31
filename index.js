@@ -172,9 +172,9 @@ async function loadModels(fastify) {
           ...(await fastify
             .mongo[getDatabaseNameByType(collectionIdType)]
             .db
-            .listCollections()
+            .listCollections({}, { nameOnly: true })
             .toArray()
-          ).map(({ name }) => name)
+          )
         )
       }
 
@@ -206,7 +206,9 @@ async function loadModels(fastify) {
     }
     await createIndexes(collection, indexes, PREFIX_OF_INDEX_NAMES_TO_PRESERVE)
   })
-  await Promise.all(promises)
+  while (promises.length) {
+    await Promise.all(promises.splice(0, 5))
+  }
   fastify.decorate('models', models)
 }
 
