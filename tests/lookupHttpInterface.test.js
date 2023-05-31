@@ -54,6 +54,12 @@ tap.test('HTTP GET /orders-details-endpoint/lookup/rider', async t => {
       found: HTTP_PUBLIC_FIXTURES,
     },
     {
+      name: 'with typed filter',
+      url: `/?value=${expectedRidersLookup[0].value.toString()}`,
+      acl_rows: undefined,
+      found: HTTP_PUBLIC_FIXTURES.filter(f => f.value === expectedRidersLookup[0].value.toString()),
+    },
+    {
       name: 'with sorting',
       url: '/?_s=label',
       acl_rows: undefined,

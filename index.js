@@ -35,7 +35,7 @@ const httpInterface = require('./lib/httpInterface')
 const JSONSchemaGenerator = require('./lib/JSONSchemaGenerator')
 const createIndexes = require('./lib/createIndexes')
 const { castCollectionId, getDatabaseNameByType } = require('./lib/pkFactories')
-const { SCHEMA_CUSTOM_KEYWORDS, OBJECTID, SETCMD } = require('./lib/consts')
+const { SCHEMA_CUSTOM_KEYWORDS, OBJECTID, SETCMD, aggregationConversion } = require('./lib/consts')
 const joinPlugin = require('./lib/joinPlugin')
 const generatePathFieldsForRawSchema = require('./lib/generatePathFieldsForRawSchema')
 const { getIdType, registerMongoInstances } = require('./lib/mongo/mongo-plugin')
@@ -235,13 +235,17 @@ function createLookupModel(fastify, viewDefinition, mergedCollections) {
     const parsedLookupProjection = []
     const lookupCollectionDefinition = { ...viewDefinition, fields: [] }
 
-    Object.entries(lookupProjection).forEach(([key, value]) => {
-      parsedLookupProjection.push({ [key]: value })
-      lookupCollectionDefinition.fields.push({
-        name: key,
-        type: 'string',
+    Object.entries(lookupProjection)
+      .forEach(([key, value]) => {
+        parsedLookupProjection.push({ [key]: value })
+        const conversion = Object.keys(value).shift()
+        if (value !== 0) {
+          lookupCollectionDefinition.fields.push({
+            name: key,
+            type: aggregationConversion[conversion],
+          })
+        }
       })
-    })
 
     const lookupModel = {
       ...buildModelDependencies(fastify, lookupCollectionMongo, lookupCollectionDefinition),

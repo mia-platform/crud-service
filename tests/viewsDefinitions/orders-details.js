@@ -32,9 +32,13 @@ module.exports = {
           {
             $project: {
               _id: 0,
-              value: '$_id',
+              value: {
+                $toObjectId: '$_id',
+              },
               label: {
-                $concat: ['$name', ' ', '$surname'],
+                $toString: {
+                  $concat: ['$name', ' ', '$surname'],
+                },
               },
             },
           },
