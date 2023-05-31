@@ -182,32 +182,25 @@ async function loadModels(fastify) {
       }
 
       if (existingCollections.includes(collectionName)) {
-        try {
-          await fastify
-            .mongo[getDatabaseNameByType(collectionIdType)]
-            .db
-            .collection(collectionName)
-            .drop()
-        } catch (error) {
-          throw new Error('Failed to delete view', { cause: error })
-        }
-      }
-      try {
-        return fastify
+        await fastify
           .mongo[getDatabaseNameByType(collectionIdType)]
           .db
-          .createCollection(
-            collectionName,
-            {
-              viewOn: source,
-              pipeline,
-            }
-          )
-      } catch (error) {
-        throw new Error('Failed to create view', { cause: error })
+          .collection(collectionName)
+          .drop()
       }
+
+      return fastify
+        .mongo[getDatabaseNameByType(collectionIdType)]
+        .db
+        .createCollection(
+          collectionName,
+          {
+            viewOn: source,
+            pipeline,
+          }
+        )
     }
-    await createIndexes(collection, indexes, PREFIX_OF_INDEX_NAMES_TO_PRESERVE)
+    return createIndexes(collection, indexes, PREFIX_OF_INDEX_NAMES_TO_PRESERVE)
   })
   while (promises.length) {
     await Promise.all(promises.splice(0, 5))
