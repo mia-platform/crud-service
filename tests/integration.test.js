@@ -33,6 +33,7 @@ const animalsFixtures = require('./fixtures/animals')
 
 const COLLECTION_DEFINITION_FOLDER = path.join(__dirname, 'collectionDefinitions')
 const NEW_COLLECTION_DEFINITION_FOLDER = path.join(__dirname, 'newCollectionDefinitions')
+const WRONG_DEFINITION_FOLDER = path.join(__dirname, 'wrongDefinitions')
 const VIEWS_DEFINITION_FOLDER = path.join(__dirname, 'viewsDefinitions')
 
 tap.test('integration', async t => {
@@ -141,6 +142,32 @@ tap.test('JSON Schema collection definition integration', async t => {
     })
 
     t.strictSame(response.statusCode, 200)
+  })
+
+  t.end()
+})
+
+tap.test('JSON Schema wrong collection definition integration', async t => {
+  const databaseName = getMongoDatabaseName()
+  const mongoURL = getMongoURL(databaseName)
+
+  t.test('should raise', async t => {
+    t.plan(1)
+
+    try {
+      await lc39('./index.js', {
+        envVariables: {
+          MONGODB_URL: mongoURL,
+          COLLECTION_DEFINITION_FOLDER: WRONG_DEFINITION_FOLDER,
+          USER_ID_HEADER_KEY: 'userid',
+          VIEWS_DEFINITION_FOLDER,
+        },
+        logLevel: 'silent',
+      })
+      t.fail()
+    } catch {
+      t.pass()
+    }
   })
 
   t.end()
