@@ -78,7 +78,7 @@ If you are interested in it, you can get one and run it locally with these comma
 docker run --name crud-service \
            --detach \
            --env LOG_LEVEL=info \
-           --env MONGODB_URL=mongodb://<your-mongo-container-ip>/crud \
+           --env MONGODB_URL=mongodb://<your-mongo-container-ip>/<database-name> \
            --env COLLECTION_DEFINITION_FOLDER=/home/node/app/collections \
            --env USER_ID_HEADER_KEY=userid \
            --env CRUD_LIMIT_CONSTRAINT_ENABLED=true \
