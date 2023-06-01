@@ -14,6 +14,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 
 - upgrade lc39 to v7, which upgrade fastify to v4
+- updated documentation regarding service configuration to clarify the database name in the connection string
+
+### Fixed
+
+- updated broken links in documentation
 
 ## 6.5.2 - 2023-05-08
 
