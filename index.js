@@ -154,13 +154,13 @@ async function iterateOverCollectionDefinitionAndRegisterCruds(fastify) {
   fastify.decorate('userIdHeaderKey', fastify.config.USER_ID_HEADER_KEY.toLowerCase())
 
   for (const [modelName, model] of Object.entries(fastify.models)) {
-    const { isView, viewHasLookupEndpints, viewDependencies } = model
+    const { isView, viewLookupsEnabled, viewDependencies } = model
     fastify.register(registerCrud, {
       modelName,
       isView,
     })
 
-    if (viewHasLookupEndpints) {
+    if (viewLookupsEnabled) {
       const lookups = viewDependencies.lookupsModels.map(({ lookup }) => lookup)
       fastify.register(registerViewCrud, {
         modelName,
@@ -295,7 +295,7 @@ async function loadModels(fastify) {
       pipeline,
     } = collectionDefinition ?? {}
     const isView = type === VIEW_TYPE
-    const viewHasLookupEndpints = isView && enableLookup
+    const viewLookupsEnabled = isView && enableLookup
 
     fastify.log.trace({ collectionEndpoint, collectionName }, 'Registering CRUD')
 
@@ -308,7 +308,7 @@ async function loadModels(fastify) {
     const modelDependencies = buildModelDependencies(fastify, collection, collectionDefinition)
 
     let viewDependencies = {}
-    if (viewHasLookupEndpints) {
+    if (viewLookupsEnabled) {
       const sourceCollection = clone(mergedCollections.find(mod => mod.name === viewSourceCollectionName))
       for (const field of collectionFields) {
         if (sourceCollection.fields.findIndex(fie => fie.name === field.name) === -1) {
@@ -331,7 +331,7 @@ async function loadModels(fastify) {
       ...modelDependencies,
       viewDependencies,
       isView,
-      viewHasLookupEndpints,
+      viewLookupsEnabled,
     }
 
     if (isView) {
