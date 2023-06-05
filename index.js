@@ -89,6 +89,12 @@ async function registerViewCrud(fastify, { modelName, lookups }) {
   fastify.decorate('jsonSchemaGenerator', viewDependencies.jsonSchemaGenerator)
   fastify.decorate('jsonSchemaGeneratorWithNested', viewDependencies.jsonSchemaGenerator)
   fastify.decorate('modelName', modelName)
+
+  // To allow writing views without having to rewrite all the logic of the HttpInterface,
+  // it was decided to adapt the fields of the calls towards the view by converting them
+  // to the fields of the underlying collection, thus hiding the complexity on the client
+  // side while maintaining consistent interfaces.
+  // This assumes that the key of the value is in the field "value" and should be made configurable.
   fastify.addHook('preHandler', (request, _reply, done) => {
     for (const { as, localField } of lookups) {
       if (request?.body?.[as]) {
@@ -103,6 +109,8 @@ async function registerViewCrud(fastify, { modelName, lookups }) {
     done()
   })
 
+  // To obtain the updated object with a consistent interface after a patch,
+  // it is necessary to retrieve the view object again before returning it to the client.
   fastify.addHook('preSerialization', async(request, _reply, payload) => {
     const { _id } = payload
     if (request.method === 'PATCH' && _id) {
