@@ -241,17 +241,23 @@ function createLookupModel(fastify, viewDefinition, mergedCollections) {
 
     const lookupProjection = pipeline.find(({ $project }) => $project !== undefined)?.$project ?? {}
     const parsedLookupProjection = []
-    const lookupCollectionDefinition = { ...viewDefinition, fields: [] }
+    const lookupCollectionDefinition = {
+      ...omit(['fields'], viewDefinition),
+      schema: {
+        type: 'object',
+        properties: {},
+        required: [],
+      },
+    }
 
     Object.entries(lookupProjection)
       .forEach(([key, value]) => {
         parsedLookupProjection.push({ [key]: value })
         const conversion = Object.keys(value).shift()
         if (value !== 0) {
-          lookupCollectionDefinition.fields.push({
-            name: key,
+          lookupCollectionDefinition.schema.properties[key] = {
             type: aggregationConversion[conversion],
-          })
+          }
         }
       })
 
@@ -293,7 +299,6 @@ async function loadModels(fastify) {
 
     const {
       source: viewSourceCollectionName,
-      fields: collectionFields,
       name: collectionName,
       endpointBasePath: collectionEndpoint,
       type,
@@ -317,20 +322,15 @@ async function loadModels(fastify) {
 
     let viewDependencies = {}
     if (viewLookupsEnabled) {
-      const sourceCollection = clone(mergedCollections.find(mod => mod.name === viewSourceCollectionName))
-      for (const field of collectionFields) {
-        if (sourceCollection.fields.findIndex(fie => fie.name === field.name) === -1) {
-          sourceCollection.fields.push(field)
-        }
-      }
-      const dependencyWithFieldIntersection = buildModelDependencies(fastify, {}, sourceCollection)
+      const sourceCollection = mergedCollections.find(mod => mod.name === viewSourceCollectionName)
+      const sourceCollectionDependencies = buildModelDependencies(fastify, {}, sourceCollection)
 
       const viewIdType = getIdType(sourceCollection)
       const sourceCollectionMongo = fastify.mongo[getDatabaseNameByType(viewIdType)].db
         .collection(viewSourceCollectionName)
       viewDependencies = buildModelDependencies(fastify, sourceCollectionMongo, collectionDefinition)
-      viewDependencies.queryParser = dependencyWithFieldIntersection.queryParser
-      viewDependencies.allFieldNames = dependencyWithFieldIntersection.allFieldNames
+      viewDependencies.queryParser = sourceCollectionDependencies.queryParser
+      viewDependencies.allFieldNames = sourceCollectionDependencies.allFieldNames
       viewDependencies.lookupsModels = createLookupModel(fastify, collectionDefinition, mergedCollections)
     }
 
