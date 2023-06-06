@@ -185,7 +185,7 @@ async function iterateOverCollectionDefinitionAndRegisterCruds(fastify) {
   }
 }
 
-function buildModelDependencies(fastify, collection, collectionDefinition) {
+function buildModelDependencies(fastify, collectionDefinition, collection) {
   const {
     defaultState,
   } = collectionDefinition
@@ -262,7 +262,7 @@ function createLookupModel(fastify, viewDefinition, mergedCollections) {
       })
 
     const lookupModel = {
-      ...buildModelDependencies(fastify, lookupCollectionMongo, lookupCollectionDefinition),
+      ...buildModelDependencies(fastify, lookupCollectionDefinition, lookupCollectionMongo),
       definition: lookupCollectionDefinition,
       lookup,
       parsedLookupProjection,
@@ -317,18 +317,17 @@ async function loadModels(fastify) {
       .mongo[getDatabaseNameByType(collectionIdType)]
       .db
       .collection(collectionName)
-
-    const modelDependencies = buildModelDependencies(fastify, collection, collectionDefinition)
+    const modelDependencies = buildModelDependencies(fastify, collectionDefinition, collection)
 
     let viewDependencies = {}
     if (viewLookupsEnabled) {
       const sourceCollection = mergedCollections.find(mod => mod.name === viewSourceCollectionName)
-      const sourceCollectionDependencies = buildModelDependencies(fastify, {}, sourceCollection)
+      const sourceCollectionDependencies = buildModelDependencies(fastify, sourceCollection)
 
       const viewIdType = getIdType(sourceCollection)
       const sourceCollectionMongo = fastify.mongo[getDatabaseNameByType(viewIdType)].db
         .collection(viewSourceCollectionName)
-      viewDependencies = buildModelDependencies(fastify, sourceCollectionMongo, collectionDefinition)
+      viewDependencies = buildModelDependencies(fastify, collectionDefinition, sourceCollectionMongo)
       viewDependencies.queryParser = sourceCollectionDependencies.queryParser
       viewDependencies.allFieldNames = sourceCollectionDependencies.allFieldNames
       viewDependencies.lookupsModels = createLookupModel(fastify, collectionDefinition, mergedCollections)
