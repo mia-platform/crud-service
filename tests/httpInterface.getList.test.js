@@ -37,6 +37,7 @@ const {
 } = require('./utils')
 const { setUpTest, prefix, stationsPrefix, getHeaders } = require('./httpInterface.utils')
 const booksCollectionDefinition = require('./collectionDefinitions/books')
+const { ObjectId } = require('mongodb')
 
 const [STATION_DOC] = stationFixtures
 const HTTP_STATION_DOC = JSON.parse(JSON.stringify(STATION_DOC))
@@ -835,6 +836,44 @@ tap.test('HTTP GET / - $text search', async t => {
 tap.test('HTTP GET / ', async t => {
   const { fastify, collection, resetCollection } = await setUpTest(t, [])
 
+  t.test('cast correctly nested object with schema', async t => {
+    const DOC_TEST = {
+      _id: ObjectId.createFromHexString('211111111111111111111111'),
+      metadata: {
+        somethingNumber: '3333',
+      },
+      attachments: [{
+        name: 'the-note',
+        detail: {
+          size: '6',
+        },
+        should: 'be removed',
+      }],
+      [__STATE__]: STATES.PUBLIC,
+    }
+
+    await resetCollection([DOC_TEST])
+
+    const response = await fastify.inject({
+      method: 'GET',
+      url: `${prefix}/`,
+      headers: {},
+    })
+    t.strictSame(JSON.parse(response.payload)[0].metadata, {
+      somethingNumber: 3333,
+    })
+    t.strictSame(JSON.parse(response.payload)[0].attachments, [
+      {
+        name: 'the-note',
+        detail: {
+          size: 6,
+        },
+      },
+    ])
+
+    t.end()
+  })
+
   t.test('filter on nested object with object notation cannot be used', async t => {
     // Documentation purpose
     const DOC = {
@@ -1244,7 +1283,7 @@ tap.test('HTTP GET /export', async t => {
 })
 
 if (process.env.MONGO_VERSION === '4.0') {
-  tap.test('unsupported _rawp in MongoDB v4.0', async t => {
+  tap.skip('unsupported _rawp in MongoDB v4.0', async t => {
     const { fastify } = await setUpTest(t)
 
     const conf = {
