@@ -268,7 +268,15 @@ module.exports.swaggerDefinition = {
   },
 }
 
-module.exports.transformSchemaForSwagger = ({ schema, url }) => {
+module.exports.transformSchemaForSwagger = ({ schema, url } = {}) => {
+  if (!schema) {
+    return {
+      url,
+      schema: {
+        hide: true,
+      },
+    }
+  }
   const {
     params = undefined,
     body = undefined,
