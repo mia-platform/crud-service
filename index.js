@@ -268,7 +268,17 @@ module.exports.swaggerDefinition = {
   },
 }
 
-module.exports.transformSchemaForSwagger = ({ schema, url }) => {
+module.exports.transformSchemaForSwagger = ({ schema, url } = {}) => {
+  // route with undefined schema will not be shown
+  if (!schema) {
+    return {
+      url,
+      schema: {
+        hide: true,
+      },
+    }
+  }
+
   const {
     params = undefined,
     body = undefined,
