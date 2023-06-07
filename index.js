@@ -30,7 +30,6 @@ const { omit } = require('ramda')
 const myPackage = require('./package')
 const QueryParser = require('./lib/QueryParser')
 const CrudService = require('./lib/CrudService')
-const ResultCaster = require('./lib/ResultCaster')
 const httpInterface = require('./lib/httpInterface')
 const JSONSchemaGenerator = require('./lib/JSONSchemaGenerator')
 const createIndexes = require('./lib/createIndexes')
@@ -62,8 +61,6 @@ async function registerCrud(fastify, { modelName, isView }) {
 
   fastify.decorate('crudService', model.crudService)
   fastify.decorate('queryParser', model.queryParser)
-  fastify.decorate('castResultsAsStream', model.castResultsAsStream)
-  fastify.decorate('castItem', model.castItem)
   fastify.decorate('allFieldNames', model.allFieldNames)
   fastify.decorate('jsonSchemaGenerator', model.jsonSchemaGenerator)
   fastify.decorate('jsonSchemaGeneratorWithNested', model.jsonSchemaGeneratorWithNested)
@@ -138,7 +135,6 @@ async function loadModels(fastify) {
       },
     )
     const queryParser = new QueryParser(collectionDefinition, pathsForRawSchema)
-    const resultCaster = new ResultCaster(collectionDefinition)
     const jsonSchemaGenerator = new JSONSchemaGenerator(
       collectionDefinition,
       {},
@@ -157,8 +153,6 @@ async function loadModels(fastify) {
       definition: collectionDefinition,
       crudService,
       queryParser,
-      castResultsAsStream: () => resultCaster.asStream(),
-      castItem: (item) => resultCaster.castItem(item),
       allFieldNames,
       jsonSchemaGenerator,
       jsonSchemaGeneratorWithNested,
