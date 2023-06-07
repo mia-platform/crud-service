@@ -44,18 +44,6 @@ module.exports = {
               'default': 'PUBLIC',
               'description': 'Filter by \\_\\_STATE__, multiple states can be specified in OR by providing a comma separated list',
             },
-            'updaterId': {
-              'type': 'string',
-              'description': 'User id that has requested the last change successfully',
-            },
-            'updatedAt': {
-              'type': 'string',
-              'description': 'Date of the request that has performed the last change',
-              'examples': [
-                '2020-09-16T12:00:00.000Z',
-              ],
-              'format': 'date-time',
-            },
             'creatorId': {
               'type': 'string',
               'description': 'User id that has created this object',
@@ -63,6 +51,18 @@ module.exports = {
             'createdAt': {
               'type': 'string',
               'description': 'Date of the request that has performed the object creation',
+              'examples': [
+                '2020-09-16T12:00:00.000Z',
+              ],
+              'format': 'date-time',
+            },
+            'updaterId': {
+              'type': 'string',
+              'description': 'User id that has requested the last change successfully',
+            },
+            'updatedAt': {
+              'type': 'string',
+              'description': 'Date of the request that has performed the last change',
               'examples': [
                 '2020-09-16T12:00:00.000Z',
               ],
