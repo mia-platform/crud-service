@@ -71,6 +71,29 @@ module.exports = {
         'type': 'string',
         'nullable': true,
       },
+      'Direttrici': {
+        'type': [
+          'array',
+          'null',
+          'string',
+        ],
+        'anyOf': [
+          {
+            'type': 'array',
+            'items': {
+              'type': 'string',
+            },
+          },
+          {
+            'type': 'string',
+          },
+          {
+            'type': 'null',
+            'nullable': true,
+          },
+        ],
+        'nullable': true,
+      },
       'Indirizzo': {
         'type': 'string',
         'nullable': true,
@@ -116,10 +139,26 @@ module.exports = {
             'nullable': true,
           },
           'Direttrici': {
-            'type': 'array',
-            'items': {
-              'type': 'string',
-            },
+            'type': [
+              'array',
+              'null',
+              'string',
+            ],
+            'anyOf': [
+              {
+                'type': 'array',
+                'items': {
+                  'type': 'string',
+                },
+              },
+              {
+                'type': 'string',
+              },
+              {
+                'type': 'null',
+                'nullable': true,
+              },
+            ],
             'nullable': true,
           },
           'Indirizzo': {
@@ -269,10 +308,25 @@ module.exports = {
           'description': 'User id that has requested the last change successfully',
         },
         'updatedAt': {
-          'type': 'string',
-          'format': 'date-time',
-          'examples': [
-            '2020-09-16T12:00:00.000Z',
+          'type': [
+            'string',
+            'object',
+          ],
+          'anyOf': [
+            {
+              'type': 'string',
+              'format': 'date-time',
+              'examples': [
+                '2020-09-16T12:00:00.000Z',
+              ],
+            },
+            {
+              'type': 'object',
+              'instanceof': 'Date',
+            },
+            {
+              'type': 'string',
+            },
           ],
           'description': 'Date of the request that has performed the last change',
         },
@@ -281,10 +335,25 @@ module.exports = {
           'description': 'User id that has created this object',
         },
         'createdAt': {
-          'type': 'string',
-          'format': 'date-time',
-          'examples': [
-            '2020-09-16T12:00:00.000Z',
+          'type': [
+            'string',
+            'object',
+          ],
+          'anyOf': [
+            {
+              'type': 'string',
+              'format': 'date-time',
+              'examples': [
+                '2020-09-16T12:00:00.000Z',
+              ],
+            },
+            {
+              'type': 'object',
+              'instanceof': 'Date',
+            },
+            {
+              'type': 'string',
+            },
           ],
           'description': 'Date of the request that has performed the object creation',
         },
@@ -305,10 +374,26 @@ module.exports = {
           'nullable': true,
         },
         'Direttrici': {
-          'type': 'array',
-          'items': {
-            'type': 'string',
-          },
+          'type': [
+            'array',
+            'null',
+            'string',
+          ],
+          'anyOf': [
+            {
+              'type': 'array',
+              'items': {
+                'type': 'string',
+              },
+            },
+            {
+              'type': 'string',
+            },
+            {
+              'type': 'null',
+              'nullable': true,
+            },
+          ],
           'nullable': true,
         },
         'Indirizzo': {

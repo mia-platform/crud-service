@@ -70,6 +70,29 @@ module.exports = {
         'type': 'string',
         'nullable': true,
       },
+      'Direttrici': {
+        'type': [
+          'array',
+          'null',
+          'string',
+        ],
+        'anyOf': [
+          {
+            'type': 'array',
+            'items': {
+              'type': 'string',
+            },
+          },
+          {
+            'type': 'string',
+          },
+          {
+            'type': 'null',
+            'nullable': true,
+          },
+        ],
+        'nullable': true,
+      },
       'Indirizzo': {
         'type': 'string',
         'nullable': true,
@@ -127,5 +150,121 @@ module.exports = {
       },
     },
     'additionalProperties': false,
+  },
+  'response': {
+    '200': {
+      'operationId': 'stations__MIA__export__MIA__response.200',
+      'type': 'array',
+      'items': {
+        'type': 'object',
+        'properties': {
+          '_id': {
+            'type': 'string',
+            'description': '_id',
+          },
+          'updaterId': {
+            'type': 'string',
+            'description': 'User id that has requested the last change successfully',
+          },
+          'updatedAt': {
+            'type': [
+              'string',
+              'object',
+            ],
+            'anyOf': [
+              {
+                'type': 'string',
+                'format': 'date-time',
+                'examples': [
+                  '2020-09-16T12:00:00.000Z',
+                ],
+              },
+              {
+                'type': 'object',
+                'instanceof': 'Date',
+              },
+              {
+                'type': 'string',
+              },
+            ],
+            'description': 'Date of the request that has performed the last change',
+          },
+          'creatorId': {
+            'type': 'string',
+            'description': 'User id that has created this object',
+          },
+          'createdAt': {
+            'type': [
+              'string',
+              'object',
+            ],
+            'anyOf': [
+              {
+                'type': 'string',
+                'format': 'date-time',
+                'examples': [
+                  '2020-09-16T12:00:00.000Z',
+                ],
+              },
+              {
+                'type': 'object',
+                'instanceof': 'Date',
+              },
+              {
+                'type': 'string',
+              },
+            ],
+            'description': 'Date of the request that has performed the object creation',
+          },
+          '__STATE__': {
+            'type': 'string',
+            'description': 'The state of the document',
+          },
+          'Cap': {
+            'type': 'number',
+            'nullable': true,
+          },
+          'CodiceMIR': {
+            'type': 'string',
+            'nullable': true,
+          },
+          'Comune': {
+            'type': 'string',
+            'nullable': true,
+          },
+          'Direttrici': {
+            'type': [
+              'array',
+              'null',
+              'string',
+            ],
+            'anyOf': [
+              {
+                'type': 'array',
+                'items': {
+                  'type': 'string',
+                },
+              },
+              {
+                'type': 'string',
+              },
+              {
+                'type': 'null',
+                'nullable': true,
+              },
+            ],
+            'nullable': true,
+          },
+          'Indirizzo': {
+            'type': 'string',
+            'nullable': true,
+          },
+          'country': {
+            'type': 'string',
+            'nullable': true,
+          },
+        },
+      },
+    },
   },
 }

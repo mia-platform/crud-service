@@ -80,6 +80,29 @@ module.exports = {
               'type': 'string',
               'nullable': true,
             },
+            'Direttrici': {
+              'type': [
+                'array',
+                'null',
+                'string',
+              ],
+              'anyOf': [
+                {
+                  'type': 'array',
+                  'items': {
+                    'type': 'string',
+                  },
+                },
+                {
+                  'type': 'string',
+                },
+                {
+                  'type': 'null',
+                  'nullable': true,
+                },
+              ],
+              'nullable': true,
+            },
             'Indirizzo': {
               'type': 'string',
               'nullable': true,
@@ -118,10 +141,26 @@ module.exports = {
                   'nullable': true,
                 },
                 'Direttrici': {
-                  'type': 'array',
-                  'items': {
-                    'type': 'string',
-                  },
+                  'type': [
+                    'array',
+                    'null',
+                    'string',
+                  ],
+                  'anyOf': [
+                    {
+                      'type': 'array',
+                      'items': {
+                        'type': 'string',
+                      },
+                    },
+                    {
+                      'type': 'string',
+                    },
+                    {
+                      'type': 'null',
+                      'nullable': true,
+                    },
+                  ],
                   'nullable': true,
                 },
                 'Indirizzo': {

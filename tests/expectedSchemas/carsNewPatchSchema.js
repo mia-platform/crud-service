@@ -198,11 +198,22 @@ module.exports = {
       'type': 'object',
       'properties': {
         '_id': {
-          'type': 'string',
-          'pattern': '^[a-fA-F\\d]{24}$',
-          'description': 'Hexadecimal identifier of the document in the collection',
-          'examples': [
-            '000000000000000000000000',
+          'type': [
+            'string',
+            'object',
+          ],
+          'anyOf': [
+            {
+              'type': 'string',
+              'pattern': '^[a-fA-F\\d]{24}$',
+              'description': 'Hexadecimal identifier of the document in the collection',
+              'examples': [
+                '000000000000000000000000',
+              ],
+            },
+            {
+              'type': 'object',
+            },
           ],
         },
         'name': {
@@ -229,10 +240,25 @@ module.exports = {
           'description': 'User id that has requested the last change successfully',
         },
         'updatedAt': {
-          'type': 'string',
-          'format': 'date-time',
-          'examples': [
-            '2020-09-16T12:00:00.000Z',
+          'type': [
+            'string',
+            'object',
+          ],
+          'anyOf': [
+            {
+              'type': 'string',
+              'format': 'date-time',
+              'examples': [
+                '2020-09-16T12:00:00.000Z',
+              ],
+            },
+            {
+              'type': 'object',
+              'instanceof': 'Date',
+            },
+            {
+              'type': 'string',
+            },
           ],
           'description': 'Date of the request that has performed the last change',
         },
@@ -241,10 +267,25 @@ module.exports = {
           'description': 'User id that has created this object',
         },
         'createdAt': {
-          'type': 'string',
-          'format': 'date-time',
-          'examples': [
-            '2020-09-16T12:00:00.000Z',
+          'type': [
+            'string',
+            'object',
+          ],
+          'anyOf': [
+            {
+              'type': 'string',
+              'format': 'date-time',
+              'examples': [
+                '2020-09-16T12:00:00.000Z',
+              ],
+            },
+            {
+              'type': 'object',
+              'instanceof': 'Date',
+            },
+            {
+              'type': 'string',
+            },
           ],
           'description': 'Date of the request that has performed the object creation',
         },

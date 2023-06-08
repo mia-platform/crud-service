@@ -27,11 +27,22 @@ module.exports = {
     'type': 'object',
     'properties': {
       '_id': {
-        'type': 'string',
-        'pattern': '^[a-fA-F\\d]{24}$',
-        'description': 'Hexadecimal identifier of the document in the collection',
-        'examples': [
-          '000000000000000000000000',
+        'type': [
+          'string',
+          'object',
+        ],
+        'anyOf': [
+          {
+            'type': 'string',
+            'pattern': '^[a-fA-F\\d]{24}$',
+            'description': 'Hexadecimal identifier of the document in the collection',
+            'examples': [
+              '000000000000000000000000',
+            ],
+          },
+          {
+            'type': 'object',
+          },
         ],
       },
       'creatorId': {
@@ -115,5 +126,112 @@ module.exports = {
       },
     },
     'additionalProperties': false,
+  },
+  'response': {
+    '200': {
+      'operationId': 'cars__MIA__export__MIA__response.200',
+      'type': 'array',
+      'items': {
+        'type': 'object',
+        'properties': {
+          '_id': {
+            'type': [
+              'string',
+              'object',
+            ],
+            'anyOf': [
+              {
+                'type': 'string',
+                'pattern': '^[a-fA-F\\d]{24}$',
+                'description': 'Hexadecimal identifier of the document in the collection',
+                'examples': [
+                  '000000000000000000000000',
+                ],
+              },
+              {
+                'type': 'object',
+              },
+            ],
+          },
+          'name': {
+            'type': 'string',
+            'description': "The car's name",
+          },
+          'price': {
+            'type': 'number',
+            'description': "The car's price",
+          },
+          'position': {
+            'type': 'array',
+            'items': {
+              'type': 'number',
+            },
+            'description': "The car's position",
+          },
+          'additionalInfo': {
+            'type': 'object',
+            'additionalProperties': true,
+          },
+          'updaterId': {
+            'type': 'string',
+            'description': 'User id that has requested the last change successfully',
+          },
+          'updatedAt': {
+            'type': [
+              'string',
+              'object',
+            ],
+            'anyOf': [
+              {
+                'type': 'string',
+                'format': 'date-time',
+                'examples': [
+                  '2020-09-16T12:00:00.000Z',
+                ],
+              },
+              {
+                'type': 'object',
+                'instanceof': 'Date',
+              },
+              {
+                'type': 'string',
+              },
+            ],
+            'description': 'Date of the request that has performed the last change',
+          },
+          'creatorId': {
+            'type': 'string',
+            'description': 'User id that has created this object',
+          },
+          'createdAt': {
+            'type': [
+              'string',
+              'object',
+            ],
+            'anyOf': [
+              {
+                'type': 'string',
+                'format': 'date-time',
+                'examples': [
+                  '2020-09-16T12:00:00.000Z',
+                ],
+              },
+              {
+                'type': 'object',
+                'instanceof': 'Date',
+              },
+              {
+                'type': 'string',
+              },
+            ],
+            'description': 'Date of the request that has performed the object creation',
+          },
+          '__STATE__': {
+            'type': 'string',
+            'description': 'The state of the document',
+          },
+        },
+      },
+    },
   },
 }

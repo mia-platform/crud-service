@@ -22,6 +22,7 @@ const fastifyEnv = require('@fastify/env')
 
 const Ajv = require('ajv')
 const ajvFormats = require('ajv-formats')
+const ajvKeywords = require('ajv-keywords')
 
 const { readdirSync } = require('fs')
 const { join } = require('path')
@@ -45,6 +46,8 @@ const fastifyEnvSchema = require('./envSchema')
 
 const ajv = new Ajv({ useDefaults: true })
 ajvFormats(ajv)
+ajvKeywords(ajv)
+
 const compatibilityValidate = ajv.compile(compatibilityModelJsonSchema)
 const validate = ajv.compile(modelJsonSchema)
 
