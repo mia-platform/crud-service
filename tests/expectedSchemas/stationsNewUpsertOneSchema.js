@@ -114,6 +114,25 @@ module.exports = {
         'type': 'string',
         'nullable': true,
       },
+      'nonNullableDate': {
+        'type': [
+          'string',
+          'object',
+        ],
+        'anyOf': [
+          {
+            'type': 'string',
+            'examples': [
+              '2020-09-16T12:00:00.000Z',
+            ],
+            'format': 'date-time',
+          },
+          {
+            'type': 'object',
+            'instanceof': 'Date',
+          },
+        ],
+      },
       '_q': {
         'type': 'string',
         'description': 'Additional query part to forward to MongoDB',
@@ -181,6 +200,25 @@ module.exports = {
             'type': 'string',
             'nullable': true,
           },
+          'nonNullableDate': {
+            'type': [
+              'string',
+              'object',
+            ],
+            'anyOf': [
+              {
+                'type': 'string',
+                'examples': [
+                  '2020-09-16T12:00:00.000Z',
+                ],
+                'format': 'date-time',
+              },
+              {
+                'type': 'object',
+                'instanceof': 'Date',
+              },
+            ],
+          },
           'Direttrici.$.replace': {
             'type': 'string',
           },
@@ -227,6 +265,12 @@ module.exports = {
               true,
             ],
           },
+          'nonNullableDate': {
+            'type': 'boolean',
+            'enum': [
+              true,
+            ],
+          },
         },
         'additionalProperties': false,
         'patternProperties': {},
@@ -253,7 +297,14 @@ module.exports = {
       },
       '$currentDate': {
         'type': 'object',
-        'properties': {},
+        'properties': {
+          'nonNullableDate': {
+            'type': 'boolean',
+            'enum': [
+              true,
+            ],
+          },
+        },
         'additionalProperties': false,
       },
       '$push': {
@@ -348,6 +399,25 @@ module.exports = {
           'country': {
             'type': 'string',
             'nullable': true,
+          },
+          'nonNullableDate': {
+            'type': [
+              'string',
+              'object',
+            ],
+            'anyOf': [
+              {
+                'type': 'string',
+                'examples': [
+                  '2020-09-16T12:00:00.000Z',
+                ],
+                'format': 'date-time',
+              },
+              {
+                'type': 'object',
+                'instanceof': 'Date',
+              },
+            ],
           },
         },
         'additionalProperties': false,
@@ -464,6 +534,28 @@ module.exports = {
         'country': {
           'type': 'string',
           'nullable': true,
+        },
+        'nonNullableDate': {
+          'type': [
+            'string',
+            'object',
+          ],
+          'anyOf': [
+            {
+              'type': 'string',
+              'format': 'date-time',
+              'examples': [
+                '2020-09-16T12:00:00.000Z',
+              ],
+            },
+            {
+              'type': 'object',
+              'instanceof': 'Date',
+            },
+            {
+              'type': 'string',
+            },
+          ],
         },
       },
     },

@@ -104,6 +104,13 @@ module.exports = {
       crypted: false,
       nullable: true,
     },
+    {
+      name: 'nonNullableDate',
+      type: 'Date',
+      required: false,
+      crypted: false,
+      nullable: false,
+    },
   ],
   indexes: [
     {
