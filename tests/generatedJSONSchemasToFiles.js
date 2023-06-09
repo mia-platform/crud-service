@@ -82,7 +82,7 @@ collections.forEach(collection => {
     const schema = generator[method]()
     let newExpectedSchema = structuredClone(schema)
     const paths = JSONPath({
-      path: '$..[?(@.type=="string" && @.pattern)]',
+      path: '$..[?(@.type==="string" && @.pattern)]',
       json: newExpectedSchema,
       resultType: 'pointer',
     })

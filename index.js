@@ -31,7 +31,7 @@ const { omit } = require('ramda')
 const myPackage = require('./package')
 const QueryParser = require('./lib/QueryParser')
 const CrudService = require('./lib/CrudService')
-const ResultCaster = require('./lib/ResultCaster')
+const GeoPointCaster = require('./lib/GeoPointCaster')
 const httpInterface = require('./lib/httpInterface')
 const JSONSchemaGenerator = require('./lib/JSONSchemaGenerator')
 const createIndexes = require('./lib/createIndexes')
@@ -105,8 +105,9 @@ async function loadModels(fastify) {
     const compatibilityValidation = compatibilityValidate(collectionDefinition)
     const validation = validate(collectionDefinition)
     if (!validation && !compatibilityValidation) {
-      fastify.log.error(compatibilityValidate.errors ?? validate.errors)
-      throw new Error(`Invalid collection definition: ${JSON.stringify(compatibilityValidate.errors) ?? JSON.stringify(validate.errors)}`)
+      const errors = collectionDefinition.schema ? validate.errors : compatibilityValidate.errors
+      fastify.log.error(errors)
+      throw new Error(`Invalid collection definition: ${JSON.stringify(errors)}`)
     }
 
     const {
@@ -141,7 +142,7 @@ async function loadModels(fastify) {
       },
     )
     const queryParser = new QueryParser(collectionDefinition, pathsForRawSchema)
-    const resultCaster = new ResultCaster(collectionDefinition)
+    const resultCaster = new GeoPointCaster(collectionDefinition)
     const jsonSchemaGenerator = new JSONSchemaGenerator(
       collectionDefinition,
       {},

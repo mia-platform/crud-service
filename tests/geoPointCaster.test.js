@@ -19,11 +19,11 @@
 const tap = require('tap')
 const collectionDefinition = require('./collectionDefinitions/books')
 const newCollectionDefinition = require('./collectionDefinitions/books')
-const ResultCaster = require('../lib/ResultCaster')
+const GeoPointCaster = require('../lib/GeoPointCaster')
 
-tap.test('ResultCaster', test => {
+tap.test('GeoPointCaster', test => {
   test.test('old configuration', assert => {
-    const resultCaster = new ResultCaster(collectionDefinition)
+    const geoPointCaster = new GeoPointCaster(collectionDefinition)
 
     const testCases = [
       {
@@ -65,7 +65,7 @@ tap.test('ResultCaster', test => {
     for (const { name, document, expectedResult } of testCases) {
       assert.test(name, test => {
         test.plan(1)
-        resultCaster.castItem(document)
+        geoPointCaster.castItem(document)
         test.strictSame(document, expectedResult)
         test.end()
       })
@@ -74,7 +74,7 @@ tap.test('ResultCaster', test => {
   })
 
   test.test('new configuration', assert => {
-    const resultCaster = new ResultCaster(newCollectionDefinition)
+    const geoPointCaster = new GeoPointCaster(newCollectionDefinition)
 
     const testCases = [
       {
@@ -116,7 +116,7 @@ tap.test('ResultCaster', test => {
     for (const { name, document, expectedResult } of testCases) {
       assert.test(name, test => {
         test.plan(1)
-        resultCaster.castItem(document)
+        geoPointCaster.castItem(document)
         test.strictSame(document, expectedResult)
         test.end()
       })

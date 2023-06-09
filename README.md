@@ -155,7 +155,7 @@ These models will be analyzed by the [JSONSchemaGenerator](./lib/JSONSchemaGener
 
 The service exposes several APIs to communicate with the collections. You can send requests as you prefer: you can use curl, use an application such as PostMan, or use the integrated Swagger API Interface accessible to `http://{{url}}/documentation`.
 
-When the Service is live, every HTTP request executed will be caught by the HTTP Interface that works as a communication channel with the CRUD Service. The data included with the request (query parameters, body, commands) is evaluated by the [`QueryParser`](./lib/QueryParser.js) class to verify the query to make sure that every value associated to a specific field is in the correct type. Then it's forwarded to the [`CrudService`](./lib/CrudService.js) class to execute the query. Result of `GET` requests are passed to the [`ResultCaster`](./lib/ResultCaster.js) class to casts properties in the data with the types defined in the models.
+When the Service is live, every HTTP request executed will be caught by the HTTP Interface that works as a communication channel with the CRUD Service. The data included with the request (query parameters, body, commands) is evaluated by the [`QueryParser`](./lib/QueryParser.js) class to verify the query to make sure that every value associated to a specific field is in the correct type. Then it's forwarded to the [`CrudService`](./lib/CrudService.js) class to execute the query. Result of `GET` requests are passed to the [`GeoPointCaster`](./lib/GeoPointCaster.js) class to casts GeoPoints properties in the data.
 
 ### Define your collections
 
@@ -261,14 +261,14 @@ This class makes the query to the mongodb collection, manages `updaterId`, `upda
 This class casts the value from the query, the body and the commands in order to insert `Date` and `ObjectId`
 and perform other conversions such as `GeoPoint` where needed
 
-### ResultCaster
+### GeoPointCaster
 
-This class casts the value of the result from a query executed in order to have consistent data with the definition of the collection. It operates only on two types of properties: MongoDB's `GeoPoint` and `number`.
+This class casts the value of the result from a query executed in order to have consistent data with the definition of the collection. It operates only on one type of properties: MongoDB's `GeoPoint`.
 
 ### HTTPInterface
 
 This piece of code is a communication channel between HTTP and the CrudService.
-It uses the `QueryParser` to cast the value before forwarding the request to the `crudService`, and the `ResultCaster` to cast the value to be returned.
+It uses the `QueryParser` to cast the value before forwarding the request to the `crudService`, and the `GeoPointCaster` to cast the GeoPoints value inside the response to be returned.
 
 The HTTPInterface includes by default different API methods for every kind of operation. The following are available for both Collections and Views:
 
