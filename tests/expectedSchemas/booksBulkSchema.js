@@ -53,11 +53,11 @@ module.exports = {
             'string',
             'object',
           ],
+          'description': 'The address of the author',
           'anyOf': [
             {
               'type': 'string',
               'pattern': '^[a-fA-F\\d]{24}$',
-              'description': 'Hexadecimal identifier of the document in the collection',
               'examples': [
                 '000000000000000000000000',
               ],
@@ -66,7 +66,6 @@ module.exports = {
               'type': 'object',
             },
           ],
-          'description': 'The address of the author',
         },
         'isPromoted': {
           'type': 'boolean',
@@ -75,9 +74,14 @@ module.exports = {
         'publishDate': {
           'type': [
             'string',
+            'null',
             'object',
           ],
           'anyOf': [
+            {
+              'type': 'null',
+              'nullable': true,
+            },
             {
               'type': 'string',
               'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
@@ -226,6 +230,10 @@ module.exports = {
           ],
           'anyOf': [
             {
+              'type': 'null',
+              'nullable': true,
+            },
+            {
               'type': 'array',
               'items': {
                 'type': 'object',
@@ -318,10 +326,6 @@ module.exports = {
                 'name',
               ],
             },
-            {
-              'type': 'null',
-              'nullable': true,
-            },
           ],
           'nullable': true,
         },
@@ -333,6 +337,10 @@ module.exports = {
           ],
           'anyOf': [
             {
+              'type': 'null',
+              'nullable': true,
+            },
+            {
               'type': 'array',
               'items': {
                 'type': 'object',
@@ -342,10 +350,6 @@ module.exports = {
             {
               'type': 'object',
               'additionalProperties': true,
-            },
-            {
-              'type': 'null',
-              'nullable': true,
             },
           ],
           'nullable': true,
@@ -377,11 +381,11 @@ module.exports = {
               'string',
               'object',
             ],
+            'description': 'Hexadecimal identifier of the document in the collection',
             'anyOf': [
               {
                 'type': 'string',
                 'pattern': '^[a-fA-F\\d]{24}$',
-                'description': 'Hexadecimal identifier of the document in the collection',
                 'examples': [
                   '000000000000000000000000',
                 ],

@@ -38,24 +38,46 @@ module.exports = {
         'description': 'User id that has created this object',
       },
       'createdAt': {
-        'type': 'string',
-        'description': 'Date of the request that has performed the object creation',
-        'examples': [
-          '2020-09-16T12:00:00.000Z',
+        'type': [
+          'string',
+          'object',
         ],
-        'format': 'date-time',
+        'anyOf': [
+          {
+            'type': 'string',
+            'examples': [
+              '2020-09-16T12:00:00.000Z',
+            ],
+            'format': 'date-time',
+          },
+          {
+            'type': 'object',
+            'instanceof': 'Date',
+          },
+        ],
       },
       'updaterId': {
         'type': 'string',
         'description': 'User id that has requested the last change successfully',
       },
       'updatedAt': {
-        'type': 'string',
-        'description': 'Date of the request that has performed the last change',
-        'examples': [
-          '2020-09-16T12:00:00.000Z',
+        'type': [
+          'string',
+          'object',
         ],
-        'format': 'date-time',
+        'anyOf': [
+          {
+            'type': 'string',
+            'examples': [
+              '2020-09-16T12:00:00.000Z',
+            ],
+            'format': 'date-time',
+          },
+          {
+            'type': 'object',
+            'instanceof': 'Date',
+          },
+        ],
       },
       'Cap': {
         'type': 'number',
@@ -77,6 +99,10 @@ module.exports = {
         ],
         'anyOf': [
           {
+            'type': 'null',
+            'nullable': true,
+          },
+          {
             'type': 'array',
             'items': {
               'type': 'string',
@@ -84,10 +110,6 @@ module.exports = {
           },
           {
             'type': 'string',
-          },
-          {
-            'type': 'null',
-            'nullable': true,
           },
         ],
         'nullable': true,
@@ -144,6 +166,10 @@ module.exports = {
             ],
             'anyOf': [
               {
+                'type': 'null',
+                'nullable': true,
+              },
+              {
                 'type': 'array',
                 'items': {
                   'type': 'string',
@@ -151,10 +177,6 @@ module.exports = {
               },
               {
                 'type': 'string',
-              },
-              {
-                'type': 'null',
-                'nullable': true,
               },
             ],
             'nullable': true,

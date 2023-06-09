@@ -96,6 +96,7 @@ collections.forEach(collection => {
       const property = lget(newExpectedSchema, key)
       if (property.pattern === '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$') {
         delete property.pattern
+        delete property.description
         property.format = 'date-time'
         newExpectedSchema = lset(
           newExpectedSchema,

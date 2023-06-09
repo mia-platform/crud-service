@@ -78,11 +78,11 @@ module.exports = {
               'string',
               'object',
             ],
+            'description': 'Hexadecimal identifier of the document in the collection',
             'anyOf': [
               {
                 'type': 'string',
                 'pattern': '^[a-fA-F\\d]{24}$',
-                'description': 'Hexadecimal identifier of the document in the collection',
                 'examples': [
                   '000000000000000000000000',
                 ],

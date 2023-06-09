@@ -31,11 +31,11 @@ module.exports = {
           'string',
           'object',
         ],
+        'description': 'Hexadecimal identifier of the document in the collection',
         'anyOf': [
           {
             'type': 'string',
             'pattern': '^[a-fA-F\\d]{24}$',
-            'description': 'Hexadecimal identifier of the document in the collection',
             'examples': [
               '000000000000000000000000',
             ],
@@ -50,24 +50,46 @@ module.exports = {
         'description': 'User id that has created this object',
       },
       'createdAt': {
-        'type': 'string',
-        'description': 'Date of the request that has performed the object creation',
-        'examples': [
-          '2020-09-16T12:00:00.000Z',
+        'type': [
+          'string',
+          'object',
         ],
-        'format': 'date-time',
+        'anyOf': [
+          {
+            'type': 'string',
+            'examples': [
+              '2020-09-16T12:00:00.000Z',
+            ],
+            'format': 'date-time',
+          },
+          {
+            'type': 'object',
+            'instanceof': 'Date',
+          },
+        ],
       },
       'updaterId': {
         'type': 'string',
         'description': 'User id that has requested the last change successfully',
       },
       'updatedAt': {
-        'type': 'string',
-        'description': 'Date of the request that has performed the last change',
-        'examples': [
-          '2020-09-16T12:00:00.000Z',
+        'type': [
+          'string',
+          'object',
         ],
-        'format': 'date-time',
+        'anyOf': [
+          {
+            'type': 'string',
+            'examples': [
+              '2020-09-16T12:00:00.000Z',
+            ],
+            'format': 'date-time',
+          },
+          {
+            'type': 'object',
+            'instanceof': 'Date',
+          },
+        ],
       },
       'name': {
         'type': 'string',
@@ -91,11 +113,11 @@ module.exports = {
           'string',
           'object',
         ],
+        'description': 'The address of the author',
         'anyOf': [
           {
             'type': 'string',
             'pattern': '^[a-fA-F\\d]{24}$',
-            'description': 'Hexadecimal identifier of the document in the collection',
             'examples': [
               '000000000000000000000000',
             ],
@@ -104,7 +126,6 @@ module.exports = {
             'type': 'object',
           },
         ],
-        'description': 'The address of the author',
       },
       'isPromoted': {
         'type': 'boolean',
@@ -113,12 +134,16 @@ module.exports = {
       'publishDate': {
         'type': [
           'string',
+          'null',
           'object',
         ],
         'anyOf': [
           {
+            'type': 'null',
+            'nullable': true,
+          },
+          {
             'type': 'string',
-            'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
             'examples': [
               '2020-09-16T12:00:00.000Z',
             ],
@@ -175,6 +200,10 @@ module.exports = {
           'object',
         ],
         'anyOf': [
+          {
+            'type': 'null',
+            'nullable': true,
+          },
           {
             'type': 'array',
             'items': {
@@ -268,10 +297,6 @@ module.exports = {
               'name',
             ],
           },
-          {
-            'type': 'null',
-            'nullable': true,
-          },
         ],
         'nullable': true,
       },
@@ -283,6 +308,10 @@ module.exports = {
         ],
         'anyOf': [
           {
+            'type': 'null',
+            'nullable': true,
+          },
+          {
             'type': 'array',
             'items': {
               'type': 'object',
@@ -292,10 +321,6 @@ module.exports = {
           {
             'type': 'object',
             'additionalProperties': true,
-          },
-          {
-            'type': 'null',
-            'nullable': true,
           },
         ],
         'nullable': true,
@@ -424,11 +449,11 @@ module.exports = {
               'string',
               'object',
             ],
+            'description': 'Hexadecimal identifier of the document in the collection',
             'anyOf': [
               {
                 'type': 'string',
                 'pattern': '^[a-fA-F\\d]{24}$',
-                'description': 'Hexadecimal identifier of the document in the collection',
                 'examples': [
                   '000000000000000000000000',
                 ],
@@ -518,11 +543,11 @@ module.exports = {
               'string',
               'object',
             ],
+            'description': 'The address of the author',
             'anyOf': [
               {
                 'type': 'string',
                 'pattern': '^[a-fA-F\\d]{24}$',
-                'description': 'Hexadecimal identifier of the document in the collection',
                 'examples': [
                   '000000000000000000000000',
                 ],
@@ -531,7 +556,6 @@ module.exports = {
                 'type': 'object',
               },
             ],
-            'description': 'The address of the author',
           },
           'isPromoted': {
             'type': 'boolean',
@@ -540,9 +564,14 @@ module.exports = {
           'publishDate': {
             'type': [
               'string',
+              'null',
               'object',
             ],
             'anyOf': [
+              {
+                'type': 'null',
+                'nullable': true,
+              },
               {
                 'type': 'string',
                 'format': 'date-time',
@@ -691,6 +720,10 @@ module.exports = {
             ],
             'anyOf': [
               {
+                'type': 'null',
+                'nullable': true,
+              },
+              {
                 'type': 'array',
                 'items': {
                   'type': 'object',
@@ -783,10 +816,6 @@ module.exports = {
                   'name',
                 ],
               },
-              {
-                'type': 'null',
-                'nullable': true,
-              },
             ],
             'nullable': true,
           },
@@ -798,6 +827,10 @@ module.exports = {
             ],
             'anyOf': [
               {
+                'type': 'null',
+                'nullable': true,
+              },
+              {
                 'type': 'array',
                 'items': {
                   'type': 'object',
@@ -807,10 +840,6 @@ module.exports = {
               {
                 'type': 'object',
                 'additionalProperties': true,
-              },
-              {
-                'type': 'null',
-                'nullable': true,
               },
             ],
             'nullable': true,

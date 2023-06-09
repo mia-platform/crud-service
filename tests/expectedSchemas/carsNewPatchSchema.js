@@ -40,24 +40,46 @@ module.exports = {
         'description': 'User id that has created this object',
       },
       'createdAt': {
-        'type': 'string',
-        'description': 'Date of the request that has performed the object creation',
-        'examples': [
-          '2020-09-16T12:00:00.000Z',
+        'type': [
+          'string',
+          'object',
         ],
-        'format': 'date-time',
+        'anyOf': [
+          {
+            'type': 'string',
+            'examples': [
+              '2020-09-16T12:00:00.000Z',
+            ],
+            'format': 'date-time',
+          },
+          {
+            'type': 'object',
+            'instanceof': 'Date',
+          },
+        ],
       },
       'updaterId': {
         'type': 'string',
         'description': 'User id that has requested the last change successfully',
       },
       'updatedAt': {
-        'type': 'string',
-        'description': 'Date of the request that has performed the last change',
-        'examples': [
-          '2020-09-16T12:00:00.000Z',
+        'type': [
+          'string',
+          'object',
         ],
-        'format': 'date-time',
+        'anyOf': [
+          {
+            'type': 'string',
+            'examples': [
+              '2020-09-16T12:00:00.000Z',
+            ],
+            'format': 'date-time',
+          },
+          {
+            'type': 'object',
+            'instanceof': 'Date',
+          },
+        ],
       },
       'name': {
         'type': 'string',
@@ -202,11 +224,11 @@ module.exports = {
             'string',
             'object',
           ],
+          'description': 'Hexadecimal identifier of the document in the collection',
           'anyOf': [
             {
               'type': 'string',
               'pattern': '^[a-fA-F\\d]{24}$',
-              'description': 'Hexadecimal identifier of the document in the collection',
               'examples': [
                 '000000000000000000000000',
               ],

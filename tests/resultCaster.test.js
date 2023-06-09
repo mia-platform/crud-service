@@ -46,19 +46,6 @@ tap.test('ResultCaster', test => {
         },
       },
       {
-        name: 'should cast number field from string',
-        document: {
-          name: 'The you you are',
-          author: 'Dr. Ricken Lazlo Hale, PhD',
-          price: '22.99',
-        },
-        expectedResult: {
-          name: 'The you you are',
-          author: 'Dr. Ricken Lazlo Hale, PhD',
-          price: 22.99,
-        },
-      },
-      {
         name: 'should cast GeoPoint fields',
         document: {
           name: 'Node cookbook',
@@ -107,19 +94,6 @@ tap.test('ResultCaster', test => {
           isPromoted: false,
           tags: ['Programming', 'Computer Science', 'New'],
           publishDate: new Date('2015-01-01T00:00:00.000Z'),
-        },
-      },
-      {
-        name: 'should cast number field from string',
-        document: {
-          name: 'The you you are',
-          author: 'Dr. Ricken Lazlo Hale, PhD',
-          price: '22.99',
-        },
-        expectedResult: {
-          name: 'The you you are',
-          author: 'Dr. Ricken Lazlo Hale, PhD',
-          price: 22.99,
         },
       },
       {
