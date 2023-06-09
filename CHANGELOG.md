@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 
 - updated broken links in documentation
+- wrong swagger configuration
 
 ## 6.5.2 - 2023-05-08
 
