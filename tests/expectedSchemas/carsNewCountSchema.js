@@ -33,13 +33,17 @@ module.exports = {
           '000000000000000000000000',
         ],
       },
-      'name': {
+      'creatorId': {
         'type': 'string',
-        'description': "The car's name",
+        'description': 'User id that has created this object',
       },
-      'price': {
-        'type': 'number',
-        'description': "The car's price",
+      'createdAt': {
+        'type': 'string',
+        'description': 'Date of the request that has performed the object creation',
+        'examples': [
+          '2020-09-16T12:00:00.000Z',
+        ],
+        'format': 'date-time',
       },
       'updaterId': {
         'type': 'string',
@@ -53,17 +57,13 @@ module.exports = {
         ],
         'format': 'date-time',
       },
-      'creatorId': {
+      'name': {
         'type': 'string',
-        'description': 'User id that has created this object',
+        'description': "The car's name",
       },
-      'createdAt': {
-        'type': 'string',
-        'description': 'Date of the request that has performed the object creation',
-        'examples': [
-          '2020-09-16T12:00:00.000Z',
-        ],
-        'format': 'date-time',
+      'price': {
+        'type': 'number',
+        'description': "The car's price",
       },
       '_q': {
         'type': 'string',

@@ -61,6 +61,7 @@ module.exports = {
       'name': {
         'type': 'string',
         'description': 'The name of the book',
+        'nullable': true,
       },
       'isbn': {
         'type': 'string',
@@ -92,6 +93,7 @@ module.exports = {
         'examples': [
           '2020-09-16T12:00:00.000Z',
         ],
+        'nullable': true,
         'format': 'date-time',
       },
       '_q': {
@@ -131,13 +133,13 @@ module.exports = {
         'anyOf': [
           {
             'type': 'string',
-            'pattern': '^-?(_id|__STATE__|creatorId|createdAt|updaterId|updatedAt|name|isbn|price|author|authorAddressId|isPromoted|publishDate|tags|tagIds|additionalInfo|signature|metadata|attachments|editionsDates)(\\.([^\\.,])+)*(,-?(_id|__STATE__|creatorId|createdAt|updaterId|updatedAt|name|isbn|price|author|authorAddressId|isPromoted|publishDate|tags|tagIds|additionalInfo|signature|metadata|attachments|editionsDates)(\\.([^\\.,])+)*)*$',
+            'pattern': '^-?(_id|updaterId|updatedAt|creatorId|createdAt|__STATE__|name|isbn|price|author|authorAddressId|isPromoted|publishDate|tags|tagIds|additionalInfo|signature|metadata|attachments|editionsDates)(\\.([^\\.,])+)*(,-?(_id|updaterId|updatedAt|creatorId|createdAt|__STATE__|name|isbn|price|author|authorAddressId|isPromoted|publishDate|tags|tagIds|additionalInfo|signature|metadata|attachments|editionsDates)(\\.([^\\.,])+)*)*$',
           },
           {
             'type': 'array',
             'items': {
               'type': 'string',
-              'pattern': '^-?(_id|__STATE__|creatorId|createdAt|updaterId|updatedAt|name|isbn|price|author|authorAddressId|isPromoted|publishDate|tags|tagIds|additionalInfo|signature|metadata|attachments|editionsDates)(\\.([^\\.,])+)*(,-?(_id|__STATE__|creatorId|createdAt|updaterId|updatedAt|name|isbn|price|author|authorAddressId|isPromoted|publishDate|tags|tagIds|additionalInfo|signature|metadata|attachments|editionsDates)(\\.([^\\.,])+)*)*$',
+              'pattern': '^-?(_id|updaterId|updatedAt|creatorId|createdAt|__STATE__|name|isbn|price|author|authorAddressId|isPromoted|publishDate|tags|tagIds|additionalInfo|signature|metadata|attachments|editionsDates)(\\.([^\\.,])+)*(,-?(_id|updaterId|updatedAt|creatorId|createdAt|__STATE__|name|isbn|price|author|authorAddressId|isPromoted|publishDate|tags|tagIds|additionalInfo|signature|metadata|attachments|editionsDates)(\\.([^\\.,])+)*)*$',
             },
           },
         ],
@@ -253,8 +255,8 @@ module.exports = {
           },
           'name': {
             'type': 'string',
-            'nullable': true,
             'description': 'The name of the book',
+            'nullable': true,
           },
           'isbn': {
             'type': 'string',
@@ -286,8 +288,8 @@ module.exports = {
             'examples': [
               '2020-09-16T12:00:00.000Z',
             ],
-            'nullable': true,
             'description': 'The date it was published',
+            'nullable': true,
           },
           'position': {
             'type': 'array',
