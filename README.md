@@ -318,7 +318,7 @@ For example, for version 5.0.14, the final url of the `.deb` will be: https://re
 
 ## Client-side Libraries
 
-For leveraging the CRUD Service APIs in your services you can use the one of the following libraries based on supported languages
+For leveraging the CRUD Service APIs in your services you can use one of the following libraries based on supported languages
 
  - [Golang](https://github.com/mia-platform/go-crud-service-client)
 
