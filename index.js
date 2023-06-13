@@ -251,11 +251,11 @@ function createLookupModel(fastify, viewDefinition, mergedCollections) {
     }
 
     Object.entries(lookupProjection)
-      .forEach(([key, value]) => {
-        parsedLookupProjection.push({ [key]: value })
-        const conversion = Object.keys(value).shift()
-        if (value !== 0) {
-          lookupCollectionDefinition.schema.properties[key] = {
+      .forEach(([fieldName, schema]) => {
+        parsedLookupProjection.push({ [fieldName]: schema })
+        const conversion = Object.keys(schema).shift()
+        if (schema !== 0) {
+          lookupCollectionDefinition.schema.properties[fieldName] = {
             type: aggregationConversion[conversion],
           }
         }
