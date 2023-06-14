@@ -25,7 +25,7 @@ const ajvFormats = require('ajv-formats')
 
 const { readdirSync } = require('fs')
 const { join } = require('path')
-const { omit, clone } = require('ramda')
+const { omit } = require('ramda')
 
 const myPackage = require('./package')
 const QueryParser = require('./lib/QueryParser')
@@ -235,11 +235,11 @@ function createLookupModel(fastify, viewDefinition, mergedCollections) {
 
   for (const lookup of viewLookups) {
     const { from, pipeline } = lookup
-    const lookupCollection = clone(mergedCollections.find(({ name }) => name === from))
+    const lookupCollection = mergedCollections.find(({ name }) => name === from)
     const lookupIdType = getIdType(lookupCollection)
     const lookupCollectionMongo = fastify.mongo[getDatabaseNameByType(lookupIdType)].db.collection(from)
 
-    const lookupProjection = pipeline.find(({ $project }) => $project !== undefined)?.$project ?? {}
+    const lookupProjection = pipeline.find(({ $project }) => $project)?.$project ?? {}
     const parsedLookupProjection = []
     const lookupCollectionDefinition = {
       ...omit(['fields'], viewDefinition),
@@ -255,6 +255,9 @@ function createLookupModel(fastify, viewDefinition, mergedCollections) {
         parsedLookupProjection.push({ [fieldName]: schema })
         const conversion = Object.keys(schema).shift()
         if (schema !== 0) {
+          if (!aggregationConversion[conversion]) {
+            throw new Error(`Invalid view lookup definition: no explicit type found in ${JSON.stringify({ [fieldName]: schema })}`)
+          }
           lookupCollectionDefinition.schema.properties[fieldName] = {
             type: aggregationConversion[conversion],
           }
@@ -325,7 +328,9 @@ async function loadModels(fastify) {
       const sourceCollectionDependencies = buildModelDependencies(fastify, sourceCollection)
 
       const viewIdType = getIdType(sourceCollection)
-      const sourceCollectionMongo = fastify.mongo[getDatabaseNameByType(viewIdType)].db
+      const sourceCollectionMongo = await fastify
+        .mongo[getDatabaseNameByType(viewIdType)]
+        .db
         .collection(viewSourceCollectionName)
       viewDependencies = buildModelDependencies(fastify, collectionDefinition, sourceCollectionMongo)
       viewDependencies.queryParser = sourceCollectionDependencies.queryParser
@@ -462,7 +467,7 @@ module.exports.transformSchemaForSwagger = ({ schema, url } = {}) => {
     querystring = undefined,
     response = undefined,
     ...others
-  } = schema ?? {}
+  } = schema
   const transformed = { ...others }
   const KEYS_TO_REMOVE = [
     SCHEMA_CUSTOM_KEYWORDS.UNIQUE_OPERATION_ID,
