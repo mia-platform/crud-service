@@ -17,8 +17,11 @@
 'use strict'
 
 const tap = require('tap')
+const path = require('path')
+const lc39 = require('@mia-platform/lc39')
+const { MongoClient } = require('mongodb')
 
-const { setUpTest, getHeaders } = require('./httpInterface.utils')
+const { getHeaders } = require('./httpInterface.utils')
 const {
   lookupAddressPrefix,
   expectedRidersLookup,
@@ -26,14 +29,45 @@ const {
   ridersFixture,
 } = require('./viewUtils.utils')
 
+const {
+  getMongoDatabaseName,
+  getMongoURL,
+} = require('./utils')
+
 const ridersData = require('./fixtures/riders')
 const ordersData = require('./fixtures/orders')
 const { STATES, __STATE__ } = require('../lib/consts')
 
 const HTTP_PUBLIC_FIXTURES = JSON.parse(JSON.stringify(expectedRidersLookup))
+const COLLECTION_DEFINITION_FOLDER = path.join(__dirname, 'collectionDefinitions')
+const VIEWS_DEFINITION_FOLDER = path.join(__dirname, 'viewsDefinitionsLookup')
 
 tap.test('HTTP GET /orders-details-endpoint/lookup/rider', async t => {
-  const { fastify, database } = await setUpTest(t)
+  if (process.env.MONGO_VERSION <= '4.4') {
+    t.skip('Lookup view not supported on Mongo version <= 4.4')
+    return
+  }
+  const databaseName = getMongoDatabaseName()
+  const mongoURL = getMongoURL(databaseName)
+
+  const client = await MongoClient.connect(mongoURL)
+  const database = client.db(databaseName)
+
+  const logLevel = 'silent'
+  const envVariables = {
+    MONGODB_URL: mongoURL,
+    COLLECTION_DEFINITION_FOLDER,
+    USER_ID_HEADER_KEY: 'userId',
+    VIEWS_DEFINITION_FOLDER,
+  }
+
+  const fastify = await lc39('./index', { logLevel, envVariables })
+
+  t.teardown(async() => {
+    await database.dropDatabase()
+    await client.close()
+    await fastify.close()
+  })
 
   const ridersCollection = database.collection('riders')
   const ordersCollection = database.collection('orders')
