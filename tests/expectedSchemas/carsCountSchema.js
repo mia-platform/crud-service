@@ -33,13 +33,17 @@ module.exports = {
           '000000000000000000000000',
         ],
       },
-      'name': {
+      'creatorId': {
         'type': 'string',
-        'description': "The car's name",
+        'description': 'User id that has created this object',
       },
-      'price': {
-        'type': 'number',
-        'description': "The car's price",
+      'createdAt': {
+        'type': 'string',
+        'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
+        'description': 'Date of the request that has performed the object creation',
+        'examples': [
+          '2020-09-16T12:00:00.000Z',
+        ],
       },
       'updaterId': {
         'type': 'string',
@@ -53,17 +57,13 @@ module.exports = {
           '2020-09-16T12:00:00.000Z',
         ],
       },
-      'creatorId': {
+      'name': {
         'type': 'string',
-        'description': 'User id that has created this object',
+        'description': "The car's name",
       },
-      'createdAt': {
-        'type': 'string',
-        'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
-        'description': 'Date of the request that has performed the object creation',
-        'examples': [
-          '2020-09-16T12:00:00.000Z',
-        ],
+      'price': {
+        'type': 'number',
+        'description': "The car's price",
       },
       '_q': {
         'type': 'string',

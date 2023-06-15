@@ -33,18 +33,6 @@ module.exports = {
           '00000000-0000-4000-0000-000000000000',
         ],
       },
-      'updaterId': {
-        'type': 'string',
-        'description': 'User id that has requested the last change successfully',
-      },
-      'updatedAt': {
-        'type': 'string',
-        'description': 'Date of the request that has performed the last change',
-        'examples': [
-          '2020-09-16T12:00:00.000Z',
-        ],
-        'format': 'date-time',
-      },
       'creatorId': {
         'type': 'string',
         'description': 'User id that has created this object',
@@ -57,20 +45,37 @@ module.exports = {
         ],
         'format': 'date-time',
       },
+      'updaterId': {
+        'type': 'string',
+        'description': 'User id that has requested the last change successfully',
+      },
+      'updatedAt': {
+        'type': 'string',
+        'description': 'Date of the request that has performed the last change',
+        'examples': [
+          '2020-09-16T12:00:00.000Z',
+        ],
+        'format': 'date-time',
+      },
       'Cap': {
         'type': 'number',
+        'nullable': true,
       },
       'CodiceMIR': {
         'type': 'string',
+        'nullable': true,
       },
       'Comune': {
         'type': 'string',
+        'nullable': true,
       },
       'Indirizzo': {
         'type': 'string',
+        'nullable': true,
       },
       'country': {
         'type': 'string',
+        'nullable': true,
       },
       '_q': {
         'type': 'string',
