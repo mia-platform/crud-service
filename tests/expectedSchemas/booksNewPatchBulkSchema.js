@@ -533,6 +533,7 @@ module.exports = {
                   },
                 },
               },
+              'additionalProperties': false,
             },
             'attachments\\.\\d+\\.name$': {
               'type': 'string',
@@ -1215,6 +1216,7 @@ module.exports = {
                       },
                     },
                   },
+                  'additionalProperties': false,
                 },
                 'attachments\\.\\d+\\.name$': {
                   'type': 'string',
@@ -1556,12 +1558,15 @@ module.exports = {
                 },
               },
               'patternProperties': {
+                'metadata\\.somethingArrayObject\\.\\d+\\..+$': {},
+                'metadata\\.somethingObject\\..+$': {},
                 'metadata\\.exampleArrayOfArray\\.\\d+$': {
                   'type': 'string',
                 },
                 'attachments\\.\\d+\\.neastedArr$': {
                   'type': 'number',
                 },
+                'attachments\\.\\d+\\.additionalInfo\\..+$': {},
                 'attachments\\.\\d+\\.more$': {
                   'type': 'string',
                 },
@@ -1676,6 +1681,28 @@ module.exports = {
                 },
               },
               'patternProperties': {
+                'metadata\\.somethingArrayObject\\.\\d+\\..+$': {
+                  'oneOf': [
+                    {},
+                    {
+                      'type': 'object',
+                      'patternProperties': {
+                        '^$': {},
+                      },
+                    },
+                  ],
+                },
+                'metadata\\.somethingObject\\..+$': {
+                  'oneOf': [
+                    {},
+                    {
+                      'type': 'object',
+                      'patternProperties': {
+                        '^$': {},
+                      },
+                    },
+                  ],
+                },
                 'metadata\\.exampleArrayOfArray\\.\\d+$': {
                   'oneOf': [
                     {
@@ -1694,6 +1721,17 @@ module.exports = {
                     {
                       'type': 'number',
                     },
+                    {
+                      'type': 'object',
+                      'patternProperties': {
+                        '^$': {},
+                      },
+                    },
+                  ],
+                },
+                'attachments\\.\\d+\\.additionalInfo\\..+$': {
+                  'oneOf': [
+                    {},
                     {
                       'type': 'object',
                       'patternProperties': {
@@ -1826,6 +1864,28 @@ module.exports = {
                 },
               },
               'patternProperties': {
+                'metadata\\.somethingArrayObject\\.\\d+\\..+$': {
+                  'oneOf': [
+                    {},
+                    {
+                      'type': 'object',
+                      'patternProperties': {
+                        '^$': {},
+                      },
+                    },
+                  ],
+                },
+                'metadata\\.somethingObject\\..+$': {
+                  'oneOf': [
+                    {},
+                    {
+                      'type': 'object',
+                      'patternProperties': {
+                        '^$': {},
+                      },
+                    },
+                  ],
+                },
                 'metadata\\.exampleArrayOfArray\\.\\d+$': {
                   'oneOf': [
                     {
@@ -1844,6 +1904,17 @@ module.exports = {
                     {
                       'type': 'number',
                     },
+                    {
+                      'type': 'object',
+                      'patternProperties': {
+                        '^$': {},
+                      },
+                    },
+                  ],
+                },
+                'attachments\\.\\d+\\.additionalInfo\\..+$': {
+                  'oneOf': [
+                    {},
                     {
                       'type': 'object',
                       'patternProperties': {

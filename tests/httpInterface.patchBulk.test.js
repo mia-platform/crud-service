@@ -472,6 +472,61 @@ tap.test('HTTP PATCH /bulk', async t => {
       t.end()
     })
 
+    t.test('$set - with nested additional property', async t => {
+      const [DOC_TEST] = fixtures
+
+      const UPDATE_COMMAND = {
+        $set: {
+          'metadata.somethingNumber': VALUE_AS_STRING,
+          'metadata.somethingArrayObject.0.arrayItemObjectChildNumber': VALUE_AS_STRING,
+          'metadata.somethingArrayObject.1.arrayItemObjectChildNumber': VALUE_AS_STRING,
+          'metadata.somethingArrayObject.1.additionalProp': VALUE_AS_STRING,
+          'metadata.somethingArrayOfNumbers.0': VALUE_AS_STRING,
+        },
+      }
+
+      await resetCollection()
+
+      const response = await fastify.inject({
+        method: 'PATCH',
+        url: `${prefix}/bulk`,
+        payload: [
+          {
+            filter: {
+              _id: DOC_TEST._id,
+            },
+            update: UPDATE_COMMAND,
+          },
+        ],
+      })
+
+      t.test('should update one document', t => {
+        t.equal(JSON.parse(response.payload), 1)
+        t.end()
+      })
+
+      t.test('should update the document', async t => {
+        const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
+        t.strictSame(docOnDb.metadata, {
+          somethingNumber: VALUE_AS_NUMBER,
+          somethingString: 'the-saved-string',
+          somethingArrayObject: [
+            {
+              arrayItemObjectChildNumber: VALUE_AS_NUMBER,
+            },
+            {
+              arrayItemObjectChildNumber: VALUE_AS_NUMBER,
+              additionalProp: VALUE_AS_STRING,
+            },
+          ],
+          somethingArrayOfNumbers: [VALUE_AS_NUMBER],
+        })
+        t.end()
+      })
+
+      t.end()
+    })
+
     t.test('$set - with replace operator', async t => {
       const OLD_VALUE = 2
 
@@ -574,6 +629,68 @@ tap.test('HTTP PATCH /bulk', async t => {
       t.end()
     })
 
+    t.test('$push - with array of object and nested additional property', async t => {
+      const DOC_TEST = {
+        ...fixtures[0],
+        metadata: {
+          somethingString: 'the-saved-string',
+          somethingArrayOfNumbers: [3],
+        },
+        attachments: [{
+          name: 'note',
+          neastedArr: [123],
+        }],
+      }
+      const UPDATE_COMMAND = {
+        $push: {
+          'attachments.0.neastedArr': VALUE_AS_STRING,
+          'attachments.0.additionalInfo.additionalArray': VALUE_AS_STRING,
+          'metadata.somethingArrayOfNumbers': VALUE_AS_STRING,
+        },
+      }
+
+      await resetCollection([DOC_TEST])
+
+      const response = await fastify.inject({
+        method: 'PATCH',
+        url: `${prefix}/bulk`,
+        payload: [
+          {
+            filter: {
+              _id: DOC_TEST._id,
+            },
+            update: UPDATE_COMMAND,
+          },
+        ],
+      })
+
+      t.test('should update one document', t => {
+        t.equal(JSON.parse(response.payload), 1)
+        t.end()
+      })
+
+      t.test('should update the document', async t => {
+        const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
+
+        t.strictSame(docOnDb.metadata, {
+          somethingString: 'the-saved-string',
+          somethingArrayOfNumbers: [3, VALUE_AS_NUMBER],
+        })
+
+        t.strictSame(docOnDb.attachments, [{
+          name: 'note',
+          neastedArr: [123, VALUE_AS_NUMBER],
+          additionalInfo: {
+            additionalArray: [VALUE_AS_STRING],
+          },
+        }])
+
+        t.end()
+      })
+
+      t.end()
+    })
+
     t.test('$addToSet', async t => {
       const DOC_TEST = {
         ...fixtures[0],
@@ -624,6 +741,70 @@ tap.test('HTTP PATCH /bulk', async t => {
         t.strictSame(docOnDb.attachments, [{
           name: 'note',
           neastedArr: [123, VALUE_AS_NUMBER],
+        }])
+
+        t.end()
+      })
+
+      t.end()
+    })
+
+    t.test('$addToSet - with array of object and nested additional property', async t => {
+      const DOC_TEST = {
+        ...fixtures[0],
+        metadata: {
+          somethingString: 'the-saved-string',
+          somethingArrayOfNumbers: [VALUE_AS_NUMBER],
+        },
+        attachments: [
+          {
+            name: 'note',
+            neastedArr: [123, VALUE_AS_NUMBER],
+          },
+        ],
+      }
+      const UPDATE_COMMAND = {
+        $addToSet: {
+          'attachments.0.neastedArr': VALUE_AS_STRING,
+          'attachments.0.additionalInfo.additionalArray': VALUE_AS_STRING,
+          'metadata.somethingArrayOfNumbers': VALUE_AS_STRING,
+        },
+      }
+
+      await resetCollection([DOC_TEST])
+
+      const response = await fastify.inject({
+        method: 'PATCH',
+        url: `${prefix}/bulk`,
+        payload: [
+          {
+            filter: {
+              _id: DOC_TEST._id,
+            },
+            update: UPDATE_COMMAND,
+          },
+        ],
+      })
+
+      t.test('should update one document', t => {
+        t.equal(JSON.parse(response.payload), 1)
+        t.end()
+      })
+
+      t.test('should update the document without duplicates', async t => {
+        const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
+
+        t.strictSame(docOnDb.metadata, {
+          somethingString: 'the-saved-string',
+          somethingArrayOfNumbers: [VALUE_AS_NUMBER],
+        })
+
+        t.strictSame(docOnDb.attachments, [{
+          name: 'note',
+          neastedArr: [123, VALUE_AS_NUMBER],
+          additionalInfo: {
+            additionalArray: [VALUE_AS_STRING],
+          },
         }])
 
         t.end()
@@ -685,6 +866,74 @@ tap.test('HTTP PATCH /bulk', async t => {
         t.strictSame(docOnDb.attachments, [{
           name: 'note',
           neastedArr: [987, 654],
+        }])
+
+        t.end()
+      })
+
+      t.end()
+    })
+
+    t.test('$pull - with array of object and nested additional property', async t => {
+      const DOC_TEST = {
+        ...fixtures[0],
+        tags: ['tag1', 'tag2', 'tag3'],
+        metadata: {
+          somethingString: 'the-saved-string',
+          somethingArrayOfNumbers: [123, 456, 678],
+        },
+        attachments: [{
+          name: 'note',
+          neastedArr: [987, 654, 321],
+          additionalInfo: {
+            additionalArray: [VALUE_AS_STRING],
+          },
+        }],
+      }
+      const UPDATE_COMMAND = {
+        $pull: {
+          'tags': 'tag2',
+          'attachments.0.neastedArr': 321,
+          'attachments.0.additionalInfo.additionalArray': VALUE_AS_STRING,
+          'metadata.somethingArrayOfNumbers': 123,
+        },
+      }
+
+      await resetCollection([DOC_TEST])
+
+      const response = await fastify.inject({
+        method: 'PATCH',
+        url: `${prefix}/bulk`,
+        payload: [
+          {
+            filter: {
+              _id: DOC_TEST._id,
+            },
+            update: UPDATE_COMMAND,
+          },
+        ],
+      })
+
+      t.test('should update one document', t => {
+        t.equal(JSON.parse(response.payload), 1)
+        t.end()
+      })
+
+      t.test('should update the document removing values from arrays', async t => {
+        const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
+
+        t.strictSame(docOnDb.tags, ['tag1', 'tag3'])
+        t.strictSame(docOnDb.metadata, {
+          somethingString: 'the-saved-string',
+          somethingArrayOfNumbers: [456, 678],
+        })
+
+        t.strictSame(docOnDb.attachments, [{
+          name: 'note',
+          neastedArr: [987, 654],
+          additionalInfo: {
+            additionalArray: [],
+          },
         }])
 
         t.end()

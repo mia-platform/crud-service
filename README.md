@@ -316,6 +316,12 @@ To change the cryptd version, you can download the binary file from the [MongoDB
 
 For example, for version 5.0.14, the final url of the `.deb` will be: https://repo.mongodb.com/apt/debian/dists/bullseye/mongodb-enterprise/5.0/main/binary-amd64/mongodb-enterprise-cryptd_5.0.14_amd64.deb
 
+## Client-side Libraries
+
+For leveraging the CRUD Service APIs in your services you can use one of the following libraries based on supported languages
+
+ - [Golang](https://github.com/mia-platform/go-crud-service-client)
+
 ## Contributing
 
 CRUD Service is an active project developed and maintained by [Mia Platform](https://mia-platform.eu/), it is distributed open source and it is [Apache 2 licensed](./LICENSE).

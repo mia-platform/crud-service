@@ -512,6 +512,7 @@ module.exports = {
                   },
                 },
               },
+              'additionalProperties': false,
             },
             'attachments\\.\\d+\\.name$': {
               'type': 'string',
