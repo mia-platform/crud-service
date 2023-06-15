@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - #89 operators `$addToSet` and `$pull` are now supported on properties added via `additionalProperties` JSON schema definition
 - collection definition validation is now carried out only once per collection
 
+### Changed
+
+- update minor and patch dependencies
+
 ## 6.6.0 - 2023-06-09
 
 ### Added
