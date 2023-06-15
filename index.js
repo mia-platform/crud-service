@@ -99,11 +99,16 @@ async function loadModels(fastify) {
 
   // eslint-disable-next-line max-statements
   const promises = mergedCollections.map(async(collectionDefinition) => {
-    const compatibilityValidation = compatibilityValidate(collectionDefinition)
-    const validation = validate(collectionDefinition)
-    if (!validation && !compatibilityValidation) {
-      fastify.log.error(compatibilityValidate.errors ?? validate.errors)
-      throw new Error(`Invalid collection definition: ${JSON.stringify(compatibilityValidate.errors) ?? JSON.stringify(validate.errors)}`)
+    // avoid validating the collection definition twice, since it would only
+    // match one of the two, depending on the existence of schema property
+    if (!collectionDefinition.schema) {
+      if (!compatibilityValidate(collectionDefinition)) {
+        fastify.log.error(compatibilityValidate.errors)
+        throw new Error(`invalid collection definition: ${JSON.stringify(compatibilityValidate.errors)}`)
+      }
+    } else if (!validate(collectionDefinition)) {
+      fastify.log.error(validate.errors)
+      throw new Error(`invalid collection definition: ${JSON.stringify(validate.errors)}`)
     }
 
     const {
