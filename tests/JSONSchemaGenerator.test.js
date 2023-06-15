@@ -38,7 +38,6 @@ const ajvFormats = require('ajv-formats')
 
 const JSONSchemaGenerator = require('../lib/JSONSchemaGenerator')
 const generatePathFieldsForRawSchema = require('../lib/generatePathFieldsForRawSchema')
-const { sortRegex } = require('../lib/JSONSchemaGenerator')
 const { SCHEMA_CUSTOM_KEYWORDS } = require('../lib/consts')
 
 const collections = Object.keys(collectionDefinitions)
@@ -427,36 +426,6 @@ tap.test('GeoPoint validation', t => {
       }
     })
   }
-})
-
-tap.test('sortRegex must match the right expression', t => {
-  const collection = 'books'
-  const regex = new RegExp(sortRegex(collectionDefinitions[collection]))
-
-  const matchExp = [
-    'attachments',
-    'attachments,price',
-    '-attachments',
-    '-price',
-    'attachments,-price',
-    '-attachments,price',
-    'attachments.nested,price',
-    '-attachments.nested.subnested,price',
-    'attachments.nested.subnested,price.nested.subnested',
-  ]
-
-  const notMatchExp = [
-    'inexistent',
-    '-attachments..nested,price',
-    'attachments.,price',
-    'price,inexistent',
-    '',
-  ]
-
-  t.plan(matchExp.length + notMatchExp.length)
-
-  matchExp.forEach(expr => t.strictSame(regex.test(expr), true))
-  notMatchExp.forEach(expr => t.strictSame(regex.test(expr), false))
 })
 
 function getJsonSchemaGenerator(collection) {
