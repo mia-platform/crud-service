@@ -148,6 +148,47 @@ tap.test('createIndexes', async t => {
       expectedIndexCreatedCount: 1,
     },
     {
+      name: 'text index with already present one',
+      alreadyPresentIndexes: [
+        {
+          spec: {
+            name: TEXT_FIELD,
+          },
+          options: {
+            name: nameIndexToPreserve,
+            unique: true,
+          },
+        },
+      ],
+      indexes: [
+        {
+          name: nameIndexToPreserve,
+          type: TEXT_INDEX,
+          fields: [
+            { name: 'name' },
+          ],
+        },
+      ],
+      expectedIndexes: [
+        {
+          v: 2,
+          key: {
+            _fts: TEXT_FIELD,
+            _ftsx: 1,
+          },
+          weights: {
+            name: 1,
+          },
+          default_language: 'english',
+          language_override: 'language',
+          textIndexVersion: 3,
+          name: nameIndexToPreserve,
+          unique: true,
+        },
+      ],
+      expectedIndexCreatedCount: 0,
+    },
+    {
       name: 'text index with all options',
       alreadyPresentIndexes: [],
       indexes: [

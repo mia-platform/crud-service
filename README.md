@@ -78,7 +78,7 @@ If you are interested in it, you can get one and run it locally with these comma
 docker run --name crud-service \
            --detach \
            --env LOG_LEVEL=info \
-           --env MONGODB_URL=mongodb://<your-mongo-container-ip>/crud \
+           --env MONGODB_URL=mongodb://<your-mongo-container-ip>/<database-name> \
            --env COLLECTION_DEFINITION_FOLDER=/home/node/app/collections \
            --env USER_ID_HEADER_KEY=userid \
            --env CRUD_LIMIT_CONSTRAINT_ENABLED=true \
@@ -315,6 +315,12 @@ See the documentation to see which parameters are available.
 To change the cryptd version, you can download the binary file from the [MongoDB Repositories](cryptd), then navigate to the following subpath: `{version_wanted}/main/binary_amd64/mongodb-enterprise-cryptd_{version_wanted}_amd64.deb`.
 
 For example, for version 5.0.14, the final url of the `.deb` will be: https://repo.mongodb.com/apt/debian/dists/bullseye/mongodb-enterprise/5.0/main/binary-amd64/mongodb-enterprise-cryptd_5.0.14_amd64.deb
+
+## Client-side Libraries
+
+For leveraging the CRUD Service APIs in your services you can use one of the following libraries based on supported languages
+
+ - [Golang](https://github.com/mia-platform/go-crud-service-client)
 
 ## Contributing
 

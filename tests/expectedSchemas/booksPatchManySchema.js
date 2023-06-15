@@ -60,6 +60,7 @@ module.exports = {
       'name': {
         'type': 'string',
         'description': 'The name of the book',
+        'nullable': true,
       },
       'isbn': {
         'type': 'string',
@@ -92,6 +93,7 @@ module.exports = {
         'examples': [
           '2020-09-16T12:00:00.000Z',
         ],
+        'nullable': true,
       },
       '_q': {
         'type': 'string',
@@ -181,8 +183,8 @@ module.exports = {
         'properties': {
           'name': {
             'type': 'string',
-            'nullable': true,
             'description': 'The name of the book',
+            'nullable': true,
           },
           'isbn': {
             'type': 'string',
@@ -665,6 +667,7 @@ module.exports = {
                 },
               },
             },
+            'additionalProperties': false,
           },
           'attachments\\.\\d+\\.name$': {
             'type': 'string',
@@ -1006,12 +1009,15 @@ module.exports = {
           },
         },
         'patternProperties': {
+          'metadata\\.somethingArrayObject\\.\\d+\\..+$': {},
+          'metadata\\.somethingObject\\..+$': {},
           'metadata\\.exampleArrayOfArray\\.\\d+$': {
             'type': 'string',
           },
           'attachments\\.\\d+\\.neastedArr$': {
             'type': 'number',
           },
+          'attachments\\.\\d+\\.additionalInfo\\..+$': {},
           'attachments\\.\\d+\\.more$': {
             'type': 'string',
           },
@@ -1126,6 +1132,28 @@ module.exports = {
           },
         },
         'patternProperties': {
+          'metadata\\.somethingArrayObject\\.\\d+\\..+$': {
+            'oneOf': [
+              {},
+              {
+                'type': 'object',
+                'patternProperties': {
+                  '^$': {},
+                },
+              },
+            ],
+          },
+          'metadata\\.somethingObject\\..+$': {
+            'oneOf': [
+              {},
+              {
+                'type': 'object',
+                'patternProperties': {
+                  '^$': {},
+                },
+              },
+            ],
+          },
           'metadata\\.exampleArrayOfArray\\.\\d+$': {
             'oneOf': [
               {
@@ -1144,6 +1172,17 @@ module.exports = {
               {
                 'type': 'number',
               },
+              {
+                'type': 'object',
+                'patternProperties': {
+                  '^$': {},
+                },
+              },
+            ],
+          },
+          'attachments\\.\\d+\\.additionalInfo\\..+$': {
+            'oneOf': [
+              {},
               {
                 'type': 'object',
                 'patternProperties': {
@@ -1276,6 +1315,28 @@ module.exports = {
           },
         },
         'patternProperties': {
+          'metadata\\.somethingArrayObject\\.\\d+\\..+$': {
+            'oneOf': [
+              {},
+              {
+                'type': 'object',
+                'patternProperties': {
+                  '^$': {},
+                },
+              },
+            ],
+          },
+          'metadata\\.somethingObject\\..+$': {
+            'oneOf': [
+              {},
+              {
+                'type': 'object',
+                'patternProperties': {
+                  '^$': {},
+                },
+              },
+            ],
+          },
           'metadata\\.exampleArrayOfArray\\.\\d+$': {
             'oneOf': [
               {
@@ -1294,6 +1355,17 @@ module.exports = {
               {
                 'type': 'number',
               },
+              {
+                'type': 'object',
+                'patternProperties': {
+                  '^$': {},
+                },
+              },
+            ],
+          },
+          'attachments\\.\\d+\\.additionalInfo\\..+$': {
+            'oneOf': [
+              {},
               {
                 'type': 'object',
                 'patternProperties': {

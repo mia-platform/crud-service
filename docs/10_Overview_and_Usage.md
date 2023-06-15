@@ -669,7 +669,7 @@ The list of currently supported MongoDB aggregation operators is the following:
 Here you can find the official Mongo documentation about the [projection](https://www.mongodb.com/docs/manual/reference/method/db.collection.find/#std-label-method-find-projection) field into the find operator.
 
 :::note
-If you have problems with the special characters in the URL encoding, you can try the `json-query-params-encoding` header. More info at ([CRUD Headers](./overview_and_usage.md#crud-headers))
+If you have problems with the special characters in the URL encoding, you can try the `json-query-params-encoding` header. More info at ([CRUD Headers](#crud-headers))
 :::
 
 #### Combine all together
@@ -738,10 +738,10 @@ You can use more MongoDB filters in query **_q**. Here is the complete list:
 - `$elemMatch` and `$options`
 - `$text`
 
-Aggregate cannot be used. To use aggregate please see [Mia-Platform MongoDB Reader Service](../mongodb-reader/configuration.md).
+Aggregate cannot be used. To use aggregate please see [Mia-Platform MongoDB Reader Service](https://docs.mia-platform.eu/docs/runtime_suite/mongodb-reader/configuration).
 
 :::note
-If you have problems with the special characters in the URL encoding, you can try the `json-query-params-encoding` header. More info at ([CRUD Headers](./overview_and_usage.md#crud-headers)).
+If you have problems with the special characters in the URL encoding, you can try the `json-query-params-encoding` header. More info at ([CRUD Headers](#crud-headers)).
 :::
 
 #### Count
