@@ -20,6 +20,8 @@ module.exports = {
   'summary': 'Update multiple items of books, each one with its own modifications',
   'tags': [
     'Books Endpoint',
+    'example',
+    'tags',
   ],
   'body': {
     'operationId': 'books__MIA__patchBulk__MIA__body',

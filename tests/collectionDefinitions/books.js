@@ -270,4 +270,5 @@ module.exports = {
       partialFilterExpression: '{"isPromoted": { "$eq": true } }',
     },
   ],
+  tags: ['example', 'tags'],
 }

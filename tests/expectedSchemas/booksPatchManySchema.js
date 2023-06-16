@@ -20,6 +20,8 @@ module.exports = {
   'summary': 'Update the items of the books collection that match the query.',
   'tags': [
     'Books Endpoint',
+    'example',
+    'tags',
   ],
   'querystring': {
     'operationId': 'books__MIA__patchMany__MIA__querystring',

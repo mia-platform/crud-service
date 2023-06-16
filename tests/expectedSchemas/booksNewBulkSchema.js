@@ -20,6 +20,8 @@ module.exports = {
   'summary': 'Insert new items in the books collection.',
   'tags': [
     'Books Endpoint',
+    'example',
+    'tags',
   ],
   'body': {
     'operationId': 'books__MIA__postBulk__MIA__body',

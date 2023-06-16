@@ -20,6 +20,8 @@ module.exports = {
   'summary': 'Delete an item with specific ID from the books collection.',
   'tags': [
     'Books Endpoint',
+    'example',
+    'tags',
   ],
   'params': {
     'type': 'object',
