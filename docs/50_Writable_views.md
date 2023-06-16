@@ -93,7 +93,7 @@ module.exports = {
 }
 ```
 
-And here the colleciton definition:
+And here the collection definition:
 
 ```js title=collection
 // Collection
@@ -191,4 +191,4 @@ As mentioned earlier, the CRUD service will also expose lookup routes. In this c
 ]
 ```
 
-The data returned when accessing the `/lookup/rider` route will be a list of all riders present in the `riders` collection. The formatting of this data will adhere to the specific format specified in the lookup configuration.
+The data returned when accessing the `/orders-details-endpoint/lookup/rider` route will be a list of all riders present in the `riders` collection. The formatting of this data will adhere to the specific format specified in the lookup configuration.
