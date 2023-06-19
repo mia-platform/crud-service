@@ -36,7 +36,7 @@ const httpInterface = require('./lib/httpInterface')
 const JSONSchemaGenerator = require('./lib/JSONSchemaGenerator')
 const createIndexes = require('./lib/createIndexes')
 const { castCollectionId, getDatabaseNameByType } = require('./lib/pkFactories')
-const { SCHEMA_CUSTOM_KEYWORDS, OBJECTID } = require('./lib/consts')
+const { SCHEMA_CUSTOM_KEYWORDS, OBJECTID, SETCMD, aggregationConversion } = require('./lib/consts')
 const joinPlugin = require('./lib/joinPlugin')
 const generatePathFieldsForRawSchema = require('./lib/generatePathFieldsForRawSchema')
 const { getIdType, registerMongoInstances } = require('./lib/mongo/mongo-plugin')
@@ -62,6 +62,7 @@ async function registerCrud(fastify, { modelName, isView }) {
   fastify.log.trace({ modelName }, 'Registering CRUD')
 
   const model = fastify.models[modelName]
+  const prefix = model.definition.endpointBasePath
 
   fastify.decorate('crudService', model.crudService)
   fastify.decorate('queryParser', model.queryParser)
@@ -71,8 +72,90 @@ async function registerCrud(fastify, { modelName, isView }) {
   fastify.decorate('jsonSchemaGenerator', model.jsonSchemaGenerator)
   fastify.decorate('jsonSchemaGeneratorWithNested', model.jsonSchemaGeneratorWithNested)
   fastify.decorate('modelName', modelName)
-  const prefix = model.definition.endpointBasePath
-  fastify.register(httpInterface, { prefix, isView })
+  fastify.register(httpInterface, { prefix, registerGetters: true, registerSetters: !isView })
+}
+
+async function registerViewCrud(fastify, { modelName, lookups }) {
+  if (!fastify.mongo) { throw new Error('`fastify.mongo` is undefined!') }
+  if (!modelName) { throw new Error('`modelName` is undefined!') }
+
+  fastify.log.trace({ modelName }, 'Registering View CRUD')
+
+  const { definition, viewDependencies, crudService } = fastify.models[modelName]
+  const prefix = definition.endpointBasePath
+
+  fastify.decorate('crudService', viewDependencies.crudService)
+  fastify.decorate('queryParser', viewDependencies.queryParser)
+  fastify.decorate('castResultsAsStream', viewDependencies.castResultsAsStream)
+  fastify.decorate('castItem', viewDependencies.castItem)
+  fastify.decorate('allFieldNames', viewDependencies.allFieldNames)
+  fastify.decorate('jsonSchemaGenerator', viewDependencies.jsonSchemaGenerator)
+  fastify.decorate('jsonSchemaGeneratorWithNested', viewDependencies.jsonSchemaGenerator)
+  fastify.decorate('modelName', modelName)
+
+  // To allow writing views without having to rewrite all the logic of the HttpInterface,
+  // it was decided to adapt the fields of the calls towards the view by converting them
+  // to the fields of the underlying collection, thus hiding the complexity on the client
+  // side while maintaining consistent interfaces.
+  // This assumes that the key of the value is in the field "value" and should be made configurable.
+  fastify.addHook('preHandler', (request, _reply, done) => {
+    for (const { as, localField } of lookups) {
+      if (request?.body?.[as]) {
+        request.body[localField] = request.body[as].value
+        delete request.body[as]
+      }
+      if (request?.body?.[SETCMD]?.[as]) {
+        request.body[SETCMD][localField] = request.body[SETCMD][as].value
+        delete request.body[SETCMD][as]
+      }
+    }
+    done()
+  })
+
+  // To obtain the updated object with a consistent interface after a patch,
+  // it is necessary to retrieve the view object again before returning it to the client.
+  fastify.addHook('preSerialization', async(request, _reply, payload) => {
+    const { _id } = payload
+    if (request.method === 'PATCH' && _id) {
+      // eslint-disable-next-line no-underscore-dangle
+      const doc = await crudService._mongoCollection.findOne({ _id })
+      return doc
+    }
+    return payload
+  })
+
+  fastify.register(httpInterface, { prefix, registerGetters: false, registerSetters: true })
+}
+
+async function registerViewCrudLookup(fastify, { modelName, lookupModel }) {
+  if (!fastify.mongo) { throw new Error('`fastify.mongo` is undefined!') }
+
+  fastify.log.trace({ modelName }, 'Registering ViewLookup CRUD')
+
+  const {
+    as: modelField,
+  } = lookupModel.lookup
+
+  const { definition } = fastify.models[modelName]
+  const prefix = definition.endpointBasePath
+  const lookupPrefix = join(prefix, 'lookup', modelField)
+
+
+  fastify.decorate('crudService', lookupModel.crudService)
+  fastify.decorate('queryParser', lookupModel.queryParser)
+  fastify.decorate('castResultsAsStream', lookupModel.castResultsAsStream)
+  fastify.decorate('castItem', lookupModel.castItem)
+  fastify.decorate('allFieldNames', lookupModel.allFieldNames)
+  fastify.decorate('jsonSchemaGenerator', lookupModel.jsonSchemaGenerator)
+  fastify.decorate('jsonSchemaGeneratorWithNested', lookupModel.jsonSchemaGenerator)
+  fastify.decorate('modelName', modelName)
+  fastify.decorate('lookupProjection', lookupModel.parsedLookupProjection)
+  fastify.register(httpInterface, {
+    prefix: lookupPrefix,
+    registerGetters: false,
+    registerSetters: false,
+    registerLookup: true,
+  })
 }
 
 const registerDatabase = fp(registerMongoInstances, { decorators: { fastify: ['config'] } })
@@ -82,11 +165,117 @@ async function iterateOverCollectionDefinitionAndRegisterCruds(fastify) {
   fastify.decorate('userIdHeaderKey', fastify.config.USER_ID_HEADER_KEY.toLowerCase())
 
   for (const [modelName, model] of Object.entries(fastify.models)) {
+    const { isView, viewLookupsEnabled, viewDependencies } = model
     fastify.register(registerCrud, {
       modelName,
-      isView: model.isView,
+      isView,
     })
+
+    if (viewLookupsEnabled) {
+      const lookups = viewDependencies.lookupsModels.map(({ lookup }) => lookup)
+      fastify.register(registerViewCrud, {
+        modelName,
+        lookups,
+      })
+
+      for (const lookupModel of viewDependencies.lookupsModels) {
+        fastify.register(registerViewCrudLookup, {
+          modelName,
+          lookupModel,
+        })
+      }
+    }
   }
+}
+
+function buildModelDependencies(fastify, collectionDefinition, collection) {
+  const {
+    defaultState,
+  } = collectionDefinition
+
+  const allFieldNames = collectionDefinition.fields
+    ? collectionDefinition.fields.map(field => field.name)
+    : Object.keys(collectionDefinition.schema.properties)
+  const pathsForRawSchema = generatePathFieldsForRawSchema(fastify.log, collectionDefinition)
+
+  // TODO: make this configurable
+  const crudService = new CrudService(
+    collection,
+    defaultState,
+    { allowDiskUse: fastify.config.ALLOW_DISK_USE_IN_QUERIES },
+  )
+  const queryParser = new QueryParser(collectionDefinition, pathsForRawSchema)
+  const geoPointCaster = new GeoPointCaster(collectionDefinition)
+  const jsonSchemaGenerator = new JSONSchemaGenerator(
+    collectionDefinition,
+    {},
+    fastify.config.CRUD_LIMIT_CONSTRAINT_ENABLED,
+    fastify.config.CRUD_MAX_LIMIT
+  )
+  const jsonSchemaGeneratorWithNested = new JSONSchemaGenerator(
+    collectionDefinition,
+    pathsForRawSchema,
+    fastify.config.CRUD_LIMIT_CONSTRAINT_ENABLED,
+    fastify.config.CRUD_MAX_LIMIT
+  )
+
+  return {
+    crudService,
+    queryParser,
+    castResultsAsStream: () => geoPointCaster.asStream(),
+    castItem: (item) => geoPointCaster.castItem(item),
+    allFieldNames,
+    jsonSchemaGenerator,
+    jsonSchemaGeneratorWithNested,
+  }
+}
+
+function createLookupModel(fastify, viewDefinition, mergedCollections) {
+  const lookupModels = []
+  const viewLookups = viewDefinition.pipeline
+    .filter(pipeline => '$lookup' in pipeline)
+    .map(lookup => Object.values(lookup).shift())
+
+  for (const lookup of viewLookups) {
+    const { from, pipeline } = lookup
+    const lookupCollection = mergedCollections.find(({ name }) => name === from)
+    const lookupIdType = getIdType(lookupCollection)
+    const lookupCollectionMongo = fastify.mongo[getDatabaseNameByType(lookupIdType)].db.collection(from)
+
+    const lookupProjection = pipeline.find(({ $project }) => $project)?.$project ?? {}
+    const parsedLookupProjection = []
+    const lookupCollectionDefinition = {
+      ...omit(['fields'], viewDefinition),
+      schema: {
+        type: 'object',
+        properties: {},
+        required: [],
+      },
+    }
+
+    Object.entries(lookupProjection)
+      .forEach(([fieldName, schema]) => {
+        parsedLookupProjection.push({ [fieldName]: schema })
+        const conversion = Object.keys(schema).shift()
+        if (schema !== 0) {
+          if (!aggregationConversion[conversion]) {
+            throw new Error(`Invalid view lookup definition: no explicit type found in ${JSON.stringify({ [fieldName]: schema })}`)
+          }
+          lookupCollectionDefinition.schema.properties[fieldName] = {
+            type: aggregationConversion[conversion],
+          }
+        }
+      })
+
+    const lookupModel = {
+      ...buildModelDependencies(fastify, lookupCollectionDefinition, lookupCollectionMongo),
+      definition: lookupCollectionDefinition,
+      lookup,
+      parsedLookupProjection,
+    }
+    lookupModels.push(lookupModel)
+  }
+  return lookupModels
 }
 
 // eslint-disable-next-line max-statements
@@ -115,62 +304,49 @@ async function loadModels(fastify) {
     }
 
     const {
+      source: viewSourceCollectionName,
       name: collectionName,
       endpointBasePath: collectionEndpoint,
       type,
-      defaultState,
       indexes = [],
+      enableLookup,
       source,
       pipeline,
     } = collectionDefinition ?? {}
     const isView = type === VIEW_TYPE
+    const viewLookupsEnabled = isView && enableLookup
 
     fastify.log.trace({ collectionEndpoint, collectionName }, 'Registering CRUD')
+
     const collectionIdType = getIdType(collectionDefinition)
     const collection = await fastify
       .mongo[getDatabaseNameByType(collectionIdType)]
       .db
       .collection(collectionName)
+    const modelDependencies = buildModelDependencies(fastify, collectionDefinition, collection)
 
-    const allFieldNames = collectionDefinition.fields
-      ? collectionDefinition.fields.map(field => field.name)
-      : Object.keys(collectionDefinition.schema.properties)
-    const pathsForRawSchema = generatePathFieldsForRawSchema(fastify.log, collectionDefinition)
+    let viewDependencies = {}
+    if (viewLookupsEnabled) {
+      const sourceCollection = mergedCollections.find(mod => mod.name === viewSourceCollectionName)
+      const sourceCollectionDependencies = buildModelDependencies(fastify, sourceCollection)
 
-    // TODO: make this configurable
-    const crudService = new CrudService(
-      collection,
-      defaultState,
-      {
-        allowDiskUse: fastify.config.ALLOW_DISK_USE_IN_QUERIES,
-      },
-    )
-    const queryParser = new QueryParser(collectionDefinition, pathsForRawSchema)
-    const resultCaster = new GeoPointCaster(collectionDefinition)
-    const jsonSchemaGenerator = new JSONSchemaGenerator(
-      collectionDefinition,
-      {},
-      fastify.config.CRUD_LIMIT_CONSTRAINT_ENABLED,
-      fastify.config.CRUD_MAX_LIMIT
-    )
-
-    const jsonSchemaGeneratorWithNested = new JSONSchemaGenerator(
-      collectionDefinition,
-      pathsForRawSchema,
-      fastify.config.CRUD_LIMIT_CONSTRAINT_ENABLED,
-      fastify.config.CRUD_MAX_LIMIT
-    )
+      const viewIdType = getIdType(sourceCollection)
+      const sourceCollectionMongo = await fastify
+        .mongo[getDatabaseNameByType(viewIdType)]
+        .db
+        .collection(viewSourceCollectionName)
+      viewDependencies = buildModelDependencies(fastify, collectionDefinition, sourceCollectionMongo)
+      viewDependencies.queryParser = sourceCollectionDependencies.queryParser
+      viewDependencies.allFieldNames = sourceCollectionDependencies.allFieldNames
+      viewDependencies.lookupsModels = createLookupModel(fastify, collectionDefinition, mergedCollections)
+    }
 
     models[getCollectionNameFromEndpoint(collectionEndpoint)] = {
       definition: collectionDefinition,
-      crudService,
-      queryParser,
-      castResultsAsStream: () => resultCaster.asStream(),
-      castItem: (item) => resultCaster.castItem(item),
-      allFieldNames,
-      jsonSchemaGenerator,
-      jsonSchemaGeneratorWithNested,
+      ...modelDependencies,
+      viewDependencies,
       isView,
+      viewLookupsEnabled,
     }
 
     if (isView) {
@@ -208,6 +384,7 @@ async function loadModels(fastify) {
           }
         )
     }
+
     return createIndexes(collection, indexes, PREFIX_OF_INDEX_NAMES_TO_PRESERVE)
   })
   while (promises.length) {

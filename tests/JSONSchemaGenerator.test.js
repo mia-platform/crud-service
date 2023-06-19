@@ -42,7 +42,7 @@ const generatePathFieldsForRawSchema = require('../lib/generatePathFieldsForRawS
 const { SCHEMA_CUSTOM_KEYWORDS } = require('../lib/consts')
 
 const collections = Object.keys(collectionDefinitions)
-const operations = ['GetList', 'GetItem', 'Post', 'Delete', 'Count', 'Bulk', 'Patch', 'PatchBulk', 'ChangeState', 'ChangeStateMany', 'Export']
+const operations = ['GetList', 'GetItem', 'Post', 'Delete', 'Count', 'Bulk', 'Patch', 'PatchBulk', 'ChangeState', 'ChangeStateMany', 'Export', 'GetListLookup']
 
 const operationToMethod = operations.reduce((operationToMethod, op) => {
   operationToMethod[op] = `generate${op}JSONSchema`

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## 6.7.0 - 2023-06-19
+
+### Added
+
+- #92 abstraction for [view writing support](docs/50_Writable_views.md) with the "enableLookup" flag in views configuration.
+
 ## 6.6.1 - 2023-06-15
 
 ### Fixed

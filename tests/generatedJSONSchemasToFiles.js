@@ -42,7 +42,7 @@ const lget = require('lodash.get')
 const lset = require('lodash.set')
 const validationOperations = ['GetList', 'GetItem', 'Delete', 'Count', 'Patch', 'PatchBulk',
   'ChangeState', 'ChangeStateMany', 'Export']
-const serializationOperation = ['Post', 'Bulk', 'DeleteList', 'UpsertOne', 'PatchMany']
+const serializationOperation = ['Post', 'Bulk', 'DeleteList', 'UpsertOne', 'PatchMany', 'GetListLookup']
 const operations = [...validationOperations, ...serializationOperation]
 
 const operationToMethod = operations.reduce((opToMethod, op) => {
