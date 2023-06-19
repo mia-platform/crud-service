@@ -163,14 +163,15 @@ When the Service is live, every HTTP request executed will be caught by the HTTP
 
 The collections should be included in separate JSON or JavaScript files in the folder defined with the environment variable `COLLECTION_DEFINITION_FOLDER`. Each collection object requires the following fields:
 
-| Name             | Type             | Required | Default value | Description                                                                                                                                                                                                                                  |
-|------------------|------------------|----------|---------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| id             | String           | - | -             | Additional identifier that can be associated to the collection definition.                                                                                                                                                                      |
-| endpointBasePath | String           | Required | -             | The endpoint path, used as entry point to CRUD operations                                                                                                                                                                                    |
-| name     | String           | Required | -             | The name of the collection on MongoDB.                                                                                                                                                                                                              |
-| defaultState             | String           | - | `DRAFT`       | The default state assigned to a document when inserted. Can be one of the [\_\_STATE__ available values](#metadata-fields)                                                                                                                   |
-| schema           | JSONSchemaStandard | Required | -             | The JSON Schema configuration of the fields to be included in the collection object. A complete description of its fields can be found in the [ _schema_](./lib/model.jsonschema.js#L447)  section of the collection JSON Schema.                                        |
-| indexes          | Array of objects | Required | -             | The list of indexes to be created when starting the service and initializing all the collections. A complete description of its fields can be found [in the _indexes_ section of the collection JSON Schema](./lib/model.jsonschema.js#L240) |
+| Name | Type | Required | Default value | Description |
+|------|------|----------|---------------|-------------|
+| id | String | - | - | Additional identifier that can be associated to the collection definition. |
+| endpointBasePath | String | &check; | - | The endpoint path, used as entry point to CRUD operations |
+| name | String | &check; | - | The name of the collection on MongoDB. |
+| defaultState | String | - | `DRAFT` | The default state assigned to a document when inserted. Can be one of the [\_\_STATE__ available values](#metadata-fields) |
+| schema | JSONSchemaStandard | &check; | - | The JSON Schema configuration of the fields to be included in the collection object. A complete description of its fields can be found in the [ _schema_](./lib/model.jsonschema.js#L447)  section of the collection JSON Schema. |
+| indexes | Array of objects | &check; | - | The list of indexes to be created when starting the service and initializing all the collections. A complete description of its fields can be found [in the _indexes_ section of the collection JSON Schema](./lib/model.jsonschema.js#L240) |
+| tags | Array of string | - | [] | The list of tags to be associated to the collection's endpoints, useful to group different endpoint under the same section inside the swagger. |
 
 **WARNING:** The definition of _unique_ indexes makes the CRUD Service fail at startup if the database contains inconsistent documents (e.g. documents that have the same value for that key). Also documents without that key are all considered to have the same value (_null_), thus [violating the uniqueness](https://docs.mongodb.com/manual/core/index-unique/#unique-index-and-missing-field), and causing the index generation (and the CRUD Service) to fail at startup.
 
@@ -183,14 +184,15 @@ whereas the schema that defines and validate the data model definition can be fo
 
 The collections should be included in separate JSON or JavaScript files in the folder defined with the environment variable `COLLECTION_DEFINITION_FOLDER`. Each collection object requires the following fields:
 
-| Name             | Type             | Required | Default value | Description                                                                                                                                                                                                                                  |
-|------------------|------------------|----------|---------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| id             | String           | - | -             | Additional identifier that can be associated to the collection definition.                                                                                                                                                                      |
-| endpointBasePath | String           | Required | -             | The endpoint path, used as entry point to CRUD operations                                                                                                                                                                                    |
-| name     | String           | Required | -             | The name of the collection on MongoDB.                                                                                                                                                                                                              |
-| defaultState             | String           | - | `DRAFT`       | The default state assigned to a document when inserted. Can be one of the [\_\_STATE__ available values](#metadata-fields)                                                                                                                   |
-| fields           | Array of objects | Required | -             | The list of fields to be included in the collection object. A complete description of its fields can be found [in the _fields_ section of the collection JSON Schema](./lib/model.jsonschema.js#L77).                                        |
-| indexes          | Array of objects | Required | -             | The list of indexes to be created when starting the service and initializing all the collections. A complete description of its fields can be found [in the _indexes_ section of the collection JSON Schema](./lib/model.jsonschema.js#L240) |
+| Name | Type | Required | Default value | Description |
+|------|------|----------|---------------|-------------|
+| id | String | - | - | Additional identifier that can be associated to the collection definition. |
+| endpointBasePath | String | &check; | - | The endpoint path, used as entry point to CRUD operations |
+| name | String | &check; | - | The name of the collection on MongoDB. |
+| defaultState | String | - | `DRAFT` | The default state assigned to a document when inserted. Can be one of the [\_\_STATE__ available values](#metadata-fields) |
+| fields | Array of objects | &check; | - | The list of fields to be included in the collection object. A complete description of its fields can be found [in the _fields_ section of the collection JSON Schema](./lib/model.jsonschema.js#L77). |
+| indexes | Array of objects | &check; | - | The list of indexes to be created when starting the service and initializing all the collections. A complete description of its fields can be found [in the _indexes_ section of the collection JSON Schema](./lib/model.jsonschema.js#L240) |
+| tags | Array of string | - | [] | The list of tags to be associated to the collection's endpoints, useful to group different endpoint under the same section inside the swagger. |
 
 **WARNING:** The definition of _unique_ indexes makes the CRUD Service fail at startup if the database contains inconsistent documents (e.g. documents that have the same value for that key). Also documents without that key are all considered to have the same value (_null_), thus [violating the uniqueness](https://docs.mongodb.com/manual/core/index-unique/#unique-index-and-missing-field), and causing the index generation (and the CRUD Service) to fail at startup.
 
@@ -204,12 +206,12 @@ whereas the schema that defines and validate the data model definition can be fo
 
 The MongoDB Views should be included in separate JSON or JavaScript files in the folder defined with the environment variable `VIEWS_DEFINITION_FOLDER`. Each collection object requires the following fields:
 
-| Name     | Type   | Required | Default value | Description                                                                                                                                                       |
-|----------|--------|----------|---------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| name     | String | Required | -             | The name of the view, used as identifier                                                                                                                          |
-| source   | String | Required | -             | The name of the collection to be used as source to generate the view                                                                                              |
-| type     | `view` | Required | -             | The type of MongoDB element, which is required by CRUD Service to understand which operations might be performed. It should be the value `view`.                  |
-| pipeline | Object | Required | -             | The pipeline to aggregate the MongoDB View. It uses the same syntax of the [Aggregation Pipeline](https://www.mongodb.com/docs/manual/core/aggregation-pipeline/) |
+| Name | Type   | Required | Default value | Description |
+|------|--------|----------|---------------|-------------|
+| name | String | &check; | - | The name of the view, used as identifier |
+| source | String | &check; | - | The name of the collection to be used as source to generate the view |
+| type | `view` | &check; | - | The type of MongoDB element, which is required by CRUD Service to understand which operations might be performed. It should be the value `view`. |
+| pipeline | Object | &check; | - | The pipeline to aggregate the MongoDB View. It uses the same syntax of the [Aggregation Pipeline](https://www.mongodb.com/docs/manual/core/aggregation-pipeline/) |
 
 Several examples of collections can be found in the [Views Definitions folder](./tests/viewsDefinitions/),
 whereas the schema that defines and validate the data model definition can be found [here](./lib/model.jsonschema.js) (it is the same schema of the collection definition).
