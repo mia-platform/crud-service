@@ -18,7 +18,6 @@
 
 const tap = require('tap')
 const abstractLogger = require('abstract-logging')
-const { MongoClient } = require('mongodb')
 const { omit } = require('ramda')
 
 const { STATES } = require('../lib/consts')
@@ -28,13 +27,10 @@ const {
   fixtures,
   publicFixtures,
   draftFixture,
-  clearCollectionAndInsertFixtures,
-  getMongoDatabaseName,
-  getMongoURL,
-  BOOKS_COLLECTION_NAME,
   RAW_PROJECTION_PLAIN_INCLUSIVE,
   RAW_PROJECTION_PLAIN_EXCLUSIVE,
 } = require('./utils')
+const { setUpTest } = require('./httpInterface.utils')
 
 const EMPTY_QUERY = {}
 const ONLY_ID_PROJECTION = []
@@ -47,20 +43,7 @@ const context = {
 }
 
 tap.test('aggregate', async t => {
-  const databaseName = getMongoDatabaseName()
-  const mongoURL = getMongoURL(databaseName)
-
-  const client = await MongoClient.connect(mongoURL)
-  const database = client.db(databaseName)
-  const collection = database.collection(BOOKS_COLLECTION_NAME)
-
-  await clearCollectionAndInsertFixtures(collection)
-
-  t.teardown(async() => {
-    await database.dropDatabase()
-    await client.close()
-  })
-
+  const { collection } = await setUpTest(t)
   const crudService = new CrudService(collection, STATES.PUBLIC)
 
   t.test('should return all the documents if no query are specified', async t => {
@@ -359,7 +342,7 @@ tap.test('aggregate', async t => {
   })
 
   t.test('rawProjection', t => {
-    t.plan(4)
+    t.plan(5)
 
     const SORT = undefined
     const SKIP = 0
@@ -433,7 +416,7 @@ tap.test('aggregate', async t => {
       t.strictSame(data, expectedDocsWithExcludedFields)
     })
 
-    t.test('should exclude specified fields overridding existing _p specification', async t => {
+    t.test('should exclude specified fields overriding existing _p specification', async t => {
       t.plan(1)
 
       const data = await crudService.aggregate(
@@ -447,6 +430,31 @@ tap.test('aggregate', async t => {
       ).toArray()
 
       t.strictSame(data, expectedDocsWithExcludedFields)
+    })
+
+    t.test('should exclude specified fields overriding existing _p specification', async t => {
+      t.plan(1)
+
+      const data = await crudService.aggregate(
+        context,
+        {
+          $and: [
+            {
+              $text: {
+                $search: 'Ulyss',
+              },
+            },
+          ],
+        },
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        [STATES.DRAFT, STATES.PUBLIC, STATES.TRASH, STATES.DELETED],
+        true
+      ).toArray()
+
+      t.strictSame(data, [{ _id: expectedDocs[0]._id, score: 1 }])
     })
   })
 })

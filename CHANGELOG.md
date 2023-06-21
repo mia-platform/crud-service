@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fixed
+
+- $text search query now working on aggregation
+
 ## 6.7.0 - 2023-06-19
 
 ### Added
