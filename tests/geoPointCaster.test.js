@@ -18,7 +18,7 @@
 
 const tap = require('tap')
 const collectionDefinition = require('./collectionDefinitions/books')
-const newCollectionDefinition = require('./collectionDefinitions/books')
+const newCollectionDefinition = require('./newCollectionDefinitions/books')
 const GeoPointCaster = require('../lib/GeoPointCaster')
 
 tap.test('GeoPointCaster', test => {
