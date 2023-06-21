@@ -1283,7 +1283,7 @@ tap.test('HTTP GET /export', async t => {
 })
 
 if (process.env.MONGO_VERSION === '4.0') {
-  tap.skip('unsupported _rawp in MongoDB v4.0', async t => {
+  tap.test('unsupported _rawp in MongoDB v4.0', async t => {
     const { fastify } = await setUpTest(t)
 
     const conf = {
