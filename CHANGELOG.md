@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fixed
+
+- [#158](https://github.com/mia-platform/community/discussions/158) fixed wrong validation on nested objects.
+
 ## 6.7.0 - 2023-06-19
 
 ### Added
