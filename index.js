@@ -31,7 +31,7 @@ const { omit } = require('ramda')
 const myPackage = require('./package')
 const QueryParser = require('./lib/QueryParser')
 const CrudService = require('./lib/CrudService')
-const GeoPointCaster = require('./lib/GeoPointCaster')
+const AdditionalCaster = require('./lib/AdditionalCaster')
 const httpInterface = require('./lib/httpInterface')
 const JSONSchemaGenerator = require('./lib/JSONSchemaGenerator')
 const createIndexes = require('./lib/createIndexes')
@@ -205,7 +205,7 @@ function buildModelDependencies(fastify, collectionDefinition, collection) {
     { allowDiskUse: fastify.config.ALLOW_DISK_USE_IN_QUERIES },
   )
   const queryParser = new QueryParser(collectionDefinition, pathsForRawSchema)
-  const geoPointCaster = new GeoPointCaster(collectionDefinition)
+  const additionalCaster = new AdditionalCaster(collectionDefinition)
   const jsonSchemaGenerator = new JSONSchemaGenerator(
     collectionDefinition,
     {},
@@ -222,8 +222,8 @@ function buildModelDependencies(fastify, collectionDefinition, collection) {
   return {
     crudService,
     queryParser,
-    castResultsAsStream: () => geoPointCaster.asStream(),
-    castItem: (item) => geoPointCaster.castItem(item),
+    castResultsAsStream: () => additionalCaster.castResultsAsStream(),
+    castItem: (item) => additionalCaster.castItem(item),
     allFieldNames,
     jsonSchemaGenerator,
     jsonSchemaGeneratorWithNested,

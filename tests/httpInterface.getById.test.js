@@ -490,7 +490,7 @@ tap.test('HTTP GET', async t => {
 
   t.test('/:id cast correctly nested object with schema', async t => {
     const DOC_TEST = {
-      // ...fixtures[0],
+      ...fixtures[0],
       _id: ObjectId.createFromHexString('211111111111111111111111'),
       metadata: {
         somethingNumber: '3333',
