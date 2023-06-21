@@ -47,7 +47,7 @@ module.exports = {
           {
             'type': 'string',
             'examples': [
-              '2020-09-16T12:00:00.000Z',
+              '1997-04-24T07:00:00.000Z',
             ],
             'format': 'date-time',
           },
@@ -70,7 +70,7 @@ module.exports = {
           {
             'type': 'string',
             'examples': [
-              '2020-09-16T12:00:00.000Z',
+              '1997-04-24T07:00:00.000Z',
             ],
             'format': 'date-time',
           },
@@ -132,7 +132,7 @@ module.exports = {
           {
             'type': 'string',
             'examples': [
-              '2020-09-16T12:00:00.000Z',
+              '1997-04-24T07:00:00.000Z',
             ],
             'format': 'date-time',
           },
@@ -217,7 +217,7 @@ module.exports = {
                 'type': 'string',
                 'format': 'date-time',
                 'examples': [
-                  '2020-09-16T12:00:00.000Z',
+                  '1997-04-24T07:00:00.000Z',
                 ],
               },
               {
@@ -244,7 +244,7 @@ module.exports = {
                 'type': 'string',
                 'format': 'date-time',
                 'examples': [
-                  '2020-09-16T12:00:00.000Z',
+                  '1997-04-24T07:00:00.000Z',
                 ],
               },
               {
@@ -314,7 +314,7 @@ module.exports = {
                 'type': 'string',
                 'format': 'date-time',
                 'examples': [
-                  '2020-09-16T12:00:00.000Z',
+                  '1997-04-24T07:00:00.000Z',
                 ],
               },
               {

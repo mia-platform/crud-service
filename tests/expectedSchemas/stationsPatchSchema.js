@@ -50,7 +50,7 @@ module.exports = {
             'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
             'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
             'examples': [
-              '2020-09-16T12:00:00.000Z',
+              '1997-04-24T07:00:00.000Z',
             ],
           },
           {
@@ -74,7 +74,7 @@ module.exports = {
             'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
             'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
             'examples': [
-              '2020-09-16T12:00:00.000Z',
+              '1997-04-24T07:00:00.000Z',
             ],
           },
           {
@@ -137,7 +137,7 @@ module.exports = {
             'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
             'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
             'examples': [
-              '2020-09-16T12:00:00.000Z',
+              '1997-04-24T07:00:00.000Z',
             ],
           },
           {
@@ -224,7 +224,7 @@ module.exports = {
                 'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
                 'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
                 'examples': [
-                  '2020-09-16T12:00:00.000Z',
+                  '1997-04-24T07:00:00.000Z',
                 ],
               },
               {
@@ -394,7 +394,7 @@ module.exports = {
               'type': 'string',
               'format': 'date-time',
               'examples': [
-                '2020-09-16T12:00:00.000Z',
+                '1997-04-24T07:00:00.000Z',
               ],
             },
             {
@@ -421,7 +421,7 @@ module.exports = {
               'type': 'string',
               'format': 'date-time',
               'examples': [
-                '2020-09-16T12:00:00.000Z',
+                '1997-04-24T07:00:00.000Z',
               ],
             },
             {
@@ -491,7 +491,7 @@ module.exports = {
               'type': 'string',
               'format': 'date-time',
               'examples': [
-                '2020-09-16T12:00:00.000Z',
+                '1997-04-24T07:00:00.000Z',
               ],
             },
             {
