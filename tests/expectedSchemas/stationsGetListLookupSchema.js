@@ -17,87 +17,77 @@
 'use strict'
 
 module.exports = {
-  'summary': 'Export the cars collection',
-  'description': 'The exported documents are sent as newline separated JSON objects to facilitate large dataset streaming and parsing',
+  'summary': 'Returns a list of documents in stations',
+  'description': 'Results can be filtered specifying the following parameters:',
   'tags': [
-    'Cars Endpoint',
+    'Stations Endpoint',
   ],
   'querystring': {
-    'operationId': 'cars__MIA__export__MIA__querystring',
+    'operationId': 'stations__MIA__getListLookup__MIA__querystring',
     'type': 'object',
     'properties': {
-      '_id': {
-        'type': [
-          'string',
-          'object',
-        ],
-        'description': 'Hexadecimal identifier of the document in the collection',
-        'anyOf': [
-          {
-            'type': 'string',
-            'pattern': '^[a-fA-F\\d]{24}$',
-            'examples': [
-              '000000000000000000000000',
-            ],
-          },
-          {
-            'type': 'object',
-          },
-        ],
-      },
-      'creatorId': {
-        'type': 'string',
-        'description': 'User id that has created this object',
-      },
-      'createdAt': {
-        'type': [
-          'string',
-          'object',
-        ],
-        'anyOf': [
-          {
-            'type': 'string',
-            'examples': [
-              '1997-04-24T07:00:00.000Z',
-            ],
-            'format': 'date-time',
-          },
-          {
-            'type': 'object',
-            'instanceof': 'Date',
-          },
-        ],
-      },
-      'updaterId': {
-        'type': 'string',
-        'description': 'User id that has requested the last change successfully',
-      },
-      'updatedAt': {
-        'type': [
-          'string',
-          'object',
-        ],
-        'anyOf': [
-          {
-            'type': 'string',
-            'examples': [
-              '1997-04-24T07:00:00.000Z',
-            ],
-            'format': 'date-time',
-          },
-          {
-            'type': 'object',
-            'instanceof': 'Date',
-          },
-        ],
-      },
-      'name': {
-        'type': 'string',
-        'description': "The car's name",
-      },
-      'price': {
+      'Cap': {
         'type': 'number',
-        'description': "The car's price",
+        'nullable': true,
+      },
+      'CodiceMIR': {
+        'type': 'string',
+        'nullable': true,
+      },
+      'Comune': {
+        'type': 'string',
+        'nullable': true,
+      },
+      'Direttrici': {
+        'type': [
+          'array',
+          'null',
+          'string',
+        ],
+        'anyOf': [
+          {
+            'type': 'null',
+            'nullable': true,
+          },
+          {
+            'type': 'array',
+            'items': {
+              'type': 'string',
+            },
+          },
+          {
+            'type': 'string',
+          },
+        ],
+        'nullable': true,
+      },
+      'Indirizzo': {
+        'type': 'string',
+        'nullable': true,
+      },
+      'country': {
+        'type': 'string',
+        'nullable': true,
+      },
+      'nonNullableDate': {
+        'type': [
+          'string',
+          'object',
+        ],
+        'anyOf': [
+          {
+            'type': 'string',
+            'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
+            'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
+            'examples': [
+              '1997-04-24T07:00:00.000Z',
+            ],
+          },
+          {
+            'type': 'object',
+            'instanceof': 'Date',
+          },
+        ],
       },
       '_q': {
         'type': 'string',
@@ -116,14 +106,12 @@ module.exports = {
         'default': 'PUBLIC',
         'description': 'Filter by \\_\\_STATE__, multiple states can be specified in OR by providing a comma separated list',
       },
-      '_rawp': {
-        'type': 'string',
-        'description': 'Additional raw stringified projection for MongoDB',
-      },
       '_l': {
         'type': 'integer',
         'minimum': 1,
-        'description': 'Limits the number of documents',
+        'description': 'Limits the number of documents, max 200 elements, minimum 1',
+        'default': 25,
+        'maximum': 200,
       },
       '_sk': {
         'type': 'integer',
@@ -134,13 +122,13 @@ module.exports = {
         'anyOf': [
           {
             'type': 'string',
-            'pattern': '^-?(_id|updaterId|updatedAt|creatorId|createdAt|__STATE__|name|price|additionalInfo)(\\.([^\\.,])+)*(,-?(_id|updaterId|updatedAt|creatorId|createdAt|__STATE__|name|price|additionalInfo)(\\.([^\\.,])+)*)*$',
+            'pattern': '^-?(_id|updaterId|updatedAt|creatorId|createdAt|__STATE__|Cap|CodiceMIR|Comune|Direttrici|Indirizzo|country|nonNullableDate)(\\.([^\\.,])+)*(,-?(_id|updaterId|updatedAt|creatorId|createdAt|__STATE__|Cap|CodiceMIR|Comune|Direttrici|Indirizzo|country|nonNullableDate)(\\.([^\\.,])+)*)*$',
           },
           {
             'type': 'array',
             'items': {
               'type': 'string',
-              'pattern': '^-?(_id|updaterId|updatedAt|creatorId|createdAt|__STATE__|name|price|additionalInfo)(\\.([^\\.,])+)*(,-?(_id|updaterId|updatedAt|creatorId|createdAt|__STATE__|name|price|additionalInfo)(\\.([^\\.,])+)*)*$',
+              'pattern': '^-?(_id|updaterId|updatedAt|creatorId|createdAt|__STATE__|Cap|CodiceMIR|Comune|Direttrici|Indirizzo|country|nonNullableDate)(\\.([^\\.,])+)*(,-?(_id|updaterId|updatedAt|creatorId|createdAt|__STATE__|Cap|CodiceMIR|Comune|Direttrici|Indirizzo|country|nonNullableDate)(\\.([^\\.,])+)*)*$',
             },
           },
         ],
@@ -151,48 +139,14 @@ module.exports = {
   },
   'response': {
     '200': {
-      'operationId': 'cars__MIA__export__MIA__response.200',
+      'operationId': 'stations__MIA__getListLookup__MIA__response.200',
       'type': 'array',
       'items': {
         'type': 'object',
         'properties': {
           '_id': {
-            'type': [
-              'string',
-              'object',
-            ],
-            'description': 'Hexadecimal identifier of the document in the collection',
-            'anyOf': [
-              {
-                'type': 'string',
-                'pattern': '^[a-fA-F\\d]{24}$',
-                'examples': [
-                  '000000000000000000000000',
-                ],
-              },
-              {
-                'type': 'object',
-              },
-            ],
-          },
-          'name': {
             'type': 'string',
-            'description': "The car's name",
-          },
-          'price': {
-            'type': 'number',
-            'description': "The car's price",
-          },
-          'position': {
-            'type': 'array',
-            'items': {
-              'type': 'number',
-            },
-            'description': "The car's position",
-          },
-          'additionalInfo': {
-            'type': 'object',
-            'additionalProperties': true,
+            'description': '_id',
           },
           'updaterId': {
             'type': 'string',
@@ -251,6 +205,71 @@ module.exports = {
           '__STATE__': {
             'type': 'string',
             'description': 'The state of the document',
+          },
+          'Cap': {
+            'type': 'number',
+            'nullable': true,
+          },
+          'CodiceMIR': {
+            'type': 'string',
+            'nullable': true,
+          },
+          'Comune': {
+            'type': 'string',
+            'nullable': true,
+          },
+          'Direttrici': {
+            'type': [
+              'array',
+              'null',
+              'string',
+            ],
+            'anyOf': [
+              {
+                'type': 'null',
+                'nullable': true,
+              },
+              {
+                'type': 'array',
+                'items': {
+                  'type': 'string',
+                },
+              },
+              {
+                'type': 'string',
+              },
+            ],
+            'nullable': true,
+          },
+          'Indirizzo': {
+            'type': 'string',
+            'nullable': true,
+          },
+          'country': {
+            'type': 'string',
+            'nullable': true,
+          },
+          'nonNullableDate': {
+            'type': [
+              'string',
+              'object',
+            ],
+            'anyOf': [
+              {
+                'type': 'string',
+                'format': 'date-time',
+                'examples': [
+                  '1997-04-24T07:00:00.000Z',
+                ],
+              },
+              {
+                'type': 'object',
+                'instanceof': 'Date',
+              },
+              {
+                'type': 'string',
+              },
+            ],
           },
         },
       },

@@ -86,6 +86,11 @@ module.exports = {
         type: 'string',
         nullable: true,
       },
+      nonNullableDate: {
+        type: 'string',
+        format: 'date-time',
+        nullable: false,
+      },
     },
   },
   indexes: [

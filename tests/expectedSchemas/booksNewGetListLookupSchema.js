@@ -17,84 +17,17 @@
 'use strict'
 
 module.exports = {
-  'summary': 'Export the books collection',
-  'description': 'The exported documents are sent as newline separated JSON objects to facilitate large dataset streaming and parsing',
+  'summary': 'Returns a list of documents in books',
+  'description': 'Results can be filtered specifying the following parameters:',
   'tags': [
     'Books Endpoint',
     'example',
     'tags',
   ],
   'querystring': {
-    'operationId': 'books__MIA__export__MIA__querystring',
+    'operationId': 'books__MIA__getListLookup__MIA__querystring',
     'type': 'object',
     'properties': {
-      '_id': {
-        'type': [
-          'string',
-          'object',
-        ],
-        'description': 'Hexadecimal identifier of the document in the collection',
-        'anyOf': [
-          {
-            'type': 'string',
-            'pattern': '^[a-fA-F\\d]{24}$',
-            'examples': [
-              '000000000000000000000000',
-            ],
-          },
-          {
-            'type': 'object',
-          },
-        ],
-      },
-      'creatorId': {
-        'type': 'string',
-        'description': 'User id that has created this object',
-      },
-      'createdAt': {
-        'type': [
-          'string',
-          'object',
-        ],
-        'anyOf': [
-          {
-            'type': 'string',
-            'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
-            'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
-            'examples': [
-              '1997-04-24T07:00:00.000Z',
-            ],
-          },
-          {
-            'type': 'object',
-            'instanceof': 'Date',
-          },
-        ],
-      },
-      'updaterId': {
-        'type': 'string',
-        'description': 'User id that has requested the last change successfully',
-      },
-      'updatedAt': {
-        'type': [
-          'string',
-          'object',
-        ],
-        'anyOf': [
-          {
-            'type': 'string',
-            'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
-            'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
-            'examples': [
-              '1997-04-24T07:00:00.000Z',
-            ],
-          },
-          {
-            'type': 'object',
-            'instanceof': 'Date',
-          },
-        ],
-      },
       'name': {
         'type': 'string',
         'description': 'The name of the book',
@@ -148,11 +81,10 @@ module.exports = {
           },
           {
             'type': 'string',
-            'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
-            'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
             'examples': [
               '1997-04-24T07:00:00.000Z',
             ],
+            'format': 'date-time',
           },
           {
             'type': 'object',
@@ -347,14 +279,12 @@ module.exports = {
         'default': 'PUBLIC',
         'description': 'Filter by \\_\\_STATE__, multiple states can be specified in OR by providing a comma separated list',
       },
-      '_rawp': {
-        'type': 'string',
-        'description': 'Additional raw stringified projection for MongoDB',
-      },
       '_l': {
         'type': 'integer',
         'minimum': 1,
-        'description': 'Limits the number of documents',
+        'description': 'Limits the number of documents, max 200 elements, minimum 1',
+        'default': 25,
+        'maximum': 200,
       },
       '_sk': {
         'type': 'integer',
@@ -444,7 +374,7 @@ module.exports = {
   },
   'response': {
     '200': {
-      'operationId': 'books__MIA__export__MIA__response.200',
+      'operationId': 'books__MIA__getListLookup__MIA__response.200',
       'type': 'array',
       'items': {
         'type': 'object',

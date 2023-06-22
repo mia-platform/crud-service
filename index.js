@@ -22,6 +22,7 @@ const fastifyEnv = require('@fastify/env')
 
 const Ajv = require('ajv')
 const ajvFormats = require('ajv-formats')
+const ajvKeywords = require('ajv-keywords')
 
 const { readdirSync } = require('fs')
 const { join } = require('path')
@@ -30,7 +31,7 @@ const { omit } = require('ramda')
 const myPackage = require('./package')
 const QueryParser = require('./lib/QueryParser')
 const CrudService = require('./lib/CrudService')
-const ResultCaster = require('./lib/ResultCaster')
+const AdditionalCaster = require('./lib/AdditionalCaster')
 const httpInterface = require('./lib/httpInterface')
 const JSONSchemaGenerator = require('./lib/JSONSchemaGenerator')
 const createIndexes = require('./lib/createIndexes')
@@ -46,6 +47,8 @@ const fastifyEnvSchema = require('./envSchema')
 
 const ajv = new Ajv({ useDefaults: true })
 ajvFormats(ajv)
+ajvKeywords(ajv)
+
 const compatibilityValidate = ajv.compile(compatibilityModelJsonSchema)
 const validate = ajv.compile(modelJsonSchema)
 
@@ -202,7 +205,7 @@ function buildModelDependencies(fastify, collectionDefinition, collection) {
     { allowDiskUse: fastify.config.ALLOW_DISK_USE_IN_QUERIES },
   )
   const queryParser = new QueryParser(collectionDefinition, pathsForRawSchema)
-  const resultCaster = new ResultCaster(collectionDefinition)
+  const additionalCaster = new AdditionalCaster(collectionDefinition)
   const jsonSchemaGenerator = new JSONSchemaGenerator(
     collectionDefinition,
     {},
@@ -219,8 +222,8 @@ function buildModelDependencies(fastify, collectionDefinition, collection) {
   return {
     crudService,
     queryParser,
-    castResultsAsStream: () => resultCaster.asStream(),
-    castItem: (item) => resultCaster.castItem(item),
+    castResultsAsStream: () => additionalCaster.castResultsAsStream(),
+    castItem: (item) => additionalCaster.castItem(item),
     allFieldNames,
     jsonSchemaGenerator,
     jsonSchemaGeneratorWithNested,

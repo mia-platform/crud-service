@@ -74,11 +74,22 @@ module.exports = {
         'type': 'object',
         'properties': {
           '_id': {
-            'type': 'string',
-            'pattern': '^[a-fA-F\\d]{24}$',
+            'type': [
+              'string',
+              'object',
+            ],
             'description': 'Hexadecimal identifier of the document in the collection',
-            'examples': [
-              '000000000000000000000000',
+            'anyOf': [
+              {
+                'type': 'string',
+                'pattern': '^[a-fA-F\\d]{24}$',
+                'examples': [
+                  '000000000000000000000000',
+                ],
+              },
+              {
+                'type': 'object',
+              },
             ],
           },
         },

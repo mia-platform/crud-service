@@ -49,24 +49,46 @@ module.exports = {
               'description': 'User id that has created this object',
             },
             'createdAt': {
-              'type': 'string',
-              'description': 'Date of the request that has performed the object creation',
-              'examples': [
-                '2020-09-16T12:00:00.000Z',
+              'type': [
+                'string',
+                'object',
               ],
-              'format': 'date-time',
+              'anyOf': [
+                {
+                  'type': 'string',
+                  'examples': [
+                    '1997-04-24T07:00:00.000Z',
+                  ],
+                  'format': 'date-time',
+                },
+                {
+                  'type': 'object',
+                  'instanceof': 'Date',
+                },
+              ],
             },
             'updaterId': {
               'type': 'string',
               'description': 'User id that has requested the last change successfully',
             },
             'updatedAt': {
-              'type': 'string',
-              'description': 'Date of the request that has performed the last change',
-              'examples': [
-                '2020-09-16T12:00:00.000Z',
+              'type': [
+                'string',
+                'object',
               ],
-              'format': 'date-time',
+              'anyOf': [
+                {
+                  'type': 'string',
+                  'examples': [
+                    '1997-04-24T07:00:00.000Z',
+                  ],
+                  'format': 'date-time',
+                },
+                {
+                  'type': 'object',
+                  'instanceof': 'Date',
+                },
+              ],
             },
             'Cap': {
               'type': 'number',
@@ -80,6 +102,29 @@ module.exports = {
               'type': 'string',
               'nullable': true,
             },
+            'Direttrici': {
+              'type': [
+                'array',
+                'null',
+                'string',
+              ],
+              'anyOf': [
+                {
+                  'type': 'null',
+                  'nullable': true,
+                },
+                {
+                  'type': 'array',
+                  'items': {
+                    'type': 'string',
+                  },
+                },
+                {
+                  'type': 'string',
+                },
+              ],
+              'nullable': true,
+            },
             'Indirizzo': {
               'type': 'string',
               'nullable': true,
@@ -87,6 +132,25 @@ module.exports = {
             'country': {
               'type': 'string',
               'nullable': true,
+            },
+            'nonNullableDate': {
+              'type': [
+                'string',
+                'object',
+              ],
+              'anyOf': [
+                {
+                  'type': 'string',
+                  'examples': [
+                    '1997-04-24T07:00:00.000Z',
+                  ],
+                  'format': 'date-time',
+                },
+                {
+                  'type': 'object',
+                  'instanceof': 'Date',
+                },
+              ],
             },
             '_q': {
               'type': 'string',
@@ -118,10 +182,26 @@ module.exports = {
                   'nullable': true,
                 },
                 'Direttrici': {
-                  'type': 'array',
-                  'items': {
-                    'type': 'string',
-                  },
+                  'type': [
+                    'array',
+                    'null',
+                    'string',
+                  ],
+                  'anyOf': [
+                    {
+                      'type': 'null',
+                      'nullable': true,
+                    },
+                    {
+                      'type': 'array',
+                      'items': {
+                        'type': 'string',
+                      },
+                    },
+                    {
+                      'type': 'string',
+                    },
+                  ],
                   'nullable': true,
                 },
                 'Indirizzo': {
@@ -131,6 +211,25 @@ module.exports = {
                 'country': {
                   'type': 'string',
                   'nullable': true,
+                },
+                'nonNullableDate': {
+                  'type': [
+                    'string',
+                    'object',
+                  ],
+                  'anyOf': [
+                    {
+                      'type': 'string',
+                      'examples': [
+                        '1997-04-24T07:00:00.000Z',
+                      ],
+                      'format': 'date-time',
+                    },
+                    {
+                      'type': 'object',
+                      'instanceof': 'Date',
+                    },
+                  ],
                 },
                 'Direttrici.$.replace': {
                   'type': 'string',
@@ -178,6 +277,12 @@ module.exports = {
                     true,
                   ],
                 },
+                'nonNullableDate': {
+                  'type': 'boolean',
+                  'enum': [
+                    true,
+                  ],
+                },
               },
               'additionalProperties': false,
               'patternProperties': {},
@@ -204,7 +309,14 @@ module.exports = {
             },
             '$currentDate': {
               'type': 'object',
-              'properties': {},
+              'properties': {
+                'nonNullableDate': {
+                  'type': 'boolean',
+                  'enum': [
+                    true,
+                  ],
+                },
+              },
               'additionalProperties': false,
             },
             '$push': {

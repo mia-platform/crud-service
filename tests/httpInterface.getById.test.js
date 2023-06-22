@@ -19,7 +19,7 @@
 const tap = require('tap')
 const { ObjectId } = require('mongodb')
 
-const { STATES, STATE } = require('../lib/consts')
+const { STATES, __STATE__ } = require('../lib/consts')
 const {
   fixtures,
   stationFixtures,
@@ -490,18 +490,20 @@ tap.test('HTTP GET', async t => {
 
   t.test('/:id cast correctly nested object with schema', async t => {
     const DOC_TEST = {
-      ...DOC,
+      ...fixtures[0],
       _id: ObjectId.createFromHexString('211111111111111111111111'),
       metadata: {
         somethingNumber: '3333',
       },
-      attachments: [{
-        name: 'the-note',
-        detail: {
-          size: '6',
+      attachments: [
+        {
+          name: 'the-note',
+          detail: {
+            size: '6',
+          },
         },
-      }],
-      [STATE]: STATES.PUBLIC,
+      ],
+      [__STATE__]: STATES.PUBLIC,
     }
 
     await resetCollection([DOC_TEST])
@@ -535,7 +537,7 @@ tap.test('HTTP GET', async t => {
         }],
         somethingArrayOfNumbers: [5],
       },
-      [STATE]: STATES.PUBLIC,
+      [__STATE__]: STATES.PUBLIC,
     }
     const DOC_TEST_NO_MATCH = {
       ...fixtures[0],
@@ -548,7 +550,7 @@ tap.test('HTTP GET', async t => {
         }],
         somethingArrayOfNumbers: [5],
       },
-      [STATE]: STATES.PUBLIC,
+      [__STATE__]: STATES.PUBLIC,
     }
 
     await resetCollection([DOC_TEST, DOC_TEST_NO_MATCH])
@@ -587,7 +589,7 @@ tap.test('HTTP GET', async t => {
         }],
         somethingArrayOfNumbers: [5],
       },
-      [STATE]: STATES.PUBLIC,
+      [__STATE__]: STATES.PUBLIC,
     }
 
     await resetCollection([DOC_TEST])

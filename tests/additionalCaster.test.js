@@ -18,12 +18,12 @@
 
 const tap = require('tap')
 const collectionDefinition = require('./collectionDefinitions/books')
-const newCollectionDefinition = require('./collectionDefinitions/books')
-const ResultCaster = require('../lib/ResultCaster')
+const newCollectionDefinition = require('./newCollectionDefinitions/books')
+const AdditionalCaster = require('../lib/AdditionalCaster')
 
-tap.test('ResultCaster', test => {
+tap.test('AdditionalCaster', test => {
   test.test('old configuration', assert => {
-    const resultCaster = new ResultCaster(collectionDefinition)
+    const additionalCaster = new AdditionalCaster(collectionDefinition)
 
     const testCases = [
       {
@@ -46,19 +46,6 @@ tap.test('ResultCaster', test => {
         },
       },
       {
-        name: 'should cast number field from string',
-        document: {
-          name: 'The you you are',
-          author: 'Dr. Ricken Lazlo Hale, PhD',
-          price: '22.99',
-        },
-        expectedResult: {
-          name: 'The you you are',
-          author: 'Dr. Ricken Lazlo Hale, PhD',
-          price: 22.99,
-        },
-      },
-      {
         name: 'should cast GeoPoint fields',
         document: {
           name: 'Node cookbook',
@@ -78,7 +65,7 @@ tap.test('ResultCaster', test => {
     for (const { name, document, expectedResult } of testCases) {
       assert.test(name, test => {
         test.plan(1)
-        resultCaster.castItem(document)
+        additionalCaster.castItem(document)
         test.strictSame(document, expectedResult)
         test.end()
       })
@@ -87,7 +74,7 @@ tap.test('ResultCaster', test => {
   })
 
   test.test('new configuration', assert => {
-    const resultCaster = new ResultCaster(newCollectionDefinition)
+    const additionalCaster = new AdditionalCaster(newCollectionDefinition)
 
     const testCases = [
       {
@@ -110,19 +97,6 @@ tap.test('ResultCaster', test => {
         },
       },
       {
-        name: 'should cast number field from string',
-        document: {
-          name: 'The you you are',
-          author: 'Dr. Ricken Lazlo Hale, PhD',
-          price: '22.99',
-        },
-        expectedResult: {
-          name: 'The you you are',
-          author: 'Dr. Ricken Lazlo Hale, PhD',
-          price: 22.99,
-        },
-      },
-      {
         name: 'should cast GeoPoint fields',
         document: {
           name: 'Node cookbook',
@@ -142,7 +116,7 @@ tap.test('ResultCaster', test => {
     for (const { name, document, expectedResult } of testCases) {
       assert.test(name, test => {
         test.plan(1)
-        resultCaster.castItem(document)
+        additionalCaster.castItem(document)
         test.strictSame(document, expectedResult)
         test.end()
       })
