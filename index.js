@@ -44,6 +44,7 @@ const mergeViewsInCollections = require('./lib/mergeViewsInCollections')
 
 const { compatibilityModelJsonSchema, modelJsonSchema } = require('./lib/model.jsonschema')
 const fastifyEnvSchema = require('./envSchema')
+const { getAjvResponseValidationFunction } = require('./lib/validatorGetters')
 
 const ajv = new Ajv({ useDefaults: true })
 ajvFormats(ajv)
@@ -114,12 +115,16 @@ async function registerViewCrud(fastify, { modelName, lookups }) {
 
   // To obtain the updated object with a consistent interface after a patch,
   // it is necessary to retrieve the view object again before returning it to the client.
-  fastify.addHook('preSerialization', async(request, _reply, payload) => {
+  fastify.addHook('preSerialization', async function preSerializer(request, _reply, payload) {
     const { _id } = payload
     if (request.method === 'PATCH' && _id) {
+      const docId = this.castCollectionId(_id)
       // eslint-disable-next-line no-underscore-dangle
-      const doc = await crudService._mongoCollection.findOne({ _id })
-      return doc
+      const doc = await crudService._mongoCollection.findOne({ _id: docId })
+      const response = this.castItem(doc)
+      const validatePatch = getAjvResponseValidationFunction(request.routeSchema.response['200'])
+      validatePatch(response)
+      return response
     }
     return payload
   })
