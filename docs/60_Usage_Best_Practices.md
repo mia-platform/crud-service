@@ -12,7 +12,7 @@ Cloud service providers offer solutions such as SaaS (e.g., MongoDB Atlas instal
 A replica set implements an acknowledgment mechanism to maintain data availability and consistency across its nodes. More information about a replica set can be found in the [MongoDB documentation](https://www.mongodb.com/docs/manual/core/replica-set-write-concern/).
 :::
 
-## Use cases
+## Description
 
 The operations performed by the CRUD Service are based on the official MongoDB connection driver.
 
