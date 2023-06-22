@@ -171,7 +171,7 @@ The collections should be included in separate JSON or JavaScript files in the f
 | defaultState | String | - | `DRAFT` | The default state assigned to a document when inserted. Can be one of the [\_\_STATE__ available values](#metadata-fields) |
 | schema | JSONSchemaStandard | &check; | - | The JSON Schema configuration of the fields to be included in the collection object. A complete description of its fields can be found in the [ _schema_](./lib/model.jsonschema.js#L447)  section of the collection JSON Schema. |
 | indexes | Array of objects | &check; | - | The list of indexes to be created when starting the service and initializing all the collections. A complete description of its fields can be found [in the _indexes_ section of the collection JSON Schema](./lib/model.jsonschema.js#L240) |
-| tags | Array of string | - | [] | The list of tags to be associated to the collection's endpoints, useful to group different endpoint under the same section inside the swagger. |
+| tags | Array of strings | - | [] | The list of tags to be associated to the collection's endpoints, useful to group different endpoint under the same section inside the swagger. |
 
 **WARNING:** The definition of _unique_ indexes makes the CRUD Service fail at startup if the database contains inconsistent documents (e.g. documents that have the same value for that key). Also documents without that key are all considered to have the same value (_null_), thus [violating the uniqueness](https://docs.mongodb.com/manual/core/index-unique/#unique-index-and-missing-field), and causing the index generation (and the CRUD Service) to fail at startup.
 
@@ -192,7 +192,7 @@ The collections should be included in separate JSON or JavaScript files in the f
 | defaultState | String | - | `DRAFT` | The default state assigned to a document when inserted. Can be one of the [\_\_STATE__ available values](#metadata-fields) |
 | fields | Array of objects | &check; | - | The list of fields to be included in the collection object. A complete description of its fields can be found [in the _fields_ section of the collection JSON Schema](./lib/model.jsonschema.js#L77). |
 | indexes | Array of objects | &check; | - | The list of indexes to be created when starting the service and initializing all the collections. A complete description of its fields can be found [in the _indexes_ section of the collection JSON Schema](./lib/model.jsonschema.js#L240) |
-| tags | Array of string | - | [] | The list of tags to be associated to the collection's endpoints, useful to group different endpoint under the same section inside the swagger. |
+| tags | Array of strings | - | [] | The list of tags to be associated to the collection's endpoints, useful to group different endpoint under the same section inside the swagger. |
 
 **WARNING:** The definition of _unique_ indexes makes the CRUD Service fail at startup if the database contains inconsistent documents (e.g. documents that have the same value for that key). Also documents without that key are all considered to have the same value (_null_), thus [violating the uniqueness](https://docs.mongodb.com/manual/core/index-unique/#unique-index-and-missing-field), and causing the index generation (and the CRUD Service) to fail at startup.
 
