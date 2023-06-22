@@ -193,6 +193,7 @@ module.exports = {
           required: ['name'],
           additionalProperties: false,
         },
+        nullable: true,
       },
       editionsDates: {
         type: 'array',

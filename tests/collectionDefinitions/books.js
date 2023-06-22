@@ -211,6 +211,7 @@ module.exports = {
           additionalProperties: false,
         },
       },
+      nullable: true,
       required: false,
     },
     {

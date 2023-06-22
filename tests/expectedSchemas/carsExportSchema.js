@@ -27,11 +27,22 @@ module.exports = {
     'type': 'object',
     'properties': {
       '_id': {
-        'type': 'string',
-        'pattern': '^[a-fA-F\\d]{24}$',
+        'type': [
+          'string',
+          'object',
+        ],
         'description': 'Hexadecimal identifier of the document in the collection',
-        'examples': [
-          '000000000000000000000000',
+        'anyOf': [
+          {
+            'type': 'string',
+            'pattern': '^[a-fA-F\\d]{24}$',
+            'examples': [
+              '000000000000000000000000',
+            ],
+          },
+          {
+            'type': 'object',
+          },
         ],
       },
       'creatorId': {
@@ -39,11 +50,23 @@ module.exports = {
         'description': 'User id that has created this object',
       },
       'createdAt': {
-        'type': 'string',
-        'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
-        'description': 'Date of the request that has performed the object creation',
-        'examples': [
-          '2020-09-16T12:00:00.000Z',
+        'type': [
+          'string',
+          'object',
+        ],
+        'anyOf': [
+          {
+            'type': 'string',
+            'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
+            'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
+            'examples': [
+              '1997-04-24T07:00:00.000Z',
+            ],
+          },
+          {
+            'type': 'object',
+            'instanceof': 'Date',
+          },
         ],
       },
       'updaterId': {
@@ -51,11 +74,23 @@ module.exports = {
         'description': 'User id that has requested the last change successfully',
       },
       'updatedAt': {
-        'type': 'string',
-        'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
-        'description': 'Date of the request that has performed the last change',
-        'examples': [
-          '2020-09-16T12:00:00.000Z',
+        'type': [
+          'string',
+          'object',
+        ],
+        'anyOf': [
+          {
+            'type': 'string',
+            'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
+            'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
+            'examples': [
+              '1997-04-24T07:00:00.000Z',
+            ],
+          },
+          {
+            'type': 'object',
+            'instanceof': 'Date',
+          },
         ],
       },
       'name': {
@@ -115,5 +150,112 @@ module.exports = {
       },
     },
     'additionalProperties': false,
+  },
+  'response': {
+    '200': {
+      'operationId': 'cars__MIA__export__MIA__response.200',
+      'type': 'array',
+      'items': {
+        'type': 'object',
+        'properties': {
+          '_id': {
+            'type': [
+              'string',
+              'object',
+            ],
+            'description': 'Hexadecimal identifier of the document in the collection',
+            'anyOf': [
+              {
+                'type': 'string',
+                'pattern': '^[a-fA-F\\d]{24}$',
+                'examples': [
+                  '000000000000000000000000',
+                ],
+              },
+              {
+                'type': 'object',
+              },
+            ],
+          },
+          'name': {
+            'type': 'string',
+            'description': "The car's name",
+          },
+          'price': {
+            'type': 'number',
+            'description': "The car's price",
+          },
+          'position': {
+            'type': 'array',
+            'items': {
+              'type': 'number',
+            },
+            'description': "The car's position",
+          },
+          'additionalInfo': {
+            'type': 'object',
+            'additionalProperties': true,
+          },
+          'updaterId': {
+            'type': 'string',
+            'description': 'User id that has requested the last change successfully',
+          },
+          'updatedAt': {
+            'type': [
+              'string',
+              'object',
+            ],
+            'anyOf': [
+              {
+                'type': 'string',
+                'format': 'date-time',
+                'examples': [
+                  '1997-04-24T07:00:00.000Z',
+                ],
+              },
+              {
+                'type': 'object',
+                'instanceof': 'Date',
+              },
+              {
+                'type': 'string',
+              },
+            ],
+            'description': 'Date of the request that has performed the last change',
+          },
+          'creatorId': {
+            'type': 'string',
+            'description': 'User id that has created this object',
+          },
+          'createdAt': {
+            'type': [
+              'string',
+              'object',
+            ],
+            'anyOf': [
+              {
+                'type': 'string',
+                'format': 'date-time',
+                'examples': [
+                  '1997-04-24T07:00:00.000Z',
+                ],
+              },
+              {
+                'type': 'object',
+                'instanceof': 'Date',
+              },
+              {
+                'type': 'string',
+              },
+            ],
+            'description': 'Date of the request that has performed the object creation',
+          },
+          '__STATE__': {
+            'type': 'string',
+            'description': 'The state of the document',
+          },
+        },
+      },
+    },
   },
 }

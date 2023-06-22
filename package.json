@@ -34,6 +34,7 @@
     "@mia-platform/lc39": "^7.0.0",
     "@mia-platform/mongodb-healthchecker": "^1.0.1",
     "ajv-formats": "^2.1.1",
+    "ajv-keywords": "^5.1.0",
     "fastify-plugin": "^4.5.0",
     "jsonpath-plus": "^7.2.0",
     "JSONStream": "^1.3.5",

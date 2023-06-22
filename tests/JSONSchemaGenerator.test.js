@@ -35,13 +35,14 @@ const collectionDefinitions = {
 
 const Ajv = require('ajv')
 const ajvFormats = require('ajv-formats')
+const ajvKeywords = require('ajv-keywords')
 
 const JSONSchemaGenerator = require('../lib/JSONSchemaGenerator')
 const generatePathFieldsForRawSchema = require('../lib/generatePathFieldsForRawSchema')
 const { SCHEMA_CUSTOM_KEYWORDS } = require('../lib/consts')
 
 const collections = Object.keys(collectionDefinitions)
-const operations = ['GetList', 'GetItem', 'Post', 'Delete', 'Count', 'Bulk', 'Patch', 'PatchBulk', 'ChangeState', 'ChangeStateMany', 'Export']
+const operations = ['GetList', 'GetItem', 'Post', 'Delete', 'Count', 'Bulk', 'Patch', 'PatchBulk', 'ChangeState', 'ChangeStateMany', 'Export', 'GetListLookup']
 
 const operationToMethod = operations.reduce((operationToMethod, op) => {
   operationToMethod[op] = `generate${op}JSONSchema`
@@ -51,8 +52,10 @@ const operationToMethod = operations.reduce((operationToMethod, op) => {
 const ajv = new Ajv({
   useDefaults: true,
   allowMatchingProperties: true,
+  allowUnionTypes: true,
 })
 ajvFormats(ajv)
+ajvKeywords(ajv)
 ajv.addVocabulary(Object.values(SCHEMA_CUSTOM_KEYWORDS))
 
 const expectedSchemas = operations.reduce((acc, operation) => {

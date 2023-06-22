@@ -42,7 +42,7 @@ const lget = require('lodash.get')
 const lset = require('lodash.set')
 const validationOperations = ['GetList', 'GetItem', 'Delete', 'Count', 'Patch', 'PatchBulk',
   'ChangeState', 'ChangeStateMany', 'Export']
-const serializationOperation = ['Post', 'Bulk', 'DeleteList', 'UpsertOne', 'PatchMany']
+const serializationOperation = ['Post', 'Bulk', 'DeleteList', 'UpsertOne', 'PatchMany', 'GetListLookup']
 const operations = [...validationOperations, ...serializationOperation]
 
 const operationToMethod = operations.reduce((opToMethod, op) => {
@@ -82,7 +82,7 @@ collections.forEach(collection => {
     const schema = generator[method]()
     let newExpectedSchema = structuredClone(schema)
     const paths = JSONPath({
-      path: '$..[?(@.type=="string" && @.pattern)]',
+      path: '$..[?(@.type==="string" && @.pattern)]',
       json: newExpectedSchema,
       resultType: 'pointer',
     })
@@ -96,6 +96,7 @@ collections.forEach(collection => {
       const property = lget(newExpectedSchema, key)
       if (property.pattern === '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$') {
         delete property.pattern
+        delete property.description
         property.format = 'date-time'
         newExpectedSchema = lset(
           newExpectedSchema,

@@ -40,10 +40,26 @@ module.exports = {
           'nullable': true,
         },
         'Direttrici': {
-          'type': 'array',
-          'items': {
-            'type': 'string',
-          },
+          'type': [
+            'array',
+            'null',
+            'string',
+          ],
+          'anyOf': [
+            {
+              'type': 'null',
+              'nullable': true,
+            },
+            {
+              'type': 'array',
+              'items': {
+                'type': 'string',
+              },
+            },
+            {
+              'type': 'string',
+            },
+          ],
           'nullable': true,
         },
         'Indirizzo': {
@@ -53,6 +69,25 @@ module.exports = {
         'country': {
           'type': 'string',
           'nullable': true,
+        },
+        'nonNullableDate': {
+          'type': [
+            'string',
+            'object',
+          ],
+          'anyOf': [
+            {
+              'type': 'string',
+              'examples': [
+                '1997-04-24T07:00:00.000Z',
+              ],
+              'format': 'date-time',
+            },
+            {
+              'type': 'object',
+              'instanceof': 'Date',
+            },
+          ],
         },
         '__STATE__': {
           'type': 'string',
