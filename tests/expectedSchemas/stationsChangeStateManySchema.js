@@ -43,10 +43,6 @@ module.exports = {
               'description': 'User id that has created this object',
             },
             'createdAt': {
-              'type': [
-                'string',
-                'object',
-              ],
               'anyOf': [
                 {
                   'type': 'string',
@@ -67,10 +63,6 @@ module.exports = {
               'description': 'User id that has requested the last change successfully',
             },
             'updatedAt': {
-              'type': [
-                'string',
-                'object',
-              ],
               'anyOf': [
                 {
                   'type': 'string',
@@ -102,10 +94,6 @@ module.exports = {
               'type': 'string',
             },
             'nonNullableDate': {
-              'type': [
-                'string',
-                'object',
-              ],
               'anyOf': [
                 {
                   'type': 'string',

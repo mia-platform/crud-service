@@ -29,10 +29,6 @@ module.exports = {
     'type': 'object',
     'properties': {
       '_id': {
-        'type': [
-          'string',
-          'object',
-        ],
         'description': 'Hexadecimal identifier of the document in the collection',
         'anyOf': [
           {
@@ -52,10 +48,6 @@ module.exports = {
         'description': 'User id that has created this object',
       },
       'createdAt': {
-        'type': [
-          'string',
-          'object',
-        ],
         'anyOf': [
           {
             'type': 'string',
@@ -75,10 +67,6 @@ module.exports = {
         'description': 'User id that has requested the last change successfully',
       },
       'updatedAt': {
-        'type': [
-          'string',
-          'object',
-        ],
         'anyOf': [
           {
             'type': 'string',
@@ -111,10 +99,6 @@ module.exports = {
         'description': 'The author of the book',
       },
       'authorAddressId': {
-        'type': [
-          'string',
-          'object',
-        ],
         'description': 'The address of the author',
         'anyOf': [
           {
@@ -134,36 +118,24 @@ module.exports = {
         'description': "If it's in promotion",
       },
       'publishDate': {
-        'type': [
-          'string',
-          'null',
-          'object',
-        ],
         'anyOf': [
-          {
-            'type': 'null',
-            'nullable': true,
-          },
           {
             'type': 'string',
             'examples': [
               '1997-04-24T07:00:00.000Z',
             ],
+            'nullable': true,
             'format': 'date-time',
           },
           {
             'type': 'object',
             'instanceof': 'Date',
+            'nullable': true,
           },
         ],
         'description': 'The date it was published',
-        'nullable': true,
       },
       'tags': {
-        'type': [
-          'array',
-          'string',
-        ],
         'anyOf': [
           {
             'type': 'array',
@@ -178,10 +150,6 @@ module.exports = {
         'description': 'Tags',
       },
       'tagIds': {
-        'type': [
-          'array',
-          'number',
-        ],
         'anyOf': [
           {
             'type': 'array',
@@ -196,16 +164,7 @@ module.exports = {
         'description': 'Tag identification numbers',
       },
       'attachments': {
-        'type': [
-          'array',
-          'null',
-          'object',
-        ],
         'anyOf': [
-          {
-            'type': 'null',
-            'nullable': true,
-          },
           {
             'type': 'array',
             'items': {
@@ -252,7 +211,9 @@ module.exports = {
               'required': [
                 'name',
               ],
+              'nullable': true,
             },
+            'nullable': true,
           },
           {
             'type': 'object',
@@ -298,34 +259,27 @@ module.exports = {
             'required': [
               'name',
             ],
-          },
-        ],
-        'nullable': true,
-      },
-      'editionsDates': {
-        'type': [
-          'array',
-          'null',
-          'object',
-        ],
-        'anyOf': [
-          {
-            'type': 'null',
             'nullable': true,
           },
+        ],
+      },
+      'editionsDates': {
+        'anyOf': [
           {
             'type': 'array',
             'items': {
               'type': 'object',
               'additionalProperties': true,
+              'nullable': true,
             },
+            'nullable': true,
           },
           {
             'type': 'object',
             'additionalProperties': true,
+            'nullable': true,
           },
         ],
-        'nullable': true,
       },
       '_q': {
         'type': 'string',
@@ -449,10 +403,6 @@ module.exports = {
         'type': 'object',
         'properties': {
           '_id': {
-            'type': [
-              'string',
-              'object',
-            ],
             'description': 'Hexadecimal identifier of the document in the collection',
             'anyOf': [
               {
@@ -476,10 +426,6 @@ module.exports = {
             'description': 'User id that has created this object',
           },
           'createdAt': {
-            'type': [
-              'string',
-              'object',
-            ],
             'anyOf': [
               {
                 'type': 'string',
@@ -503,10 +449,6 @@ module.exports = {
             'description': 'User id that has requested the last change successfully',
           },
           'updatedAt': {
-            'type': [
-              'string',
-              'object',
-            ],
             'anyOf': [
               {
                 'type': 'string',
@@ -543,10 +485,6 @@ module.exports = {
             'description': 'The author of the book',
           },
           'authorAddressId': {
-            'type': [
-              'string',
-              'object',
-            ],
             'description': 'The address of the author',
             'anyOf': [
               {
@@ -566,33 +504,26 @@ module.exports = {
             'description': "If it's in promotion",
           },
           'publishDate': {
-            'type': [
-              'string',
-              'null',
-              'object',
-            ],
             'anyOf': [
-              {
-                'type': 'null',
-                'nullable': true,
-              },
               {
                 'type': 'string',
                 'format': 'date-time',
                 'examples': [
                   '1997-04-24T07:00:00.000Z',
                 ],
+                'nullable': true,
               },
               {
                 'type': 'object',
                 'instanceof': 'Date',
+                'nullable': true,
               },
               {
                 'type': 'string',
+                'nullable': true,
               },
             ],
             'description': 'The date it was published',
-            'nullable': true,
           },
           'position': {
             'type': 'array',
@@ -602,10 +533,6 @@ module.exports = {
             'description': 'The position of the book',
           },
           'tags': {
-            'type': [
-              'array',
-              'string',
-            ],
             'anyOf': [
               {
                 'type': 'array',
@@ -620,10 +547,6 @@ module.exports = {
             'description': 'Tags',
           },
           'tagIds': {
-            'type': [
-              'array',
-              'number',
-            ],
             'anyOf': [
               {
                 'type': 'array',
@@ -717,16 +640,7 @@ module.exports = {
             ],
           },
           'attachments': {
-            'type': [
-              'array',
-              'null',
-              'object',
-            ],
             'anyOf': [
-              {
-                'type': 'null',
-                'nullable': true,
-              },
               {
                 'type': 'array',
                 'items': {
@@ -773,7 +687,9 @@ module.exports = {
                   'required': [
                     'name',
                   ],
+                  'nullable': true,
                 },
+                'nullable': true,
               },
               {
                 'type': 'object',
@@ -819,34 +735,27 @@ module.exports = {
                 'required': [
                   'name',
                 ],
-              },
-            ],
-            'nullable': true,
-          },
-          'editionsDates': {
-            'type': [
-              'array',
-              'null',
-              'object',
-            ],
-            'anyOf': [
-              {
-                'type': 'null',
                 'nullable': true,
               },
+            ],
+          },
+          'editionsDates': {
+            'anyOf': [
               {
                 'type': 'array',
                 'items': {
                   'type': 'object',
                   'additionalProperties': true,
+                  'nullable': true,
                 },
+                'nullable': true,
               },
               {
                 'type': 'object',
                 'additionalProperties': true,
+                'nullable': true,
               },
             ],
-            'nullable': true,
           },
         },
       },
