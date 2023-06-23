@@ -20,6 +20,8 @@ module.exports = {
   'summary': 'Change state of an item of books collection.',
   'tags': [
     'Books Endpoint',
+    'example',
+    'tags',
   ],
   'params': {
     'operationId': 'books__MIA__changeState__MIA__params',

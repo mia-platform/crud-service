@@ -183,6 +183,7 @@ tap.test('validate schema', async t => {
           ],
         },
       ],
+      tags: ['tag', 'example'],
     }
 
     t.strictSame(validate(jsonFile), true)
@@ -253,6 +254,7 @@ tap.test('validate schema', async t => {
           },
         },
       },
+      tags: ['tag', 'example'],
     }
 
     t.strictSame(validate(jsonFile), true)
@@ -653,6 +655,7 @@ tap.test('validate schema', async t => {
           },
         },
       },
+      tags: ['tag', 'example'],
     }
 
     t.strictSame(validate(jsonFile), true)
@@ -724,6 +727,7 @@ tap.test('validate schema', async t => {
           },
         },
       },
+      tags: ['tag', 'example'],
     }
 
     t.strictSame(validate(jsonFile), true)
