@@ -20,6 +20,8 @@ module.exports = {
   'summary': 'Returns the number of items in the books collection.',
   'tags': [
     'Books Endpoint',
+    'example',
+    'tags',
   ],
   'querystring': {
     'operationId': 'books__MIA__count__MIA__querystring',

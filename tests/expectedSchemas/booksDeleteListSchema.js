@@ -20,6 +20,8 @@ module.exports = {
   'summary': 'Delete multiple items from the books collection.',
   'tags': [
     'Books Endpoint',
+    'example',
+    'tags',
   ],
   'querystring': {
     'operationId': 'books__MIA__deleteList__MIA__querystring',

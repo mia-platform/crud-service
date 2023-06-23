@@ -21,6 +21,8 @@ module.exports = {
   'description': 'Results can be filtered specifying the following parameters:',
   'tags': [
     'Books Endpoint',
+    'example',
+    'tags',
   ],
   'querystring': {
     'operationId': 'books__MIA__getListLookup__MIA__querystring',

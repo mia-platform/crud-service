@@ -7,8 +7,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+- [mia-platform/#256](mia-platform/community/discussions/256) configurable collection tags.
+
 ### Fixed
 
+- $text search query now working on aggregation
 - [#158](https://github.com/mia-platform/community/discussions/158) fixed wrong validation on nested objects.
 
 ## 6.7.0 - 2023-06-19
