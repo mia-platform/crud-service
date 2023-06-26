@@ -60,7 +60,7 @@
     "mongodb": "^4.10.0",
     "pre-commit": "^1.2.2",
     "swagger-parser": "^10.0.3",
-    "tap": "^16.3.6",
+    "tap": "^16.3.7",
     "uuid-validate": "0.0.3"
   },
   "engines": {
