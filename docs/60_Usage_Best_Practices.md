@@ -24,7 +24,7 @@ In particular, we want to evaluate the usage of these two procedures in terms of
 
 The analysis has produced the following results, which can be summarized in the following table.
 
-|                           | **Pagination without sorting** | **Pagination with sorting on a indexed field** | **Pagination with sorting on a immutable field (example: unique indexed field)** | **Stream with export** |
+|                           | **Pagination without sorting** | **Pagination with sorting on an indexed field** | **Pagination with sorting on an immutable field (example: unique indexed field)** | **Stream with export** |
 |---------------------------|--------------------------------|------------------------------------------------|----------------------------------------------------------------------------------|------------------------|
 | PREVENTS DATA DUPLICATION |             &Cross;            |                     &Cross;                    |                                      &check;                                     |         &check;        |
 | PREVENTS DATA LOSS        |             &Cross;            |                     &Cross;                    |                                      &Cross;                                     |         &check;        |
@@ -54,7 +54,7 @@ Now let's examine in detail the benefits and drawbacks of the different procedur
 #### Drawbacks
 
 - IT may introduce performance overhead when retrieving large result sets, especially if sorting is complex.
-- If the data changes during pagination, it may lead to missing or duplicate records in subsequent pages.
+- If the data changes during pagination, it may lead to missing or duplicate records on subsequent pages.
 
 ### Stream
 
@@ -68,7 +68,7 @@ Now let's examine in detail the benefits and drawbacks of the different procedur
 
 - It requires continuous processing and handling of data streams, which may increase resource utilization.
 - Data ordering may not be guaranteed, depending on the stream source and processing pipeline.
-- In the event of disruptions or failures in the stream processing, data consistency can be compromised.
+- In the event of disruptions or failures in stream processing, data consistency can be compromised.
 
 :::tip
 It's important to choose the appropriate procedure based on the specific requirements and trade-offs of your application.
@@ -250,7 +250,7 @@ Even a sort mechanism would not prevent the occurrence of these events.
 
 Implementing a pagination mechanism through the CRUD Service APIs is preferable when dealing with a static dataset with a low rate of update/delete operations.
 
-When there is a **high number of update** operations, it is strongly recommended to apply sorting based on immutable fields, such as primary keys. These keys should be covered by MongoDB indexes to avoid excessive resource consumption by the Replica Set.
+When there is a **high number of update** operations, it is strongly recommended to apply to sort based on immutable fields, such as primary keys. These keys should be covered by MongoDB indexes to avoid excessive resource consumption by the Replica Set.
 
 When there is a **high number of delete** operations, the possibility of record loss between requests is unavoidable. In this case, it is preferable to execute only one request within the procedure or use data streaming through the `GET /export` method.
 
