@@ -53,7 +53,7 @@ Now let's examine in detail the benefits and drawbacks of the different procedur
 
 #### Drawbacks
 
-- IT may introduce performance overhead when retrieving large result sets, especially if sorting is complex.
+- It may introduce performance overhead when retrieving large result sets, especially if sorting is complex.
 - If the data changes during pagination, it may lead to missing or duplicate records on subsequent pages.
 
 ### Stream
