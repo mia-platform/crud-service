@@ -16,7 +16,7 @@ A replica set implements an acknowledgment mechanism to maintain data availabili
 
 The operations performed by the CRUD Service are based on the official MongoDB connection driver.
 
-Let's consider, for example, a `GET` method associated with a collection. Its invocation corresponds to a `find` operation in the driver, which [opens a cursor towards the replica set](https://www.mongodb.com/docs/manual/reference/glossary/#std-term-cursor). The result is an iterator of the data collected from the database, referred to as a `Result Set`.
+Let's consider, for example, a `GET` method associated with a collection. Its invocation corresponds to a `find` operation in the driver, which [opens a cursor toward the replica set](https://www.mongodb.com/docs/manual/reference/glossary/#std-term-cursor). The result is an iterator of the data collected from the database, referred to as a `Result Set`.
 
 Different read operations are enabled by the CRUD Service, to be used according to the needs of the application in which they are implemented. Specifically, we will focus on data retrieval procedures using **PAGINATION** (both unordered and ordered) and **STREAM**, enabled by the `GET /` and `GET /export` methods, respectively, exposed by each CRUD collection.
 
