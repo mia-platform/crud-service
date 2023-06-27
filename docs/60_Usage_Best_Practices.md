@@ -175,10 +175,8 @@ This indicates that the `my_field` field must be present in each document within
 ## Pagination
 
 A possible implementation to read data from the collection is to utilize client-side pagination by invoking the GET method with the query parameters `_sk` (skip) and `_l` (limit):
-
-The `_sk` parameter is used to specify the number of records to skip before starting to retrieve the result set. It allows you to navigate through different pages of data;
-
-The `_l` parameter represents the maximum number of records to retrieve in a single page. It determines the size of each page of data.
+- the `_sk` parameter is used to specify the number of records to skip before starting to retrieve the result set. It allows you to navigate through different pages of data.
+- the `_l` parameter represents the maximum number of records to retrieve in a single page. It determines the size of each page of data.
 
 By adjusting the values of `_sk` and `_l`, you can control the pagination of data retrieval based on your specific requirements. For example, to retrieve the first page of data, you would set `_sk=0` and `_l` to the desired page size. For subsequent pages, you would increase the value of `_sk` by the page size to skip the already retrieved records.
 
