@@ -246,3 +246,57 @@ Note that the sort query parameter `_s` has been added to the requests.
 Even a sort mechanism would not prevent the occurrence of these events.
 :::
 
+### Conclusions
+
+Implementing a pagination mechanism through the CRUD Service APIs is preferable when dealing with a static dataset with a low rate of update/delete operations.
+
+When there is a **high number of update** operations, it is strongly recommended to apply sorting based on immutable fields, such as primary keys. These keys should be covered by MongoDB indexes to avoid excessive resource consumption by the Replica Set.
+
+When there is a **high number of delete** operations, the possibility of record loss between requests is unavoidable. In this case, it is preferable to execute only one request within the procedure or use data streaming through the `GET /export` method.
+
+### Use cases
+
+The application of a pagination mechanism is recommended for scenarios that enhance the user experience of the end user, such as in the case of front-end applications that need to request and display a series of data in multiple sessions.
+
+These data can be dynamic or static, but in the case of dynamic data, it is important to analyze the update rate of the relevant collection to ensure that the frequency of record updates is lower than the frequency at which the user performs operations on them (insertions/deletions/updates) in order to avoid inconsistent results.
+
+## Read a collection with Streams
+
+When the dataset of a collection has a high rate of **UPDATE/DELETE** operations compared to the rate of incoming HTTP requests, we suggest avoiding pagination mechanisms in favor of a data streaming approach.
+
+The `GET /export` method exposed by each endpoint associated with a collection opens a data stream in `nd-json` format in the HTTP response. By using this method, the CRUD Service will open **only one cursor** to the MongoDB cluster, and the `ResultSet` will remain unaffected by concurrent **UPDATE/DELETE** operations.
+
+:::info
+[ndjson](http://ndjson.org/) is a format that ensures the streaming of data structures, where each record is processed individually and separated by a newline (`\n`) delimiter.
+
+To properly read this format, it is necessary to specify the header `"Accept: application/x-ndjson" `within the HTTP request. This header informs the server that the client expects the response to be in nd-json format.
+:::
+
+In the given scenario, we can make a single HTTP request:
+
+- `GET /my_single_view/export`
+
+Alternatively, if we want to apply the previous filter on the updatedAt field, we can write:
+
+- `GET /my_single_view/export?&_q=%7B%22updatedAt%22:%7B%22$gte%22:%22%22%7D%7D`
+
+Now let's analyze the two possible operations that can be performed concurrently on the collection:
+
+- **UPDATE**: If a record is updated during the cursor iteration, it will appear again in the result set. However, no records will be lost within the batches during the request.
+- **DELETE**: If a record that has not been read by the batch is deleted during the cursor iteration, it will not be iterated in the result set. On the other hand, if the record has already been processed at the time of its deletion, it will not be removed from the result set that has already been returned by the cursor.
+
+### Conclusions
+
+The stream mechanism is useful for preserving the integrity of a record and obtaining a result set that is consistent with the current state of the database, as it is based on opening a single cursor.
+
+:::caution
+The HTTP response will be divided into chunks, meaning that the length of the response is not known in advance, and it will have a Transfer-Encoding: chunked header. HTTP client libraries typically provide an automatic mechanism to handle this type of response.
+:::
+
+### Use cases
+
+The application of a stream mechanism is recommended in procedures where there is the need to retrieve data with an HTTP request that precisely replicates a single find operation of the MongoDB driver.
+
+:::danger
+Launching a stream query without any filters is equivalent to performing a collection scan, which is strongly discouraged, especially for collections with a large number of data.
+:::
