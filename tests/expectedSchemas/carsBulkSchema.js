@@ -74,6 +74,10 @@ module.exports = {
         'type': 'object',
         'properties': {
           '_id': {
+            'type': [
+              'string',
+              'object',
+            ],
             'description': 'Hexadecimal identifier of the document in the collection',
             'anyOf': [
               {

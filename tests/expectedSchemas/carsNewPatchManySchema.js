@@ -26,6 +26,10 @@ module.exports = {
     'type': 'object',
     'properties': {
       '_id': {
+        'type': [
+          'string',
+          'object',
+        ],
         'description': 'Hexadecimal identifier of the document in the collection',
         'anyOf': [
           {
@@ -45,6 +49,10 @@ module.exports = {
         'description': 'User id that has created this object',
       },
       'createdAt': {
+        'type': [
+          'string',
+          'object',
+        ],
         'anyOf': [
           {
             'type': 'string',
@@ -64,6 +72,10 @@ module.exports = {
         'description': 'User id that has requested the last change successfully',
       },
       'updatedAt': {
+        'type': [
+          'string',
+          'object',
+        ],
         'anyOf': [
           {
             'type': 'string',

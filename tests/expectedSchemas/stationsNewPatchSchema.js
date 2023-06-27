@@ -40,6 +40,10 @@ module.exports = {
         'description': 'User id that has created this object',
       },
       'createdAt': {
+        'type': [
+          'string',
+          'object',
+        ],
         'anyOf': [
           {
             'type': 'string',
@@ -59,6 +63,10 @@ module.exports = {
         'description': 'User id that has requested the last change successfully',
       },
       'updatedAt': {
+        'type': [
+          'string',
+          'object',
+        ],
         'anyOf': [
           {
             'type': 'string',
@@ -86,20 +94,27 @@ module.exports = {
         'nullable': true,
       },
       'Direttrici': {
+        'type': [
+          'array',
+          'null',
+          'string',
+        ],
         'anyOf': [
+          {
+            'type': 'null',
+            'nullable': true,
+          },
           {
             'type': 'array',
             'items': {
               'type': 'string',
-              'nullable': true,
             },
-            'nullable': true,
           },
           {
             'type': 'string',
-            'nullable': true,
           },
         ],
+        'nullable': true,
       },
       'Indirizzo': {
         'type': 'string',
@@ -110,6 +125,10 @@ module.exports = {
         'nullable': true,
       },
       'nonNullableDate': {
+        'type': [
+          'string',
+          'object',
+        ],
         'anyOf': [
           {
             'type': 'string',
@@ -161,20 +180,27 @@ module.exports = {
             'nullable': true,
           },
           'Direttrici': {
+            'type': [
+              'array',
+              'null',
+              'string',
+            ],
             'anyOf': [
+              {
+                'type': 'null',
+                'nullable': true,
+              },
               {
                 'type': 'array',
                 'items': {
                   'type': 'string',
-                  'nullable': true,
                 },
-                'nullable': true,
               },
               {
                 'type': 'string',
-                'nullable': true,
               },
             ],
+            'nullable': true,
           },
           'Indirizzo': {
             'type': 'string',
@@ -185,6 +211,10 @@ module.exports = {
             'nullable': true,
           },
           'nonNullableDate': {
+            'type': [
+              'string',
+              'object',
+            ],
             'anyOf': [
               {
                 'type': 'string',
@@ -351,6 +381,10 @@ module.exports = {
           'description': 'User id that has requested the last change successfully',
         },
         'updatedAt': {
+          'type': [
+            'string',
+            'object',
+          ],
           'anyOf': [
             {
               'type': 'string',
@@ -374,6 +408,10 @@ module.exports = {
           'description': 'User id that has created this object',
         },
         'createdAt': {
+          'type': [
+            'string',
+            'object',
+          ],
           'anyOf': [
             {
               'type': 'string',
@@ -409,20 +447,27 @@ module.exports = {
           'nullable': true,
         },
         'Direttrici': {
+          'type': [
+            'array',
+            'null',
+            'string',
+          ],
           'anyOf': [
+            {
+              'type': 'null',
+              'nullable': true,
+            },
             {
               'type': 'array',
               'items': {
                 'type': 'string',
-                'nullable': true,
               },
-              'nullable': true,
             },
             {
               'type': 'string',
-              'nullable': true,
             },
           ],
+          'nullable': true,
         },
         'Indirizzo': {
           'type': 'string',
@@ -433,6 +478,10 @@ module.exports = {
           'nullable': true,
         },
         'nonNullableDate': {
+          'type': [
+            'string',
+            'object',
+          ],
           'anyOf': [
             {
               'type': 'string',
