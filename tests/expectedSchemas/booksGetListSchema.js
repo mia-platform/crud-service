@@ -143,16 +143,16 @@ module.exports = {
         ],
         'anyOf': [
           {
-            'type': 'null',
-            'nullable': true,
-          },
-          {
             'type': 'string',
             'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
             'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
             'examples': [
               '1997-04-24T07:00:00.000Z',
             ],
+          },
+          {
+            'type': 'null',
+            'nullable': true,
           },
           {
             'type': 'object',
@@ -205,10 +205,6 @@ module.exports = {
           'object',
         ],
         'anyOf': [
-          {
-            'type': 'null',
-            'nullable': true,
-          },
           {
             'type': 'array',
             'items': {
@@ -302,6 +298,10 @@ module.exports = {
               'name',
             ],
           },
+          {
+            'type': 'null',
+            'nullable': true,
+          },
         ],
         'nullable': true,
       },
@@ -313,10 +313,6 @@ module.exports = {
         ],
         'anyOf': [
           {
-            'type': 'null',
-            'nullable': true,
-          },
-          {
             'type': 'array',
             'items': {
               'type': 'object',
@@ -326,6 +322,10 @@ module.exports = {
           {
             'type': 'object',
             'additionalProperties': true,
+          },
+          {
+            'type': 'null',
+            'nullable': true,
           },
         ],
         'nullable': true,
@@ -576,15 +576,15 @@ module.exports = {
             ],
             'anyOf': [
               {
-                'type': 'null',
-                'nullable': true,
-              },
-              {
                 'type': 'string',
                 'format': 'date-time',
                 'examples': [
                   '1997-04-24T07:00:00.000Z',
                 ],
+              },
+              {
+                'type': 'null',
+                'nullable': true,
               },
               {
                 'type': 'object',
@@ -727,10 +727,6 @@ module.exports = {
             ],
             'anyOf': [
               {
-                'type': 'null',
-                'nullable': true,
-              },
-              {
                 'type': 'array',
                 'items': {
                   'type': 'object',
@@ -823,6 +819,10 @@ module.exports = {
                   'name',
                 ],
               },
+              {
+                'type': 'null',
+                'nullable': true,
+              },
             ],
             'nullable': true,
           },
@@ -834,10 +834,6 @@ module.exports = {
             ],
             'anyOf': [
               {
-                'type': 'null',
-                'nullable': true,
-              },
-              {
                 'type': 'array',
                 'items': {
                   'type': 'object',
@@ -847,6 +843,10 @@ module.exports = {
               {
                 'type': 'object',
                 'additionalProperties': true,
+              },
+              {
+                'type': 'null',
+                'nullable': true,
               },
             ],
             'nullable': true,

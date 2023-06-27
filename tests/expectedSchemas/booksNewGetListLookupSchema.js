@@ -76,15 +76,15 @@ module.exports = {
         ],
         'anyOf': [
           {
-            'type': 'null',
-            'nullable': true,
-          },
-          {
             'type': 'string',
             'examples': [
               '1997-04-24T07:00:00.000Z',
             ],
             'format': 'date-time',
+          },
+          {
+            'type': 'null',
+            'nullable': true,
           },
           {
             'type': 'object',
@@ -137,10 +137,6 @@ module.exports = {
           'object',
         ],
         'anyOf': [
-          {
-            'type': 'null',
-            'nullable': true,
-          },
           {
             'type': 'array',
             'items': {
@@ -234,6 +230,10 @@ module.exports = {
               'name',
             ],
           },
+          {
+            'type': 'null',
+            'nullable': true,
+          },
         ],
         'nullable': true,
       },
@@ -245,10 +245,6 @@ module.exports = {
         ],
         'anyOf': [
           {
-            'type': 'null',
-            'nullable': true,
-          },
-          {
             'type': 'array',
             'items': {
               'type': 'object',
@@ -258,6 +254,10 @@ module.exports = {
           {
             'type': 'object',
             'additionalProperties': true,
+          },
+          {
+            'type': 'null',
+            'nullable': true,
           },
         ],
         'nullable': true,
@@ -504,15 +504,15 @@ module.exports = {
             ],
             'anyOf': [
               {
-                'type': 'null',
-                'nullable': true,
-              },
-              {
                 'type': 'string',
                 'format': 'date-time',
                 'examples': [
                   '1997-04-24T07:00:00.000Z',
                 ],
+              },
+              {
+                'type': 'null',
+                'nullable': true,
               },
               {
                 'type': 'object',
@@ -655,10 +655,6 @@ module.exports = {
             ],
             'anyOf': [
               {
-                'type': 'null',
-                'nullable': true,
-              },
-              {
                 'type': 'array',
                 'items': {
                   'type': 'object',
@@ -751,6 +747,10 @@ module.exports = {
                   'name',
                 ],
               },
+              {
+                'type': 'null',
+                'nullable': true,
+              },
             ],
             'nullable': true,
           },
@@ -762,10 +762,6 @@ module.exports = {
             ],
             'anyOf': [
               {
-                'type': 'null',
-                'nullable': true,
-              },
-              {
                 'type': 'array',
                 'items': {
                   'type': 'object',
@@ -775,6 +771,10 @@ module.exports = {
               {
                 'type': 'object',
                 'additionalProperties': true,
+              },
+              {
+                'type': 'null',
+                'nullable': true,
               },
             ],
             'nullable': true,

@@ -112,10 +112,6 @@ module.exports = {
               ],
               'anyOf': [
                 {
-                  'type': 'null',
-                  'nullable': true,
-                },
-                {
                   'type': 'array',
                   'items': {
                     'type': 'string',
@@ -123,6 +119,10 @@ module.exports = {
                 },
                 {
                   'type': 'string',
+                },
+                {
+                  'type': 'null',
+                  'nullable': true,
                 },
               ],
               'nullable': true,
@@ -192,10 +192,6 @@ module.exports = {
                   ],
                   'anyOf': [
                     {
-                      'type': 'null',
-                      'nullable': true,
-                    },
-                    {
                       'type': 'array',
                       'items': {
                         'type': 'string',
@@ -203,6 +199,10 @@ module.exports = {
                     },
                     {
                       'type': 'string',
+                    },
+                    {
+                      'type': 'null',
+                      'nullable': true,
                     },
                   ],
                   'nullable': true,

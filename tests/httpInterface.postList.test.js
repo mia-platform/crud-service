@@ -429,7 +429,7 @@ tap.test('HTTP POST /', async t => {
       t.strictSame(JSON.parse(response.payload), {
         statusCode: 400,
         error: 'Bad Request',
-        message: 'body/attachments must be null, body/attachments/0 must have required property \'name\', body/attachments must be object, body/attachments must match a schema in anyOf',
+        message: 'body/attachments/0 must have required property \'name\', body/attachments must be object, body/attachments must be null, body/attachments must match a schema in anyOf',
         code: 'FST_ERR_VALIDATION',
       })
       t.end()
@@ -468,8 +468,7 @@ tap.test('HTTP POST /', async t => {
       t.strictSame(JSON.parse(response.payload), {
         statusCode: 400,
         error: 'Bad Request',
-        code: 'FST_ERR_VALIDATION',
-        message: 'body/attachments must be null, body/attachments/0 must NOT have additional properties, body/attachments must be object, body/attachments must match a schema in anyOf',
+        message: 'body/attachments/0 must NOT have additional properties, body/attachments must be object, body/attachments must be null, body/attachments must match a schema in anyOf. Property "unexpectedField" is not defined in validation schema',
       })
       t.end()
     })
