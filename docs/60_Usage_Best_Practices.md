@@ -60,7 +60,7 @@ Now let's examine in detail the benefits and drawbacks of the different procedur
 
 #### Benefits
 
-- It provides real-time data streaming, allowing applications to consume data as it becomes available.
+- It provides data streaming, allowing applications to consume data as it becomes available during query execution.
 - It enables efficient processing and analysis of continuous data streams.
 - It can be useful in scenarios where immediate data updates are critical, such as real-time analytics or monitoring.
 
@@ -80,6 +80,9 @@ Let's consider the case of a single view called `my_single_view`, which correspo
 
 ```json
 {
+    "id": "my_single_view",
+    "description": "Collection of my_single_view",
+    "name": "my_single_view",
     "fields": [
         {
             "name": "_id",
@@ -188,27 +191,28 @@ Let's assume we have a collection consisting of 100 records, and we need to impl
 
 This procedure translates into the following 4 HTTP requests to the GET /my_single_view/ endpoint:
 
-- GET /my_single_view/?_sk=0&_l=25
-- GET /my_single_view/?_sk=25&_l=25
-- GET /my_single_view/?_sk=50&_l=25
-- GET /my_single_view/?_sk=75&_l=25
+- `GET /my_single_view/?_sk=0&_l=25`
+- `GET /my_single_view/?_sk=25&_l=25`
+- `GET /my_single_view/?_sk=50&_l=25`
+- `GET /my_single_view/?_sk=75&_l=25`
 
 Now, we want to filter the records based on the `updatedAt` field, which is updated by other services (such as the Single View Creator) to indicate the time when the record was last modified. 
 
 Specifically, we want to try retrieving paginated records updated within the last 10 minutes.
 
-The previously written procedure can be adapted as follows:
-
-- GET /my_single_view/?_sk=0&_l=25&_q=%7B%22updatedAt%22:%7B%22$gte%22:%22%22%7D%7D
-- GET /my_single_view/?_sk=25&_l=25&_q=%7B%22updatedAt%22:%7B%22$gte%22:%22your%20iso%20date%22%7D%7D
-- GET /my_single_view/?_sk=50&_l=25&_q=%7B%22updatedAt%22:%7B%22$gte%22:%22your%20iso%20date%22%7D%7D
-- GET /my_single_view/?_sk=75&_l=25&_q=%7B%22updatedAt%22:%7B%22$gte%22:%22your%20iso%20date%22%7D%7D
-
-In the above requests, the filter defined translates to the following MongoDB query contained in the `_q` query parameter:
+In the following requests, the filter defined translates to the following MongoDB query contained in the `_q` query parameter:
 
 ```json
 {"updatedAt":{"$gte":"your iso date"}}
 ```
+
+The previously written procedure can be adapted as follows:
+
+- `GET /my_single_view/?_sk=0&_l=25&_q=<mongodbquery url-encoded>`
+- `GET /my_single_view/?_sk=25&_l=25&_q=<mongodbquery url-encoded>`
+- `GET /my_single_view/?_sk=50&_l=25&_q=<mongodbquery url-encoded>`
+- `GET /my_single_view/?_sk=75&_l=25&_q=<mongodbquery url-encoded>`
+
 
 You would replace `your iso date` with the actual ISO-formatted date and time indicating the starting point for filtering the updatedAt field. This allows retrieving only the records that were updated after that specified date.
 
@@ -267,7 +271,7 @@ The `GET /export` method exposed by each endpoint associated with a collection o
 :::info
 [ndjson](http://ndjson.org/) is a format that ensures the streaming of data structures, where each record is processed individually and separated by a newline (`\n`) delimiter.
 
-To properly read this format, it is necessary to specify the header `"Accept: application/x-ndjson" `within the HTTP request. This header informs the server that the client expects the response to be in nd-json format.
+To properly read this format, it is necessary to specify the header `"Accept: application/x-ndjson" `within the HTTP request. This header informs the server that the client expects the response to be in `nd-json` format.
 :::
 
 In the given scenario, we can make a single HTTP request:
