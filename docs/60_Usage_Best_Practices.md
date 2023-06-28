@@ -208,10 +208,10 @@ In the following requests, the filter defined translates to the following MongoD
 
 The previously written procedure can be adapted as follows:
 
-- `GET /my_single_view/?_sk=0&_l=25&_q=<mongodbquery url-encoded>`
-- `GET /my_single_view/?_sk=25&_l=25&_q=<mongodbquery url-encoded>`
-- `GET /my_single_view/?_sk=50&_l=25&_q=<mongodbquery url-encoded>`
-- `GET /my_single_view/?_sk=75&_l=25&_q=<mongodbquery url-encoded>`
+- `GET /my_single_view/?_sk=0&_l=25&_q=<mongodb query url-encoded>`
+- `GET /my_single_view/?_sk=25&_l=25&_q=<mongodb query url-encoded>`
+- `GET /my_single_view/?_sk=50&_l=25&_q=<mongodb query url-encoded>`
+- `GET /my_single_view/?_sk=75&_l=25&_q=<mongodb query url-encoded>`
 
 
 You would replace `your iso date` with the actual ISO-formatted date and time indicating the starting point for filtering the updatedAt field. This allows retrieving only the records that were updated after that specified date.
@@ -233,10 +233,10 @@ Let's analyze the two possible operations that can be executed in parallel on th
 - **UPDATE**: During a pagination request, duplicates may be generated. If the record `{ "my_field": "1" }` is updated between the first and second requests, the record will be retrieved again during the subsequent requests.
 In order to avoid duplicated records, you could sort the query result by an immutable field in the collection over time, such as a primary key (e.g., the `_id` field in MongoDB). In this case, by sorting based on the values of the `my_field` field, covered by the `my_field_index` index, you can prevent duplicates during the procedure. The updated pagination requests would be as follows:
 
-  1. GET /my_single_view/?_sk=0&_l=25&_s=my_field&_q=%7B%22updatedAt%22:%7B%22$gte%22:%22%22%7D%7D
-  2. GET /my_single_view/?_sk=25&_l=25&_s=my_field&_q=%7B%22updatedAt%22:%7B%22$gte%22:%22your%20iso%20date%22%7D%7D
-  3. GET /my_single_view/?_sk=50&_l=25&_s=my_field&_q=%7B%22updatedAt%22:%7B%22$gte%22:%22your%20iso%20date%22%7D%7D
-  4. GET /my_single_view/?_sk=75&_l=25&_s=my_field&_q=%7B%22updatedAt%22:%7B%22$gte%22:%22your%20iso%20date%22%7D%7D
+  1. `GET /my_single_view/?_sk=0&_l=25&_s=my_field&_q=<mongodb query url-encoded>`
+  2. `GET /my_single_view/?_sk=25&_l=25&_s=my_field&_q=<mongodb query url-encoded>`
+  3. `GET /my_single_view/?_sk=50&_l=25&_s=my_field&_q=<mongodb query url-encoded>`
+  4. `GET /my_single_view/?_sk=75&_l=25&_s=my_field&_q=<mongodb query url-encoded>`
 
 :::note
 Note that the sort query parameter `_s` has been added to the requests.
@@ -280,7 +280,7 @@ In the given scenario, we can make a single HTTP request:
 
 Alternatively, if we want to apply the previous filter on the updatedAt field, we can write:
 
-- `GET /my_single_view/export?&_q=%7B%22updatedAt%22:%7B%22$gte%22:%22%22%7D%7D`
+- `GET /my_single_view/export?&_q=<mongodb query url-encoded>`
 
 Now let's analyze the two possible operations that can be performed concurrently on the collection:
 
