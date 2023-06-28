@@ -97,21 +97,20 @@ module.exports = {
       'Direttrici': {
         'type': [
           'array',
-          'null',
           'string',
+          'null',
         ],
         'anyOf': [
           {
             'type': 'array',
             'items': {
               'type': 'string',
+              'nullable': true,
             },
+            'nullable': true,
           },
           {
             'type': 'string',
-          },
-          {
-            'type': 'null',
             'nullable': true,
           },
         ],
@@ -279,21 +278,20 @@ module.exports = {
           'Direttrici': {
             'type': [
               'array',
-              'null',
               'string',
+              'null',
             ],
             'anyOf': [
               {
                 'type': 'array',
                 'items': {
                   'type': 'string',
+                  'nullable': true,
                 },
+                'nullable': true,
               },
               {
                 'type': 'string',
-              },
-              {
-                'type': 'null',
                 'nullable': true,
               },
             ],

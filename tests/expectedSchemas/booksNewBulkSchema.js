@@ -85,15 +85,13 @@ module.exports = {
               'examples': [
                 '1997-04-24T07:00:00.000Z',
               ],
-              'format': 'date-time',
-            },
-            {
-              'type': 'null',
               'nullable': true,
+              'format': 'date-time',
             },
             {
               'type': 'object',
               'instanceof': 'Date',
+              'nullable': true,
             },
           ],
           'description': 'The date it was published',
@@ -226,8 +224,8 @@ module.exports = {
         'attachments': {
           'type': [
             'array',
-            'null',
             'object',
+            'null',
           ],
           'anyOf': [
             {
@@ -276,7 +274,9 @@ module.exports = {
                 'required': [
                   'name',
                 ],
+                'nullable': true,
               },
+              'nullable': true,
             },
             {
               'type': 'object',
@@ -322,9 +322,6 @@ module.exports = {
               'required': [
                 'name',
               ],
-            },
-            {
-              'type': 'null',
               'nullable': true,
             },
           ],
@@ -333,8 +330,8 @@ module.exports = {
         'editionsDates': {
           'type': [
             'array',
-            'null',
             'object',
+            'null',
           ],
           'anyOf': [
             {
@@ -342,14 +339,13 @@ module.exports = {
               'items': {
                 'type': 'object',
                 'additionalProperties': true,
+                'nullable': true,
               },
+              'nullable': true,
             },
             {
               'type': 'object',
               'additionalProperties': true,
-            },
-            {
-              'type': 'null',
               'nullable': true,
             },
           ],

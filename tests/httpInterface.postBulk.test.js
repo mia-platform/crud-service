@@ -589,7 +589,7 @@ tap.test('HTTP POST /bulk', async t => {
       t.strictSame(body, {
         statusCode: 400,
         error: 'Bad Request',
-        message: 'body/0/publishDate must match pattern "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$", body/0/publishDate must be null, body/0/publishDate must be object, body/0/publishDate must pass "instanceof" keyword validation, body/0/publishDate must match a schema in anyOf',
+        message: 'body/0/publishDate must match pattern "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$", body/0/publishDate must be object, body/0/publishDate must pass "instanceof" keyword validation, body/0/publishDate must match a schema in anyOf',
         code: 'FST_ERR_VALIDATION',
       })
       t.end()
