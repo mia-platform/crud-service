@@ -288,7 +288,7 @@ Now let's analyze the two possible operations that can be performed concurrently
 The stream mechanism is useful for preserving the integrity of a record and obtaining a result set that is consistent with the current state of the database, as it is based on opening a single cursor.
 
 :::caution
-The HTTP response will be divided into chunks, meaning that the length of the response is not known in advance, and it will have a Transfer-Encoding: chunked header. HTTP client libraries typically provide an automatic mechanism to handle this type of response.
+The HTTP response will be divided into chunks, meaning that the length of the response is not known in advance, and it will have a `Transfer-Encoding: chunked` header. HTTP client libraries typically provide an automatic mechanism to handle this type of response.
 :::
 
 ### Use cases
