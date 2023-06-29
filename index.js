@@ -27,6 +27,7 @@ const ajvKeywords = require('ajv-keywords')
 const { readdirSync } = require('fs')
 const { join } = require('path')
 const { omit } = require('ramda')
+const lunset = require('lodash.unset')
 
 const myPackage = require('./package')
 const QueryParser = require('./lib/QueryParser')
@@ -44,6 +45,9 @@ const mergeViewsInCollections = require('./lib/mergeViewsInCollections')
 
 const { compatibilityModelJsonSchema, modelJsonSchema } = require('./lib/model.jsonschema')
 const fastifyEnvSchema = require('./envSchema')
+const { getAjvResponseValidationFunction } = require('./lib/validatorGetters')
+const { JSONPath } = require('jsonpath-plus')
+const { getPathFromPointer } = require('./lib/JSONPath.utils')
 
 const ajv = new Ajv({ useDefaults: true })
 ajvFormats(ajv)
@@ -114,12 +118,16 @@ async function registerViewCrud(fastify, { modelName, lookups }) {
 
   // To obtain the updated object with a consistent interface after a patch,
   // it is necessary to retrieve the view object again before returning it to the client.
-  fastify.addHook('preSerialization', async(request, _reply, payload) => {
+  fastify.addHook('preSerialization', async function preSerializer(request, _reply, payload) {
     const { _id } = payload
     if (request.method === 'PATCH' && _id) {
+      const docId = this.castCollectionId(_id)
       // eslint-disable-next-line no-underscore-dangle
-      const doc = await crudService._mongoCollection.findOne({ _id })
-      return doc
+      const doc = await crudService._mongoCollection.findOne({ _id: docId })
+      const response = this.castItem(doc)
+      const validatePatch = getAjvResponseValidationFunction(request.context.schema.response['200'])
+      validatePatch(response)
+      return response
     }
     return payload
   })
@@ -472,21 +480,38 @@ module.exports.transformSchemaForSwagger = ({ schema, url } = {}) => {
     ...others
   } = schema
   const transformed = { ...others }
-  const KEYS_TO_REMOVE = [
-    SCHEMA_CUSTOM_KEYWORDS.UNIQUE_OPERATION_ID,
-  ]
 
-  if (params) { transformed.params = omit(KEYS_TO_REMOVE, params) }
-  if (body) { transformed.body = omit(KEYS_TO_REMOVE, body) }
-  if (querystring) { transformed.querystring = omit(KEYS_TO_REMOVE, querystring) }
+  if (params) { transformed.params = getTransformedSchema(params) }
+  if (body) { transformed.body = getTransformedSchema(body) }
+  if (querystring) { transformed.querystring = getTransformedSchema(querystring) }
   if (response) {
     transformed.response = {
       ...response,
-      ...response['200'] ? { 200: omit(KEYS_TO_REMOVE, response['200']) } : {},
+      ...response['200'] ? { 200: getTransformedSchema(response['200']) } : {},
     }
   }
 
   return { schema: transformed, url }
+}
+
+function getTransformedSchema(httpPartSchema) {
+  if (!httpPartSchema) { return }
+  const KEYS_TO_UNSET = [
+    SCHEMA_CUSTOM_KEYWORDS.UNIQUE_OPERATION_ID,
+    ...JSONPath({
+      json: httpPartSchema,
+      resultType: 'pointer',
+      path: '$..[?(@ && @.type && Array.isArray(@.type))]',
+    })
+      .map(pointer => `${getPathFromPointer(pointer)}.type`),
+  ]
+
+  const response = httpPartSchema
+  KEYS_TO_UNSET.forEach(keyToUnset => {
+    lunset(response, `${keyToUnset}`)
+  })
+
+  return response
 }
 
 module.exports.getMetrics = function getMetrics(prometheusClient) {

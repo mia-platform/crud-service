@@ -351,8 +351,7 @@ tap.test('HTTP POST /', async t => {
       t.strictSame(JSON.parse(response.payload), {
         statusCode: 400,
         error: 'Bad Request',
-        message: "body/metadata must have required property 'somethingNumber'",
-        code: 'FST_ERR_VALIDATION',
+        message: "body must have required property 'somethingNumber'",
       })
       t.end()
     })
@@ -429,8 +428,7 @@ tap.test('HTTP POST /', async t => {
       t.strictSame(JSON.parse(response.payload), {
         statusCode: 400,
         error: 'Bad Request',
-        message: 'body/attachments must be null, body/attachments/0 must have required property \'name\', body/attachments must be object, body/attachments must match a schema in anyOf',
-        code: 'FST_ERR_VALIDATION',
+        message: "body must be null, body must have required property 'name', body must be object, body must match a schema in anyOf",
       })
       t.end()
     })
@@ -468,8 +466,7 @@ tap.test('HTTP POST /', async t => {
       t.strictSame(JSON.parse(response.payload), {
         statusCode: 400,
         error: 'Bad Request',
-        code: 'FST_ERR_VALIDATION',
-        message: 'body/attachments must be null, body/attachments/0 must NOT have additional properties, body/attachments must be object, body/attachments must match a schema in anyOf',
+        message: 'body must be null, body must NOT have additional properties, body must be object, body must match a schema in anyOf',
       })
       t.end()
     })
