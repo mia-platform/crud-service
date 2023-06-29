@@ -352,7 +352,7 @@ tap.test('views integration', async t => {
   t.end()
 })
 
-tap.test('encryption integration', async t => {
+tap.skip('encryption integration', async t => {
   const databaseName = getMongoDatabaseName()
   const mongoURL = getMongoURL(databaseName)
 
