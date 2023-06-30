@@ -19,7 +19,7 @@
 module.exports = {
   'summary': 'Insert new items in the stations collection.',
   'tags': [
-    'Stations Endpoint',
+    'stations endpoint',
   ],
   'body': {
     'operationId': 'stations__MIA__postBulk__MIA__body',

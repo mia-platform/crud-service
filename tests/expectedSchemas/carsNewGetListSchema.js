@@ -20,7 +20,7 @@ module.exports = {
   'summary': 'Returns a list of documents in cars',
   'description': 'Results can be filtered specifying the following parameters:',
   'tags': [
-    'Cars Endpoint',
+    'cars endpoint',
   ],
   'querystring': {
     'operationId': 'cars__MIA__getList__MIA__querystring',
