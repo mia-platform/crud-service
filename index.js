@@ -47,7 +47,7 @@ const { compatibilityModelJsonSchema, modelJsonSchema } = require('./lib/model.j
 const fastifyEnvSchema = require('./envSchema')
 const { getAjvResponseValidationFunction } = require('./lib/validatorGetters')
 const { JSONPath } = require('jsonpath-plus')
-const { getPathFromPointer } = require('./lib/JSONPath.utils')
+const { pointerSeparator } = require('./lib/JSONPath.utils')
 
 const ajv = new Ajv({ useDefaults: true })
 ajvFormats(ajv)
@@ -503,7 +503,9 @@ function getTransformedSchema(httpPartSchema) {
       resultType: 'pointer',
       path: '$..[?(@ && @.type && Array.isArray(@.type))]',
     })
-      .map(pointer => `${getPathFromPointer(pointer)}.type`),
+      .map(pointer => `${pointer
+        .slice(1)
+        .replace(pointerSeparator, '.')}.type`),
   ]
 
   const response = httpPartSchema
