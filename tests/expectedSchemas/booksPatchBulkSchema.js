@@ -19,7 +19,7 @@
 module.exports = {
   'summary': 'Update multiple items of books, each one with its own modifications',
   'tags': [
-    'Books Endpoint',
+    'books endpoint',
     'Library',
   ],
   'body': {

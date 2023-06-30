@@ -19,7 +19,7 @@
 module.exports = {
   'summary': 'Update the item with specific ID in the cars collection.',
   'tags': [
-    'Cars Endpoint',
+    'cars endpoint',
   ],
   'params': {
     'properties': {

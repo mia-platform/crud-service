@@ -19,7 +19,7 @@
 module.exports = {
   'summary': 'Update an item in the cars collection. If the item is not in the collection, it will be inserted.',
   'tags': [
-    'Cars Endpoint',
+    'cars endpoint',
   ],
   'querystring': {
     'operationId': 'cars__MIA__upsertOne__MIA__querystring',

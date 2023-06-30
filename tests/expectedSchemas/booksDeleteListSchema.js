@@ -19,7 +19,7 @@
 module.exports = {
   'summary': 'Delete multiple items from the books collection.',
   'tags': [
-    'Books Endpoint',
+    'books endpoint',
     'Library',
   ],
   'querystring': {

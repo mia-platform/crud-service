@@ -20,7 +20,7 @@ module.exports = {
   'summary': 'Returns a list of documents in books',
   'description': 'Results can be filtered specifying the following parameters:',
   'tags': [
-    'Books Endpoint',
+    'books endpoint',
     'Library',
   ],
   'querystring': {

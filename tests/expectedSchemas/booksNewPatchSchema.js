@@ -19,7 +19,7 @@
 module.exports = {
   'summary': 'Update the item with specific ID in the books collection.',
   'tags': [
-    'Books Endpoint',
+    'books endpoint',
     'Library',
   ],
   'params': {

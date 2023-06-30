@@ -19,7 +19,7 @@
 module.exports = {
   'summary': 'Add a new item to the cars collection.',
   'tags': [
-    'Cars Endpoint',
+    'cars endpoint',
   ],
   'body': {
     'operationId': 'cars__MIA__postItem__MIA__body',

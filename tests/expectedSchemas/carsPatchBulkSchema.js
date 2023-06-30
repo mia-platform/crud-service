@@ -19,7 +19,7 @@
 module.exports = {
   'summary': 'Update multiple items of cars, each one with its own modifications',
   'tags': [
-    'Cars Endpoint',
+    'cars endpoint',
   ],
   'body': {
     'operationId': 'cars__MIA__patchBulk__MIA__body',

@@ -19,7 +19,7 @@
 module.exports = {
   'summary': 'Delete an item with specific ID from the cars collection.',
   'tags': [
-    'Cars Endpoint',
+    'cars endpoint',
   ],
   'params': {
     'type': 'object',

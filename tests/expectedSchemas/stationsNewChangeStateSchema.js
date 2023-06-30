@@ -19,7 +19,7 @@
 module.exports = {
   'summary': 'Change state of an item of stations collection.',
   'tags': [
-    'Stations Endpoint',
+    'stations endpoint',
   ],
   'params': {
     'operationId': 'stations__MIA__changeState__MIA__params',

@@ -19,7 +19,7 @@
 module.exports = {
   'summary': 'Update the item with specific ID in the stations collection.',
   'tags': [
-    'Stations Endpoint',
+    'stations endpoint',
   ],
   'params': {
     'properties': {

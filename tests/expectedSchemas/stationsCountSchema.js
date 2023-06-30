@@ -19,7 +19,7 @@
 module.exports = {
   'summary': 'Returns the number of items in the stations collection.',
   'tags': [
-    'Stations Endpoint',
+    'stations endpoint',
   ],
   'querystring': {
     'operationId': 'stations__MIA__count__MIA__querystring',

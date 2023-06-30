@@ -19,7 +19,7 @@
 module.exports = {
   'summary': 'Returns the number of items in the cars collection.',
   'tags': [
-    'Cars Endpoint',
+    'cars endpoint',
   ],
   'querystring': {
     'operationId': 'cars__MIA__count__MIA__querystring',

@@ -19,7 +19,7 @@
 module.exports = {
   'summary': 'Change state of multiple items of cars.',
   'tags': [
-    'Cars Endpoint',
+    'cars endpoint',
   ],
   'body': {
     'operationId': 'cars__MIA__changeStateMany__MIA__body',

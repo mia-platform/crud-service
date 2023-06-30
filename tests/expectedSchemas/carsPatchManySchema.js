@@ -19,7 +19,7 @@
 module.exports = {
   'summary': 'Update the items of the cars collection that match the query.',
   'tags': [
-    'Cars Endpoint',
+    'cars endpoint',
   ],
   'querystring': {
     'operationId': 'cars__MIA__patchMany__MIA__querystring',

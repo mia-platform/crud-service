@@ -19,7 +19,7 @@
 module.exports = {
   'summary': 'Update the items of the stations collection that match the query.',
   'tags': [
-    'Stations Endpoint',
+    'stations endpoint',
   ],
   'querystring': {
     'operationId': 'stations__MIA__patchMany__MIA__querystring',
