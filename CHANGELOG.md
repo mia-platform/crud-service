@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - $text search query now working on aggregation
 - [#158](https://github.com/mia-platform/community/discussions/158) fixed wrong validation on nested objects.
+- endpoint tag format has been updated to correctly display paths with underscores
 
 ## 6.7.0 - 2023-06-19
 
