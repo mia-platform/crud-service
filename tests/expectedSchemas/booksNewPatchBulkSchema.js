@@ -49,7 +49,7 @@ module.exports = {
             },
             'createdAt': {
               'type': 'string',
-              'example': '1997-04-24T07:00:00.000Z',
+              'example': '1997-04-23T22:00:00.000Z',
               'anyOf': [
                 {
                   'format': 'date-time',
@@ -68,7 +68,7 @@ module.exports = {
             },
             'updatedAt': {
               'type': 'string',
-              'example': '1997-04-24T07:00:00.000Z',
+              'example': '1997-04-23T22:00:00.000Z',
               'anyOf': [
                 {
                   'format': 'date-time',
@@ -110,7 +110,7 @@ module.exports = {
             },
             'publishDate': {
               'type': 'string',
-              'example': '1997-04-24T07:00:00.000Z',
+              'example': '1997-04-23T22:00:00.000Z',
               'description': 'The date it was published',
               'nullable': true,
               'anyOf': [
@@ -589,7 +589,7 @@ module.exports = {
                 },
                 'publishDate': {
                   'type': 'string',
-                  'example': '1997-04-24T07:00:00.000Z',
+                  'example': '1997-04-23T22:00:00.000Z',
                   'description': 'The date it was published',
                   'nullable': true,
                   'anyOf': [
