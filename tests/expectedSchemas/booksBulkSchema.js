@@ -20,8 +20,7 @@ module.exports = {
   'summary': 'Insert new items in the books collection.',
   'tags': [
     'Books Endpoint',
-    'example',
-    'tags',
+    'Library',
   ],
   'body': {
     'operationId': 'books__MIA__postBulk__MIA__body',
@@ -51,50 +50,19 @@ module.exports = {
           'description': 'The author of the book',
         },
         'authorAddressId': {
-          'type': [
-            'string',
-            'object',
-          ],
+          'type': 'string',
           'description': 'The address of the author',
-          'anyOf': [
-            {
-              'type': 'string',
-              'pattern': '^[a-fA-F\\d]{24}$',
-              'examples': [
-                '000000000000000000000000',
-              ],
-            },
-            {
-              'type': 'object',
-            },
-          ],
+          'pattern': '^[a-fA-F\\d]{24}$',
+          'example': '000000000000000000000000',
         },
         'isPromoted': {
           'type': 'boolean',
           'description': "If it's in promotion",
         },
         'publishDate': {
-          'type': [
-            'string',
-            'null',
-            'object',
-          ],
-          'anyOf': [
-            {
-              'type': 'string',
-              'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
-              'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
-              'examples': [
-                '1997-04-24T07:00:00.000Z',
-              ],
-              'nullable': true,
-            },
-            {
-              'type': 'object',
-              'instanceof': 'Date',
-              'nullable': true,
-            },
-          ],
+          'type': 'string',
+          'example': '1997-04-24T07:00:00.000Z',
+          'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
           'description': 'The date it was published',
           'nullable': true,
         },
@@ -375,23 +343,10 @@ module.exports = {
         'type': 'object',
         'properties': {
           '_id': {
-            'type': [
-              'string',
-              'object',
-            ],
+            'type': 'string',
             'description': 'Hexadecimal identifier of the document in the collection',
-            'anyOf': [
-              {
-                'type': 'string',
-                'pattern': '^[a-fA-F\\d]{24}$',
-                'examples': [
-                  '000000000000000000000000',
-                ],
-              },
-              {
-                'type': 'object',
-              },
-            ],
+            'pattern': '^[a-fA-F\\d]{24}$',
+            'example': '000000000000000000000000',
           },
         },
       },

@@ -20,8 +20,7 @@ module.exports = {
   'summary': 'Delete an item with specific ID from the books collection.',
   'tags': [
     'Books Endpoint',
-    'example',
-    'tags',
+    'Library',
   ],
   'params': {
     'type': 'object',
@@ -42,21 +41,17 @@ module.exports = {
         'description': 'User id that has created this object',
       },
       'createdAt': {
-        'type': [
-          'string',
-          'object',
-        ],
+        'type': 'string',
+        'example': '1997-04-24T07:00:00.000Z',
         'anyOf': [
           {
-            'type': 'string',
-            'examples': [
-              '1997-04-24T07:00:00.000Z',
-            ],
             'format': 'date-time',
           },
           {
-            'type': 'object',
-            'instanceof': 'Date',
+            'format': 'date',
+          },
+          {
+            'format': 'time',
           },
         ],
       },
@@ -65,21 +60,17 @@ module.exports = {
         'description': 'User id that has requested the last change successfully',
       },
       'updatedAt': {
-        'type': [
-          'string',
-          'object',
-        ],
+        'type': 'string',
+        'example': '1997-04-24T07:00:00.000Z',
         'anyOf': [
           {
-            'type': 'string',
-            'examples': [
-              '1997-04-24T07:00:00.000Z',
-            ],
             'format': 'date-time',
           },
           {
-            'type': 'object',
-            'instanceof': 'Date',
+            'format': 'date',
+          },
+          {
+            'format': 'time',
           },
         ],
       },
@@ -101,51 +92,31 @@ module.exports = {
         'description': 'The author of the book',
       },
       'authorAddressId': {
-        'type': [
-          'string',
-          'object',
-        ],
+        'type': 'string',
         'description': 'The address of the author',
-        'anyOf': [
-          {
-            'type': 'string',
-            'pattern': '^[a-fA-F\\d]{24}$',
-            'examples': [
-              '000000000000000000000000',
-            ],
-          },
-          {
-            'type': 'object',
-          },
-        ],
+        'pattern': '^[a-fA-F\\d]{24}$',
+        'example': '000000000000000000000000',
       },
       'isPromoted': {
         'type': 'boolean',
         'description': "If it's in promotion",
       },
       'publishDate': {
-        'type': [
-          'string',
-          'null',
-          'object',
-        ],
+        'type': 'string',
+        'example': '1997-04-24T07:00:00.000Z',
+        'description': 'The date it was published',
+        'nullable': true,
         'anyOf': [
           {
-            'type': 'string',
-            'examples': [
-              '1997-04-24T07:00:00.000Z',
-            ],
-            'nullable': true,
             'format': 'date-time',
           },
           {
-            'type': 'object',
-            'instanceof': 'Date',
-            'nullable': true,
+            'format': 'date',
+          },
+          {
+            'format': 'time',
           },
         ],
-        'description': 'The date it was published',
-        'nullable': true,
       },
       'tags': {
         'type': [

@@ -70,21 +70,19 @@ module.exports = {
           'nullable': true,
         },
         'nonNullableDate': {
-          'type': [
-            'string',
-            'object',
-          ],
+          'type': 'string',
+          'example': '1997-04-24T07:00:00.000Z',
+          'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
+          'nullable': false,
           'anyOf': [
             {
-              'type': 'string',
-              'examples': [
-                '1997-04-24T07:00:00.000Z',
-              ],
               'format': 'date-time',
             },
             {
-              'type': 'object',
-              'instanceof': 'Date',
+              'format': 'date',
+            },
+            {
+              'format': 'time',
             },
           ],
         },
@@ -114,9 +112,7 @@ module.exports = {
             'type': 'string',
             'pattern': '^(?!\\s*$).+',
             'description': 'String identifier of the document in the collection',
-            'examples': [
-              '00000000-0000-4000-0000-000000000000',
-            ],
+            'example': '00000000-0000-4000-0000-000000000000',
           },
         },
       },

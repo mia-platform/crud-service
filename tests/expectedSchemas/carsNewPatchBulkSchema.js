@@ -31,23 +31,10 @@ module.exports = {
           'type': 'object',
           'properties': {
             '_id': {
-              'type': [
-                'string',
-                'object',
-              ],
+              'type': 'string',
               'description': 'Hexadecimal identifier of the document in the collection',
-              'anyOf': [
-                {
-                  'type': 'string',
-                  'pattern': '^[a-fA-F\\d]{24}$',
-                  'examples': [
-                    '000000000000000000000000',
-                  ],
-                },
-                {
-                  'type': 'object',
-                },
-              ],
+              'pattern': '^[a-fA-F\\d]{24}$',
+              'example': '000000000000000000000000',
             },
             '_st': {
               'type': 'string',
@@ -60,21 +47,17 @@ module.exports = {
               'description': 'User id that has created this object',
             },
             'createdAt': {
-              'type': [
-                'string',
-                'object',
-              ],
+              'type': 'string',
+              'example': '1997-04-24T07:00:00.000Z',
               'anyOf': [
                 {
-                  'type': 'string',
-                  'examples': [
-                    '1997-04-24T07:00:00.000Z',
-                  ],
                   'format': 'date-time',
                 },
                 {
-                  'type': 'object',
-                  'instanceof': 'Date',
+                  'format': 'date',
+                },
+                {
+                  'format': 'time',
                 },
               ],
             },
@@ -83,21 +66,17 @@ module.exports = {
               'description': 'User id that has requested the last change successfully',
             },
             'updatedAt': {
-              'type': [
-                'string',
-                'object',
-              ],
+              'type': 'string',
+              'example': '1997-04-24T07:00:00.000Z',
               'anyOf': [
                 {
-                  'type': 'string',
-                  'examples': [
-                    '1997-04-24T07:00:00.000Z',
-                  ],
                   'format': 'date-time',
                 },
                 {
-                  'type': 'object',
-                  'instanceof': 'Date',
+                  'format': 'date',
+                },
+                {
+                  'format': 'time',
                 },
               ],
             },

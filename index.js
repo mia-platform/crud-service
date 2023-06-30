@@ -503,9 +503,15 @@ function getTransformedSchema(httpPartSchema) {
       resultType: 'pointer',
       path: '$..[?(@ && @.type && Array.isArray(@.type))]',
     })
-      .map(pointer => `${pointer
-        .slice(1)
-        .replace(pointerSeparator, '.')}.type`),
+      .map(pointer => [
+        `${pointer
+          .slice(1)
+          .replace(pointerSeparator, '.')}.type`,
+        `${pointer
+          .slice(1)
+          .replace(pointerSeparator, '.')}.nullable`,
+      ])
+      .flat(),
   ]
 
   const response = httpPartSchema

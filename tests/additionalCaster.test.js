@@ -45,7 +45,7 @@ tap.test('AdditionalCaster', test => {
           price: 29.99,
           isPromoted: false,
           tags: ['Programming', 'Computer Science', 'New'],
-          publishDate: new Date('2015-01-01T00:00:00.000Z'),
+          publishDate: '2015-01-01T00:00:00.000Z',
         },
       },
       {
@@ -100,7 +100,7 @@ tap.test('AdditionalCaster', test => {
           price: 29.99,
           isPromoted: false,
           tags: ['Programming', 'Computer Science', 'New'],
-          publishDate: new Date('2015-01-01T00:00:00.000Z'),
+          publishDate: '2015-01-01T00:00:00.000Z',
         },
       },
       {
