@@ -16,17 +16,16 @@
 
 'use strict'
 
-const pointerSeparator = new RegExp('/+', 'g')
-const miaConfigurations = new RegExp('/(properties|schema|items|__mia_configuration)', 'g')
+const tap = require('tap')
+const collectionDefinition = require('./collectionDefinitions/books')
+const newCollectionDefinition = require('./newCollectionDefinitions/books')
+const { fieldsToSchema } = require('../lib/AdditionalCaster.utils')
 
-function getPathFromPointer(pointer) {
-  return pointer
-    .slice(1)
-    .replace(miaConfigurations, '')
-    .replace(pointerSeparator, '.')
-}
-
-module.exports = {
-  getPathFromPointer,
-  pointerSeparator,
-}
+tap.test('fieldsToSchema', test => {
+  test.test('should correctly convert', assert => {
+    const convertedSchema = fieldsToSchema(collectionDefinition.fields)
+    assert.strictSame(convertedSchema, newCollectionDefinition.schema)
+    assert.end()
+  })
+  test.end()
+})

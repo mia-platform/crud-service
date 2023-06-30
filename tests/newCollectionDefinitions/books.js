@@ -22,16 +22,16 @@ module.exports = {
   name: 'books',
   endpointBasePath: '/books-endpoint',
   defaultState: 'DRAFT',
-  tags: ['example', 'tags'],
+  tags: ['Library'],
   schema: {
     type: 'object',
     required: [
       '_id',
+      '__STATE__',
       'creatorId',
       'createdAt',
       'updaterId',
       'updatedAt',
-      '__STATE__',
       'name',
       'isbn',
     ],

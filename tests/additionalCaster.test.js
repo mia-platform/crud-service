@@ -20,6 +20,7 @@ const tap = require('tap')
 const collectionDefinition = require('./collectionDefinitions/books')
 const newCollectionDefinition = require('./newCollectionDefinitions/books')
 const AdditionalCaster = require('../lib/AdditionalCaster')
+const { ObjectId } = require('mongodb')
 
 tap.test('AdditionalCaster', test => {
   test.test('old configuration', assert => {
@@ -29,6 +30,7 @@ tap.test('AdditionalCaster', test => {
       {
         name: 'should return document as it is',
         document: {
+          _id: new ObjectId('111111111111111111111111'),
           name: 'Cracking the code interview',
           author: 'Gayle Laakmann',
           price: 29.99,
@@ -37,17 +39,19 @@ tap.test('AdditionalCaster', test => {
           publishDate: new Date('2015-01-01T00:00:00.000Z'),
         },
         expectedResult: {
+          _id: '111111111111111111111111',
           name: 'Cracking the code interview',
           author: 'Gayle Laakmann',
           price: 29.99,
           isPromoted: false,
           tags: ['Programming', 'Computer Science', 'New'],
-          publishDate: new Date('2015-01-01T00:00:00.000Z'),
+          publishDate: '2015-01-01T00:00:00.000Z',
         },
       },
       {
         name: 'should cast GeoPoint fields',
         document: {
+          _id: new ObjectId('111111111111111111111111'),
           name: 'Node cookbook',
           author: 'David Mark Clements, Mathias Buss, Matteo Collina, Peter Elger',
           position: {
@@ -55,6 +59,7 @@ tap.test('AdditionalCaster', test => {
           },
         },
         expectedResult: {
+          _id: '111111111111111111111111',
           name: 'Node cookbook',
           author: 'David Mark Clements, Mathias Buss, Matteo Collina, Peter Elger',
           position: [45.46, 9.19],
@@ -65,8 +70,8 @@ tap.test('AdditionalCaster', test => {
     for (const { name, document, expectedResult } of testCases) {
       assert.test(name, test => {
         test.plan(1)
-        additionalCaster.castItem(document)
-        test.strictSame(document, expectedResult)
+        const result = additionalCaster.castItem(document)
+        test.strictSame(result, expectedResult)
         test.end()
       })
     }
@@ -80,6 +85,7 @@ tap.test('AdditionalCaster', test => {
       {
         name: 'should return document as it is',
         document: {
+          _id: new ObjectId('111111111111111111111111'),
           name: 'Cracking the code interview',
           author: 'Gayle Laakmann',
           price: 29.99,
@@ -88,17 +94,19 @@ tap.test('AdditionalCaster', test => {
           publishDate: new Date('2015-01-01T00:00:00.000Z'),
         },
         expectedResult: {
+          _id: '111111111111111111111111',
           name: 'Cracking the code interview',
           author: 'Gayle Laakmann',
           price: 29.99,
           isPromoted: false,
           tags: ['Programming', 'Computer Science', 'New'],
-          publishDate: new Date('2015-01-01T00:00:00.000Z'),
+          publishDate: '2015-01-01T00:00:00.000Z',
         },
       },
       {
         name: 'should cast GeoPoint fields',
         document: {
+          _id: new ObjectId('111111111111111111111111'),
           name: 'Node cookbook',
           author: 'David Mark Clements, Mathias Buss, Matteo Collina, Peter Elger',
           position: {
@@ -106,6 +114,7 @@ tap.test('AdditionalCaster', test => {
           },
         },
         expectedResult: {
+          _id: '111111111111111111111111',
           name: 'Node cookbook',
           author: 'David Mark Clements, Mathias Buss, Matteo Collina, Peter Elger',
           position: [45.46, 9.19],
@@ -116,8 +125,8 @@ tap.test('AdditionalCaster', test => {
     for (const { name, document, expectedResult } of testCases) {
       assert.test(name, test => {
         test.plan(1)
-        additionalCaster.castItem(document)
-        test.strictSame(document, expectedResult)
+        const result = additionalCaster.castItem(document)
+        test.strictSame(result, expectedResult)
         test.end()
       })
     }

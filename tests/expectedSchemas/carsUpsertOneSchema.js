@@ -30,48 +30,18 @@ module.exports = {
         'description': 'User id that has created this object',
       },
       'createdAt': {
-        'type': [
-          'string',
-          'object',
-        ],
-        'anyOf': [
-          {
-            'type': 'string',
-            'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
-            'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
-            'examples': [
-              '1997-04-24T07:00:00.000Z',
-            ],
-          },
-          {
-            'type': 'object',
-            'instanceof': 'Date',
-          },
-        ],
+        'type': 'string',
+        'example': '1997-04-24T07:00:00.000Z',
+        'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
       },
       'updaterId': {
         'type': 'string',
         'description': 'User id that has requested the last change successfully',
       },
       'updatedAt': {
-        'type': [
-          'string',
-          'object',
-        ],
-        'anyOf': [
-          {
-            'type': 'string',
-            'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
-            'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
-            'examples': [
-              '1997-04-24T07:00:00.000Z',
-            ],
-          },
-          {
-            'type': 'object',
-            'instanceof': 'Date',
-          },
-        ],
+        'type': 'string',
+        'example': '1997-04-24T07:00:00.000Z',
+        'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
       },
       'name': {
         'type': 'string',
@@ -239,23 +209,10 @@ module.exports = {
       'type': 'object',
       'properties': {
         '_id': {
-          'type': [
-            'string',
-            'object',
-          ],
+          'type': 'string',
           'description': 'Hexadecimal identifier of the document in the collection',
-          'anyOf': [
-            {
-              'type': 'string',
-              'pattern': '^[a-fA-F\\d]{24}$',
-              'examples': [
-                '000000000000000000000000',
-              ],
-            },
-            {
-              'type': 'object',
-            },
-          ],
+          'pattern': '^[a-fA-F\\d]{24}$',
+          'example': '000000000000000000000000',
         },
         'name': {
           'type': 'string',
@@ -281,26 +238,9 @@ module.exports = {
           'description': 'User id that has requested the last change successfully',
         },
         'updatedAt': {
-          'type': [
-            'string',
-            'object',
-          ],
-          'anyOf': [
-            {
-              'type': 'string',
-              'format': 'date-time',
-              'examples': [
-                '1997-04-24T07:00:00.000Z',
-              ],
-            },
-            {
-              'type': 'object',
-              'instanceof': 'Date',
-            },
-            {
-              'type': 'string',
-            },
-          ],
+          'type': 'string',
+          'example': '1997-04-24T07:00:00.000Z',
+          'nullable': false,
           'description': 'Date of the request that has performed the last change',
         },
         'creatorId': {
@@ -308,26 +248,9 @@ module.exports = {
           'description': 'User id that has created this object',
         },
         'createdAt': {
-          'type': [
-            'string',
-            'object',
-          ],
-          'anyOf': [
-            {
-              'type': 'string',
-              'format': 'date-time',
-              'examples': [
-                '1997-04-24T07:00:00.000Z',
-              ],
-            },
-            {
-              'type': 'object',
-              'instanceof': 'Date',
-            },
-            {
-              'type': 'string',
-            },
-          ],
+          'type': 'string',
+          'example': '1997-04-24T07:00:00.000Z',
+          'nullable': false,
           'description': 'Date of the request that has performed the object creation',
         },
         '__STATE__': {
