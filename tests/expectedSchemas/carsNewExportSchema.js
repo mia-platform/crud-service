@@ -38,7 +38,7 @@ module.exports = {
       },
       'createdAt': {
         'type': 'string',
-        'example': '1997-04-23T22:00:00.000Z',
+        'example': '1997-04-24T07:00:00.000Z',
         'anyOf': [
           {
             'format': 'date-time',
@@ -57,7 +57,7 @@ module.exports = {
       },
       'updatedAt': {
         'type': 'string',
-        'example': '1997-04-23T22:00:00.000Z',
+        'example': '1997-04-24T07:00:00.000Z',
         'anyOf': [
           {
             'format': 'date-time',
@@ -166,7 +166,7 @@ module.exports = {
           },
           'updatedAt': {
             'type': 'string',
-            'example': '1997-04-23T22:00:00.000Z',
+            'example': '1997-04-24T07:00:00.000Z',
             'nullable': false,
             'description': 'Date of the request that has performed the last change',
           },
@@ -176,7 +176,7 @@ module.exports = {
           },
           'createdAt': {
             'type': 'string',
-            'example': '1997-04-23T22:00:00.000Z',
+            'example': '1997-04-24T07:00:00.000Z',
             'nullable': false,
             'description': 'Date of the request that has performed the object creation',
           },

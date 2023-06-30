@@ -31,7 +31,7 @@ module.exports = {
       },
       'createdAt': {
         'type': 'string',
-        'example': '1997-04-23T22:00:00.000Z',
+        'example': '1997-04-24T07:00:00.000Z',
         'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
       },
       'updaterId': {
@@ -40,7 +40,7 @@ module.exports = {
       },
       'updatedAt': {
         'type': 'string',
-        'example': '1997-04-23T22:00:00.000Z',
+        'example': '1997-04-24T07:00:00.000Z',
         'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
       },
       'Cap': {
@@ -87,7 +87,7 @@ module.exports = {
       },
       'nonNullableDate': {
         'type': 'string',
-        'example': '1997-04-23T22:00:00.000Z',
+        'example': '1997-04-24T07:00:00.000Z',
         'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
         'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
         'nullable': false,
@@ -160,7 +160,7 @@ module.exports = {
           },
           'nonNullableDate': {
             'type': 'string',
-            'example': '1997-04-23T22:00:00.000Z',
+            'example': '1997-04-24T07:00:00.000Z',
             'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
             'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
             'nullable': false,
@@ -347,7 +347,7 @@ module.exports = {
           },
           'nonNullableDate': {
             'type': 'string',
-            'example': '1997-04-23T22:00:00.000Z',
+            'example': '1997-04-24T07:00:00.000Z',
             'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
             'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
             'nullable': false,
@@ -373,7 +373,7 @@ module.exports = {
         },
         'updatedAt': {
           'type': 'string',
-          'example': '1997-04-23T22:00:00.000Z',
+          'example': '1997-04-24T07:00:00.000Z',
           'nullable': false,
           'description': 'Date of the request that has performed the last change',
         },
@@ -383,7 +383,7 @@ module.exports = {
         },
         'createdAt': {
           'type': 'string',
-          'example': '1997-04-23T22:00:00.000Z',
+          'example': '1997-04-24T07:00:00.000Z',
           'nullable': false,
           'description': 'Date of the request that has performed the object creation',
         },
@@ -435,7 +435,7 @@ module.exports = {
         },
         'nonNullableDate': {
           'type': 'string',
-          'example': '1997-04-23T22:00:00.000Z',
+          'example': '1997-04-24T07:00:00.000Z',
           'nullable': false,
         },
       },
