@@ -19,7 +19,7 @@
 module.exports = {
   'summary': 'Returns the item with specific ID from the books collection.',
   'tags': [
-    'Books Endpoint',
+    'books endpoint',
     'example',
     'tags',
   ],

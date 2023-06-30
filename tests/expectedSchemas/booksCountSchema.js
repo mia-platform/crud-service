@@ -19,7 +19,7 @@
 module.exports = {
   'summary': 'Returns the number of items in the books collection.',
   'tags': [
-    'Books Endpoint',
+    'books endpoint',
     'example',
     'tags',
   ],

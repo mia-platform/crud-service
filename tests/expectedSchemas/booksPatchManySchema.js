@@ -19,7 +19,7 @@
 module.exports = {
   'summary': 'Update the items of the books collection that match the query.',
   'tags': [
-    'Books Endpoint',
+    'books endpoint',
     'example',
     'tags',
   ],

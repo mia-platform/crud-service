@@ -20,7 +20,7 @@ module.exports = {
   'summary': 'Export the cars collection',
   'description': 'The exported documents are sent as newline separated JSON objects to facilitate large dataset streaming and parsing',
   'tags': [
-    'Cars Endpoint',
+    'cars endpoint',
   ],
   'querystring': {
     'operationId': 'cars__MIA__export__MIA__querystring',

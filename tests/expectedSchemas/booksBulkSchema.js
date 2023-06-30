@@ -19,7 +19,7 @@
 module.exports = {
   'summary': 'Insert new items in the books collection.',
   'tags': [
-    'Books Endpoint',
+    'books endpoint',
     'example',
     'tags',
   ],

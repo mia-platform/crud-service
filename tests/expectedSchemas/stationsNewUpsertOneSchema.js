@@ -19,7 +19,7 @@
 module.exports = {
   'summary': 'Update an item in the stations collection. If the item is not in the collection, it will be inserted.',
   'tags': [
-    'Stations Endpoint',
+    'stations endpoint',
   ],
   'querystring': {
     'operationId': 'stations__MIA__upsertOne__MIA__querystring',

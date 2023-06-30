@@ -19,7 +19,7 @@
 module.exports = {
   'summary': 'Update an item in the books collection. If the item is not in the collection, it will be inserted.',
   'tags': [
-    'Books Endpoint',
+    'books endpoint',
     'example',
     'tags',
   ],

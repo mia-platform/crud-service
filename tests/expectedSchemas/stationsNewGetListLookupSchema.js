@@ -20,7 +20,7 @@ module.exports = {
   'summary': 'Returns a list of documents in stations',
   'description': 'Results can be filtered specifying the following parameters:',
   'tags': [
-    'Stations Endpoint',
+    'stations endpoint',
   ],
   'querystring': {
     'operationId': 'stations__MIA__getListLookup__MIA__querystring',

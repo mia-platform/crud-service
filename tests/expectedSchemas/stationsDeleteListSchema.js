@@ -19,7 +19,7 @@
 module.exports = {
   'summary': 'Delete multiple items from the stations collection.',
   'tags': [
-    'Stations Endpoint',
+    'stations endpoint',
   ],
   'querystring': {
     'operationId': 'stations__MIA__deleteList__MIA__querystring',

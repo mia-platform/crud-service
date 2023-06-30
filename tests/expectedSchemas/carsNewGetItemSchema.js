@@ -19,7 +19,7 @@
 module.exports = {
   'summary': 'Returns the item with specific ID from the cars collection.',
   'tags': [
-    'Cars Endpoint',
+    'cars endpoint',
   ],
   'params': {
     'type': 'object',
