@@ -441,15 +441,13 @@ module.exports = async function plugin(fastify, opts) {
     .register(fastifyEnv, { schema: fastifyEnvSchema, data: opts })
   fastify.register(fastifyMultipart, {
     limits: {
-      fields: 0,
+      fields: 5,
       // Conversion Byte to Mb
-      fileSize: fastify.config.MAX_MULTIPART_FILE_SIZE * 1000000,
+      fileSize: fastify.config.MAX_MULTIPART_FILE_BYTES * 1000000,
       files: 1,
-      parts: 1000,
     },
   })
     .register(fp(setupCruds, { decorators: { fastify: ['config'] } }))
-  // unset and set on insert
 }
 
 module.exports.options = {
