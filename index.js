@@ -501,6 +501,8 @@ function getTransformedSchema(httpPartSchema) {
     ...JSONPath({
       json: httpPartSchema,
       resultType: 'pointer',
+      // we generate unionTypes to correctly validate data
+      // we need to remove these unionTypes from swagger to make it work correctly
       path: '$..[?(@ && @.type && Array.isArray(@.type))]',
     })
       .map(pointer => `${getPathFromPointer(pointer)}.type`),
