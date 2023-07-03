@@ -19,9 +19,8 @@
 module.exports = {
   'summary': 'Update the item with specific ID in the books collection.',
   'tags': [
-    'Books Endpoint',
-    'example',
-    'tags',
+    'books endpoint',
+    'Library',
   ],
   'params': {
     'properties': {
@@ -42,21 +41,17 @@ module.exports = {
         'description': 'User id that has created this object',
       },
       'createdAt': {
-        'type': [
-          'string',
-          'object',
-        ],
+        'type': 'string',
+        'example': '1997-04-24T07:00:00.000Z',
         'anyOf': [
           {
-            'type': 'string',
-            'examples': [
-              '1997-04-24T07:00:00.000Z',
-            ],
             'format': 'date-time',
           },
           {
-            'type': 'object',
-            'instanceof': 'Date',
+            'format': 'date',
+          },
+          {
+            'format': 'time',
           },
         ],
       },
@@ -65,21 +60,17 @@ module.exports = {
         'description': 'User id that has requested the last change successfully',
       },
       'updatedAt': {
-        'type': [
-          'string',
-          'object',
-        ],
+        'type': 'string',
+        'example': '1997-04-24T07:00:00.000Z',
         'anyOf': [
           {
-            'type': 'string',
-            'examples': [
-              '1997-04-24T07:00:00.000Z',
-            ],
             'format': 'date-time',
           },
           {
-            'type': 'object',
-            'instanceof': 'Date',
+            'format': 'date',
+          },
+          {
+            'format': 'time',
           },
         ],
       },
@@ -101,53 +92,31 @@ module.exports = {
         'description': 'The author of the book',
       },
       'authorAddressId': {
-        'type': [
-          'string',
-          'object',
-        ],
+        'type': 'string',
         'description': 'The address of the author',
-        'anyOf': [
-          {
-            'type': 'string',
-            'pattern': '^[a-fA-F\\d]{24}$',
-            'examples': [
-              '000000000000000000000000',
-            ],
-          },
-          {
-            'type': 'object',
-          },
-        ],
+        'pattern': '^[a-fA-F\\d]{24}$',
+        'example': '000000000000000000000000',
       },
       'isPromoted': {
         'type': 'boolean',
         'description': "If it's in promotion",
       },
       'publishDate': {
-        'type': [
-          'string',
-          'null',
-          'object',
-        ],
+        'type': 'string',
+        'example': '1997-04-24T07:00:00.000Z',
+        'description': 'The date it was published',
+        'nullable': true,
         'anyOf': [
           {
-            'type': 'null',
-            'nullable': true,
-          },
-          {
-            'type': 'string',
-            'examples': [
-              '1997-04-24T07:00:00.000Z',
-            ],
             'format': 'date-time',
           },
           {
-            'type': 'object',
-            'instanceof': 'Date',
+            'format': 'date',
+          },
+          {
+            'format': 'time',
           },
         ],
-        'description': 'The date it was published',
-        'nullable': true,
       },
       'tags': {
         'type': [
@@ -188,14 +157,10 @@ module.exports = {
       'attachments': {
         'type': [
           'array',
-          'null',
           'object',
+          'null',
         ],
         'anyOf': [
-          {
-            'type': 'null',
-            'nullable': true,
-          },
           {
             'type': 'array',
             'items': {
@@ -242,7 +207,9 @@ module.exports = {
               'required': [
                 'name',
               ],
+              'nullable': true,
             },
+            'nullable': true,
           },
           {
             'type': 'object',
@@ -288,6 +255,7 @@ module.exports = {
             'required': [
               'name',
             ],
+            'nullable': true,
           },
         ],
         'nullable': true,
@@ -295,24 +263,23 @@ module.exports = {
       'editionsDates': {
         'type': [
           'array',
-          'null',
           'object',
+          'null',
         ],
         'anyOf': [
-          {
-            'type': 'null',
-            'nullable': true,
-          },
           {
             'type': 'array',
             'items': {
               'type': 'object',
               'additionalProperties': true,
+              'nullable': true,
             },
+            'nullable': true,
           },
           {
             'type': 'object',
             'additionalProperties': true,
+            'nullable': true,
           },
         ],
         'nullable': true,
@@ -421,53 +388,31 @@ module.exports = {
             'description': 'The author of the book',
           },
           'authorAddressId': {
-            'type': [
-              'string',
-              'object',
-            ],
+            'type': 'string',
             'description': 'The address of the author',
-            'anyOf': [
-              {
-                'type': 'string',
-                'pattern': '^[a-fA-F\\d]{24}$',
-                'examples': [
-                  '000000000000000000000000',
-                ],
-              },
-              {
-                'type': 'object',
-              },
-            ],
+            'pattern': '^[a-fA-F\\d]{24}$',
+            'example': '000000000000000000000000',
           },
           'isPromoted': {
             'type': 'boolean',
             'description': "If it's in promotion",
           },
           'publishDate': {
-            'type': [
-              'string',
-              'null',
-              'object',
-            ],
+            'type': 'string',
+            'example': '1997-04-24T07:00:00.000Z',
+            'description': 'The date it was published',
+            'nullable': true,
             'anyOf': [
               {
-                'type': 'null',
-                'nullable': true,
-              },
-              {
-                'type': 'string',
-                'examples': [
-                  '1997-04-24T07:00:00.000Z',
-                ],
                 'format': 'date-time',
               },
               {
-                'type': 'object',
-                'instanceof': 'Date',
+                'format': 'date',
+              },
+              {
+                'format': 'time',
               },
             ],
-            'description': 'The date it was published',
-            'nullable': true,
           },
           'position': {
             'type': 'array',
@@ -596,14 +541,10 @@ module.exports = {
           'attachments': {
             'type': [
               'array',
-              'null',
               'object',
+              'null',
             ],
             'anyOf': [
-              {
-                'type': 'null',
-                'nullable': true,
-              },
               {
                 'type': 'array',
                 'items': {
@@ -650,7 +591,9 @@ module.exports = {
                   'required': [
                     'name',
                   ],
+                  'nullable': true,
                 },
+                'nullable': true,
               },
               {
                 'type': 'object',
@@ -696,6 +639,7 @@ module.exports = {
                 'required': [
                   'name',
                 ],
+                'nullable': true,
               },
             ],
             'nullable': true,
@@ -703,24 +647,23 @@ module.exports = {
           'editionsDates': {
             'type': [
               'array',
-              'null',
               'object',
+              'null',
             ],
             'anyOf': [
-              {
-                'type': 'null',
-                'nullable': true,
-              },
               {
                 'type': 'array',
                 'items': {
                   'type': 'object',
                   'additionalProperties': true,
+                  'nullable': true,
                 },
+                'nullable': true,
               },
               {
                 'type': 'object',
                 'additionalProperties': true,
+                'nullable': true,
               },
             ],
             'nullable': true,
@@ -1747,23 +1690,10 @@ module.exports = {
       'type': 'object',
       'properties': {
         '_id': {
-          'type': [
-            'string',
-            'object',
-          ],
+          'type': 'string',
           'description': 'Hexadecimal identifier of the document in the collection',
-          'anyOf': [
-            {
-              'type': 'string',
-              'pattern': '^[a-fA-F\\d]{24}$',
-              'examples': [
-                '000000000000000000000000',
-              ],
-            },
-            {
-              'type': 'object',
-            },
-          ],
+          'pattern': '^[a-fA-F\\d]{24}$',
+          'example': '000000000000000000000000',
         },
         '__STATE__': {
           'type': 'string',
@@ -1774,26 +1704,9 @@ module.exports = {
           'description': 'User id that has created this object',
         },
         'createdAt': {
-          'type': [
-            'string',
-            'object',
-          ],
-          'anyOf': [
-            {
-              'type': 'string',
-              'format': 'date-time',
-              'examples': [
-                '1997-04-24T07:00:00.000Z',
-              ],
-            },
-            {
-              'type': 'object',
-              'instanceof': 'Date',
-            },
-            {
-              'type': 'string',
-            },
-          ],
+          'type': 'string',
+          'example': '1997-04-24T07:00:00.000Z',
+          'nullable': false,
           'description': 'Date of the request that has performed the object creation',
         },
         'updaterId': {
@@ -1801,26 +1714,9 @@ module.exports = {
           'description': 'User id that has requested the last change successfully',
         },
         'updatedAt': {
-          'type': [
-            'string',
-            'object',
-          ],
-          'anyOf': [
-            {
-              'type': 'string',
-              'format': 'date-time',
-              'examples': [
-                '1997-04-24T07:00:00.000Z',
-              ],
-            },
-            {
-              'type': 'object',
-              'instanceof': 'Date',
-            },
-            {
-              'type': 'string',
-            },
-          ],
+          'type': 'string',
+          'example': '1997-04-24T07:00:00.000Z',
+          'nullable': false,
           'description': 'Date of the request that has performed the last change',
         },
         'name': {
@@ -1841,56 +1737,20 @@ module.exports = {
           'description': 'The author of the book',
         },
         'authorAddressId': {
-          'type': [
-            'string',
-            'object',
-          ],
+          'type': 'string',
           'description': 'The address of the author',
-          'anyOf': [
-            {
-              'type': 'string',
-              'pattern': '^[a-fA-F\\d]{24}$',
-              'examples': [
-                '000000000000000000000000',
-              ],
-            },
-            {
-              'type': 'object',
-            },
-          ],
+          'pattern': '^[a-fA-F\\d]{24}$',
+          'example': '000000000000000000000000',
         },
         'isPromoted': {
           'type': 'boolean',
           'description': "If it's in promotion",
         },
         'publishDate': {
-          'type': [
-            'string',
-            'null',
-            'object',
-          ],
-          'anyOf': [
-            {
-              'type': 'null',
-              'nullable': true,
-            },
-            {
-              'type': 'string',
-              'format': 'date-time',
-              'examples': [
-                '1997-04-24T07:00:00.000Z',
-              ],
-            },
-            {
-              'type': 'object',
-              'instanceof': 'Date',
-            },
-            {
-              'type': 'string',
-            },
-          ],
-          'description': 'The date it was published',
+          'type': 'string',
+          'example': '1997-04-24T07:00:00.000Z',
           'nullable': true,
+          'description': 'The date it was published',
         },
         'position': {
           'type': 'array',
@@ -2017,14 +1877,10 @@ module.exports = {
         'attachments': {
           'type': [
             'array',
-            'null',
             'object',
+            'null',
           ],
           'anyOf': [
-            {
-              'type': 'null',
-              'nullable': true,
-            },
             {
               'type': 'array',
               'items': {
@@ -2071,7 +1927,9 @@ module.exports = {
                 'required': [
                   'name',
                 ],
+                'nullable': true,
               },
+              'nullable': true,
             },
             {
               'type': 'object',
@@ -2117,6 +1975,7 @@ module.exports = {
               'required': [
                 'name',
               ],
+              'nullable': true,
             },
           ],
           'nullable': true,
@@ -2124,24 +1983,23 @@ module.exports = {
         'editionsDates': {
           'type': [
             'array',
-            'null',
             'object',
+            'null',
           ],
           'anyOf': [
-            {
-              'type': 'null',
-              'nullable': true,
-            },
             {
               'type': 'array',
               'items': {
                 'type': 'object',
                 'additionalProperties': true,
+                'nullable': true,
               },
+              'nullable': true,
             },
             {
               'type': 'object',
               'additionalProperties': true,
+              'nullable': true,
             },
           ],
           'nullable': true,

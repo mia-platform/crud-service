@@ -19,9 +19,8 @@
 module.exports = {
   'summary': 'Insert new items in the books collection.',
   'tags': [
-    'Books Endpoint',
-    'example',
-    'tags',
+    'books endpoint',
+    'Library',
   ],
   'body': {
     'operationId': 'books__MIA__postBulk__MIA__body',
@@ -51,53 +50,31 @@ module.exports = {
           'description': 'The author of the book',
         },
         'authorAddressId': {
-          'type': [
-            'string',
-            'object',
-          ],
+          'type': 'string',
           'description': 'The address of the author',
-          'anyOf': [
-            {
-              'type': 'string',
-              'pattern': '^[a-fA-F\\d]{24}$',
-              'examples': [
-                '000000000000000000000000',
-              ],
-            },
-            {
-              'type': 'object',
-            },
-          ],
+          'pattern': '^[a-fA-F\\d]{24}$',
+          'example': '000000000000000000000000',
         },
         'isPromoted': {
           'type': 'boolean',
           'description': "If it's in promotion",
         },
         'publishDate': {
-          'type': [
-            'string',
-            'null',
-            'object',
-          ],
+          'type': 'string',
+          'example': '1997-04-24T07:00:00.000Z',
+          'description': 'The date it was published',
+          'nullable': true,
           'anyOf': [
             {
-              'type': 'null',
-              'nullable': true,
-            },
-            {
-              'type': 'string',
-              'examples': [
-                '1997-04-24T07:00:00.000Z',
-              ],
               'format': 'date-time',
             },
             {
-              'type': 'object',
-              'instanceof': 'Date',
+              'format': 'date',
+            },
+            {
+              'format': 'time',
             },
           ],
-          'description': 'The date it was published',
-          'nullable': true,
         },
         'position': {
           'type': 'array',
@@ -226,14 +203,10 @@ module.exports = {
         'attachments': {
           'type': [
             'array',
-            'null',
             'object',
+            'null',
           ],
           'anyOf': [
-            {
-              'type': 'null',
-              'nullable': true,
-            },
             {
               'type': 'array',
               'items': {
@@ -280,7 +253,9 @@ module.exports = {
                 'required': [
                   'name',
                 ],
+                'nullable': true,
               },
+              'nullable': true,
             },
             {
               'type': 'object',
@@ -326,6 +301,7 @@ module.exports = {
               'required': [
                 'name',
               ],
+              'nullable': true,
             },
           ],
           'nullable': true,
@@ -333,24 +309,23 @@ module.exports = {
         'editionsDates': {
           'type': [
             'array',
-            'null',
             'object',
+            'null',
           ],
           'anyOf': [
-            {
-              'type': 'null',
-              'nullable': true,
-            },
             {
               'type': 'array',
               'items': {
                 'type': 'object',
                 'additionalProperties': true,
+                'nullable': true,
               },
+              'nullable': true,
             },
             {
               'type': 'object',
               'additionalProperties': true,
+              'nullable': true,
             },
           ],
           'nullable': true,
@@ -378,23 +353,10 @@ module.exports = {
         'type': 'object',
         'properties': {
           '_id': {
-            'type': [
-              'string',
-              'object',
-            ],
+            'type': 'string',
             'description': 'Hexadecimal identifier of the document in the collection',
-            'anyOf': [
-              {
-                'type': 'string',
-                'pattern': '^[a-fA-F\\d]{24}$',
-                'examples': [
-                  '000000000000000000000000',
-                ],
-              },
-              {
-                'type': 'object',
-              },
-            ],
+            'pattern': '^[a-fA-F\\d]{24}$',
+            'example': '000000000000000000000000',
           },
         },
       },

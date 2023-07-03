@@ -428,7 +428,7 @@ tap.test('HTTP POST /', async t => {
       t.strictSame(JSON.parse(response.payload), {
         statusCode: 400,
         error: 'Bad Request',
-        message: "body must be null, body must have required property 'name', body must be object, body must match a schema in anyOf",
+        message: "body must have required property 'name', body must be object, body must match a schema in anyOf",
       })
       t.end()
     })
@@ -466,7 +466,7 @@ tap.test('HTTP POST /', async t => {
       t.strictSame(JSON.parse(response.payload), {
         statusCode: 400,
         error: 'Bad Request',
-        message: 'body must be null, body must NOT have additional properties, body must be object, body must match a schema in anyOf',
+        message: 'body must NOT have additional properties, body must be object, body must match a schema in anyOf. Property "unexpectedField" is not defined in validation schema',
       })
       t.end()
     })

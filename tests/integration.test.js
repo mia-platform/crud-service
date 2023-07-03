@@ -593,7 +593,7 @@ tap.test('JSON Schema collection definition encryption integration', async t => 
 tap.test('ALLOW_DISK_USE_IN_QUERIES integration', async t => {
   t.test('Should work correctly if set to true (mongo >= 4.4 only)', async t => {
     if (process.env.MONGO_VERSION < '4.4') {
-      t.skip()
+      t.test()
       return
     }
 

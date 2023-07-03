@@ -19,7 +19,7 @@
 module.exports = {
   'summary': 'Update multiple items of stations, each one with its own modifications',
   'tags': [
-    'Stations Endpoint',
+    'stations endpoint',
   ],
   'body': {
     'operationId': 'stations__MIA__patchBulk__MIA__body',
@@ -34,9 +34,7 @@ module.exports = {
               'type': 'string',
               'pattern': '^(?!\\s*$).+',
               'description': 'String identifier of the document in the collection',
-              'examples': [
-                '00000000-0000-4000-0000-000000000000',
-              ],
+              'example': '00000000-0000-4000-0000-000000000000',
             },
             '_st': {
               'type': 'string',
@@ -49,48 +47,18 @@ module.exports = {
               'description': 'User id that has created this object',
             },
             'createdAt': {
-              'type': [
-                'string',
-                'object',
-              ],
-              'anyOf': [
-                {
-                  'type': 'string',
-                  'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
-                  'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
-                  'examples': [
-                    '1997-04-24T07:00:00.000Z',
-                  ],
-                },
-                {
-                  'type': 'object',
-                  'instanceof': 'Date',
-                },
-              ],
+              'type': 'string',
+              'example': '1997-04-24T07:00:00.000Z',
+              'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
             },
             'updaterId': {
               'type': 'string',
               'description': 'User id that has requested the last change successfully',
             },
             'updatedAt': {
-              'type': [
-                'string',
-                'object',
-              ],
-              'anyOf': [
-                {
-                  'type': 'string',
-                  'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
-                  'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
-                  'examples': [
-                    '1997-04-24T07:00:00.000Z',
-                  ],
-                },
-                {
-                  'type': 'object',
-                  'instanceof': 'Date',
-                },
-              ],
+              'type': 'string',
+              'example': '1997-04-24T07:00:00.000Z',
+              'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
             },
             'Cap': {
               'type': 'number',
@@ -107,22 +75,21 @@ module.exports = {
             'Direttrici': {
               'type': [
                 'array',
-                'null',
                 'string',
+                'null',
               ],
               'anyOf': [
-                {
-                  'type': 'null',
-                  'nullable': true,
-                },
                 {
                   'type': 'array',
                   'items': {
                     'type': 'string',
+                    'nullable': true,
                   },
+                  'nullable': true,
                 },
                 {
                   'type': 'string',
+                  'nullable': true,
                 },
               ],
               'nullable': true,
@@ -136,24 +103,11 @@ module.exports = {
               'nullable': true,
             },
             'nonNullableDate': {
-              'type': [
-                'string',
-                'object',
-              ],
-              'anyOf': [
-                {
-                  'type': 'string',
-                  'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
-                  'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
-                  'examples': [
-                    '1997-04-24T07:00:00.000Z',
-                  ],
-                },
-                {
-                  'type': 'object',
-                  'instanceof': 'Date',
-                },
-              ],
+              'type': 'string',
+              'example': '1997-04-24T07:00:00.000Z',
+              'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
+              'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
+              'nullable': false,
             },
             '_q': {
               'type': 'string',
@@ -187,22 +141,21 @@ module.exports = {
                 'Direttrici': {
                   'type': [
                     'array',
-                    'null',
                     'string',
+                    'null',
                   ],
                   'anyOf': [
-                    {
-                      'type': 'null',
-                      'nullable': true,
-                    },
                     {
                       'type': 'array',
                       'items': {
                         'type': 'string',
+                        'nullable': true,
                       },
+                      'nullable': true,
                     },
                     {
                       'type': 'string',
+                      'nullable': true,
                     },
                   ],
                   'nullable': true,
@@ -216,24 +169,11 @@ module.exports = {
                   'nullable': true,
                 },
                 'nonNullableDate': {
-                  'type': [
-                    'string',
-                    'object',
-                  ],
-                  'anyOf': [
-                    {
-                      'type': 'string',
-                      'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
-                      'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
-                      'examples': [
-                        '1997-04-24T07:00:00.000Z',
-                      ],
-                    },
-                    {
-                      'type': 'object',
-                      'instanceof': 'Date',
-                    },
-                  ],
+                  'type': 'string',
+                  'example': '1997-04-24T07:00:00.000Z',
+                  'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
+                  'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
+                  'nullable': false,
                 },
                 'Direttrici.$.replace': {
                   'type': 'string',

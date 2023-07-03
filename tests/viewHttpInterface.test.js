@@ -41,7 +41,7 @@ const VIEWS_DEFINITION_FOLDER = path.join(__dirname, 'viewsDefinitionsLookup')
 
 tap.test('Writable views (enableLookups: true)', async t => {
   if (process.env.MONGO_VERSION <= '4.4') {
-    t.skip('Lookup view not supported on Mongo version <= 4.4')
+    t.test('Lookup view not supported on Mongo version <= 4.4')
     return
   }
   const databaseName = getMongoDatabaseName()

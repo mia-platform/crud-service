@@ -20,51 +20,34 @@ module.exports = {
   'summary': 'Export the cars collection',
   'description': 'The exported documents are sent as newline separated JSON objects to facilitate large dataset streaming and parsing',
   'tags': [
-    'Cars Endpoint',
+    'cars endpoint',
   ],
   'querystring': {
     'operationId': 'cars__MIA__export__MIA__querystring',
     'type': 'object',
     'properties': {
       '_id': {
-        'type': [
-          'string',
-          'object',
-        ],
+        'type': 'string',
         'description': 'Hexadecimal identifier of the document in the collection',
-        'anyOf': [
-          {
-            'type': 'string',
-            'pattern': '^[a-fA-F\\d]{24}$',
-            'examples': [
-              '000000000000000000000000',
-            ],
-          },
-          {
-            'type': 'object',
-          },
-        ],
+        'pattern': '^[a-fA-F\\d]{24}$',
+        'example': '000000000000000000000000',
       },
       'creatorId': {
         'type': 'string',
         'description': 'User id that has created this object',
       },
       'createdAt': {
-        'type': [
-          'string',
-          'object',
-        ],
+        'type': 'string',
+        'example': '1997-04-24T07:00:00.000Z',
         'anyOf': [
           {
-            'type': 'string',
-            'examples': [
-              '1997-04-24T07:00:00.000Z',
-            ],
             'format': 'date-time',
           },
           {
-            'type': 'object',
-            'instanceof': 'Date',
+            'format': 'date',
+          },
+          {
+            'format': 'time',
           },
         ],
       },
@@ -73,21 +56,17 @@ module.exports = {
         'description': 'User id that has requested the last change successfully',
       },
       'updatedAt': {
-        'type': [
-          'string',
-          'object',
-        ],
+        'type': 'string',
+        'example': '1997-04-24T07:00:00.000Z',
         'anyOf': [
           {
-            'type': 'string',
-            'examples': [
-              '1997-04-24T07:00:00.000Z',
-            ],
             'format': 'date-time',
           },
           {
-            'type': 'object',
-            'instanceof': 'Date',
+            'format': 'date',
+          },
+          {
+            'format': 'time',
           },
         ],
       },
@@ -157,23 +136,10 @@ module.exports = {
         'type': 'object',
         'properties': {
           '_id': {
-            'type': [
-              'string',
-              'object',
-            ],
+            'type': 'string',
             'description': 'Hexadecimal identifier of the document in the collection',
-            'anyOf': [
-              {
-                'type': 'string',
-                'pattern': '^[a-fA-F\\d]{24}$',
-                'examples': [
-                  '000000000000000000000000',
-                ],
-              },
-              {
-                'type': 'object',
-              },
-            ],
+            'pattern': '^[a-fA-F\\d]{24}$',
+            'example': '000000000000000000000000',
           },
           'name': {
             'type': 'string',
@@ -199,26 +165,9 @@ module.exports = {
             'description': 'User id that has requested the last change successfully',
           },
           'updatedAt': {
-            'type': [
-              'string',
-              'object',
-            ],
-            'anyOf': [
-              {
-                'type': 'string',
-                'format': 'date-time',
-                'examples': [
-                  '1997-04-24T07:00:00.000Z',
-                ],
-              },
-              {
-                'type': 'object',
-                'instanceof': 'Date',
-              },
-              {
-                'type': 'string',
-              },
-            ],
+            'type': 'string',
+            'example': '1997-04-24T07:00:00.000Z',
+            'nullable': false,
             'description': 'Date of the request that has performed the last change',
           },
           'creatorId': {
@@ -226,26 +175,9 @@ module.exports = {
             'description': 'User id that has created this object',
           },
           'createdAt': {
-            'type': [
-              'string',
-              'object',
-            ],
-            'anyOf': [
-              {
-                'type': 'string',
-                'format': 'date-time',
-                'examples': [
-                  '1997-04-24T07:00:00.000Z',
-                ],
-              },
-              {
-                'type': 'object',
-                'instanceof': 'Date',
-              },
-              {
-                'type': 'string',
-              },
-            ],
+            'type': 'string',
+            'example': '1997-04-24T07:00:00.000Z',
+            'nullable': false,
             'description': 'Date of the request that has performed the object creation',
           },
           '__STATE__': {

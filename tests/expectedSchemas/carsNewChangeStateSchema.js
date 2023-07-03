@@ -19,7 +19,7 @@
 module.exports = {
   'summary': 'Change state of an item of cars collection.',
   'tags': [
-    'Cars Endpoint',
+    'cars endpoint',
   ],
   'params': {
     'operationId': 'cars__MIA__changeState__MIA__params',
@@ -40,21 +40,17 @@ module.exports = {
         'description': 'User id that has created this object',
       },
       'createdAt': {
-        'type': [
-          'string',
-          'object',
-        ],
+        'type': 'string',
+        'example': '1997-04-24T07:00:00.000Z',
         'anyOf': [
           {
-            'type': 'string',
-            'examples': [
-              '1997-04-24T07:00:00.000Z',
-            ],
             'format': 'date-time',
           },
           {
-            'type': 'object',
-            'instanceof': 'Date',
+            'format': 'date',
+          },
+          {
+            'format': 'time',
           },
         ],
       },
@@ -63,21 +59,17 @@ module.exports = {
         'description': 'User id that has requested the last change successfully',
       },
       'updatedAt': {
-        'type': [
-          'string',
-          'object',
-        ],
+        'type': 'string',
+        'example': '1997-04-24T07:00:00.000Z',
         'anyOf': [
           {
-            'type': 'string',
-            'examples': [
-              '1997-04-24T07:00:00.000Z',
-            ],
             'format': 'date-time',
           },
           {
-            'type': 'object',
-            'instanceof': 'Date',
+            'format': 'date',
+          },
+          {
+            'format': 'time',
           },
         ],
       },
