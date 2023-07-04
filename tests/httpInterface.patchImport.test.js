@@ -22,6 +22,7 @@ const { createReadStream } = require('fs')
 
 const { expectedBooks, bookToUpdate } = require('./filesFixtures/expectedResults')
 const { setUpTest, prefix } = require('./httpInterface.utils')
+const { newUpdaterId } = require('./utils')
 const FormData = require('form-data')
 const { omit } = require('ramda')
 const { CREATORID, UPDATERID, CREATEDAT, UPDATEDAT } = require('../lib/consts')
@@ -41,7 +42,7 @@ tap.test('HTTP PATCH /import', async t => {
         name: 'valid json file',
         createForm: () => {
           const form = new FormData()
-          form.append('books', jsonFileReader(), { contentType: 'application/json' })
+          form.append('file', jsonFileReader(), { contentType: 'application/json' })
           return form
         },
       },
@@ -49,7 +50,7 @@ tap.test('HTTP PATCH /import', async t => {
         name: 'valid ndjson file',
         createForm: () => {
           const form = new FormData()
-          form.append('books', ndjsonFileReader(), { contentType: 'application/x-ndjson' })
+          form.append('file', ndjsonFileReader(), { contentType: 'application/x-ndjson' })
           return form
         },
       },
@@ -57,7 +58,27 @@ tap.test('HTTP PATCH /import', async t => {
         name: 'valid csv file',
         createForm: () => {
           const form = new FormData()
-          form.append('books', CSVFileReader(), { contentType: 'text/csv' })
+          form.append('file', CSVFileReader(), { contentType: 'text/csv' })
+          return form
+        },
+      },
+      {
+        name: 'valid csv file with options',
+        createForm: () => {
+          const form = new FormData()
+          form.append('file', CSVFileReader(), { contentType: 'text/csv' })
+          form.append('encoding', 'utf8')
+          form.append('delimiter', ',')
+          form.append('escape', '\\')
+          return form
+        },
+      },
+      {
+        name: 'valid csv file with only one option',
+        createForm: () => {
+          const form = new FormData()
+          form.append('file', CSVFileReader(), { contentType: 'text/csv' })
+          form.append('delimiter', ',')
           return form
         },
       },
@@ -75,7 +96,10 @@ tap.test('HTTP PATCH /import', async t => {
           method: 'PATCH',
           url: `${prefix}/import`,
           payload: form,
-          headers: form.getHeaders(),
+          headers: {
+            ...form.getHeaders(),
+            userId: newUpdaterId,
+          },
         })
 
         t.test('and return 200', t => {
@@ -97,6 +121,68 @@ tap.test('HTTP PATCH /import', async t => {
         t.test('and not create any document', async t => {
           const documents = await collection.find().toArray()
           t.same(documents, [])
+          t.end()
+        })
+      })
+    }
+  })
+
+  t.test('should return error on invalid options', async t => {
+    const tests = [
+      {
+        name: 'with not existing propriety',
+        createForm: () => {
+          const form = new FormData()
+          form.append('file', CSVFileReader(), { contentType: 'text/csv' })
+          form.append('notExisitingPropriety', 'randomValue')
+          return form
+        },
+      },
+      {
+        name: 'on invalid encoding',
+        createForm: () => {
+          const form = new FormData()
+          form.append('file', CSVFileReader(), { contentType: 'text/csv' })
+          form.append('encoding', 'invalid')
+          return form
+        },
+      },
+    ]
+
+    for (const test of tests) {
+      const {
+        name,
+        createForm,
+      } = test
+      t.test(name, async t => {
+        const form = createForm()
+        const response = await fastify.inject({
+          method: 'PATCH',
+          url: `${prefix}/import`,
+          payload: form,
+          headers: {
+            ...form.getHeaders(),
+            userId: newUpdaterId,
+          },
+        })
+
+        t.test('and return 400', t => {
+          t.strictSame(response.statusCode, 400, response.payload)
+          t.end()
+        })
+
+        t.test('and return application/json', t => {
+          t.ok(/application\/json/.test(response.headers['content-type']))
+          t.end()
+        })
+
+        t.test('and return the right message', t => {
+          const body = JSON.parse(response.payload)
+          t.strictSame(body, {
+            'statusCode': 400,
+            'error': 'Bad Request',
+            'message': 'Invalid options',
+          })
           t.end()
         })
       })
