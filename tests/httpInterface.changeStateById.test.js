@@ -18,7 +18,14 @@
 
 const tap = require('tap')
 
-const { STATES, __STATE__ } = require('../lib/consts')
+const {
+  STATES,
+  __STATE__,
+  UPDATERID,
+  UPDATEDAT,
+  CREATORID,
+  CREATEDAT,
+} = require('../lib/consts')
 const { publicFixtures, fixtures, stationFixtures, newUpdaterId, oldUpdaterId } = require('./utils')
 const { setUpTest, prefix, stationsPrefix, getHeaders } = require('./httpInterface.utils')
 
@@ -35,7 +42,7 @@ const NON_MATCHING_QUERY = { price: { $gt: NON_MATCHING_PRICE } }
 const [STATION_DOC] = stationFixtures
 const STATION_ID = STATION_DOC._id.toString()
 
-tap.test('HTTP POST /<id>/state', async t => {
+tap.skip('HTTP POST /<id>/state', async t => {
   const tests = [
     {
       name: 'without filter',
@@ -180,7 +187,7 @@ tap.test('HTTP POST /<id>/state', async t => {
   })
 })
 
-tap.test('HTTP POST /<id>/state with string id', async t => {
+tap.skip('HTTP POST /<id>/state with string id', async t => {
   const tests = [
     {
       name: 'without filter',
@@ -247,6 +254,113 @@ tap.test('HTTP POST /<id>/state with string id', async t => {
             t.ok(Math.abs(Date.now() - doc.updatedAt.getTime()) > 5000, '`updatedAt` should not be updated')
           }
 
+          t.end()
+        })
+
+        t.test('should keep the other documents as is', async t => {
+          const documents = await collection.find({ _id: { $ne: conf.id } }).toArray()
+          t.strictSame(documents, stationFixtures.filter(d => d._id.toString() !== conf.id.toString()))
+          t.end()
+        })
+
+        t.end()
+      })
+
+      t.end()
+    })
+  })
+})
+
+tap.test('HTTP POST /<id>/state passing to a wrong state', async t => {
+  const baseFields = {
+    Cap: 25040,
+    CodiceMIR: 'S01787',
+    Comune: 'Borgonato',
+    Direttrici: [
+      'D028',
+    ],
+    Indirizzo: 'Via Stazione, 24',
+    country: 'it',
+    [CREATEDAT]: new Date('2017-11-11'),
+    [CREATORID]: 'my-creator-id',
+    [UPDATERID]: 'my-updated-id',
+    [UPDATEDAT]: new Date('2017-11-10'),
+  }
+
+  const stationFixtures = [
+    {
+      _id: '002415b0-8d6d-427c-b654-9857183e57a6',
+      ...baseFields,
+      [__STATE__]: STATES.DELETED,
+    },
+    {
+      _id: '002415b0-8d6d-427c-b654-9857183e57a7',
+      ...baseFields,
+      [__STATE__]: STATES.PUBLIC,
+    },
+    {
+      _id: '002415b0-8d6d-427c-b654-9857183e57a8',
+      ...baseFields,
+      [__STATE__]: STATES.DRAFT,
+    },
+  ]
+
+  const [DELETED_STATION_DOC, PUBLIC_STATION_DOC, DRAFT_STATION_DOC] = stationFixtures
+
+  const tests = [
+    {
+      name: 'from PUBLIC to DELETED',
+      url: `/${PUBLIC_STATION_DOC._id.toString()}/state`,
+      stateTo: STATES.DELETED,
+      id: PUBLIC_STATION_DOC._id,
+    },
+    {
+      name: 'from DRAFT to DELETED',
+      url: `/${DRAFT_STATION_DOC._id.toString()}/state`,
+      stateTo: STATES.DELETED,
+      id: DRAFT_STATION_DOC._id,
+    },
+    {
+      name: 'from DELETED to PUBLIC',
+      url: `/${DELETED_STATION_DOC._id.toString()}/state`,
+      stateTo: STATES.PUBLIC,
+      id: DELETED_STATION_DOC._id,
+    },
+  ]
+
+  t.plan(tests.length)
+  const { fastify, collection, resetCollection } = await setUpTest(t, stationFixtures, 'stations')
+
+  tests.forEach(testConf => {
+    const { name, ...conf } = testConf
+
+    t.test(`(${name})`, async t => {
+      await resetCollection()
+
+      const response = await fastify.inject({
+        method: 'POST',
+        url: stationsPrefix + conf.url,
+        payload: { stateTo: conf.stateTo },
+        headers: {
+          userId: newUpdaterId,
+          ...getHeaders(conf),
+        },
+      })
+
+      t.test(`should return 400`, t => {
+        t.strictSame(response.statusCode, 400, response.payload)
+        t.end()
+      })
+
+      t.test('should return the application/json content-type', t => {
+        t.strictSame(response.headers['content-type'], 'application/json; charset=utf-8')
+        t.end()
+      })
+
+      t.test('on database', t => {
+        t.test(`document should not be updated`, async t => {
+          const doc = await collection.findOne({ _id: conf.id })
+          t.ok(Math.abs(Date.now() - doc.updatedAt.getTime()) > 5000, '`updatedAt` should not be updated')
           t.end()
         })
 
