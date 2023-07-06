@@ -42,7 +42,7 @@ const NON_MATCHING_QUERY = { price: { $gt: NON_MATCHING_PRICE } }
 const [STATION_DOC] = stationFixtures
 const STATION_ID = STATION_DOC._id.toString()
 
-tap.skip('HTTP POST /<id>/state', async t => {
+tap.test('HTTP POST /<id>/state', async t => {
   const tests = [
     {
       name: 'without filter',
@@ -97,14 +97,6 @@ tap.skip('HTTP POST /<id>/state', async t => {
       url: `/${ID}/state`,
       acl_rows: [NON_MATCHING_QUERY],
       stateTo: STATES.DRAFT,
-      id: DOC._id,
-      found: false,
-    },
-    {
-      name: 'to wrong state',
-      url: `/${ID}/state`,
-      acl_rows: undefined,
-      stateTo: 'DELETED',
       id: DOC._id,
       found: false,
     },
@@ -187,7 +179,7 @@ tap.skip('HTTP POST /<id>/state', async t => {
   })
 })
 
-tap.skip('HTTP POST /<id>/state with string id', async t => {
+tap.test('HTTP POST /<id>/state with string id', async t => {
   const tests = [
     {
       name: 'without filter',
@@ -303,6 +295,11 @@ tap.test('HTTP POST /<id>/state passing to a wrong state', async t => {
       ...baseFields,
       [__STATE__]: STATES.DRAFT,
     },
+    {
+      _id: '002415b0-8d6d-427c-b654-9857183e57a9',
+      ...baseFields,
+      [__STATE__]: STATES.TRASH,
+    },
   ]
 
   const [DELETED_STATION_DOC, PUBLIC_STATION_DOC, DRAFT_STATION_DOC] = stationFixtures
@@ -321,7 +318,19 @@ tap.test('HTTP POST /<id>/state passing to a wrong state', async t => {
       id: DRAFT_STATION_DOC._id,
     },
     {
+      name: 'from TRASH to PUBLIC',
+      url: `/${DELETED_STATION_DOC._id.toString()}/state`,
+      stateTo: STATES.PUBLIC,
+      id: DELETED_STATION_DOC._id,
+    },
+    {
       name: 'from DELETED to PUBLIC',
+      url: `/${DELETED_STATION_DOC._id.toString()}/state`,
+      stateTo: STATES.PUBLIC,
+      id: DELETED_STATION_DOC._id,
+    },
+    {
+      name: 'from DELETED to DRAFT',
       url: `/${DELETED_STATION_DOC._id.toString()}/state`,
       stateTo: STATES.PUBLIC,
       id: DELETED_STATION_DOC._id,
