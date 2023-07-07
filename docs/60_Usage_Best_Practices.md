@@ -271,7 +271,7 @@ The `GET /export` method exposed by each endpoint associated with a collection o
 :::info
 [ndjson](http://ndjson.org/) is a format that ensures the streaming of data structures, where each record is processed individually and separated by a newline (`\n`) delimiter.
 
-To properly read this format, it is necessary to specify the header `"Accept: application/x-ndjson" `within the HTTP request. This header informs the server that the client expects the response to be in nd-json format.
+To properly read this format, it is necessary to specify the header `"Accept: application/x-ndjson" `within the HTTP request. This header informs the server that the client expects the response to be in `nd-json` format.
 :::
 
 In the given scenario, we can make a single HTTP request:
