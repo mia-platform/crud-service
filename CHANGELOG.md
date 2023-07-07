@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## 6.8.0-rc.0 - 2023-07-07
+
 ### Added
 
 - [mia-platform/#256](mia-platform/community/discussions/256) configurable collection tags.
