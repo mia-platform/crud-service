@@ -165,3 +165,42 @@ tap.test('HTTP GET /count', async t => {
     })
   })
 })
+
+tap.test('HTTP GET /count fails', async t => {
+  const { fastify, collection } = await setUpTest(t)
+
+  const response = await fastify.inject({
+    method: 'GET',
+    url: `${prefix}/count?_q=${JSON.stringify({ priceargh: { $gt: 20 } })}`,
+    headers: {},
+  })
+
+  const expectedResponse = {
+    statusCode: 400,
+    error: 'Bad Request',
+    message: 'Unknown field: priceargh',
+  }
+
+  t.test('should return 400', t => {
+    t.strictSame(response.statusCode, 400)
+    t.end()
+  })
+
+  t.test('should return JSON', t => {
+    t.ok(/application\/json/.test(response.headers['content-type']))
+    t.end()
+  })
+
+  t.test('should return the expected body', t => {
+    t.strictSame(JSON.parse(response.payload), expectedResponse)
+    t.end()
+  })
+
+  t.test('should keep the document as is in database', async t => {
+    const documents = await collection.find().toArray()
+    t.strictSame(documents, fixtures)
+    t.end()
+  })
+
+  t.end()
+})
