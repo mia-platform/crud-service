@@ -253,13 +253,16 @@ When working with collections via CRUD Service, some fields will be automaticall
 
 #### Document State management
 
-We've just explained the difference between the four possible states of a document. This property can be set directly during an _insert_, and can be changed via REST API calls only in case of the following transformations:
+We've just explained the difference between the four possible states of a document. This property can be set directly during an _insert_, and can be changed via REST API calls only in the case of the following transformations:
 - a document in `PUBLIC` can be moved to `DRAFT` or `TRASH`; 
 - a document in `DRAFT` can be moved to `PUBLIC` or `TRASH`; 
 - a document in `TRASH` can be moved to `DRAFT` or `DELETED`; 
-- a document in `DELETED` can be moved to only to `TRASH`; 
+- a document in `DELETED` can be moved only to `TRASH`;
+Any request to transition to a not allowed state will be refused and a _400 Bad Request_ will be returned.
 
-Operations of hard delete are supported, although the permissions over this type of operations is defined via ACL.
+**NOTE**: Any request to transition to update the state to the current one (e.g. from `PUBLIC` to `PUBLIC`) will be executed successfully, leaving the `__STATE__` as it is, but updating the _updaterId_ and the _updatedAt_ metadata fields.
+
+Operations of hard delete are supported, although the permissions over this type of operation are defined via ACL.
   
 ### Crud service
 
