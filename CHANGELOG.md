@@ -58,6 +58,10 @@ values and select the one with the highest weight
 
 - [mia-platform/#256](https://github.com/mia-platform/community/discussions/256) configurable collection tags.
 
+### Changed
+
+- [mia-platform/[#53](https://github.com/mia-platform/crud-service/issues/53) request to transition to a not allowed state returns 400 instead of 400
+
 ### Fixed
 
 - $text search query now working on aggregation
