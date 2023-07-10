@@ -62,6 +62,7 @@ values and select the one with the highest weight
 ### Fixed
 
 - $text search query now working on aggregation
+- [#55](https://github.com/mia-platform/crud-service/issues/55) $text search query now return _400 Bad Request_ in case a field is not included in the collection JSON Schema
 - [#158](https://github.com/mia-platform/community/discussions/158) fixed wrong validation on nested objects.
 - endpoint tag format has been updated to correctly display paths with underscores
 
