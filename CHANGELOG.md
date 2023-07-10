@@ -63,7 +63,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - `__mia_configuration` property in a collection `schema` now accepts additional properties
 - improved validation message for "body must NOT have additional properties" Ajv error, now it also says the unwanted property
-- optimization of the **STATE** query sent to MongoDB: $in operator has been removed when not necessary
+- optimization of the `__STATE__` query sent to MongoDB: $in operator has been removed when not necessary
 
 ## 6.5.1 - 2023-04-20
 
@@ -216,7 +216,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Add new \_rawp's operators: $eq, $gt, $gte, $lt, $lte, $ne, $nin, $and, $not, $nor, $or, $exists, $type, $all, $elemMatch, $size, $cond, $regexMatch, $map, $mod
 
-- Add the _CRUD_MAX_LIMIT_ environment variable, for setting up the maximum limit of object per query
+- Add the `CRUD_MAX_LIMIT` environment variable, for setting up the maximum limit of object per query
 
 ### Updated
 
