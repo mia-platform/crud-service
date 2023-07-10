@@ -1093,6 +1093,38 @@ tap.test('HTTP GET / ', async t => {
       t.end()
     })
 
+    t.test('with 500 without exit if collection contains invalid data', async assert => {
+      const DOC = {
+        ...fixtures[0],
+        price: 'thisIsAstring',
+      }
+      const jsonError = [
+        {
+          'instancePath': '/price',
+          'schemaPath': '#/properties/price/type',
+          'keyword': 'type',
+          'params': {
+            'type': 'number',
+          },
+          'message': 'must be number',
+        },
+      ]
+
+      await resetCollection()
+      await collection.insertOne(DOC)
+
+      try {
+        await fastify.inject({
+          method: 'GET',
+          url: `${prefix}/`,
+        })
+        assert.fail('It should throw output validation error')
+      } catch (error) {
+        assert.strictSame(error, jsonError)
+      }
+      assert.end()
+    })
+
     t.test('with 400 for mixed _rawp and _p', async t => {
       UNALLOWED_RAW_PROJECTIONS.forEach(projection => {
         t.test('Should not allow raw projection with projection', async assert => {
