@@ -9,7 +9,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## 6.8.0-rc.1 - 2023-07-10
 
+### Fixed
+
+- #125 handled streaming error on GET / and GET /export
+
 ## 6.8.0-rc.0 - 2023-07-07
+
+### Fixed
+
+- #123 resolved performance issues on many collections
 
 ### Added
 
