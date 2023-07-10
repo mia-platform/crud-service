@@ -7,10 +7,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-### Changed
-
-- rollback to lc39 v6 due to performance issues
-
 ### Added
 
 - [mia-platform/#256](mia-platform/community/discussions/256) configurable collection tags.
