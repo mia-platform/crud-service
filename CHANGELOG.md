@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 
 - [mia-platform/#256](mia-platform/community/discussions/256) configurable collection tags.
+- #119 created route to import collection files (json, ndjson and csv)
 
 ### Fixed
 
