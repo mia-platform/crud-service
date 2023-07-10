@@ -391,3 +391,29 @@ tap.test('HTTP POST /<id>/state passing to a wrong state', async t => {
     })
   })
 })
+
+tap.test('HTTP POST /<id>/state - filter with text query (_q) with not fields not included in JSON Schema returns 400', async t => {
+  const { fastify, collection } = await setUpTest(t)
+
+  const response = await fastify.inject({
+    method: 'POST',
+    url: `${prefix}/${ID}/state?_q=${JSON.stringify({ not_a_field: 'not_a_value' })}`,
+    payload: { stateTo: STATES.PUBLIC },
+    headers: { userId: newUpdaterId },
+  })
+
+  const expectedResponse = {
+    statusCode: 400,
+    error: 'Bad Request',
+    message: 'Unknown field: not_a_field',
+  }
+
+  t.strictSame(response.statusCode, 400)
+  t.ok(/application\/json/.test(response.headers['content-type']))
+  t.strictSame(JSON.parse(response.payload), expectedResponse)
+
+  const documents = await collection.find().toArray()
+  t.strictSame(documents, fixtures)
+
+  t.end()
+})
