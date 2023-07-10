@@ -1,4 +1,4 @@
-FROM node:18.16.1-bullseye-slim as base-with-encryption
+FROM node:18.15.0-bullseye-slim as base-with-encryption
 
 WORKDIR /cryptd
 
@@ -10,7 +10,7 @@ RUN apt-get update && \
 
 ########################################################################################################################
 
-FROM node:18.16.1-bullseye-slim as build
+FROM node:18.15.0-bullseye-slim as build
 
 ARG COMMIT_SHA=<not-specified>
 ENV NODE_ENV=production
@@ -30,7 +30,7 @@ RUN echo "crud-service: $COMMIT_SHA" >> ./commit.sha
 
 # create a CRUD Service image that does not support automatic CSFLE
 # and therefore it can be employed by everybody in any MongoDB product
-FROM node:18.16.1-bullseye-slim as crud-service-no-encryption
+FROM node:18.15.0-bullseye-slim as crud-service-no-encryption
 
 RUN apt-get update \
     && apt-get install -f tini -y \
@@ -63,7 +63,7 @@ USER node
 
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
-CMD ./node_modules/.bin/lc39 ./index.js --port=${HTTP_PORT} --log-level=${LOG_LEVEL} --prefix=${SERVICE_PREFIX} --expose-metrics ${EXPOSE_METRICS}
+CMD ./node_modules/.bin/lc39 ./index.js --port=${HTTP_PORT} --log-level=${LOG_LEVEL} --prefix=${SERVICE_PREFIX} --expose-metrics ${EXPOSE_METRICS} --enable-tracing=${ENABLE_TRACING}
 
 ########################################################################################################################
 

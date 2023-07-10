@@ -47,7 +47,7 @@ const { compatibilityModelJsonSchema, modelJsonSchema } = require('./lib/model.j
 const fastifyEnvSchema = require('./envSchema')
 const { getAjvResponseValidationFunction } = require('./lib/validatorGetters')
 const { JSONPath } = require('jsonpath-plus')
-const { getPathFromPointer } = require('./lib/JSONPath.utils')
+const { pointerSeparator } = require('./lib/JSONPath.utils')
 
 const ajv = new Ajv({ useDefaults: true })
 ajvFormats(ajv)
@@ -125,7 +125,7 @@ async function registerViewCrud(fastify, { modelName, lookups }) {
       // eslint-disable-next-line no-underscore-dangle
       const doc = await crudService._mongoCollection.findOne({ _id: docId })
       const response = this.castItem(doc)
-      const validatePatch = getAjvResponseValidationFunction(request.context.schema.response['200'])
+      const validatePatch = getAjvResponseValidationFunction(request.routeSchema.response['200'])
       validatePatch(response)
       return response
     }
@@ -501,11 +501,17 @@ function getTransformedSchema(httpPartSchema) {
     ...JSONPath({
       json: httpPartSchema,
       resultType: 'pointer',
-      // we generate unionTypes to correctly validate data
-      // we need to remove these unionTypes from swagger to make it work correctly
       path: '$..[?(@ && @.type && Array.isArray(@.type))]',
     })
-      .map(pointer => `${getPathFromPointer(pointer)}.type`),
+      .map(pointer => [
+        `${pointer
+          .slice(1)
+          .replace(pointerSeparator, '.')}.type`,
+        `${pointer
+          .slice(1)
+          .replace(pointerSeparator, '.')}.nullable`,
+      ])
+      .flat(),
   ]
 
   const response = httpPartSchema

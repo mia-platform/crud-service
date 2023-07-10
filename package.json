@@ -29,9 +29,9 @@
     "version": "npm run update-changelog && npm run update-docker-version && rm -fr Dockerfile.bck && git add CHANGELOG.md Dockerfile"
   },
   "dependencies": {
-    "@fastify/env": "^3.0.0",
-    "@fastify/mongodb": "^5.0.0",
-    "@mia-platform/lc39": "^6.0.2",
+    "@fastify/env": "^4.2.0",
+    "@fastify/mongodb": "^6.2.0",
+    "@mia-platform/lc39": "^7.0.0",
     "@mia-platform/mongodb-healthchecker": "^1.0.1",
     "ajv-formats": "^2.1.1",
     "ajv-keywords": "^5.1.0",
