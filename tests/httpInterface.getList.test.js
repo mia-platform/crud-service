@@ -834,8 +834,7 @@ tap.test('HTTP GET / - $text search', async t => {
 })
 
 tap.test('HTTP GET / ', async t => {
-  const { fastify, collection, resetCollection } = await setUpTest(t, [])
-
+  const { fastify, collection, resetCollection } = await setUpTest(t, [], undefined, undefined, true)
   t.test('cast correctly nested object with schema', async t => {
     const DOC_TEST = {
       _id: ObjectId.createFromHexString('211111111111111111111111'),

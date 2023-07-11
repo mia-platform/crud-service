@@ -171,6 +171,7 @@ const registerDatabase = fp(registerMongoInstances, { decorators: { fastify: ['c
 async function iterateOverCollectionDefinitionAndRegisterCruds(fastify) {
   fastify.decorate('castCollectionId', castCollectionId(fastify))
   fastify.decorate('userIdHeaderKey', fastify.config.USER_ID_HEADER_KEY.toLowerCase())
+  fastify.decorate('validateOutput', fastify.config.ENABLE_STRICT_OUTPUT_VALIDATION)
 
   for (const [modelName, model] of Object.entries(fastify.models)) {
     const { isView, viewLookupsEnabled, viewDependencies } = model
