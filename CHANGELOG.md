@@ -9,19 +9,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
-- Implemented the option to enable strict validation at output.
-
-## 6.8.0-rc.1 - 2023-07-10
+- [#129](https://github.com/mia-platform/crud-service/pull/129) introduce the option to enable strict validation on service responses
 
 ### Fixed
 
-- #125 handled streaming error on GET / and GET /export
-
-## 6.8.0-rc.0 - 2023-07-07
-
-### Fixed
-
-- #123 resolved performance issues on many collections
+- [#125](https://github.com/mia-platform/crud-service/pull/125) handled streaming error on GET / and GET /export
+- [#123](https://github.com/mia-platform/crud-service/pull/123) resolved performance issues on many collections
 
 ### Added
 
