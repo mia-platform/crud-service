@@ -214,7 +214,7 @@ The previously written procedure can be adapted as follows:
 - `GET /my_single_view/?_sk=75&_l=25&_q=<mongodb query url-encoded>`
 
 
-You would replace `your iso date` with the actual ISO-formatted date and time indicating the starting point for filtering the updatedAt field. This allows retrieving only the records that were updated after that specified date.
+You would replace `your iso date` with the actual ISO-formatted date and time indicating the starting point for filtering the `updatedAt` field. This allows retrieving only the records that were updated after that specified date.
 
 :::caution
 Since the result could be smaller than the total size of the collection (i.e., 100 records), some of these requests may return an empty array, indicating that there are no more records to retrieve. This can lead to the pagination procedure ending earlier than expected.
