@@ -1,0 +1,97 @@
+name: Docker container release
+
+on:
+  workflow_call:
+    inputs:
+      push:
+        default: false
+        required: false
+        type: boolean
+      version:
+        required: true
+        type: string
+    secrets:
+      username:
+        required: true
+      token:
+        required: true
+      security_checks_token:
+        required: true
+
+jobs:
+  release-docker:
+    name: Build web-server docker container
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Configure docker metadata
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: |
+            ghcr.io/mia-platform/crud-service
+            docker.io/miaplatform/crud-service
+          tags: |
+            type=ref,event=branch
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+          labels: |
+            org.opencontainers.image.documentation=https://github.com/mia-platform/crud-service
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Docker Login to ghcr.io
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.username }}
+          password: ${{ secrets.token }}
+
+      - name: Prepare build cache
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+          build-args: |
+            BUILDTIME=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.created'] }}
+            VERSION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
+
+  security-checks:
+    needs:
+      - release-docker
+    name: Triggers security checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Invoke API
+        if: ${{ inputs.push }}
+        run: |
+          curl --request POST \
+            --form token=${{ secrets.security_checks_token }} \
+            --form ref=main \
+            --form "variables[VERSION]=${{ inputs.version }}" \
+            --form "variables[CHECKSUM]=${{ needs.release-docker.outputs.checksum }}" \
+            "https://git.tools.mia-platform.eu/api/v4/projects/86291/trigger/pipeline"
