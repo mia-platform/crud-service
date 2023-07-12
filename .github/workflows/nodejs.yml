@@ -117,3 +117,21 @@ jobs:
           build-args: |
             BUILDTIME=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.created'] }}
             VERSION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
+
+  security-checks:
+    needs:
+      - build
+    name: Triggers security checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Invoke API
+        if: ${{ inputs.push }}
+        run: |
+          curl --request POST \
+            --form token=${{ secrets.CRUD_SERVICE_SYSDIG_CHECK_TRIGGER }} \
+            --form ref=main \
+            --form "variables[VERSION]=${{ inputs.version }}" \
+            --form "variables[CHECKSUM]=${{ needs.release-docker.outputs.checksum }}" \
+            "https://git.tools.mia-platform.eu/api/v4/projects/86291/trigger/pipeline"
+
