@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+- [#119](https://github.com/mia-platform/crud-service/pull/119) created route to import collection files (json, ndjson and csv)
+
 ## 6.8.0 - 2023-07-11
 
 ### Added
@@ -21,7 +25,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 
 - [mia-platform/#256](mia-platform/community/discussions/256) configurable collection tags.
-- #119 created route to import collection files (json, ndjson and csv)
 
 ### Fixed
 
