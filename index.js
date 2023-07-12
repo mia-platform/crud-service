@@ -19,6 +19,7 @@
 
 const fp = require('fastify-plugin')
 const fastifyEnv = require('@fastify/env')
+const fastifyMultipart = require('@fastify/multipart')
 
 const Ajv = require('ajv')
 const ajvFormats = require('ajv-formats')
@@ -436,8 +437,16 @@ async function setupCruds(fastify) {
 }
 
 module.exports = async function plugin(fastify, opts) {
-  fastify
+  await fastify
     .register(fastifyEnv, { schema: fastifyEnvSchema, data: opts })
+  fastify.register(fastifyMultipart, {
+    limits: {
+      fields: 5,
+      // Conversion Byte to Mb
+      fileSize: fastify.config.MAX_MULTIPART_FILE_BYTES * 1000000,
+      files: 1,
+    },
+  })
     .register(fp(setupCruds, { decorators: { fastify: ['config'] } }))
 }
 

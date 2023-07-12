@@ -1,0 +1,8 @@
+[
+    {
+        "_id": "64940bd37955234169667b47",
+        "name": "Pride and Prejudice",
+        "isbn": "fake isbn 2",
+        "publishDate": "InvalidDate"
+    }
+]

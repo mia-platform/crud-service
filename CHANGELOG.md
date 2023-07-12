@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
+- [#119](https://github.com/mia-platform/crud-service/pull/119) created route to import collection files (json, ndjson and csv)
+
+## 6.8.0 - 2023-07-11
+
+### Added
+
 - [#129](https://github.com/mia-platform/crud-service/pull/129) introduce the option to enable strict validation on service responses
 
 ### Fixed
