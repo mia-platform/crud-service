@@ -32,8 +32,9 @@ RUN echo "crud-service: $COMMIT_SHA" >> ./commit.sha
 # and therefore it can be employed by everybody in any MongoDB product
 FROM node:18.16.1-bullseye-slim as crud-service-no-encryption
 
+# note: libssl1.1 can be removed once node image version is updated
 RUN apt-get update \
-    && apt-get install -f tini -y \
+    && apt-get install -f tini libssl1.1 -y \
     && apt-get clean autoclean -y \
     && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/*
