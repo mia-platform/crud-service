@@ -34,7 +34,8 @@ async function setUpTest(
   tap,
   testFixtures = fixtures,
   mongoDBCollectionName = BOOKS_COLLECTION_NAME,
-  exposeMetrics = false
+  exposeMetrics = false,
+  strictOutputValidation = false
 ) {
   const databaseName = getMongoDatabaseName()
   const mongoURL = getMongoURL(databaseName)
@@ -52,6 +53,7 @@ async function setUpTest(
     COLLECTION_DEFINITION_FOLDER: join(__dirname, 'collectionDefinitions'),
     CRUD_LIMIT_CONSTRAINT_ENABLED,
     CRUD_MAX_LIMIT,
+    ENABLE_STRICT_OUTPUT_VALIDATION: strictOutputValidation,
     // The header key is case-insensitive. nodejs makes it lower case
     // Here is not in lower case for testing it
     USER_ID_HEADER_KEY: 'userId',

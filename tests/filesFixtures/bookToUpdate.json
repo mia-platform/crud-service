@@ -1,0 +1,79 @@
+[
+    {
+        "_id": "64940bd37955234169667b47",
+        "name": "Pride and Prejudice",
+        "author": "Jane Austen",
+        "authorAddressId": "aaaaaaaaaaaaaaaaaaaaaaab",
+        "isbn": "Updated ISBN",
+        "publishDate": "2023-01-01T00:00:00.000Z",
+        "price": 15.99,
+        "isPromoted": false,
+        "position": [
+            10,
+            20,
+            30.5
+        ],
+        "tags": [
+            "romance",
+            "classic"
+        ],
+        "tagIds": [
+            2,
+            6
+        ],
+        "additionalInfo": {
+            "footnotePages": [
+                10,
+                20,
+                30,
+                40,
+                50
+            ],
+            "foo": 50,
+            "notes": {
+                "mynote": "intriguing"
+            }
+        },
+        "metadata": {
+            "somethingNumber": 2,
+            "somethingString": "meta-string-2",
+            "somethingArrayObject": [
+                {
+                    "arrayItemObjectChildNumber": 5
+                }
+            ],
+            "somethingArrayOfNumbers": [
+                2,
+                3
+            ]
+        },
+        "attachments": [
+            {
+                "name": "attachment-2",
+                "neastedArr": [
+                    4,
+                    5,
+                    6
+                ],
+                "detail": {
+                    "size": 10
+                }
+            },
+            {
+                "name": "attachment-2b",
+                "other": "extra-info-2b"
+            }
+        ],
+        "editionsDates": [
+            {
+                "edition": 2,
+                "date": "2019-06-08T00:00:00.000Z"
+            },
+            {
+                "edition": 1,
+                "date": "2018-05-01T00:00:00.000Z"
+            }
+        ],
+        "__STATE__": "PUBLIC"
+    }
+]

@@ -834,8 +834,7 @@ tap.test('HTTP GET / - $text search', async t => {
 })
 
 tap.test('HTTP GET / ', async t => {
-  const { fastify, collection, resetCollection } = await setUpTest(t, [])
-
+  const { fastify, collection, resetCollection } = await setUpTest(t, [], undefined, undefined, true)
   t.test('cast correctly nested object with schema', async t => {
     const DOC_TEST = {
       _id: ObjectId.createFromHexString('211111111111111111111111'),
@@ -1091,6 +1090,38 @@ tap.test('HTTP GET / ', async t => {
       })
 
       t.end()
+    })
+
+    t.test('with 500 without exit if collection contains invalid data', async assert => {
+      const DOC = {
+        ...fixtures[0],
+        price: 'thisIsAstring',
+      }
+      const jsonError = [
+        {
+          'instancePath': '/price',
+          'schemaPath': '#/properties/price/type',
+          'keyword': 'type',
+          'params': {
+            'type': 'number',
+          },
+          'message': 'must be number',
+        },
+      ]
+
+      await resetCollection()
+      await collection.insertOne(DOC)
+
+      try {
+        await fastify.inject({
+          method: 'GET',
+          url: `${prefix}/`,
+        })
+        assert.fail('It should throw output validation error')
+      } catch (error) {
+        assert.strictSame(error, jsonError)
+      }
+      assert.end()
     })
 
     t.test('with 400 for mixed _rawp and _p', async t => {

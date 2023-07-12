@@ -53,6 +53,17 @@ const properties = {
     description: 'Change the maximum limit of objects returned by a Mongo query',
     default: 200,
   },
+  ENABLE_STRICT_OUTPUT_VALIDATION: {
+    type: 'boolean',
+    description: 'Enable CRUD responses to be compliant with the schema (Changing the schema without sanitizing the data could break GETs)',
+    default: false,
+  },
+  MAX_MULTIPART_FILE_BYTES: {
+    type: 'number',
+    description: 'The max size (Mb) that is possible to process in multipart requests',
+    default: 100,
+    minimum: 1,
+  },
   TRUSTED_PROXIES: { type: 'string', default: '10.0.0.0/8,172.16.0.0/12,192.168.0.0/16' },
   KMS_PROVIDER: { type: 'string', enum: ['gcp', 'local', 'none'], description: 'Master key manager', default: 'none' },
   ALLOW_DISK_USE_IN_QUERIES: {

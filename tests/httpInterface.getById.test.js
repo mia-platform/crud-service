@@ -486,7 +486,7 @@ tap.test('HTTP GET /<id> with string id', async t => {
 })
 
 tap.test('HTTP GET', async t => {
-  const { fastify, resetCollection } = await setUpTest(t, null, 'books')
+  const { fastify, resetCollection } = await setUpTest(t, null, 'books', undefined, true)
 
   t.test('/:id cast correctly nested object with schema', async t => {
     const DOC_TEST = {

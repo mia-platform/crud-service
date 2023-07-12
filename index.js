@@ -19,6 +19,7 @@
 
 const fp = require('fastify-plugin')
 const fastifyEnv = require('@fastify/env')
+const fastifyMultipart = require('@fastify/multipart')
 
 const Ajv = require('ajv')
 const ajvFormats = require('ajv-formats')
@@ -171,6 +172,7 @@ const registerDatabase = fp(registerMongoInstances, { decorators: { fastify: ['c
 async function iterateOverCollectionDefinitionAndRegisterCruds(fastify) {
   fastify.decorate('castCollectionId', castCollectionId(fastify))
   fastify.decorate('userIdHeaderKey', fastify.config.USER_ID_HEADER_KEY.toLowerCase())
+  fastify.decorate('validateOutput', fastify.config.ENABLE_STRICT_OUTPUT_VALIDATION)
 
   for (const [modelName, model] of Object.entries(fastify.models)) {
     const { isView, viewLookupsEnabled, viewDependencies } = model
@@ -435,8 +437,16 @@ async function setupCruds(fastify) {
 }
 
 module.exports = async function plugin(fastify, opts) {
-  fastify
+  await fastify
     .register(fastifyEnv, { schema: fastifyEnvSchema, data: opts })
+  fastify.register(fastifyMultipart, {
+    limits: {
+      fields: 5,
+      // Conversion Byte to Mb
+      fileSize: fastify.config.MAX_MULTIPART_FILE_BYTES * 1000000,
+      files: 1,
+    },
+  })
     .register(fp(setupCruds, { decorators: { fastify: ['config'] } }))
 }
 

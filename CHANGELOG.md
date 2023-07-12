@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## 6.8.0 - 2023-07-11
+
+### Added
+
+- [#119](https://github.com/mia-platform/crud-service/pull/119) created route to import collection files (json, ndjson and csv)
+
+## 6.8.0 - 2023-07-11
+
+### Added
+
+- [#129](https://github.com/mia-platform/crud-service/pull/129) introduce the option to enable strict validation on service responses
+
+### Fixed
+
+- [#125](https://github.com/mia-platform/crud-service/pull/125) handled streaming error on GET / and GET /export
+- [#123](https://github.com/mia-platform/crud-service/pull/123) resolved performance issues on many collections
+
 ### Added
 
 - [mia-platform/#256](mia-platform/community/discussions/256) configurable collection tags.
@@ -59,7 +76,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - `__mia_configuration` property in a collection `schema` now accepts additional properties
 - improved validation message for "body must NOT have additional properties" Ajv error, now it also says the unwanted property
-- optimization of the __STATE__ query sent to MongoDB: $in operator has been removed when not necessary
+- optimization of the `__STATE__` query sent to MongoDB: $in operator has been removed when not necessary
 
 ## 6.5.1 - 2023-04-20
 
@@ -72,8 +89,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 
 - Collections configuration files can now accept a new field `schema` which allows to define the collection data model by means of a JSON Schema.
-The property `schema` in the configuration files is an _opt-in_ feature and when defined it takes precedence over the `fields` property.  
-Though the latter property is still supported, it is recommended to convert your collections to adopt a JSON schema definition to access the new functionality offered by JSON schema.
+  The property `schema` in the configuration files is an _opt-in_ feature and when defined it takes precedence over the `fields` property.  
+  Though the latter property is still supported, it is recommended to convert your collections to adopt a JSON schema definition to access the new functionality offered by JSON schema.
 - `$pull` operator support
 - `$addToSet` supports mongo operators
 
@@ -133,7 +150,7 @@ Though the latter property is still supported, it is recommended to convert your
 
 ### Changed
 
-- Fields stored as string are casted to number if requested by schema 
+- Fields stored as string are casted to number if requested by schema
 
 ## 6.1.1 - 2022-11-22
 
@@ -181,14 +198,14 @@ Though the latter property is still supported, it is recommended to convert your
 
 - Refactored Partial Indexes configuration properties, in order to be more aligned to what is displayed on the Console Frontend
 - replaced deprecated `fastify-mongodb` and `fastify-env` with their respective
-namespace scoped version `@fastify/mongodb` and `fastify/env`
+  namespace scoped version `@fastify/mongodb` and `fastify/env`
 - remove multi-type definitions (`["<type>", "null"]`) to exploit only `nullable` attribute
-when defining that a property can be set to `null`
+  when defining that a property can be set to `null`
 - replace `standard` and `snazzy` with Mia `eslint` configuration,
-refactoring code where needed to match the latest code styles
+  refactoring code where needed to match the latest code styles
 - set Fastify to use Ajv v8 compiler
 - upgraded Ajv to v8, adopting its newer (and stricter) default configs.
-This required to review source code and tests according to the [migration guide](https://ajv.js.org/v6-to-v8-migration.html).
+  This required to review source code and tests according to the [migration guide](https://ajv.js.org/v6-to-v8-migration.html).
 - upgraded service dependencies
 
 ### Add
@@ -210,9 +227,9 @@ This required to review source code and tests according to the [migration guide]
 
 ### Add
 
-- Add new _rawp's operators: $eq, $gt, $gte, $lt, $lte, $ne, $nin, $and, $not, $nor, $or, $exists, $type, $all, $elemMatch, $size, $cond, $regexMatch, $map, $mod
+- Add new \_rawp's operators: $eq, $gt, $gte, $lt, $lte, $ne, $nin, $and, $not, $nor, $or, $exists, $type, $all, $elemMatch, $size, $cond, $regexMatch, $map, $mod
 
-- Add the *CRUD_MAX_LIMIT* environment variable, for setting up the maximum limit of object per query
+- Add the `CRUD_MAX_LIMIT` environment variable, for setting up the maximum limit of object per query
 
 ### Updated
 
@@ -240,7 +257,7 @@ This required to review source code and tests according to the [migration guide]
 
 ### Fixed
 
--  Throw error on findAll stream error event
+- Throw error on findAll stream error event
 
 ## 5.2.3 - 2022-05-04
 
@@ -316,6 +333,7 @@ Known limitation in this version:
 ## 4.4.0 - 2021-09-30
 
 ### Added
+
 - Client side field level encryption
 
 ### Fixed
@@ -359,9 +377,10 @@ Known limitation in this version:
 
 ## 4.0.0 - 2021-06-17
 
-## 3.3.0 - 2021-06-17  [Unpublished]
+## 3.3.0 - 2021-06-17 [Unpublished]
 
 ### Added
+
 - support `__STATE__` change of multiple documents using a filter and without knowing the `_id` of each one.
 
 ### Breaking Change
@@ -371,6 +390,7 @@ Known limitation in this version:
 ## 3.2.3 - 2021-04-29
 
 ### Fixed
+
 - fix `checkNormalIndexEquality` comparison
 
 ## 3.2.2 - 2021-03-04
@@ -382,16 +402,19 @@ Known limitation in this version:
 ## 3.2.1 - 2021-01-29
 
 ### Fixed
+
 - patch with unset of ObjectId field no longer fails
 
 ## 3.2.0 - 2020-12-02
 
 ### Added
+
 - support json schema for RawObject and array of RawObject field properties
 
 ## 3.1.2 - 2020-11-04
 
 ### Added
+
 - castToObjectId allow also null value as input and return null itself.
 
 ## 3.1.1
@@ -405,12 +428,13 @@ Known limitation in this version:
 
 ### Added
 
- - Allow $inc, $set, $unset on sub properties of raw object
+- Allow $inc, $set, $unset on sub properties of raw object
 
 ## 3.0.1 - 2020-10-02
 
 ### Update
-- update lc39 to v3.1.3. 
+
+- update lc39 to v3.1.3.
 
 ## 3.0.0 - 2020-09-29
 
@@ -423,14 +447,17 @@ Known limitation in this version:
 ## 2.2.0 - 2020-07-14
 
 ### Added
+
 - Expose some metrics about collections
 
 ### Update
+
 - lc39 to v3.1.0
 
 ## 2.1.6 - 2020-05-26
 
 ### Fixed
+
 - Omit required if empty
 
 ## 2.1.5 - 2020-05-26
@@ -440,6 +467,7 @@ Known limitation in this version:
 ## 2.1.4 - 2020-04-15
 
 ### Changed
+
 - Remove default limit from /export
 
 ## 2.1.3 - 2020-01-31
@@ -460,50 +488,58 @@ Known limitation in this version:
 ### Added
 
 - handle ttl index
-- support _id of type string
+- support \_id of type string
 
 ## 2.0.1 - 2019-10-16
 
 ### Fix
-- Fixed missing data in __STATE__ field of post and post-bulk json schema
+
+- Fixed missing data in **STATE** field of post and post-bulk json schema
 
 ## v2.0.0 - 2019-07-03
 
 ### BREAKING CHANGE
+
 - Implement nullable flag.
   Before this, the nullable flag is ignored. The default behavior is to convert `null` into falsy value for the field type type.
   For example, for an integer `null` value is converted to `0`, for a string to `''` (empty string).
 
 ### Added
+
 - Both the handlers of `/-/check-up` and `/-/healthz` route check the connection to Mongo.
 
-
 ## v1.2.0 (Jun 25, 2019)
+
 ### Added:
-  - Support for the CRUD_LIMIT_CONSTRAINT_ENABLED env variables to enable constraints on minimum,
-    maximum and default values. New limits are: maximum 200, minimum 1 and default 25
+
+- Support for the CRUD_LIMIT_CONSTRAINT_ENABLED env variables to enable constraints on minimum,
+  maximum and default values. New limits are: maximum 200, minimum 1 and default 25
 
 ## v1.1.0
 
 Changes that have landed in master but are not yet released.
 
 ### Added:
-  - Support for patching array items. The `$set` command works properly on both primitive and `RawObject` item types, by using `array.$.replace` and `array.$.merge` as keys in the `$set` command object.
-  This feature involves the following CRUD operations:
-    - Patch by ID
-    - Patch many
-    - Patch bulk
-  - `array.$.replace` Replace entirely the query-matching array item with the content passed as value.
-  - `array.$.merge`   Edits only the specified fields of the query-matching array item with the content passed as value.
 
-See below for some sample cURLs for **/PATCH** */books-endpoint/{:id}*   where ```_q={"attachments.name": "John Doe", _st: "PUBLIC"}```
+- Support for patching array items. The `$set` command works properly on both primitive and `RawObject` item types, by using `array.$.replace` and `array.$.merge` as keys in the `$set` command object.
+  This feature involves the following CRUD operations:
+  - Patch by ID
+  - Patch many
+  - Patch bulk
+- `array.$.replace` Replace entirely the query-matching array item with the content passed as value.
+- `array.$.merge` Edits only the specified fields of the query-matching array item with the content passed as value.
+
+See below for some sample cURLs for **/PATCH** _/books-endpoint/{:id}_ where `_q={"attachments.name": "John Doe", _st: "PUBLIC"}`
 
 **Case Merge**
+
 ```
 curl -X PATCH "http://crud-service:3000/books-endpoint/5cf83b600000000000000000?_q=%7B%22attachments.name%22%3A%20%22John%20Doe%22%7D&_st=PUBLIC" -H "accept: application/json" -H "Content-Type: application/json" -d "{ "$set": { "attachments.$.merge": { "name": "renamed attachment" } }}"
 
 ```
+
 **Case Replace**
+
 ```
 curl -X PATCH "http://crud-service:3000/books-endpoint/5cf83b600000000000000000?_q=%7B%22attachments.name%22%3A%20%22John%20Doe%22%7D&_st=PUBLIC" -H "accept: application/json" -H "Content-Type: application/json" -d "{ "$set": { "attachments.$.replace": { "name": "renamed attachment", content: "Lorem ipsum dolor sit amet", "state": "attached" } }}"
 ```
