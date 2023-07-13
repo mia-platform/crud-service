@@ -19,7 +19,7 @@ on:
 
 jobs:
   release-docker:
-    name: Build web-server docker container
+    name: Build docker image
     runs-on: ubuntu-latest
 
     steps:
