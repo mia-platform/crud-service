@@ -7,6 +7,9 @@ on:
         default: 18.x
         required: false
         type: string
+    secrets:
+      token:
+        required: true
 
 jobs:
   tests:
@@ -48,6 +51,6 @@ jobs:
       - name: Coveralls
         uses: coverallsapp/github-action@master
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.token }}
         # allow the pipeline to continue even when the coverage decreases
         continue-on-error: true
