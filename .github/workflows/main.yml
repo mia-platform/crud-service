@@ -1,7 +1,7 @@
 name: Main
 
 env:
-  node-version: 18.x
+  NODE_VERSION: 18.x
 
 on:
   workflow_dispatch:
@@ -26,7 +26,7 @@ jobs:
       - checks
     uses: ./.github/workflows/tests.yml
     with:
-      node-version: $node-version
+      node-version: $NODE_VERSION
 
   release-docker:
     needs:
