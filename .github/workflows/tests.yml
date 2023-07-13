@@ -2,11 +2,6 @@ name: Tests
 
 on:
   workflow_call:
-    inputs:
-      node-version:
-        default: 18.x
-        required: false
-        type: string
     secrets:
       token:
         required: true
@@ -16,14 +11,15 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
+        node-version: [18.x]
         mongodb-version: ["4.2", "4.4", "5.0", "6.0"]
     steps:
       - uses: actions/checkout@v3
 
-      - name: Use Node.js ${{ inputs.node-version }}
+      - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ inputs.node-version }}
+          node-version: ${{ matrix.node-version }}
           cache: npm
 
       - name: Install

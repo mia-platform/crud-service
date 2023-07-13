@@ -1,8 +1,5 @@
 name: Main
 
-env:
-  node-version: 18.x
-
 on:
   workflow_dispatch:
   push:
@@ -26,8 +23,6 @@ jobs:
     needs:
       - checks
     uses: ./.github/workflows/tests.yml
-    with:
-      node-version: ${{ env.node-version }}
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
 
