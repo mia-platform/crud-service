@@ -42,7 +42,7 @@ jobs:
     secrets:
       docker_username: ${{ secrets.BOT_DOCKER_USERNAME }}
       docker_token: ${{ secrets.BOT_DOCKER_TOKEN }}
-      github_token: ${{ secrets.GITHUB_TOKEN }}
+      github_cr_token: ${{ secrets.GITHUB_TOKEN }}
       security_checks_token: ${{ secrets.CRUD_SERVICE_SYSDIG_CHECK_TRIGGER }}
 
   security-checks:
