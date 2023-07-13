@@ -1,38 +1,27 @@
 name: Tag CI
 
-env:
-  node-version: 18.x
-
 on:
   push:
     tags:
-      - "v**"
+      - "v*"
 
 jobs:
-  next-version:
-    runs-on: ubuntu-latest
-    if: ${{ startsWith(github.ref, 'refs/tags/v') }}
-    outputs:
-      version: ${{ steps.get-version.outputs.version }}
-
-    steps:
-      - name: Compute tag version
-        id: get-version
-        run: |
-          VERSION=${GITHUB_REF#refs/tags/}
-          echo "version=$(echo ${VERSION} | sed s/^v//)" >> $GITHUB_OUTPUT
+  tests:
+    uses: ./.github/workflows/tests.yml
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
 
   release-docker:
     needs:
-      - next-version
+      - tests
     if: ${{ startsWith(github.ref, 'refs/tags/v') }}
     uses: ./.github/workflows/release-docker.yml
     with:
       push: true
-      version: ${{ needs.next-version.outputs.version }}
     secrets:
-      username: ${{ secrets.BOT_DOCKER_USERNAME }}
-      token: ${{ secrets.BOT_DOCKER_TOKEN }}
+      docker_username: ${{ secrets.BOT_DOCKER_USERNAME }}
+      docker_token: ${{ secrets.BOT_DOCKER_TOKEN }}
+      github_cr_token: ${{ secrets.GITHUB_TOKEN }}
       security_checks_token: ${{ secrets.CRUD_SERVICE_SYSDIG_CHECK_TRIGGER }}
 
   release:
