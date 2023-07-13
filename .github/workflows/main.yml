@@ -27,7 +27,9 @@ jobs:
     uses: ./.github/workflows/tests.yml
     with:
       node-version: $NODE_VERSION
-
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
+      
   release-docker:
     needs:
       - tests
