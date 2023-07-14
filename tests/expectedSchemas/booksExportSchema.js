@@ -23,6 +23,21 @@ module.exports = {
     'books endpoint',
     'Library',
   ],
+  'headers': {
+    'operationId': 'books__MIA__export__MIA__headers',
+    'type': 'object',
+    'properties': {
+      'accept': {
+        'type': 'string',
+        'enum': [
+          '*/*',
+          'application/json',
+          'application/x-ndjson',
+          'text/csv',
+        ],
+      },
+    },
+  },
   'querystring': {
     'operationId': 'books__MIA__export__MIA__querystring',
     'type': 'object',

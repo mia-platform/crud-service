@@ -22,12 +22,11 @@ const {
   publicFixtures,
   fixtures,
   stationFixtures,
+  lotOfBooksFixtures,
   RAW_PROJECTION,
   RAW_PROJECTION_FIRST_OP,
   RAW_PROJECTION_PLAIN_INCLUSIVE,
   RAW_PROJECTION_PLAIN_EXCLUSIVE,
-  BAD_RAW_PROJECTIONS_USAGE,
-  UNALLOWED_RAW_PROJECTIONS,
   sortByPrice,
   sortByName,
   sortByDate,
@@ -35,7 +34,8 @@ const {
   sortByAdditionalInfo,
 } = require('./utils')
 const { setUpTest, prefix, stationsPrefix, getHeaders } = require('./httpInterface.utils')
-const { ObjectId } = require('mongodb')
+const booksCollectionDefinition = require('./collectionDefinitions/books')
+const csvStringify = require('csv-stringify/sync')
 
 const [STATION_DOC] = stationFixtures
 const HTTP_STATION_DOC = JSON.parse(JSON.stringify(STATION_DOC))
@@ -78,11 +78,11 @@ const EXPECTED_PUBLIC_DOCS_FOR_INCLUSIVE_RAW_PROJECTION = publicFixtures.map((do
     }
 })
 
-tap.test('HTTP GET /', async t => {
+tap.test('HTTP GET /export', async t => {
   const tests = [
     {
       name: 'without filters',
-      url: '/',
+      url: '/export',
       acl_rows: undefined,
       found: HTTP_PUBLIC_FIXTURES.concat([]).sort((a, b) => {
         if (a._id === b._id) {
@@ -93,21 +93,21 @@ tap.test('HTTP GET /', async t => {
     },
     {
       name: 'with sorting',
-      url: '/?_s=price',
+      url: '/export?_s=price',
       acl_rows: undefined,
       found: HTTP_PUBLIC_FIXTURES.concat([])
         .sort((a, b) => sortByPrice(a, b, 1)),
     },
     {
       name: 'with invert sorting',
-      url: '/?_s=-price',
+      url: '/export?_s=-price',
       acl_rows: undefined,
       found: HTTP_PUBLIC_FIXTURES.concat([])
         .sort((a, b) => sortByPrice(a, b, -1)),
     },
     {
       name: 'with multiple sorting COMMA',
-      url: '/?_s=price,name',
+      url: '/export?_s=price,name',
       acl_rows: undefined,
       found: HTTP_PUBLIC_FIXTURES.concat([])
         .sort((a, b) => sortByName(a, b, 1))
@@ -115,7 +115,7 @@ tap.test('HTTP GET /', async t => {
     },
     {
       name: 'with multiple invert sorting COMMA',
-      url: '/?_s=-price,-name',
+      url: '/export?_s=-price,-name',
       acl_rows: undefined,
       found: HTTP_PUBLIC_FIXTURES.concat([])
         .sort((a, b) => sortByName(a, b, -1))
@@ -123,7 +123,7 @@ tap.test('HTTP GET /', async t => {
     },
     {
       name: 'with multiple: normal sorting for first, invert second MULTIPLE QUERYSTRING',
-      url: '/?_s=price&_s=-name',
+      url: '/export?_s=price&_s=-name',
       acl_rows: undefined,
       found: HTTP_PUBLIC_FIXTURES.concat([])
         .sort((a, b) => sortByName(a, b, -1))
@@ -131,7 +131,7 @@ tap.test('HTTP GET /', async t => {
     },
     {
       name: 'with multiple: normal sorting for first, invert for second with subfield, normal for third COMMA',
-      url: '/?_s=price,-attachments.name,publishDate',
+      url: '/export?_s=price,-attachments.name,publishDate',
       acl_rows: undefined,
       found: HTTP_PUBLIC_FIXTURES.concat([])
         .sort((a, b) => sortByDate(a, b, 1))
@@ -140,7 +140,7 @@ tap.test('HTTP GET /', async t => {
     },
     {
       name: 'with multiple: normal sorting for first and second (nested array) MULTIPLE QUERYSTRING',
-      url: '/?_s=price&_s=attachments.name',
+      url: '/export?_s=price&_s=attachments.name',
       acl_rows: undefined,
       found: HTTP_PUBLIC_FIXTURES.concat([])
         .sort((a, b) => sortByAttachmentsName(a, b, 1))
@@ -148,7 +148,7 @@ tap.test('HTTP GET /', async t => {
     },
     {
       name: 'with multiple sorting, first RawObject and second normal field',
-      url: '/?_s=additionalInfo.notes&_s=price',
+      url: '/export?_s=additionalInfo.notes&_s=price',
       acl_rows: undefined,
       found: HTTP_PUBLIC_FIXTURES.concat([])
         .sort((a, b) => sortByAdditionalInfo(a, b, 1))
@@ -156,7 +156,7 @@ tap.test('HTTP GET /', async t => {
     },
     {
       name: 'with skip and limit',
-      url: '/?_l=2&_sk=1',
+      url: '/export?_l=2&_sk=1',
       found: HTTP_PUBLIC_FIXTURES.concat([]).sort((a, b) => {
         if (a._id === b._id) {
           return 0
@@ -167,43 +167,43 @@ tap.test('HTTP GET /', async t => {
     },
     {
       name: 'with projection',
-      url: '/?_p=price,name,author',
+      url: '/export?_p=price,name,author',
       acl_rows: undefined,
-      found: HTTP_PUBLIC_FIXTURES.map(f => ({ _id: f._id, price: f.price, name: f.name, author: f.author })),
+      found: HTTP_PUBLIC_FIXTURES.map(f => ({ _id: f._id, name: f.name, author: f.author, price: f.price })),
     },
     {
       name: 'with query filter',
-      url: `/?price=${publicFixtures[0].price}`,
+      url: `/export?price=${publicFixtures[0].price}`,
       acl_rows: undefined,
       found: HTTP_PUBLIC_FIXTURES.filter(f => f.price === publicFixtures[0].price),
     },
     {
       name: 'with filter',
-      url: `/?_q=${JSON.stringify({ price: { $gt: 20 } })}`,
+      url: `/export?_q=${JSON.stringify({ price: { $gt: 20 } })}`,
       acl_rows: undefined,
       found: HTTP_PUBLIC_FIXTURES.filter(f => f.price > 20),
     },
     {
       name: 'with filter regex',
-      url: `/?_q=${JSON.stringify({ name: { $regex: 'ulysses', $options: 'si' } })}`,
+      url: `/export?_q=${JSON.stringify({ name: { $regex: 'ulysses', $options: 'si' } })}`,
       acl_rows: undefined,
       found: HTTP_PUBLIC_FIXTURES.filter(f => /ulysses/i.test(f.name)),
     },
     {
       name: 'with non-matching filter',
-      url: `/?_q=${JSON.stringify({ price: { $gt: 20000000 } })}`,
+      url: `/export?_q=${JSON.stringify({ price: { $gt: 20000000 } })}`,
       acl_rows: undefined,
       found: [],
     },
     {
       name: 'with filter with null values',
-      url: `/?_q=${JSON.stringify({ price: { $gt: 20 }, additionalInfo: null })}`,
+      url: `/export?_q=${JSON.stringify({ price: { $gt: 20 }, additionalInfo: null })}`,
       acl_rows: undefined,
       found: HTTP_PUBLIC_FIXTURES.filter(f => f.price > 20 && !f.additionalInfo),
     },
     {
       name: 'with filter by additionalInfo nested with dot notation',
-      url: `/?_q=${JSON.stringify({ 'additionalInfo.notes.mynote': 'good' })}`,
+      url: `/export?_q=${JSON.stringify({ 'additionalInfo.notes.mynote': 'good' })}`,
       acl_rows: undefined,
       found: HTTP_PUBLIC_FIXTURES.filter(
         f => f.additionalInfo && f.additionalInfo.notes && f.additionalInfo.notes.mynote === 'good'
@@ -211,7 +211,7 @@ tap.test('HTTP GET /', async t => {
     },
     {
       name: 'with filter by additionalInfo nested with dot notation with a command',
-      url: `/?_q=${JSON.stringify({ 'additionalInfo.notes.mynote': { $ne: 'good' } })}`,
+      url: `/export?_q=${JSON.stringify({ 'additionalInfo.notes.mynote': { $ne: 'good' } })}`,
       acl_rows: undefined,
       found: HTTP_PUBLIC_FIXTURES.filter(
         f => !f.additionalInfo || !f.additionalInfo.notes || f.additionalInfo.notes.mynote !== 'good'
@@ -219,7 +219,7 @@ tap.test('HTTP GET /', async t => {
     },
     {
       name: '$exists: false',
-      url: `/?_q=${JSON.stringify({ 'additionalInfo.gg': { $exists: false } })}`,
+      url: `/export?_q=${JSON.stringify({ 'additionalInfo.gg': { $exists: false } })}`,
       acl_rows: undefined,
       found: HTTP_PUBLIC_FIXTURES.filter(
         f => !f.additionalInfo || !{}.hasOwnProperty.call(f.additionalInfo, 'gg')
@@ -227,13 +227,13 @@ tap.test('HTTP GET /', async t => {
     },
     {
       name: 'with filter by additionalInfo nested without dot notation (only one level)',
-      url: `/?_q=${JSON.stringify({ additionalInfo: { note: 'good' } })}`,
+      url: `/export?_q=${JSON.stringify({ additionalInfo: { note: 'good' } })}`,
       acl_rows: undefined,
       found: HTTP_PUBLIC_FIXTURES.filter(f => f.additionalInfo && f.additionalInfo.note === 'good'),
     },
     {
       name: 'with filter with geo search',
-      url: `/?_q=${JSON.stringify({ position: { $nearSphere: { from: [0, 0] } } })}&_p=_id`,
+      url: `/export?_q=${JSON.stringify({ position: { $nearSphere: { from: [0, 0] } } })}&_p=_id`,
       acl_rows: undefined,
       found: [
         { _id: '111111111111111111111111' },
@@ -244,7 +244,7 @@ tap.test('HTTP GET /', async t => {
     },
     {
       name: 'with filter with geo search with altitude',
-      url: `/?_q=${JSON.stringify({ position: { $nearSphere: { from: [0, 0, 5] } } })}&_p=_id`,
+      url: `/export?_q=${JSON.stringify({ position: { $nearSphere: { from: [0, 0, 5] } } })}&_p=_id`,
       acl_rows: undefined,
       found: [
         { _id: '111111111111111111111111' },
@@ -255,7 +255,7 @@ tap.test('HTTP GET /', async t => {
     },
     {
       name: 'with filter with geo search with min and max',
-      url: `/?_q=${JSON.stringify({ position: { $nearSphere: { from: [0, 0], minDistance: 0, maxDistance: 10 } } })}&_p=_id`,
+      url: `/export?_q=${JSON.stringify({ position: { $nearSphere: { from: [0, 0], minDistance: 0, maxDistance: 10 } } })}&_p=_id`,
       acl_rows: undefined,
       found: [
         { _id: '111111111111111111111111' },
@@ -263,67 +263,67 @@ tap.test('HTTP GET /', async t => {
     },
     {
       name: 'with acl_rows',
-      url: '/',
+      url: '/export',
       acl_rows: [{ price: { $gt: 20 } }],
       found: HTTP_PUBLIC_FIXTURES.filter(f => f.price > 20),
     },
     {
       name: 'with acl_rows and query filter',
-      url: '/?isPromoted=true',
+      url: '/export?isPromoted=true',
       acl_rows: [{ price: { $gt: 20 } }],
       found: HTTP_PUBLIC_FIXTURES.filter(f => f.price > 20 && f.isPromoted === true),
     },
     {
       name: 'with acl_rows and filter',
-      url: `/?_q=${JSON.stringify({ isPromoted: true })}`,
+      url: `/export?_q=${JSON.stringify({ isPromoted: true })}`,
       acl_rows: [{ price: { $gt: 20 } }],
       found: HTTP_PUBLIC_FIXTURES.filter(f => f.price > 20 && f.isPromoted === true),
     },
     {
       name: 'with acl_read_columns',
-      url: '/',
+      url: '/export',
       acl_rows: undefined,
       acl_read_columns: ['price', 'author'],
-      found: HTTP_PUBLIC_FIXTURES.map(f => ({ _id: f._id, price: f.price, author: f.author })),
+      found: HTTP_PUBLIC_FIXTURES.map(f => ({ _id: f._id, author: f.author, price: f.price })),
     },
     {
       name: 'with acl_read_columns > projection',
-      url: '/?_p=price',
+      url: '/export?_p=price',
       acl_rows: undefined,
       acl_read_columns: ['price', 'author'],
       found: HTTP_PUBLIC_FIXTURES.map(f => ({ _id: f._id, price: f.price })),
     },
     {
       name: 'with acl_read_columns < projection',
-      url: '/?_p=price,author,isbn',
+      url: '/export?_p=price,author,isbn',
       acl_rows: undefined,
       acl_read_columns: ['price', 'author'],
-      found: HTTP_PUBLIC_FIXTURES.map(f => ({ _id: f._id, price: f.price, author: f.author })),
+      found: HTTP_PUBLIC_FIXTURES.map(f => ({ _id: f._id, author: f.author, price: f.price })),
     },
     {
       name: 'with acl_read_columns intersect projection',
-      url: '/?_p=price,author,isbn',
+      url: '/export?_p=price,author,isbn',
       acl_rows: undefined,
       acl_read_columns: ['price', 'author', 'name'],
-      found: HTTP_PUBLIC_FIXTURES.map(f => ({ _id: f._id, price: f.price, author: f.author })),
+      found: HTTP_PUBLIC_FIXTURES.map(f => ({ _id: f._id, author: f.author, price: f.price })),
     },
     {
       name: 'with acl_read_columns not intersect projection',
-      url: '/?_p=price',
+      url: '/export?_p=price',
       acl_rows: undefined,
       acl_read_columns: ['author', 'name'],
       found: HTTP_PUBLIC_FIXTURES.map(f => ({ _id: f._id })),
     },
     {
       name: 'with state',
-      url: `/?_st=${STATES.PUBLIC}`,
+      url: `/export?_st=${STATES.PUBLIC}`,
       acl_rows: undefined,
       acl_read_columns: undefined,
       found: HTTP_PUBLIC_FIXTURES.concat([]),
     },
     {
       name: 'with state DRAFT',
-      url: `/?_p=name&_st=${STATES.DRAFT}`,
+      url: `/export?_p=name&_st=${STATES.DRAFT}`,
       acl_rows: undefined,
       acl_read_columns: undefined,
       found: fixtures.concat([]).filter(f => f[__STATE__] === STATES.DRAFT)
@@ -331,7 +331,7 @@ tap.test('HTTP GET /', async t => {
     },
     {
       name: 'with state DRAFT,PUBLIC',
-      url: `/?_p=name&_st=${STATES.DRAFT},${STATES.PUBLIC}`,
+      url: `/export?_p=name&_st=${STATES.DRAFT},${STATES.PUBLIC}`,
       acl_rows: undefined,
       acl_read_columns: undefined,
       found: fixtures.concat([]).filter(f => f[__STATE__] === STATES.DRAFT || f[__STATE__] === STATES.PUBLIC)
@@ -339,7 +339,7 @@ tap.test('HTTP GET /', async t => {
     },
     {
       name: '$elemMatch array rawobject array',
-      url: `/?_p=_id&_q=${JSON.stringify({ attachments: { $elemMatch: { neastedArr: { $in: [3] } } } })}`,
+      url: `/export?_p=_id&_q=${JSON.stringify({ attachments: { $elemMatch: { neastedArr: { $in: [3] } } } })}`,
       acl_rows: undefined,
       acl_read_columns: undefined,
       found: fixtures.filter(f => {
@@ -351,7 +351,7 @@ tap.test('HTTP GET /', async t => {
     },
     {
       name: '$elemMatch array rawobject string',
-      url: `/?_p=_id&_q=${JSON.stringify({ attachments: { $elemMatch: { name: { $in: ['my-name'] } } } })}`,
+      url: `/export?_p=_id&_q=${JSON.stringify({ attachments: { $elemMatch: { name: { $in: ['my-name'] } } } })}`,
       acl_rows: undefined,
       acl_read_columns: undefined,
       found: fixtures.filter(f => {
@@ -363,7 +363,7 @@ tap.test('HTTP GET /', async t => {
     },
     {
       name: 'filter on nested object with dot notation',
-      url: '/?_p=_id,isbn,metadata,attachments'
+      url: '/export?_p=_id,isbn,metadata,attachments'
         + '&metadata.somethingNumber=2'
         + '&metadata.somethingString=the-saved-string'
         + '&metadata.somethingArrayObject.0.arrayItemObjectChildNumber=4'
@@ -399,7 +399,7 @@ tap.test('HTTP GET /', async t => {
     },
     {
       name: 'filter on nested object with aclRows',
-      url: '/?_p=_id,isbn,metadata',
+      url: '/export?_p=_id,isbn,metadata',
       acl_rows: [{ 'metadata.somethingArrayOfNumbers.0': 5 }],
       acl_read_columns: undefined,
       found: [{
@@ -417,12 +417,15 @@ tap.test('HTTP GET /', async t => {
     },
     {
       name: 'correct project on nested object and nested array of object with _p',
-      url: '/?_p=isbn,additionalInfo.foo,attachments.name',
+      url: '/export?_p=isbn,additionalInfo.foo,attachments.name',
       acl_rows: [{ 'metadata.somethingArrayOfNumbers.0': 5 }],
       acl_read_columns: undefined,
       found: [{
         _id: fixtures[0]._id.toString(),
         isbn: fixtures[0].isbn,
+        additionalInfo: {
+          foo: fixtures[0].additionalInfo.foo,
+        },
         attachments: [
           {
             name: 'note',
@@ -431,14 +434,11 @@ tap.test('HTTP GET /', async t => {
             name: 'another-note',
           },
         ],
-        additionalInfo: {
-          foo: fixtures[0].additionalInfo.foo,
-        },
       }],
     },
     {
       name: 'correct project on inexistent field with _p',
-      url: '/?_p=isbn,additionalInfo.inexistentField',
+      url: '/export?_p=isbn,additionalInfo.inexistentField',
       acl_rows: [{ 'metadata.somethingArrayOfNumbers.0': 5 }],
       acl_read_columns: undefined,
       found: [{
@@ -449,7 +449,7 @@ tap.test('HTTP GET /', async t => {
     },
     {
       name: 'use of $ operator for array element condition into _p',
-      url: `/?_q=${JSON.stringify({ 'attachments.name': 'another-note' })}&_p=attachments.$`,
+      url: `/export?_q=${JSON.stringify({ 'attachments.name': 'another-note' })}&_p=attachments.$`,
       acl_rows: undefined,
       acl_read_columns: undefined,
       found: [{
@@ -462,7 +462,7 @@ tap.test('HTTP GET /', async t => {
     },
     {
       name: 'wrong project with _p returns only the _id',
-      url: '/?_p=a wrong projection',
+      url: '/export?_p=a wrong projection',
       acl_rows: [{ 'metadata.somethingArrayOfNumbers.0': 5 }],
       acl_read_columns: undefined,
       found: [{
@@ -471,28 +471,28 @@ tap.test('HTTP GET /', async t => {
     },
     {
       name: 'use of raw projection in url',
-      url: `/?_rawp=${JSON.stringify(RAW_PROJECTION_PLAIN_INCLUSIVE)}&_st=${STATES.DELETED},${STATES.PUBLIC},${STATES.TRASH},${STATES.DRAFT}`,
+      url: `/export?_rawp=${JSON.stringify(RAW_PROJECTION_PLAIN_INCLUSIVE)}&_st=${STATES.DELETED},${STATES.PUBLIC},${STATES.TRASH},${STATES.DRAFT}`,
       acl_rows: undefined,
       acl_read_columns: undefined,
       found: EXPECTED_DOCS_FOR_INCLUSIVE_RAW_PROJECTION,
     },
     {
       name: 'use of raw projection in url with only PUBLIC documents',
-      url: `/?_rawp=${JSON.stringify(RAW_PROJECTION_PLAIN_INCLUSIVE)}&_st=${STATES.PUBLIC}`,
+      url: `/export?_rawp=${JSON.stringify(RAW_PROJECTION_PLAIN_INCLUSIVE)}&_st=${STATES.PUBLIC}`,
       acl_rows: undefined,
       acl_read_columns: undefined,
       found: EXPECTED_PUBLIC_DOCS_FOR_INCLUSIVE_RAW_PROJECTION,
     },
     {
       name: 'use of raw projection in url with _q',
-      url: `/?_q=${JSON.stringify({ name: 'Ulysses' })}&_rawp=${JSON.stringify(RAW_PROJECTION_PLAIN_INCLUSIVE)}&_st=${STATES.DELETED},${STATES.PUBLIC},${STATES.TRASH},${STATES.DRAFT}`,
+      url: `/export?_q=${JSON.stringify({ name: 'Ulysses' })}&_rawp=${JSON.stringify(RAW_PROJECTION_PLAIN_INCLUSIVE)}&_st=${STATES.DELETED},${STATES.PUBLIC},${STATES.TRASH},${STATES.DRAFT}`,
       acl_rows: undefined,
       acl_read_columns: undefined,
       found: [EXPECTED_DOCS_FOR_INCLUSIVE_RAW_PROJECTION[0]],
     },
     {
       name: 'use of raw projection in url with _q with acl_columns',
-      url: `/?_q=${JSON.stringify({ name: 'Ulysses' })}&_rawp=${JSON.stringify(RAW_PROJECTION_PLAIN_INCLUSIVE)}&_st=${STATES.DELETED},${STATES.PUBLIC},${STATES.TRASH},${STATES.DRAFT}`,
+      url: `/export?_q=${JSON.stringify({ name: 'Ulysses' })}&_rawp=${JSON.stringify(RAW_PROJECTION_PLAIN_INCLUSIVE)}&_st=${STATES.DELETED},${STATES.PUBLIC},${STATES.TRASH},${STATES.DRAFT}`,
       acl_rows: undefined,
       acl_read_columns: ['price', 'author', 'name'],
       found: [
@@ -504,7 +504,7 @@ tap.test('HTTP GET /', async t => {
     },
     {
       name: 'use of raw projection exclusive which do not intersect acls',
-      url: `/?_rawp=${JSON.stringify(RAW_PROJECTION_PLAIN_EXCLUSIVE)}`,
+      url: `/export?_rawp=${JSON.stringify(RAW_PROJECTION_PLAIN_EXCLUSIVE)}`,
       acl_rows: undefined,
       acl_read_columns: ['author'],
       found: publicFixtures.map((doc) => {
@@ -524,7 +524,7 @@ tap.test('HTTP GET /', async t => {
     const rawProjectionWithAggregationTests = [
       {
         name: '[only in mongo 4.4+] use of raw projection in url',
-        url: `/?_rawp=${JSON.stringify(RAW_PROJECTION)}&_st=${STATES.DELETED},${STATES.PUBLIC},${STATES.TRASH},${STATES.DRAFT}`,
+        url: `/export?_rawp=${JSON.stringify(RAW_PROJECTION)}&_st=${STATES.DELETED},${STATES.PUBLIC},${STATES.TRASH},${STATES.DRAFT}`,
         acl_rows: undefined,
         acl_read_columns: undefined,
         found: fixtures.map((doc) => {
@@ -536,7 +536,7 @@ tap.test('HTTP GET /', async t => {
       },
       {
         name: '[only in mongo 4.4+] use of raw projection in url with only PUBLIC documents',
-        url: `/?_rawp=${JSON.stringify(RAW_PROJECTION)}&_st=${STATES.PUBLIC}`,
+        url: `/export?_rawp=${JSON.stringify(RAW_PROJECTION)}&_st=${STATES.PUBLIC}`,
         acl_rows: undefined,
         acl_read_columns: undefined,
         found: publicFixtures.map((doc) => {
@@ -548,7 +548,7 @@ tap.test('HTTP GET /', async t => {
       },
       {
         name: '[only in mongo 4.4+] use of raw projection in url with _q',
-        url: `/?_q=${JSON.stringify({ name: 'Ulysses' })}&_rawp=${JSON.stringify(RAW_PROJECTION)}&_st=${STATES.DELETED},${STATES.PUBLIC},${STATES.TRASH},${STATES.DRAFT}`,
+        url: `/export?_q=${JSON.stringify({ name: 'Ulysses' })}&_rawp=${JSON.stringify(RAW_PROJECTION)}&_st=${STATES.DELETED},${STATES.PUBLIC},${STATES.TRASH},${STATES.DRAFT}`,
         acl_rows: undefined,
         acl_read_columns: undefined,
         found: [{
@@ -558,7 +558,7 @@ tap.test('HTTP GET /', async t => {
       },
       {
         name: '[only in mongo 4.4+] use of raw projection with $first operator',
-        url: `/?_q=${JSON.stringify({ name: 'Ulysses' })}&_rawp=${JSON.stringify(RAW_PROJECTION_FIRST_OP)}&_st=${STATES.DELETED},${STATES.PUBLIC},${STATES.TRASH},${STATES.DRAFT}`,
+        url: `/export?_q=${JSON.stringify({ name: 'Ulysses' })}&_rawp=${JSON.stringify(RAW_PROJECTION_FIRST_OP)}&_st=${STATES.DELETED},${STATES.PUBLIC},${STATES.TRASH},${STATES.DRAFT}`,
         acl_rows: undefined,
         acl_read_columns: undefined,
         found: [{
@@ -568,7 +568,7 @@ tap.test('HTTP GET /', async t => {
       },
       {
         name: '[only in mongo 4.4+] use of raw projection with $dateToString operator',
-        url: `/?_q=${JSON.stringify({ name: 'Ulysses' })}&_rawp=${encodeURIComponent(JSON.stringify({
+        url: `/export?_q=${JSON.stringify({ name: 'Ulysses' })}&_rawp=${encodeURIComponent(JSON.stringify({
           createdAt: {
             $dateToString: {
               date: '$createdAt',
@@ -591,16 +591,16 @@ tap.test('HTTP GET /', async t => {
     tests.push(...rawProjectionWithAggregationTests)
   }
 
-  t.plan(tests.length)
+  // t.plan(tests.length + testsConfToExport.length)
   // it is safe to instantiate the test once, since all
   // the tests only perform reads on the collection
   const { fastify, collection } = await setUpTest(t)
 
-  // Test endpoints that return JSON payload
   tests.forEach(testConf => {
     const { name, found, ...conf } = testConf
 
-    t.test(name, async t => {
+
+    t.test(`EXPORT x-ndjson ${name}`, async t => {
       const response = await fastify.inject({
         method: 'GET',
         url: prefix + conf.url,
@@ -608,17 +608,107 @@ tap.test('HTTP GET /', async t => {
       })
 
       t.test('should return 200', t => {
-        t.strictSame(response.statusCode, 200, response.payload)
+        t.strictSame(response.statusCode, 200)
         t.end()
       })
 
-      t.test('should return "application/json"', t => {
-        t.strictSame(response.headers['content-type'], 'application/json')
+      t.test('should return "application/x-ndjson"', t => {
+        t.ok(/application\/x-ndjson/.test(response.headers['content-type']))
         t.end()
       })
 
       t.test('should return the document', t => {
-        t.strictSame(JSON.parse(response.payload), found)
+        const documents = response.payload.split('\n')
+          .filter(s => s !== '')
+          .map(JSON.parse)
+        t.strictSame(documents, found, response.payload)
+        t.end()
+      })
+
+      t.test('should keep the document as is in database', async t => {
+        const documents = await collection.find().toArray()
+        t.strictSame(documents, fixtures)
+        t.end()
+      })
+
+      t.end()
+    })
+
+    t.test(`EXPORT json ${name}`, async t => {
+      const accept = 'application/json'
+      const response = await fastify.inject({
+        method: 'GET',
+        url: prefix + conf.url,
+        headers: {
+          ...getHeaders(conf),
+          accept,
+        },
+      })
+
+      t.test('should return 200', t => {
+        t.strictSame(response.statusCode, 200)
+        t.end()
+      })
+
+      t.test('should return "application/json"', t => {
+        t.ok(/application\/json/.test(response.headers['content-type']))
+        t.end()
+      })
+
+      t.test('should return the document', t => {
+        const documents = JSON.parse(response.payload)
+        t.strictSame(documents, found)
+        t.end()
+      })
+
+      t.test('should keep the document as is in database', async t => {
+        const documents = await collection.find().toArray()
+        t.strictSame(documents, fixtures)
+        t.end()
+      })
+
+      t.end()
+    })
+
+    t.test(`EXPORT csv ${name}`, async t => {
+      const accept = 'text/csv'
+      const response = await fastify.inject({
+        method: 'GET',
+        url: prefix + conf.url,
+        headers: {
+          ...getHeaders(conf),
+          accept,
+        },
+      })
+
+      t.test('should return 200', t => {
+        t.strictSame(response.statusCode, 200)
+        t.end()
+      })
+
+      t.test('should return "text/csv"', t => {
+        t.ok(/text\/csv/.test(response.headers['content-type']))
+        t.end()
+      })
+
+      t.test('should return the document', t => {
+        const foundCsv = csvStringify.stringify(found, {
+          encoding: 'utf8',
+          delimiter: ';',
+          escape: '\\',
+          header: true,
+          quote: false,
+          cast: {
+            object: (value) => {
+              try {
+                return { value: JSON.stringify(value), quote: true }
+              } catch (errs) {
+                return value
+              }
+            },
+          },
+        })
+        t.strictSame(response.payload, foundCsv)
         t.end()
       })
 
@@ -631,13 +721,14 @@ tap.test('HTTP GET /', async t => {
       t.end()
     })
   })
+  t.end()
 })
 
-tap.test('HTTP GET / - $text search', async t => {
+tap.test('HTTP GET /export - $text search', async t => {
   const textTests = [
     {
       name: 'with filter with $text search',
-      url: `/?_q=${JSON.stringify({ $text: { $search: 'Ulyss', $caseSensitive: true } })}`,
+      url: `/export?_q=${JSON.stringify({ $text: { $search: 'Ulyss', $caseSensitive: true } })}`,
       acl_rows: undefined,
       found: HTTP_PUBLIC_FIXTURES.filter(f => f.name === 'Ulysses'),
       textIndex: true,
@@ -645,15 +736,15 @@ tap.test('HTTP GET / - $text search', async t => {
     },
     {
       name: 'with filter with $text search with $or clause and indexed fields',
-      url: `/?_q=${JSON.stringify({ $or: [{ $text: { $search: 'Ulyss', $caseSensitive: true } }, { isbn: 'fake isbn 2' }] })}`,
+      url: `/export?_q=${JSON.stringify({ $or: [{ $text: { $search: 'Ulyss', $caseSensitive: true } }, { isbn: 'fake isbn 2' }] })}`,
       acl_rows: undefined,
       found: HTTP_PUBLIC_FIXTURES.filter(f => f.name === 'Ulysses' || f.isbn === 'fake isbn 2'),
       textIndex: true,
-      scores: { 'fake isbn 1': 1, 'fake isbn 2': 0 },
+      scores: { 'fake isbn 1': 1 },
     },
     {
       name: 'with filter with $text search with all options',
-      url: `/?_q=${JSON.stringify({ $text: { $search: 'Ulyss', $caseSensitive: true, $language: 'en', $diacriticSensitive: false } })}`,
+      url: `/export?_q=${JSON.stringify({ $text: { $search: 'Ulyss', $caseSensitive: true, $language: 'en', $diacriticSensitive: false } })}`,
       acl_rows: undefined,
       found: HTTP_PUBLIC_FIXTURES.filter(f => f.name === 'Ulysses'),
       textIndex: true,
@@ -661,7 +752,7 @@ tap.test('HTTP GET / - $text search', async t => {
     },
     {
       name: 'with acl_rows and $text search filter',
-      url: `/?_q=${JSON.stringify({ $text: { $search: 'Ulyss' } })}`,
+      url: `/export?_q=${JSON.stringify({ $text: { $search: 'Ulyss' } })}`,
       acl_rows: [{ price: { $gt: 20 } }],
       found: HTTP_PUBLIC_FIXTURES.filter(f => f.price > 20 && f.name === 'Ulysses'),
       textIndex: true,
@@ -669,7 +760,7 @@ tap.test('HTTP GET / - $text search', async t => {
     },
     {
       name: 'with acl_rows and $text search filter not matching documents',
-      url: `/?_q=${JSON.stringify({ $text: { $search: 'Ulyss' } })}`,
+      url: `/export?_q=${JSON.stringify({ $text: { $search: 'Ulyss' } })}`,
       acl_rows: [{ price: { $gt: 50 } }],
       found: HTTP_PUBLIC_FIXTURES.filter(f => f.price > 50 && f.name === 'Ulysses'),
       textIndex: true,
@@ -677,7 +768,7 @@ tap.test('HTTP GET / - $text search', async t => {
     },
     {
       name: 'with acl_read_columns and $text search filter',
-      url: `/?_q=${JSON.stringify({ $text: { $search: 'Ulyss' } })}&_p=price,isbn`,
+      url: `/export?_q=${JSON.stringify({ $text: { $search: 'Ulyss' } })}&_p=price,isbn`,
       acl_rows: undefined,
       acl_read_columns: ['isbn', 'name'],
       found: HTTP_PUBLIC_FIXTURES.filter(f => f.name === 'Ulysses').map(f => ({ _id: f._id, isbn: f.isbn })),
@@ -686,29 +777,17 @@ tap.test('HTTP GET / - $text search', async t => {
     },
   ]
 
-  const assertExpectedResponse = (assert, payload, expectedPayload) => {
-    for (const doc of payload) {
-      const expectedDoc = { ...expectedPayload.filter(el => el.isbn === doc.isbn)[0] }
-      const foundDoc = { ...doc }
-      if (!foundDoc.score && expectedDoc.score === 0) {
-        // accordingly to mongo version, when query is not of $text type
-        // field `score` might be evaluated as 0 or as undefined
-        // mongo 4.0 => 0, mongo 4.4 => undefined
-        delete foundDoc.score
-        delete expectedDoc.score
-      }
-      assert.strictSame(foundDoc, expectedDoc)
-    }
-  }
-
-  t.plan(textTests.length)
   // it is safe to instantiate the test once, since all
   // the tests only perform reads on the collection
   const { fastify, collection } = await setUpTest(t)
 
-  // Test endpoints that return JSON payload
+
   textTests.forEach(testConf => {
-    const { name, found, ...conf } = testConf
+    const { name, found, scores, ...conf } = testConf
+    const foundWithScores = found.map(val => ({
+      ...val,
+      ...{ ...(scores[val.isbn] ? { score: scores[val.isbn] } : undefined) },
+    }))
 
     t.test(name, async t => {
       const response = await fastify.inject({
@@ -722,22 +801,103 @@ tap.test('HTTP GET / - $text search', async t => {
         t.end()
       })
 
-      t.test('should return "application/json"', t => {
-        t.strictSame(response.headers['content-type'], 'application/json')
+      t.test('should return "application/x-ndjson"', t => {
+        t.ok(/application\/x-ndjson/.test(response.headers['content-type']))
         t.end()
       })
 
       t.test('should return the document', t => {
-        let expectedResponse = JSON.parse(JSON.stringify(found))
-        if (testConf.textIndex) {
-          expectedResponse = expectedResponse.map(doc => {
-            return {
-              ...doc,
-              score: testConf.scores[doc.isbn],
-            }
-          })
-        }
-        assertExpectedResponse(t, JSON.parse(response.payload), expectedResponse)
+        const documents = response.payload.split('\n')
+          .filter(s => s !== '')
+          .map(JSON.parse)
+
+        t.strictSame(documents, foundWithScores)
+        t.end()
+      })
+      t.test('should keep the document as is in database', async t => {
+        const documents = await collection.find().toArray()
+        t.strictSame(documents, fixtures)
+        t.end()
+      })
+
+      t.end()
+    })
+
+    t.test(`EXPORT json ${name}`, async t => {
+      const accept = 'application/json'
+      const response = await fastify.inject({
+        method: 'GET',
+        url: prefix + conf.url,
+        headers: {
+          ...getHeaders(conf),
+          accept,
+        },
+      })
+
+      t.test('should return 200', t => {
+        t.strictSame(response.statusCode, 200)
+        t.end()
+      })
+
+      t.test('should return "application/json"', t => {
+        t.ok(/application\/json/.test(response.headers['content-type']))
+        t.end()
+      })
+
+      t.test('should return the document', t => {
+        const documents = JSON.parse(response.payload)
+        t.strictSame(documents, foundWithScores)
+        t.end()
+      })
+
+      t.test('should keep the document as is in database', async t => {
+        const documents = await collection.find().toArray()
+        t.strictSame(documents, fixtures)
+        t.end()
+      })
+
+      t.end()
+    })
+
+    t.test(`EXPORT csv ${name}`, async t => {
+      const accept = 'text/csv'
+      const response = await fastify.inject({
+        method: 'GET',
+        url: prefix + conf.url,
+        headers: {
+          ...getHeaders(conf),
+          accept,
+        },
+      })
+
+      t.test('should return 200', t => {
+        t.strictSame(response.statusCode, 200)
+        t.end()
+      })
+
+      t.test('should return "text/csv"', t => {
+        t.ok(/text\/csv/.test(response.headers['content-type']))
+        t.end()
+      })
+
+      t.test('should return the document', t => {
+        const foundCsv = csvStringify.stringify(foundWithScores, {
+          encoding: 'utf8',
+          delimiter: ';',
+          escape: '\\',
+          header: true,
+          quote: false,
+          cast: {
+            object: (value) => {
+              try {
+                return { value: JSON.stringify(value), quote: true }
+              } catch (errs) {
+                return value
+              }
+            },
+          },
+        })
+        t.strictSame(response.payload, foundCsv)
         t.end()
       })
 
@@ -750,356 +910,15 @@ tap.test('HTTP GET / - $text search', async t => {
       t.end()
     })
   })
-})
-
-tap.test('HTTP GET / ', async t => {
-  const { fastify, collection, resetCollection } = await setUpTest(t, [], undefined, undefined, true)
-  t.test('cast correctly nested object with schema', async t => {
-    const DOC_TEST = {
-      _id: ObjectId.createFromHexString('211111111111111111111111'),
-      metadata: {
-        somethingNumber: '3333',
-      },
-      attachments: [{
-        name: 'the-note',
-        detail: {
-          size: '6',
-        },
-        should: 'be removed',
-      }],
-      [__STATE__]: STATES.PUBLIC,
-    }
-
-    await resetCollection([DOC_TEST])
-
-    const response = await fastify.inject({
-      method: 'GET',
-      url: `${prefix}/`,
-      headers: {},
-    })
-    t.strictSame(JSON.parse(response.payload)[0].metadata, {
-      somethingNumber: 3333,
-    })
-    t.strictSame(JSON.parse(response.payload)[0].attachments, [
-      {
-        name: 'the-note',
-        detail: {
-          size: 6,
-        },
-      },
-    ])
-
-    t.end()
-  })
-
-  t.test('filter on nested object with object notation cannot be used', async t => {
-    // Documentation purpose
-    const DOC = {
-      ...fixtures[0],
-      metadata: {
-        somethingNumber: 2,
-      },
-      attachments: [{
-        name: 'note',
-        detail: {
-          size: 6,
-        },
-      }],
-    }
-    await resetCollection([DOC])
-
-    const filterQueryMetadata = { somethingNumber: 2 }
-    const filterAttachments = [{
-      name: 'note',
-      detail: {
-        size: 6,
-      },
-    }]
-
-    const docOnDb = await collection.findOne({ metadata: filterQueryMetadata, attachments: filterAttachments })
-
-    t.ok(docOnDb)
-
-    const response = await fastify.inject({
-      method: 'GET',
-      url: `${prefix}/`,
-      query: {
-        metadata: JSON.stringify(filterQueryMetadata),
-        attachments: JSON.stringify(filterAttachments),
-      },
-      headers: {},
-    })
-
-    t.strictSame(response.statusCode, 400)
-    t.strictSame(JSON.parse(response.payload), {
-      statusCode: 400,
-      error: 'Bad Request',
-      message: 'querystring must NOT have additional properties. Property "metadata" is not defined in validation schema',
-    })
-
-    t.end()
-  })
-
-  t.test('(missing property)', async t => {
-    await resetCollection()
-
-    t.test('with _s with nonexistent property', async assert => {
-      const response = await fastify.inject({
-        method: 'GET',
-        url: `${prefix}/?_s=nonexistent`,
-        headers: {},
-      })
-
-      assert.strictSame(response.statusCode, 400)
-      assert.end()
-    })
-
-    t.test('with _s with nonexistent and existing properties', async t => {
-      const response = await fastify.inject({
-        method: 'GET',
-        url: `${prefix}/?_s=price,nonexistent`,
-        headers: {},
-      })
-
-      t.strictSame(response.statusCode, 400)
-      t.end()
-    })
-
-    t.test('with _s with existing nested and nonexistent properties', async t => {
-      const response = await fastify.inject({
-        method: 'GET',
-        url: `${prefix}/?_s=attachments.name,nonexistent`,
-        headers: {},
-      })
-
-      t.strictSame(response.statusCode, 400)
-      t.end()
-    })
-
-    t.test('with _s with nonexistent and existing nested properties REPEATED QUERYSTRING', async t => {
-      const response = await fastify.inject({
-        method: 'GET',
-        url: `${prefix}/?_s=nonexistent&_s=attachments.name`,
-        headers: {},
-      })
-
-      t.strictSame(response.statusCode, 400)
-      t.end()
-    })
-
-    t.end()
-  })
-
-  t.test('serialize correctly data on GET (a string should be casted to number to match schema)', async t => {
-    const DOC = {
-      ...fixtures[0],
-      // expected to be casted to number
-      price: '44',
-      ignoreMe: 'expect to be ignored',
-    }
-
-    await resetCollection([DOC])
-
-    const response = await fastify.inject({
-      method: 'GET',
-      url: '/books-endpoint/',
-      headers: {},
-    })
-
-    t.strictSame(response.statusCode, 200)
-    const [item] = JSON.parse(response.payload)
-
-    t.equal(item.ignoreMe, undefined)
-    t.strictSame(item.price, 44)
-
-    t.end()
-  })
-
-
-  t.test('(limits)', async t => {
-    const limitsFixtures = []
-    for (let index = 0; index < 26; index++) {
-      limitsFixtures.push({ [__STATE__]: STATES.PUBLIC, isbn: `default-test-${index}` })
-    }
-
-    await resetCollection(limitsFixtures)
-
-    t.test('don\'t fail with minimum and maximum limit value and return only default numbers ', async t => {
-      t.test('Minimum 1', async t => {
-        const response = await fastify.inject({
-          method: 'GET',
-          url: `${prefix}/?_l=1`,
-        })
-
-        t.strictSame(response.statusCode, 200)
-        t.end()
-      })
-
-      t.test('Maximum 200', async t => {
-        const response = await fastify.inject({
-          method: 'GET',
-          url: `${prefix}/?_l=200`,
-        })
-
-        t.strictSame(response.statusCode, 200)
-        t.end()
-      })
-
-      t.test('Return the default number of document', async t => {
-        const response = await fastify.inject({
-          method: 'GET',
-          url: `${prefix}/`,
-        })
-
-        t.strictSame(response.statusCode, 200)
-        t.strictSame(JSON.parse(response.payload).length, 25)
-        t.end()
-      })
-
-      t.end()
-    })
-
-    t.test('fails with wrong limit value', async assert => {
-      const response = await fastify.inject({
-        method: 'GET',
-        url: `${prefix}/?_l=500`,
-      })
-
-      assert.strictSame(response.statusCode, 400)
-      assert.end()
-    })
-
-    t.end()
-  })
-
-  t.test('fails', async t => {
-    await resetCollection()
-
-    t.test('with 500', async t => {
-      UNALLOWED_RAW_PROJECTIONS.forEach(projection => {
-        t.test('Should not allow raw projection', async assert => {
-          const { statusCode } = await fastify.inject({
-            method: 'GET',
-            url: `${prefix}/?_rawp=${JSON.stringify(projection)}`,
-            headers: {},
-          })
-
-          assert.strictSame(statusCode, 400)
-          assert.end()
-        })
-      })
-
-      t.test('Should raise error if raw projection tries to override acls', async assert => {
-        const expectedPayload = {
-          statusCode: 400,
-          error: 'Bad Request',
-          message: '_rawp exclusive projection is overriding at least one acl_read_column value',
-        }
-        const { statusCode, payload } = await fastify.inject({
-          method: 'GET',
-          url: `${prefix}/?_rawp=${JSON.stringify(RAW_PROJECTION_PLAIN_EXCLUSIVE)}`,
-          headers: {
-            acl_read_columns: ['price', 'author', 'name'],
-          },
-        })
-
-        assert.strictSame(statusCode, 400)
-        assert.strictSame(JSON.parse(payload), expectedPayload)
-        assert.end()
-      })
-
-      t.end()
-    })
-
-    t.test('with 500 without exit if collection contains invalid data', async assert => {
-      const DOC = {
-        ...fixtures[0],
-        price: 'thisIsAstring',
-      }
-      const jsonError = [
-        {
-          'instancePath': '/price',
-          'schemaPath': '#/properties/price/type',
-          'keyword': 'type',
-          'params': {
-            'type': 'number',
-          },
-          'message': 'must be number',
-        },
-      ]
-
-      await resetCollection()
-      await collection.insertOne(DOC)
-
-      try {
-        await fastify.inject({
-          method: 'GET',
-          url: `${prefix}/`,
-        })
-        assert.fail('It should throw output validation error')
-      } catch (error) {
-        assert.strictSame(error, jsonError)
-      }
-      assert.end()
-    })
-
-    t.test('with 400 for mixed _rawp and _p', async t => {
-      UNALLOWED_RAW_PROJECTIONS.forEach(projection => {
-        t.test('Should not allow raw projection with projection', async assert => {
-          const expectedPayload = {
-            statusCode: 400,
-            error: 'Bad Request',
-            message: 'Use of both _rawp and _p parameter is not allowed',
-          }
-          const { statusCode, payload } = await fastify.inject({
-            method: 'GET',
-            url: `${prefix}/?_rawp=${JSON.stringify(projection)}&_p=author`,
-            headers: {},
-          })
-
-          assert.strictSame(statusCode, 400)
-          assert.strictSame(JSON.parse(payload), expectedPayload)
-          assert.end()
-        })
-      })
-
-      t.end()
-    })
-
-    t.test('with 400 due to usage of forbidden operators', async t => {
-      BAD_RAW_PROJECTIONS_USAGE.forEach(projection => {
-        t.test('Should not allow specified raw projection', async assert => {
-          const expectedPayload = {
-            statusCode: 400,
-            error: 'Bad Request',
-            message: `Operator ${projection.unwantedOperator} is not allowed in raw projection`,
-          }
-          const { statusCode, payload } = await fastify.inject({
-            method: 'GET',
-            url: `${prefix}/?_rawp=${JSON.stringify(projection.input)}`,
-            headers: {},
-          })
-
-          assert.strictSame(statusCode, 400)
-          assert.strictSame(JSON.parse(payload), expectedPayload)
-          assert.end()
-        })
-      })
-
-      t.end()
-    })
-
-    t.end()
-  })
-
   t.end()
 })
 
-tap.test('HTTP GET / with _id in querystring', async t => {
+
+tap.test('HTTP GET /export with _id in querystring', async t => {
   const tests = [
     {
       name: 'without filters',
-      url: `/?_id=${STATION_ID}`,
+      url: `/export?_id=${STATION_ID}`,
       acl_rows: undefined,
       found: [HTTP_STATION_DOC],
     },
@@ -1107,7 +926,6 @@ tap.test('HTTP GET / with _id in querystring', async t => {
 
   const { fastify, collection } = await setUpTest(t, stationFixtures, 'stations')
 
-  // Test endpoints that return JSON payload
   tests.forEach(testConf => {
     const { name, found, ...conf } = testConf
 
@@ -1123,15 +941,105 @@ tap.test('HTTP GET / with _id in querystring', async t => {
         t.end()
       })
 
+      t.test('should return "application/x-ndjson"', assert => {
+        assert.ok(/application\/x-ndjson/.test(response.headers['content-type']))
+        assert.end()
+      })
+
+      t.test('should return the document', assert => {
+        const documents = response.payload.split('\n')
+          .filter(s => s !== '')
+          .map(JSON.parse)
+        assert.strictSame(documents, found)
+        assert.end()
+      })
+      t.test('should keep the document as is in database', async assert => {
+        const documents = await collection.find().toArray()
+        assert.strictSame(documents, stationFixtures)
+        assert.end()
+      })
+
+      t.end()
+    })
+
+    t.test(`EXPORT json ${name}`, async t => {
+      const accept = 'application/json'
+      const response = await fastify.inject({
+        method: 'GET',
+        url: stationsPrefix + conf.url,
+        headers: {
+          ...getHeaders(conf),
+          accept,
+        },
+      })
+
+      t.test('should return 200', t => {
+        t.strictSame(response.statusCode, 200, response.payload)
+        t.end()
+      })
+
       t.test('should return "application/json"', t => {
-        t.strictSame(response.headers['content-type'], 'application/json')
+        t.ok(/application\/json/.test(response.headers['content-type']))
         t.end()
       })
 
       t.test('should return the document', t => {
-        t.strictSame(JSON.parse(response.payload), found)
+        const documents = JSON.parse(response.payload)
+        t.strictSame(documents, found)
         t.end()
       })
+
+      t.test('should keep the document as is in database', async t => {
+        const documents = await collection.find().toArray()
+        t.strictSame(documents, stationFixtures)
+        t.end()
+      })
+
+      t.end()
+    })
+
+    t.test(`EXPORT csv ${name}`, async t => {
+      const accept = 'text/csv'
+      const response = await fastify.inject({
+        method: 'GET',
+        url: stationsPrefix + conf.url,
+        headers: {
+          ...getHeaders(conf),
+          accept,
+        },
+      })
+
+      t.test('should return 200', t => {
+        t.strictSame(response.statusCode, 200)
+        t.end()
+      })
+
+      t.test('should return "text/csv"', t => {
+        t.ok(/text\/csv/.test(response.headers['content-type']))
+        t.end()
+      })
+
+      t.test('should return the document', t => {
+        const foundCsv = csvStringify.stringify(found, {
+          encoding: 'utf8',
+          delimiter: ';',
+          escape: '\\',
+          header: true,
+          quote: false,
+          cast: {
+            object: (value) => {
+              try {
+                return { value: JSON.stringify(value), quote: true }
+              } catch (errs) {
+                return value
+              }
+            },
+          },
+        })
+        t.strictSame(response.payload, foundCsv)
+        t.end()
+      })
+
       t.test('should keep the document as is in database', async t => {
         const documents = await collection.find().toArray()
         t.strictSame(documents, stationFixtures)
@@ -1145,42 +1053,52 @@ tap.test('HTTP GET / with _id in querystring', async t => {
   t.end()
 })
 
-if (process.env.MONGO_VERSION === '4.0') {
-  tap.test('unsupported _rawp in MongoDB v4.0', async t => {
-    const { fastify } = await setUpTest(t)
+tap.test('HTTP GET /export', async t => {
+  const mongoDbCollectionName = booksCollectionDefinition.name
+  const { fastify } = await setUpTest(t, lotOfBooksFixtures, mongoDbCollectionName)
 
-    const conf = {
-      name: 'unsupported _rawp in MongoDB v4.0',
-      url: `/?_rawp=${JSON.stringify(RAW_PROJECTION)}`,
-      acl_rows: undefined,
-      acl_read_columns: undefined,
-    }
-
+  t.test('should return all documents', async t => {
     const response = await fastify.inject({
       method: 'GET',
-      url: prefix + conf.url,
-      headers: getHeaders(conf),
+      url: `${prefix}/export`,
     })
+    const parseBodyResponse = response.body.split('\n').filter(item => item)
+      .map(item => JSON.parse(item))
 
-    t.test('should return 200', t => {
-      t.strictSame(response.statusCode, 400)
-      t.end()
-    })
-
-    t.test('should return "application/json"', t => {
-      t.end()
-      t.strictSame(response.headers['content-type'], 'application/json; charset=utf-8')
-    })
-
-    t.test('should return the error message', t => {
-      t.end()
-      t.strictSame(JSON.parse(response.payload), {
-        message: 'Unsupported projection option: attachments: { $filter: { input: "$attachments", as: "item", cond: { $in: [ "$$item.name", [ "note" ] ] } } }',
-        error: 'Bad Request',
-        statusCode: 400,
-      })
-    })
+    t.strictSame(response.statusCode, 200)
+    t.equal(parseBodyResponse.length, lotOfBooksFixtures.length)
 
     t.end()
   })
-}
+
+  t.test('should return only 3 documents', async(t) => {
+    const response = await fastify.inject({
+      method: 'GET',
+      url: `${prefix}/export?_l=3`,
+    })
+    const parseBodyResponse = response.body.split('\n').filter(item => item)
+      .map(item => JSON.parse(item))
+
+    t.strictSame(response.statusCode, 200)
+    t.equal(parseBodyResponse.length, 3)
+
+    t.end()
+  })
+
+  t.test('should return greater than previous maximum default (200 documents)', async(t) => {
+    const response = await fastify.inject({
+      method: 'GET',
+      url: `${prefix}/export?_l=201`,
+    })
+    const parseBodyResponse = response.body.split('\n').filter(item => item)
+      .map(item => JSON.parse(item))
+
+    t.strictSame(response.statusCode, 200)
+    t.equal(parseBodyResponse.length, 201)
+
+    t.end()
+  })
+
+  t.end()
+})
+

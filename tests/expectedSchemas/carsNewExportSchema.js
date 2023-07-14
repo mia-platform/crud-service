@@ -22,6 +22,21 @@ module.exports = {
   'tags': [
     'cars endpoint',
   ],
+  'headers': {
+    'operationId': 'cars__MIA__export__MIA__headers',
+    'type': 'object',
+    'properties': {
+      'accept': {
+        'type': 'string',
+        'enum': [
+          '*/*',
+          'application/json',
+          'application/x-ndjson',
+          'text/csv',
+        ],
+      },
+    },
+  },
   'querystring': {
     'operationId': 'cars__MIA__export__MIA__querystring',
     'type': 'object',
