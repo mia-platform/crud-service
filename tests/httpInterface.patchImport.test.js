@@ -68,7 +68,7 @@ tap.test('HTTP PATCH /import', async t => {
           const form = new FormData()
           form.append('file', CSVFileReader(), { contentType: 'text/csv' })
           form.append('encoding', 'utf8')
-          form.append('delimiter', ',')
+          form.append('delimiter', ';')
           form.append('escape', '\\')
           return form
         },
@@ -78,7 +78,7 @@ tap.test('HTTP PATCH /import', async t => {
         createForm: () => {
           const form = new FormData()
           form.append('file', CSVFileReader(), { contentType: 'text/csv' })
-          form.append('delimiter', ',')
+          form.append('delimiter', ';')
           return form
         },
       },
