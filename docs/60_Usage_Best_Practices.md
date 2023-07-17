@@ -83,6 +83,8 @@ Let's consider the case of a single view called `my_single_view`, which correspo
     "id": "my_single_view",
     "description": "Collection of my_single_view",
     "name": "my_single_view",
+    "endpointBasePath": "/my-single-view",
+    "defaultState": "PUBLIC",
     "fields": [
         {
             "name": "_id",
