@@ -68,7 +68,7 @@ Now let's examine in detail the benefits and drawbacks of the different procedur
 
 - It requires continuous processing and handling of data streams, which may increase resource utilization.
 - Data ordering may not be guaranteed, depending on the stream source and processing pipeline.
-- In the event of disruptions or failures in stream processing, data consistency can be compromised.
+- In the event of disruptions or failures in stream processing, data consistency can be compromised (which means only a subset of data is potentially received). However, the CRUD Service returns an HTTP error in such case and therefore it is possible to recover from it. 
 
 :::tip
 It's important to choose the appropriate procedure based on the specific requirements and trade-offs of your application.
