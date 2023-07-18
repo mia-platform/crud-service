@@ -29,6 +29,7 @@ module.exports = {
     'properties': {
       'accept': {
         'type': 'string',
+        'default': 'application/x-ndjson',
         'enum': [
           '*/*',
           'application/json',
