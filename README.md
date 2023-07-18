@@ -260,7 +260,7 @@ We've just explained the difference between the four possible states of a docume
 - a document in `DELETED` can be moved only to `TRASH`;
 Any request to transition to a not allowed state will be refused and a _400 Bad Request_ will be returned.
 
-**NOTE**: Any request to transition to update the state to the current one (e.g. from `PUBLIC` to `PUBLIC`) will be executed successfully, leaving the `__STATE__` as it is, but updating the _updaterId_ and the _updatedAt_ metadata fields.
+**NOTE**: If you request to update the state to its current value (e.g., from `PUBLIC` to `PUBLIC`), it will be successful. The `__STATE__` will remain the same, but the _updaterId_ and _updatedAt_ metadata fields will be updated.
 
 Operations of hard delete are supported, although the permissions over this type of operation are defined via ACL.
   
