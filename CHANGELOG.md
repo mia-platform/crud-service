@@ -60,7 +60,7 @@ values and select the one with the highest weight
 
 ### Changed
 
-- [mia-platform/[#53](https://github.com/mia-platform/crud-service/issues/53) request to transition to a not allowed state returns 400 instead of 400
+- [mia-platform/[#53](https://github.com/mia-platform/crud-service/issues/53) request to transition to a not allowed state returns 400 instead of 404.
 
 ### Fixed
 
