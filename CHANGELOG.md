@@ -7,13 +7,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+
+### BREAKING CHANGES
+
+- [#140](https://github.com/mia-platform/crud-service/pull/140) changed response code on nique constraint violation wrt [mia-platform/#175](https://github.com/mia-platform/community/discussions/175)
+- remove support to MongoDB v4.2
+
 ### Changed
 
 - remove `additionalProperties` constraints from collection definition schema to allow greater flexibility in adding further config entries
-
-### Removed
-
-- remove support to MongoDB v4.2
 
 ## 6.9.1 - 2023-09-08
 
