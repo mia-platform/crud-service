@@ -19,7 +19,7 @@
 const tap = require('tap')
 const abstractLogger = require('abstract-logging')
 const { MongoClient } = require('mongodb')
-const { omit } = require('ramda')
+const lomit = require('lodash.omit')
 
 const { STATES } = require('../lib/consts')
 const CrudService = require('../lib/CrudService')
@@ -110,7 +110,7 @@ tap.test('upsertOne', async t => {
     t.test('should insert the doc in the database', async t => {
       t.plan(1)
       const doc = await collection.findOne({ _id: ret._id })
-      const docWithoutId = omit(['_id'], doc)
+      const docWithoutId = lomit(doc, ['_id'])
 
       t.strictSame(docWithoutId, {
         name: 'Strange Book',
@@ -144,7 +144,7 @@ tap.test('upsertOne', async t => {
     t.test('should insert the doc in the database', async t => {
       t.plan(1)
       const doc = await collection.findOne({ _id: ret._id })
-      const docWithoutId = omit(['_id'], doc)
+      const docWithoutId = lomit(doc, ['_id'])
 
       t.strictSame(docWithoutId, {
         name: 'Strange Book',

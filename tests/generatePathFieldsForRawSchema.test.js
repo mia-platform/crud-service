@@ -18,7 +18,7 @@
 
 const tap = require('tap')
 const pino = require('pino')
-const R = require('ramda')
+const lpick = require('lodash.pick')
 
 const generatePathFieldsForRawSchema = require('../lib/generatePathFieldsForRawSchema')
 
@@ -142,7 +142,7 @@ tap.test('generatePathFieldsForRawSchema', t => {
       field: 'the-invalid-field',
       msg: errorMsg,
     }
-    t.strictSame(R.pick(['collectionName', 'field', 'msg'], errorLogs[0]), EXPECTED_LOG)
+    t.strictSame(lpick(errorLogs[0], ['collectionName', 'field', 'msg']), EXPECTED_LOG)
 
     t.end()
   })

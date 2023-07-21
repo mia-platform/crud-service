@@ -18,7 +18,7 @@
 
 const tap = require('tap')
 const { ObjectId } = require('mongodb')
-const R = require('ramda')
+const lomit = require('lodash.omit')
 const { STANDARD_FIELDS } = require('../lib/CrudService')
 
 const {
@@ -427,7 +427,7 @@ tap.test('HTTP PATCH /<id> - nested object', async t => {
         })
 
         t.equal(response.statusCode, 200)
-        t.strictSame(R.omit([UPDATEDAT, CREATEDAT, UPDATERID], JSON.parse(response.payload)), {
+        t.strictSame(lomit(JSON.parse(response.payload), [UPDATEDAT, CREATEDAT, UPDATERID]), {
           _id: DOC_TEST._id.toHexString(),
           name: DOC_TEST.name,
           environments: [{
