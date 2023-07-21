@@ -692,6 +692,7 @@ module.exports = {
           'nullable': true,
         },
       },
+      'additionalProperties': false,
     },
   },
 }

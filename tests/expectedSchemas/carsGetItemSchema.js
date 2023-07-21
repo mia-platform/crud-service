@@ -143,6 +143,7 @@ module.exports = {
           'description': 'The state of the document',
         },
       },
+      'additionalProperties': false,
     },
   },
 }

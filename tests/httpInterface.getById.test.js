@@ -665,5 +665,33 @@ tap.test('HTTP GET', async t => {
     t.end()
   })
 
+  t.test('HTTP GET /<id> shouldn\'t return fields not included in schema', async t => {
+    const fixtureWithNotDefinedField = {
+      ...STATION_DOC,
+      UnknownField: 'unknownValue',
+    }
+
+    const { fastify } = await setUpTest(t, [fixtureWithNotDefinedField], 'stations')
+
+    const expectedResponse = {
+      _id: STATION_ID,
+      Comune: 'Borgonato',
+    }
+
+    const response = await fastify.inject({
+      method: 'GET',
+      url: `${stationsPrefix}/${STATION_ID}?_p=UnknownField,Comune`,
+      headers: {},
+    })
+
+    t.strictSame(response.statusCode, (200))
+    t.ok(/application\/json/.test(response.headers['content-type']))
+    t.strictSame(JSON.parse(response.payload), expectedResponse)
+
+    t.end()
+  })
+
   t.end()
 })
+
+
