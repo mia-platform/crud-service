@@ -176,11 +176,6 @@ async function iterateOverCollectionDefinitionAndRegisterCruds(fastify) {
 
   for (const [modelName, model] of Object.entries(fastify.models)) {
     const { isView, viewLookupsEnabled, viewDependencies } = model
-    fastify.register(registerCrud, {
-      modelName,
-      isView,
-    })
-
     if (viewLookupsEnabled) {
       const lookups = viewDependencies.lookupsModels.map(({ lookup }) => lookup)
       fastify.register(registerViewCrud, {
@@ -195,6 +190,11 @@ async function iterateOverCollectionDefinitionAndRegisterCruds(fastify) {
         })
       }
     }
+
+    fastify.register(registerCrud, {
+      modelName,
+      isView,
+    })
   }
 }
 
