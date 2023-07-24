@@ -27,7 +27,7 @@ const ajvKeywords = require('ajv-keywords')
 
 const { readdirSync } = require('fs')
 const { join } = require('path')
-const { omit } = require('ramda')
+const lomit = require('lodash.omit')
 const lunset = require('lodash.unset')
 
 const myPackage = require('./package')
@@ -255,7 +255,7 @@ function createLookupModel(fastify, viewDefinition, mergedCollections) {
     const lookupProjection = pipeline.find(({ $project }) => $project)?.$project ?? {}
     const parsedLookupProjection = []
     const lookupCollectionDefinition = {
-      ...omit(['fields'], viewDefinition),
+      ...lomit(viewDefinition, ['fields']),
       schema: {
         type: 'object',
         properties: {},

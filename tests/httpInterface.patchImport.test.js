@@ -24,7 +24,7 @@ const { expectedBooks, bookToUpdate } = require('./filesFixtures/expectedResults
 const { setUpTest, prefix } = require('./httpInterface.utils')
 const { newUpdaterId } = require('./utils')
 const FormData = require('form-data')
-const { omit } = require('ramda')
+const lomit = require('lodash.omit')
 const { CREATORID, UPDATERID, CREATEDAT, UPDATEDAT } = require('../lib/consts')
 
 tap.test('HTTP PATCH /import', async t => {
@@ -206,7 +206,7 @@ tap.test('HTTP PATCH /import', async t => {
     t.strictSame(body, { message: 'File uploaded successfully' })
 
     const document = await collection.findOne({ _id: bookToUpdate._id })
-    t.strictSame(omit([CREATORID, UPDATERID, CREATEDAT, UPDATEDAT], document), bookToUpdate)
+    t.strictSame(lomit(document, [CREATORID, UPDATERID, CREATEDAT, UPDATEDAT]), bookToUpdate)
     t.end()
   })
 
