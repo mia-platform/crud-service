@@ -207,7 +207,7 @@ module.exports = {
           'nullable': false,
         },
       },
-      'additionalProperties': false,
+      'additionalProperties': true,
     },
   },
 }
