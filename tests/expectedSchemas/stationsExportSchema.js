@@ -22,6 +22,22 @@ module.exports = {
   'tags': [
     'stations endpoint',
   ],
+  'headers': {
+    'operationId': 'stations__MIA__export__MIA__headers',
+    'type': 'object',
+    'properties': {
+      'accept': {
+        'type': 'string',
+        'default': 'application/x-ndjson',
+        'enum': [
+          '*/*',
+          'application/json',
+          'application/x-ndjson',
+          'text/csv',
+        ],
+      },
+    },
+  },
   'querystring': {
     'operationId': 'stations__MIA__export__MIA__querystring',
     'type': 'object',

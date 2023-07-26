@@ -16,7 +16,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - [#138](https://github.com/mia-platform/crud-service/pull/138) patch import route validate the presence for the `_id` field
 - [#145](https://github.com/mia-platform/crud-service/pull/145) increased get response performances
- 
+
+### Added
+
+- [#137](https://github.com/mia-platform/crud-service/pull/137) export route allows different file formats (json, ndjson and csv)
+
 ## 6.8.0 - 2023-07-11
 
 ### Added

@@ -282,12 +282,12 @@ It uses the `QueryParser` to cast the value before forwarding the request to the
 
 The HTTPInterface includes by default different API methods for every kind of operation. The following are available for both Collections and Views:
 
-| Verb | API Method                   | Description                                    | 
-|------|------------------------------|------------------------------------------------|
-| GET  | {base URL}/{endpoint}/       | Returns a list of documents.                   |
-| GET  | {base URL}/{endpoint}/export | Export the collection.                         |
-| GET  | {base URL}/{endpoint}/{id}   | Returns the item with specific _ID_.           |
-| GET  | {base URL}/{endpoint}/count  | Returns the number of items in the collection. |
+| Verb | API Method                   | Description                                      | 
+|------|------------------------------|--------------------------------------------------|
+| GET  | {base URL}/{endpoint}/       | Returns a list of documents.                     |
+| GET  | {base URL}/{endpoint}/export | Export the collection in different file formats. |
+| GET  | {base URL}/{endpoint}/{id}   | Returns the item with specific _ID_.             |
+| GET  | {base URL}/{endpoint}/count  | Returns the number of items in the collection.   |
 
 For collections, also the following methods are available:
 
