@@ -20,12 +20,13 @@ const tap = require('tap')
 const path = require('path')
 const { createReadStream } = require('fs')
 
-const { expectedBooks, bookToUpdate } = require('./filesFixtures/expectedResults')
+const { bookToUpdate, expectedBooks } = require('./filesFixtures/expectedResults')
 const { setUpTest, prefix } = require('./httpInterface.utils')
 const { newUpdaterId } = require('./utils')
 const FormData = require('form-data')
 const lomit = require('lodash.omit')
 const { CREATORID, UPDATERID, CREATEDAT, UPDATEDAT } = require('../lib/consts')
+const { ObjectId } = require('mongodb')
 
 tap.test('HTTP PATCH /import', async t => {
   const jsonFileReader = () => createReadStream(path.join(__dirname, 'filesFixtures/books.json'))
@@ -117,12 +118,6 @@ tap.test('HTTP PATCH /import', async t => {
           t.strictSame(body, { message: 'File uploaded successfully' })
           t.end()
         })
-
-        t.test('and not create any document', async t => {
-          const documents = await collection.find().toArray()
-          t.same(documents, [])
-          t.end()
-        })
       })
     }
   })
@@ -190,6 +185,7 @@ tap.test('HTTP PATCH /import', async t => {
   })
 
   t.test('should update already existing documents', async t => {
+    await collection.deleteMany({})
     await collection.insertMany(expectedBooks)
 
     const form = new FormData()
@@ -207,7 +203,55 @@ tap.test('HTTP PATCH /import', async t => {
 
     const document = await collection.findOne({ _id: bookToUpdate._id })
     t.strictSame(lomit(document, [CREATORID, UPDATERID, CREATEDAT, UPDATEDAT]), bookToUpdate)
-    t.end()
+  })
+
+  t.test('should insert non existing documents', async t => {
+    await collection.deleteMany({})
+
+    const form = new FormData()
+    form.append('books', createReadStream(path.join(__dirname, 'filesFixtures/books.json')), { contentType: 'application/json' })
+    const response = await fastify.inject({
+      method: 'PATCH',
+      url: `${prefix}/import`,
+      payload: form,
+      headers: form.getHeaders(),
+    })
+
+    t.strictSame(response.statusCode, 200, response.payload)
+    const body = JSON.parse(response.payload)
+    t.strictSame(body, { message: 'File uploaded successfully' })
+
+    const documentsCount = await collection.countDocuments()
+    t.strictSame(documentsCount, 3)
+  })
+
+  t.test('should update the state of a deleted document', async t => {
+    await collection.deleteMany({})
+    await collection.insertOne({
+      _id: new ObjectId('64940bd37955234169667b47'),
+      __STATE__: 'TRASH',
+    })
+
+    const form = new FormData()
+    form.append('books', createReadStream(path.join(__dirname, 'filesFixtures/bookToUpdateWithoutState.json')), { contentType: 'application/json' })
+    const response = await fastify.inject({
+      method: 'PATCH',
+      url: `${prefix}/import`,
+      payload: form,
+      headers: form.getHeaders(),
+    })
+
+    t.strictSame(response.statusCode, 200, response.payload)
+    const body = JSON.parse(response.payload)
+    t.strictSame(body, { message: 'File uploaded successfully' })
+
+    const document = await collection.findOne({
+      _id: new ObjectId('64940bd37955234169667b47'),
+
+      // default state
+      __STATE__: 'DRAFT',
+    })
+    t.ok(document)
   })
 
   t.test('should return the correct error if a row is invalid', async t => {
