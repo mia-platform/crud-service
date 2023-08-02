@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+- [#154](https://github.com/mia-platform/crud-service/pull/154) import route with PATCH method now does an upsert instead of a simple update
+
 ## 6.9.0-rc.0 - 2023-08-02
 
 ### Changed
