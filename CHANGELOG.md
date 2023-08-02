@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## 6.9.0-rc.0 - 2023-08-02
+
 ### Changed
 
 - updated NodeJS version in Dockerfile to v18.17.0
