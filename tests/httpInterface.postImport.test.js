@@ -25,7 +25,7 @@ const { setUpTest, prefix } = require('./httpInterface.utils')
 const { newUpdaterId } = require('./utils')
 const FormData = require('form-data')
 const { __STATE__, STATES, CREATORID, UPDATEDAT, UPDATERID, CREATEDAT } = require('../lib/consts')
-const { omit } = require('ramda')
+const lomit = require('lodash.omit')
 
 tap.test('HTTP POST /import', async t => {
   const jsonFileReader = () => createReadStream(path.join(__dirname, 'filesFixtures/books.json'))
@@ -129,7 +129,7 @@ tap.test('HTTP POST /import', async t => {
             t.strictSame(document[__STATE__], STATES.PUBLIC)
           }
 
-          t.strictSame(documents.map(doc => omit([CREATORID, UPDATERID, CREATEDAT, UPDATEDAT], doc)), expectedBooks)
+          t.strictSame(documents.map(doc => lomit(doc, [CREATORID, UPDATERID, CREATEDAT, UPDATEDAT])), expectedBooks)
 
           t.end()
         })

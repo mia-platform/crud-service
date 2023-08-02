@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+
+- updated NodeJS version in Dockerfile to v18.17.0
+- updated service minor and patch dependencies
+
+### Fixed
+
+- [#138](https://github.com/mia-platform/crud-service/pull/138) patch import route validate the presence for the `_id` field
+- [#145](https://github.com/mia-platform/crud-service/pull/145) increased get response performances
+
+### Added
+
+- [#137](https://github.com/mia-platform/crud-service/pull/137) export route allows different file formats (json, ndjson and csv)
+
 ## 6.8.0 - 2023-07-11
 
 ### Added
@@ -26,7 +40,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
-- [mia-platform/#256](mia-platform/community/discussions/256) configurable collection tags.
+- [mia-platform/#256](https://github.com/mia-platform/community/discussions/256) configurable collection tags.
 
 ### Fixed
 

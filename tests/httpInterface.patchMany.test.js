@@ -17,7 +17,7 @@
 'use strict'
 
 const tap = require('tap')
-const { omit } = require('ramda')
+const lomit = require('lodash.omit')
 const { STANDARD_FIELDS } = require('../lib/CrudService')
 
 const { STATES, __STATE__, ARRAY_MERGE_ELEMENT_OPERATOR } = require('../lib/consts')
@@ -264,8 +264,8 @@ tap.test('HTTP PATCH /', async t => {
         ).toArray()
 
         for (let i = 0; i < updatedDocs.length; i++) {
-          const actual = omit(['_id', 'updaterId', 'updatedAt'], updatedDocs[i])
-          const expected = omit(['_id', 'updaterId', 'updatedAt'], expectedUpdatedDocuments[i])
+          const actual = lomit(updatedDocs[i], ['_id', 'updaterId', 'updatedAt'])
+          const expected = lomit(expectedUpdatedDocuments[i], ['_id', 'updaterId', 'updatedAt'])
           t.strictSame(actual, expected)
         }
 
@@ -309,8 +309,8 @@ tap.test('HTTP PATCH /', async t => {
 
       t.ok(updatedDoc.publishDate > expectedUpdatedDocument.publishDate)
 
-      const actual = omit(['_id', 'updaterId', 'updatedAt', 'publishDate'], updatedDoc)
-      const expected = omit(['_id', 'updaterId', 'updatedAt', 'publishDate'], expectedUpdatedDocument)
+      const actual = lomit(updatedDoc, ['_id', 'updaterId', 'updatedAt', 'publishDate'])
+      const expected = lomit(expectedUpdatedDocument, ['_id', 'updaterId', 'updatedAt', 'publishDate'])
       t.strictSame(actual, expected)
       t.end()
     })

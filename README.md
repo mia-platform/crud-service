@@ -282,28 +282,30 @@ It uses the `QueryParser` to cast the value before forwarding the request to the
 
 The HTTPInterface includes by default different API methods for every kind of operation. The following are available for both Collections and Views:
 
-| Verb | API Method                   | Description                                    | 
-|------|------------------------------|------------------------------------------------|
-| GET  | {base URL}/{endpoint}/       | Returns a list of documents.                   |
-| GET  | {base URL}/{endpoint}/export | Export the collection.                         |
-| GET  | {base URL}/{endpoint}/{id}   | Returns the item with specific _ID_.           |
-| GET  | {base URL}/{endpoint}/count  | Returns the number of items in the collection. |
+| Verb | API Method                   | Description                                      | 
+|------|------------------------------|--------------------------------------------------|
+| GET  | {base URL}/{endpoint}/       | Returns a list of documents.                     |
+| GET  | {base URL}/{endpoint}/export | Export the collection in different file formats. |
+| GET  | {base URL}/{endpoint}/{id}   | Returns the item with specific _ID_.             |
+| GET  | {base URL}/{endpoint}/count  | Returns the number of items in the collection.   |
 
 For collections, also the following methods are available:
 
-| Verb   | Method                           | Description                                                                                  | 
-|--------|----------------------------------|----------------------------------------------------------------------------------------------|
-| POST   | {base URL}/{endpoint}/           | Add a new item to the collection.                                                            |
-| POST   | {base URL}/{endpoint}/upsert-one | Update an item in the collection. If the item is not in the collection, it will be inserted. |
-| POST   | {base URL}/{endpoint}/bulk       | Insert new items in the collection.                                                          |
-| POST   | {base URL}/{endpoint}/state      | Change state of multiple items of the collection.                                            |
-| POST   | {base URL}/{endpoint}/{id}/state | Change state of the item with specific _ID_.                                                 |
-| POST   | {base URL}/{endpoint}/validate   | Verify if the body of the request is valid for an insertion in the collection.               |
-| PATCH  | {base URL}/{endpoint}/           | Update the items of the collection that match the query.                                     |
-| PATCH  | {base URL}/{endpoint}/{id}       | Update the item with specific _ID_ in the collection.                                        |
-| PATCH  | {base URL}/{endpoint}/bulk       | Update multiple items of the collection, each one with its own modifications                 |
-| DELETE | {base URL}/{endpoint}/           | Delete multiple items from the collection.                                                   |
-| DELETE | {base URL}/{endpoint}/{id}       | Delete an item with specific _ID_ from the collection.                                       |
+| Verb   | Method                           | Description                                                                                         | 
+|--------|----------------------------------|-----------------------------------------------------------------------------------------------------|
+| POST   | {base URL}/{endpoint}/           | Add a new item to the collection.                                                                   |
+| POST   | {base URL}/{endpoint}/upsert-one | Update an item in the collection. If the item is not in the collection, it will be inserted.        |
+| POST   | {base URL}/{endpoint}/bulk       | Insert new items in the collection.                                                                 |
+| POST   | {base URL}/{endpoint}/state      | Change state of multiple items of the collection.                                                   |
+| POST   | {base URL}/{endpoint}/{id}/state | Change state of the item with specific _ID_.                                                        |
+| POST   | {base URL}/{endpoint}/validate   | Verify if the body of the request is valid for an insertion in the collection.                      |
+| POST   | {base URL}/{endpoint}/import     | Inserts new items in the collection from file (json, ndjson and csv).                               |
+| PATCH  | {base URL}/{endpoint}/           | Update the items of the collection that match the query.                                            |
+| PATCH  | {base URL}/{endpoint}/{id}       | Update the item with specific _ID_ in the collection.                                               |
+| PATCH  | {base URL}/{endpoint}/bulk       | Update multiple items of the collection, each one with its own modifications                        |
+| PATCH  | {base URL}/{endpoint}/import     | Update the items in the collection from file (json, ndjson and csv), it must include the _ID_ field |
+| DELETE | {base URL}/{endpoint}/           | Delete multiple items from the collection.                                                          |
+| DELETE | {base URL}/{endpoint}/{id}       | Delete an item with specific _ID_ from the collection.                                              |
 
 All these methods might include additional query parameters to refine the search. To have more detail, you can check the [live documentation](http://localhost:3000/documentation) (available only when a service instance is started locally) or refer to the service [documentation overview](./docs/10_Overview_and_Usage.md#crud-endpoints).
 

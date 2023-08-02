@@ -18,7 +18,7 @@
 
 const tap = require('tap')
 const abstractLogger = require('abstract-logging')
-const { omit } = require('ramda')
+const lomit = require('lodash.omit')
 
 const { STATES } = require('../lib/consts')
 const CrudService = require('../lib/CrudService')
@@ -365,7 +365,7 @@ tap.test('aggregate', async t => {
 
     const expectedDocsWithExcludedFields = fixtures.map((doc) => {
       const docCopy = { ...doc }
-      return omit(['attachments', 'isbn', 'price'], docCopy)
+      return lomit(docCopy, ['attachments', 'isbn', 'price'])
     })
 
     t.test('should return only the right fields', async t => {

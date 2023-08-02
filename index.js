@@ -27,7 +27,7 @@ const ajvKeywords = require('ajv-keywords')
 
 const { readdirSync } = require('fs')
 const { join } = require('path')
-const { omit } = require('ramda')
+const lomit = require('lodash.omit')
 const lunset = require('lodash.unset')
 
 const myPackage = require('./package')
@@ -176,11 +176,6 @@ async function iterateOverCollectionDefinitionAndRegisterCruds(fastify) {
 
   for (const [modelName, model] of Object.entries(fastify.models)) {
     const { isView, viewLookupsEnabled, viewDependencies } = model
-    fastify.register(registerCrud, {
-      modelName,
-      isView,
-    })
-
     if (viewLookupsEnabled) {
       const lookups = viewDependencies.lookupsModels.map(({ lookup }) => lookup)
       fastify.register(registerViewCrud, {
@@ -195,6 +190,11 @@ async function iterateOverCollectionDefinitionAndRegisterCruds(fastify) {
         })
       }
     }
+
+    fastify.register(registerCrud, {
+      modelName,
+      isView,
+    })
   }
 }
 
@@ -255,7 +255,7 @@ function createLookupModel(fastify, viewDefinition, mergedCollections) {
     const lookupProjection = pipeline.find(({ $project }) => $project)?.$project ?? {}
     const parsedLookupProjection = []
     const lookupCollectionDefinition = {
-      ...omit(['fields'], viewDefinition),
+      ...lomit(viewDefinition, ['fields']),
       schema: {
         type: 'object',
         properties: {},

@@ -24,7 +24,7 @@ const { expectedBooks, bookToUpdate } = require('./filesFixtures/expectedResults
 const { setUpTest, prefix } = require('./httpInterface.utils')
 const { newUpdaterId } = require('./utils')
 const FormData = require('form-data')
-const { omit } = require('ramda')
+const lomit = require('lodash.omit')
 const { CREATORID, UPDATERID, CREATEDAT, UPDATEDAT } = require('../lib/consts')
 
 tap.test('HTTP PATCH /import', async t => {
@@ -206,7 +206,7 @@ tap.test('HTTP PATCH /import', async t => {
     t.strictSame(body, { message: 'File uploaded successfully' })
 
     const document = await collection.findOne({ _id: bookToUpdate._id })
-    t.strictSame(omit([CREATORID, UPDATERID, CREATEDAT, UPDATEDAT], document), bookToUpdate)
+    t.strictSame(lomit(document, [CREATORID, UPDATERID, CREATEDAT, UPDATEDAT]), bookToUpdate)
     t.end()
   })
 
@@ -226,6 +226,25 @@ tap.test('HTTP PATCH /import', async t => {
     t.strictSame(body.statusCode, 400)
     t.strictSame(body.error, 'Bad Request')
     t.match(body.message, '(index: 0, /publishDate) must match pattern "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$"')
+    t.end()
+  })
+
+  t.test('should return an error if no _id is provided', async t => {
+    const form = new FormData()
+    form.append('books', createReadStream(path.join(__dirname, 'filesFixtures/booksNoId.json')), { contentType: 'application/json' })
+    const response = await fastify.inject({
+      method: 'PATCH',
+      url: `${prefix}/import`,
+      payload: form,
+      headers: form.getHeaders(),
+    })
+
+    t.strictSame(response.statusCode, 400, response.payload)
+    t.ok(/application\/json/.test(response.headers['content-type']))
+    const body = JSON.parse(response.payload)
+    t.strictSame(body.statusCode, 400)
+    t.strictSame(body.error, 'Bad Request')
+    t.match(body.message, '(index: 0) must have required property \'_id\'')
     t.end()
   })
 })
