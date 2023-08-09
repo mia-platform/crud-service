@@ -254,6 +254,26 @@ tap.test('HTTP PATCH /import', async t => {
     t.ok(document)
   })
 
+  t.test('should insert if no _id is provided', async t => {
+    await collection.deleteMany({})
+
+    const form = new FormData()
+    form.append('books', createReadStream(path.join(__dirname, 'filesFixtures/booksNoId.json')), { contentType: 'application/json' })
+    const response = await fastify.inject({
+      method: 'PATCH',
+      url: `${prefix}/import`,
+      payload: form,
+      headers: form.getHeaders(),
+    })
+
+    t.strictSame(response.statusCode, 200, response.payload)
+    const body = JSON.parse(response.payload)
+    t.strictSame(body, { message: 'File uploaded successfully' })
+
+    const documentsCount = await collection.countDocuments()
+    t.strictSame(documentsCount, 1)
+  })
+
   t.test('should return the correct error if a row is invalid', async t => {
     const form = new FormData()
     form.append('books', createReadStream(path.join(__dirname, 'filesFixtures/booksError.json')), { contentType: 'application/json' })
@@ -270,25 +290,6 @@ tap.test('HTTP PATCH /import', async t => {
     t.strictSame(body.statusCode, 400)
     t.strictSame(body.error, 'Bad Request')
     t.match(body.message, '(index: 0, /publishDate) must match pattern "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$"')
-    t.end()
-  })
-
-  t.test('should return an error if no _id is provided', async t => {
-    const form = new FormData()
-    form.append('books', createReadStream(path.join(__dirname, 'filesFixtures/booksNoId.json')), { contentType: 'application/json' })
-    const response = await fastify.inject({
-      method: 'PATCH',
-      url: `${prefix}/import`,
-      payload: form,
-      headers: form.getHeaders(),
-    })
-
-    t.strictSame(response.statusCode, 400, response.payload)
-    t.ok(/application\/json/.test(response.headers['content-type']))
-    const body = JSON.parse(response.payload)
-    t.strictSame(body.statusCode, 400)
-    t.strictSame(body.error, 'Bad Request')
-    t.match(body.message, '(index: 0) must have required property \'_id\'')
     t.end()
   })
 })
