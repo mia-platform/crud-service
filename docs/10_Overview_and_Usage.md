@@ -24,6 +24,7 @@ Via APIs it's possible to:
 - create a new element in a collection (also with a bulk action);
 - update one or more elements of a collection;
 - delete one or more elements of a collection.
+- import elements from a file csv, json or ndjson into a collection
 
 The following guide will help you to get familiar with the APIs of the CRUD Service.
 
@@ -1025,6 +1026,42 @@ curl --location --request DELETE 'url.mia-platform.eu/v2/books/?category=sci-fi&
 
 The endpoint always responds `200 OK`, with an integer number in the body representing the count of deleted documents. 
 The response is 200 also when no documents are found, in that case the count will be 0.
+
+### Import
+
+You can import element into a collection from a file csv, json or ndjson.
+
+#### Import insert
+
+To import all the elements of a file you have to use the `POST` method. Mind that the method will fail if inside the file you have documents with an `_id` already present in your collection. To avoid this refer to the [upsert method](#import-upsert).
+
+The route to call is the following:
+
+`POST` `https://your-url/<CRUD collection endpoint>/import`
+
+Below you can see an example:
+
+```shell
+curl --data "file=@/path/to/file.json" -H 'Content-Type: multipart/form-data;boundary=XXXXX' -X POST http://url.mia-platform.eu/v2/books/import
+```
+
+When successful the endpoint responds `201 OK`, with the text "File uploaded successfully"
+
+#### Import upsert
+
+You can also import all the elements from a file using an `upsert` strategy, meaning that all the documents in the file having an already present `_id` in your collection will be updated with the value of the document in the file. Of course, if the document in the file does not have an `_id` present in the collection it will be inserted as a new document.
+
+The route to call is the following:
+
+`PATCH` `https://your-url/<CRUD collection endpoint>/import`
+
+Below you can see an example:
+
+```shell
+curl --data "file=@/path/to/file.json" -H 'Content-Type: multipart/form-data;boundary=XXXXX' -X PATCH http://url.mia-platform.eu/v2/books/import
+```
+
+When successful the endpoint responds `200 OK`, with the text "File uploaded successfully"
 
 ### RawObject and Array_RawObject with schemas
 
