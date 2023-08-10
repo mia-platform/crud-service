@@ -3,5 +3,10 @@
         "name": "Pride and Prejudice",
         "isbn": "fake isbn 2",
         "publishDate": "2023-01-01T00:00:00.000Z"
+    },
+    {
+        "name": "Pride and Prejudice 2 the revenge",
+        "isbn": "fake isbn 10",
+        "publishDate": "2023-01-01T00:00:00.000Z"
     }
 ]

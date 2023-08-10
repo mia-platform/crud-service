@@ -271,7 +271,15 @@ tap.test('HTTP PATCH /import', async t => {
     t.strictSame(body, { message: 'File uploaded successfully' })
 
     const documentsCount = await collection.countDocuments()
-    t.strictSame(documentsCount, 1)
+    t.strictSame(documentsCount, 2)
+
+    // Make sure we're inserting documents with valid defaults
+    const firstDocument = await collection.findOne({})
+    t.ok(firstDocument._id instanceof ObjectId)
+    t.ok(firstDocument.createdAt instanceof Date)
+    t.ok(firstDocument.updatedAt instanceof Date)
+    t.strictSame(firstDocument.creatorId, 'public')
+    t.strictSame(firstDocument.updaterId, 'public')
   })
 
   t.test('should return the correct error if a row is invalid', async t => {
