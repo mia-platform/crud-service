@@ -1029,7 +1029,10 @@ The response is 200 also when no documents are found, in that case the count wil
 
 ### Import
 
-You can import element into a collection from a file csv, json or ndjson.
+You can import records into a collection from files adopting these formats:
+- `csv`
+- `json`
+- `ndjson`
 
 #### Import insert
 
