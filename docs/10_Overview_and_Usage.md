@@ -1048,6 +1048,8 @@ Below you can see an example:
 curl --data "file=@/path/to/file.json" -H 'Content-Type: multipart/form-data;boundary=XXXXX' -X POST http://url.mia-platform.eu/v2/books/import
 ```
 
+Check out what the [import file](#import-file-examples) should look like
+
 When successful the endpoint responds `201 OK`, with the text "File uploaded successfully"
 
 #### Import upsert
@@ -1065,7 +1067,34 @@ Below you can see an example:
 curl --data "file=@/path/to/file.json" -H 'Content-Type: multipart/form-data;boundary=XXXXX' -X PATCH http://url.mia-platform.eu/v2/books/import
 ```
 
+Check out what the [import file](#import-file-examples) should look like
+
 When successful the endpoint responds `200 OK`, with the text "File uploaded successfully"
+
+##### Import file examples
+
+```json title="books.json"
+[
+    {
+        "name": "The Fellowship Of The Ring",
+        "isbn": "54453",
+        "price": 13.99,
+        "author": "J.R.R. Tolkien"
+    },
+    {
+        "name": "Dune",
+        "isbn": "143535",
+        "price": 14.99,
+        "author": "Frank Herbert"
+    }
+]
+```
+
+```csv title="books.csv"
+name,isbn,price,author
+The Fellowship Of The Ring,54453,13.99,J.R.R. Tolkien
+Dune,143535,14.99,Frank Herbert
+```
 
 ### RawObject and Array_RawObject with schemas
 
