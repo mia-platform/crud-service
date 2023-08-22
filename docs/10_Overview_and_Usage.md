@@ -1052,7 +1052,8 @@ When successful the endpoint responds `201 OK`, with the text "File uploaded suc
 
 #### Import upsert
 
-You can also import all the elements from a file using an `upsert` strategy, meaning that all the documents in the file having an already present `_id` in your collection will be updated with the value of the document in the file. Of course, if the document in the file does not have an `_id` present in the collection it will be inserted as a new document.
+You can also import all the elements from a file using an `upsert` strategy, meaning that all the documents in the file having an already present `_id` field in your collection will be updated with the value of the document in the file.  
+In case a document in the file does not provide the `_id` field, then the import procedure will use the input document as filter to look for an existing document with the same data in the collection. If the document matches a collection record then, the metadata (e.g. `updatedAt` field) of existing document is updated. Otherwise a new document will be inserted in the collection```
 
 The route to call is the following:
 
