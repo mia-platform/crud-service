@@ -282,6 +282,29 @@ tap.test('HTTP PATCH /import', async t => {
     t.strictSame(firstDocument.updaterId, 'public')
   })
 
+  t.test('should not duplicate when the same records witout _id are imported', async t => {
+    await collection.deleteMany({})
+
+    // Import 3 times
+    for (let index = 0; index < 3; index++) {
+      const form = new FormData()
+      form.append('books', createReadStream(path.join(__dirname, 'filesFixtures/booksNoId.json')), { contentType: 'application/json' })
+      const response = await fastify.inject({
+        method: 'PATCH',
+        url: `${prefix}/import`,
+        payload: form,
+        headers: form.getHeaders(),
+      })
+
+      t.strictSame(response.statusCode, 200, response.payload)
+      const body = JSON.parse(response.payload)
+      t.strictSame(body, { message: 'File uploaded successfully' })
+    }
+
+    const documentsCount = await collection.countDocuments()
+    t.strictSame(documentsCount, 2)
+  })
+
   t.test('should return the correct error if a row is invalid', async t => {
     const form = new FormData()
     form.append('books', createReadStream(path.join(__dirname, 'filesFixtures/booksError.json')), { contentType: 'application/json' })
