@@ -20,12 +20,13 @@ const tap = require('tap')
 const path = require('path')
 const { createReadStream } = require('fs')
 
-const { expectedBooks, bookToUpdate } = require('./filesFixtures/expectedResults')
+const { bookToUpdate, expectedBooks } = require('./filesFixtures/expectedResults')
 const { setUpTest, prefix } = require('./httpInterface.utils')
 const { newUpdaterId } = require('./utils')
 const FormData = require('form-data')
 const lomit = require('lodash.omit')
 const { CREATORID, UPDATERID, CREATEDAT, UPDATEDAT } = require('../lib/consts')
+const { ObjectId } = require('mongodb')
 
 tap.test('HTTP PATCH /import', async t => {
   const jsonFileReader = () => createReadStream(path.join(__dirname, 'filesFixtures/books.json'))
@@ -117,12 +118,6 @@ tap.test('HTTP PATCH /import', async t => {
           t.strictSame(body, { message: 'File uploaded successfully' })
           t.end()
         })
-
-        t.test('and not create any document', async t => {
-          const documents = await collection.find().toArray()
-          t.same(documents, [])
-          t.end()
-        })
       })
     }
   })
@@ -190,6 +185,7 @@ tap.test('HTTP PATCH /import', async t => {
   })
 
   t.test('should update already existing documents', async t => {
+    await collection.deleteMany({})
     await collection.insertMany(expectedBooks)
 
     const form = new FormData()
@@ -207,7 +203,106 @@ tap.test('HTTP PATCH /import', async t => {
 
     const document = await collection.findOne({ _id: bookToUpdate._id })
     t.strictSame(lomit(document, [CREATORID, UPDATERID, CREATEDAT, UPDATEDAT]), bookToUpdate)
-    t.end()
+  })
+
+  t.test('should insert non existing documents', async t => {
+    await collection.deleteMany({})
+
+    const form = new FormData()
+    form.append('books', createReadStream(path.join(__dirname, 'filesFixtures/books.json')), { contentType: 'application/json' })
+    const response = await fastify.inject({
+      method: 'PATCH',
+      url: `${prefix}/import`,
+      payload: form,
+      headers: form.getHeaders(),
+    })
+
+    t.strictSame(response.statusCode, 200, response.payload)
+    const body = JSON.parse(response.payload)
+    t.strictSame(body, { message: 'File uploaded successfully' })
+
+    const documentsCount = await collection.countDocuments()
+    t.strictSame(documentsCount, 3)
+  })
+
+  t.test('should update the state of a deleted document', async t => {
+    await collection.deleteMany({})
+    await collection.insertOne({
+      _id: new ObjectId('64940bd37955234169667b47'),
+      __STATE__: 'TRASH',
+    })
+
+    const form = new FormData()
+    form.append('books', createReadStream(path.join(__dirname, 'filesFixtures/bookToUpdateWithoutState.json')), { contentType: 'application/json' })
+    const response = await fastify.inject({
+      method: 'PATCH',
+      url: `${prefix}/import`,
+      payload: form,
+      headers: form.getHeaders(),
+    })
+
+    t.strictSame(response.statusCode, 200, response.payload)
+    const body = JSON.parse(response.payload)
+    t.strictSame(body, { message: 'File uploaded successfully' })
+
+    const document = await collection.findOne({
+      _id: new ObjectId('64940bd37955234169667b47'),
+
+      // default state
+      __STATE__: 'DRAFT',
+    })
+    t.ok(document)
+  })
+
+  t.test('should insert if no _id is provided', async t => {
+    await collection.deleteMany({})
+
+    const form = new FormData()
+    form.append('books', createReadStream(path.join(__dirname, 'filesFixtures/booksNoId.json')), { contentType: 'application/json' })
+    const response = await fastify.inject({
+      method: 'PATCH',
+      url: `${prefix}/import`,
+      payload: form,
+      headers: form.getHeaders(),
+    })
+
+    t.strictSame(response.statusCode, 200, response.payload)
+    const body = JSON.parse(response.payload)
+    t.strictSame(body, { message: 'File uploaded successfully' })
+
+    const documentsCount = await collection.countDocuments()
+    t.strictSame(documentsCount, 2)
+
+    // Make sure we're inserting documents with valid defaults
+    const firstDocument = await collection.findOne({})
+    t.ok(firstDocument._id instanceof ObjectId)
+    t.ok(firstDocument.createdAt instanceof Date)
+    t.ok(firstDocument.updatedAt instanceof Date)
+    t.strictSame(firstDocument.creatorId, 'public')
+    t.strictSame(firstDocument.updaterId, 'public')
+  })
+
+  t.test('should not duplicate when the same records witout _id are imported', async t => {
+    await collection.deleteMany({})
+
+    // Import 3 times
+    for (let index = 0; index < 3; index++) {
+      const form = new FormData()
+      form.append('books', createReadStream(path.join(__dirname, 'filesFixtures/booksNoId.json')), { contentType: 'application/json' })
+      const response = await fastify.inject({
+        method: 'PATCH',
+        url: `${prefix}/import`,
+        payload: form,
+        headers: form.getHeaders(),
+      })
+
+      t.strictSame(response.statusCode, 200, response.payload)
+      const body = JSON.parse(response.payload)
+      t.strictSame(body, { message: 'File uploaded successfully' })
+    }
+
+    const documentsCount = await collection.countDocuments()
+    t.strictSame(documentsCount, 2)
   })
 
   t.test('should return the correct error if a row is invalid', async t => {
@@ -226,25 +321,6 @@ tap.test('HTTP PATCH /import', async t => {
     t.strictSame(body.statusCode, 400)
     t.strictSame(body.error, 'Bad Request')
     t.match(body.message, '(index: 0, /publishDate) must match pattern "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$"')
-    t.end()
-  })
-
-  t.test('should return an error if no _id is provided', async t => {
-    const form = new FormData()
-    form.append('books', createReadStream(path.join(__dirname, 'filesFixtures/booksNoId.json')), { contentType: 'application/json' })
-    const response = await fastify.inject({
-      method: 'PATCH',
-      url: `${prefix}/import`,
-      payload: form,
-      headers: form.getHeaders(),
-    })
-
-    t.strictSame(response.statusCode, 400, response.payload)
-    t.ok(/application\/json/.test(response.headers['content-type']))
-    const body = JSON.parse(response.payload)
-    t.strictSame(body.statusCode, 400)
-    t.strictSame(body.error, 'Bad Request')
-    t.match(body.message, '(index: 0) must have required property \'_id\'')
     t.end()
   })
 })

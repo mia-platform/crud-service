@@ -24,6 +24,7 @@ Via APIs it's possible to:
 - create a new element in a collection (also with a bulk action);
 - update one or more elements of a collection;
 - delete one or more elements of a collection.
+- import elements from a file csv, json or ndjson into a collection
 
 The following guide will help you to get familiar with the APIs of the CRUD Service.
 
@@ -1025,6 +1026,75 @@ curl --location --request DELETE 'url.mia-platform.eu/v2/books/?category=sci-fi&
 
 The endpoint always responds `200 OK`, with an integer number in the body representing the count of deleted documents. 
 The response is 200 also when no documents are found, in that case the count will be 0.
+
+### Import
+
+You can import records into a collection from files adopting these formats:
+- `csv`
+- `json`
+- `ndjson`
+
+#### Import insert
+
+To import all the elements of a file you have to use the `POST` method. Mind that the method will fail if inside the file you have documents with an `_id` already present in your collection. To avoid this refer to the [upsert method](#import-upsert).
+
+The route to call is the following:
+
+`POST` `https://your-url/<CRUD collection endpoint>/import`
+
+Below you can see an example:
+
+```shell
+curl --data "file=@/path/to/file.json" -H 'Content-Type: multipart/form-data;boundary=XXXXX' -X POST http://url.mia-platform.eu/v2/books/import
+```
+
+Check out what the [import file](#import-file-examples) should look like
+
+When successful the endpoint responds `201 OK`, with the text "File uploaded successfully"
+
+#### Import upsert
+
+You can also import all the elements from a file using an `upsert` strategy, meaning that all the documents in the file having an already present `_id` field in your collection will be updated with the value of the document in the file.  
+In case a document in the file does not provide the `_id` field, then the import procedure will use the input document as filter to look for an existing document with the same data in the collection. If the document matches a collection record then, the metadata (e.g. `updatedAt` field) of existing document is updated. Otherwise a new document will be inserted in the collection```
+
+The route to call is the following:
+
+`PATCH` `https://your-url/<CRUD collection endpoint>/import`
+
+Below you can see an example:
+
+```shell
+curl --data "file=@/path/to/file.json" -H 'Content-Type: multipart/form-data;boundary=XXXXX' -X PATCH http://url.mia-platform.eu/v2/books/import
+```
+
+Check out what the [import file](#import-file-examples) should look like
+
+When successful the endpoint responds `200 OK`, with the text "File uploaded successfully"
+
+##### Import file examples
+
+```json title="books.json"
+[
+    {
+        "name": "The Fellowship Of The Ring",
+        "isbn": "54453",
+        "price": 13.99,
+        "author": "J.R.R. Tolkien"
+    },
+    {
+        "name": "Dune",
+        "isbn": "143535",
+        "price": 14.99,
+        "author": "Frank Herbert"
+    }
+]
+```
+
+```csv title="books.csv"
+name,isbn,price,author
+The Fellowship Of The Ring,54453,13.99,J.R.R. Tolkien
+Dune,143535,14.99,Frank Herbert
+```
 
 ### RawObject and Array_RawObject with schemas
 
