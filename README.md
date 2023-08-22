@@ -359,7 +359,7 @@ Mia Platform s.r.l. does not respond to any improper use of the MongoDB Data Enc
 [cryptd]: https://repo.mongodb.com/apt/debian/dists/bullseye/mongodb-enterprise/
 
 [pipeline-link]: https://github.com/mia-platform/crud-service/actions
-[build-svg]: https://img.shields.io/github/actions/workflow/status/mia-platform/crud-service/nodejs.yml
+[build-svg]: https://img.shields.io/github/actions/workflow/status/mia-platform/crud-service/main.yml
 [license-svg]: https://img.shields.io/github/license/mia-platform/CRUD-service
 
 [coverage-svg]: https://coveralls.io/repos/github/mia-platform/crud-service/badge.svg?branch=main
