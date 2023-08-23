@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 
-- updated NodeJS version in Dockerfile to v18.17.0
+- updated NodeJS version in Dockerfile to v18.17.1
 - updated service minor and patch dependencies
 - [#154](https://github.com/mia-platform/crud-service/pull/154) import route with PATCH method now does an upsert instead of a simple update
 
