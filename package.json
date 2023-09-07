@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@fastify/env": "^4.2.0",
-    "@fastify/mongodb": "^6.2.0",
+    "@fastify/mongodb": "^8.0.0",
     "@fastify/multipart": "^7.7.3",
     "@mia-platform/lc39": "^7.0.1",
     "@mia-platform/mongodb-healthchecker": "^1.0.1",
