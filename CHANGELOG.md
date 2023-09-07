@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+
+- remove `additionalProperties` constraints from collection definition schema to allow greater flexibility in adding further config entries
+
+### Removed
+
+- remove support to MongoDB v4.2
+
 ## 6.9.0 - 2023-08-23
 
 ### Added
