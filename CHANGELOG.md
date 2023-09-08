@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## 6.9.1 - 2023-09-08
+
 ### Fixed
 
 - [#172](https://github.com/mia-platform/crud-service/issues/172) collection _export_ endpoint can now parse multiple accept header
