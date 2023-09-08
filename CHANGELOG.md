@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fixed
+
+- [#172](https://github.com/mia-platform/crud-service/issues/172) collection _export_ endpoint can now parse multiple accept header
+values and select the one with the highest weight
+
 ## 6.9.0 - 2023-08-23
 
 ### Added

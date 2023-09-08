@@ -29,12 +29,6 @@ module.exports = {
       'accept': {
         'type': 'string',
         'default': 'application/x-ndjson',
-        'enum': [
-          '*/*',
-          'application/json',
-          'application/x-ndjson',
-          'text/csv',
-        ],
       },
     },
   },
