@@ -720,6 +720,61 @@ tap.test('HTTP GET /export', async t => {
 
       t.end()
     })
+
+    t.test(`EXPORT x-ndjson ${name} - use multiple weighted accepts`, async t => {
+      const accept = 'text/csv;q=0.7, application/x-ndjson, */*'
+      const response = await fastify.inject({
+        method: 'GET',
+        url: prefix + conf.url,
+        headers: { ...getHeaders(conf), accept },
+      })
+
+      t.test('should return 200', t => {
+        t.strictSame(response.statusCode, 200)
+        t.end()
+      })
+
+      t.test('should return "application/x-ndjson"', t => {
+        t.ok(/application\/x-ndjson/.test(response.headers['content-type']))
+        t.end()
+      })
+
+      t.test('should return the document', t => {
+        const documents = response.payload.split('\n')
+          .filter(s => s !== '')
+          .map(JSON.parse)
+        t.strictSame(documents, found, response.payload)
+        t.end()
+      })
+
+      t.test('should keep the document as is in database', async t => {
+        const documents = await collection.find().toArray()
+        t.strictSame(documents, fixtures)
+        t.end()
+      })
+
+      t.end()
+    })
+
+    t.test(`EXPORT unexpected accept type ${name}`, async t => {
+      const accept = 'image/jpeg'
+      const response = await fastify.inject({
+        method: 'GET',
+        url: prefix + conf.url,
+        headers: { ...getHeaders(conf), accept },
+      })
+
+      t.test('should return 406 HTTP error', t => {
+        t.strictSame(response.statusCode, 406)
+        t.strictSame(
+          JSON.parse(response.payload),
+          { statusCode: 406, error: 'Not Acceptable', message: 'unsupported file type image/jpeg' }
+        )
+        t.end()
+      })
+
+      t.end()
+    })
   })
   t.end()
 })
