@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - remove support to MongoDB v4.2
 - [#140](https://github.com/mia-platform/crud-service/pull/140) changed response code on unique constraint violation with respect to [mia-platform/#175](https://github.com/mia-platform/community/discussions/175)
 - [#53](https://github.com/mia-platform/crud-service/issues/53) request to transition to a disallowed state now returns HTTP error 400 instead of 404
+- [#55](https://github.com/mia-platform/crud-service/issues/55) additional query \_q now return _400 Bad Request_ in case a field is not included in the collection definition schema
 
 ### Changed
 
@@ -64,7 +65,6 @@ values and select the one with the highest weight
 - $text search query now working on aggregation
 - [#158](https://github.com/mia-platform/community/discussions/158) fixed wrong validation on nested objects.
 - endpoint tag format has been updated to correctly display paths with underscores
-- [#55](https://github.com/mia-platform/crud-service/issues/55) additional query \_q now return _400 Bad Request_ in case a field is not included in the collection JSON Schema
 
 ## 6.7.0 - 2023-06-19
 
