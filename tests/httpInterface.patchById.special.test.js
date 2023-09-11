@@ -30,7 +30,13 @@ const {
   CREATORID,
   CREATEDAT,
 } = require('../lib/consts')
-const { fixtures, stationFixtures, newUpdaterId, oldUpdaterId, checkDocumentsInDatabase } = require('./utils')
+const {
+  fixtures,
+  stationFixtures,
+  newUpdaterId,
+  oldUpdaterId,
+  checkDocumentsInDatabase,
+} = require('./utils')
 const { setUpTest, prefix, stationsPrefix, NOT_FOUND_BODY, getHeaders } = require('./httpInterface.utils')
 const collectionDefinition = require('./collectionDefinitions/books')
 
@@ -50,7 +56,10 @@ const UPDATED_STATION_HTTP_DOC = { ...STATION_HTTP_DOC,
   updaterId: newUpdaterId }
 
 const MATCHING_TAGIDS_QUERY = { tagIds: 1 }
-const RENAMED_ATTACHMENTS = [{ name: 'renamed', neastedArr: [1, 2, 3], detail: { size: 9 } }, { name: 'another-note', other: 'stuff' }]
+const RENAMED_ATTACHMENTS = [
+  { name: 'renamed', neastedArr: [1, 2, 3], detail: { size: 9 } },
+  { name: 'another-note', other: 'stuff' },
+]
 const ATTACHMENT_REPLACE_ELEMENT = `attachments.$.${ARRAY_REPLACE_ELEMENT_OPERATOR}`
 
 const UPDATE_REPLACE_ARRAY_ELEMENT_COMMAND = {
@@ -59,1181 +68,1178 @@ const UPDATE_REPLACE_ARRAY_ELEMENT_COMMAND = {
   },
 }
 
-tap.test('HTTP PATCH /<id> - nested object', async t => {
+tap.test('HTTP PATCH /<id> - ', async t => {
+  const { fastify, collection, resetCollection } = await setUpTest(t)
   const [DOC_TEST] = fixtures
 
   const VALUE_AS_NUMBER = 5555
   const VALUE_AS_STRING = `${VALUE_AS_NUMBER}`
 
-  t.test('$set', async t => {
-    const { fastify, collection, resetCollection } = await setUpTest(t)
-
-    t.test('with dot notation in $set', async t => {
-      t.test('ok', async t => {
-        await resetCollection()
-
-        const UPDATE_COMMAND = {
-          $set: {
-            'metadata.somethingNumber': VALUE_AS_NUMBER,
-          },
-        }
-        const response = await fastify.inject({
-          method: 'PATCH',
-          url: `${prefix}/${DOC_TEST._id.toHexString()}`,
-          payload: UPDATE_COMMAND,
-          headers: {
-            userId: newUpdaterId,
-          },
-        })
-
-        t.strictSame(response.statusCode, 200)
-        t.equal(JSON.parse(response.payload).metadata.somethingNumber, VALUE_AS_NUMBER)
-
-        const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
-        t.strictSame(docOnDb.metadata.somethingNumber, VALUE_AS_NUMBER)
-        t.end()
-      })
-
-      t.test('number as string is casted', async t => {
-        await resetCollection()
-
-        const UPDATE_COMMAND = {
-          $set: {
-            'metadata.somethingNumber': VALUE_AS_STRING,
-            'metadata.somethingArrayObject.0.arrayItemObjectChildNumber': VALUE_AS_STRING,
-            'metadata.somethingArrayOfNumbers.0': VALUE_AS_STRING,
-          },
-        }
-        const response = await fastify.inject({
-          method: 'PATCH',
-          url: `${prefix}/${DOC_TEST._id.toHexString()}`,
-          payload: UPDATE_COMMAND,
-          headers: {
-            userId: newUpdaterId,
-          },
-        })
-        t.strictSame(response.statusCode, 200)
-
-        const EXPECTED_CASTED_OBJECT = {
-          somethingNumber: VALUE_AS_NUMBER,
-          somethingString: 'the-saved-string',
-          somethingArrayObject: [{
-            arrayItemObjectChildNumber: VALUE_AS_NUMBER,
-          }],
-          somethingArrayOfNumbers: [VALUE_AS_NUMBER],
-        }
-
-        t.strictSame(JSON.parse(response.payload).metadata, EXPECTED_CASTED_OBJECT)
-
-        const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
-        t.strictSame(docOnDb.metadata, EXPECTED_CASTED_OBJECT)
-        t.end()
-      })
-
-      t.test('cast with middle path', async t => {
-        await resetCollection()
-
-        const UPDATE_COMMAND = {
-          $set: {
-            'metadata.somethingArrayObject.0': { arrayItemObjectChildNumber: VALUE_AS_STRING },
-            'metadata.somethingArrayOfNumbers': [VALUE_AS_STRING],
-            'metadata.somethingObject': { childNumber: VALUE_AS_STRING },
-          },
-        }
-
-        const response = await fastify.inject({
-          method: 'PATCH',
-          url: `${prefix}/${DOC_TEST._id.toHexString()}`,
-          payload: UPDATE_COMMAND,
-          headers: {
-            userId: newUpdaterId,
-          },
-        })
-        t.strictSame(response.statusCode, 200)
-        const metadataFromPayload = JSON.parse(response.payload).metadata
-
-        const EXPECTED_SOMETHING_ARRAY_OBJECT = [{ arrayItemObjectChildNumber: VALUE_AS_NUMBER }]
-        const EXPECTED_SOMETHING_ARRAT_OF_NUMBERS = [VALUE_AS_NUMBER]
-        const EXPECTED_SOMETHING_OBJECT = { childNumber: VALUE_AS_NUMBER }
-
-        t.strictSame(metadataFromPayload.somethingArrayObject, EXPECTED_SOMETHING_ARRAY_OBJECT)
-        t.strictSame(metadataFromPayload.somethingArrayOfNumbers, EXPECTED_SOMETHING_ARRAT_OF_NUMBERS)
-        t.strictSame(metadataFromPayload.somethingObject, EXPECTED_SOMETHING_OBJECT)
-
-        const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
-        const metadataOnDb = docOnDb.metadata
-
-        t.strictSame(metadataOnDb.somethingArrayObject, EXPECTED_SOMETHING_ARRAY_OBJECT)
-        t.strictSame(metadataOnDb.somethingArrayOfNumbers, EXPECTED_SOMETHING_ARRAT_OF_NUMBERS)
-        t.strictSame(metadataOnDb.somethingObject, EXPECTED_SOMETHING_OBJECT)
-
-        t.end()
-      })
-
-      t.test('support additionalProperties true', async t => {
-        await resetCollection()
-
-        const UPDATE_COMMAND = {
-          $set: {
-            'metadata.somethingArrayObject.0.additionalItem.leaf': '3',
-            'metadata.somethingArrayObject.0.additionalLeaf': 'foo',
-            'metadata.somethingObject.additionalField': '9',
-          },
-        }
-        const response = await fastify.inject({
-          method: 'PATCH',
-          url: `${prefix}/${DOC_TEST._id.toHexString()}`,
-          payload: UPDATE_COMMAND,
-          headers: {
-            userId: newUpdaterId,
-          },
-        })
-
-        t.strictSame(response.statusCode, 200)
-
-        const EXPECED_SOMETHING_ARRAY_OBJECT_0 = {
-          arrayItemObjectChildNumber: 4,
-          // is not cast
-          additionalItem: { leaf: '3' },
-          additionalLeaf: 'foo',
-        }
-        const EXPECTED_SOMETHING_OBJECT = {
-          // is not cast
-          additionalField: '9',
-        }
-
-        t.strictSame(JSON.parse(response.payload).metadata.somethingArrayObject[0], EXPECED_SOMETHING_ARRAY_OBJECT_0)
-        t.strictSame(JSON.parse(response.payload).metadata.somethingObject, EXPECTED_SOMETHING_OBJECT)
-
-        const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
-        t.strictSame(docOnDb.metadata.somethingArrayObject[0], EXPECED_SOMETHING_ARRAY_OBJECT_0)
-
-        t.strictSame(docOnDb.metadata.somethingObject, EXPECTED_SOMETHING_OBJECT)
-
-        t.end()
-      })
-      t.end()
-    })
-
-    t.test('with object in $set', async t => {
-      t.test('ok', async t => {
-        await resetCollection()
-        const UPDATE_COMMAND = {
-          $set: {
-            metadata: {
-              somethingNumber: VALUE_AS_NUMBER,
-            },
-          },
-        }
-        const response = await fastify.inject({
-          method: 'PATCH',
-          url: `${prefix}/${DOC_TEST._id.toHexString()}`,
-          payload: UPDATE_COMMAND,
-          headers: {
-            userId: newUpdaterId,
-          },
-        })
-
-        t.strictSame(response.statusCode, 200)
-        t.equal(JSON.parse(response.payload).metadata.somethingNumber, VALUE_AS_NUMBER)
-
-        const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
-        t.strictSame(docOnDb.metadata.somethingNumber, VALUE_AS_NUMBER)
-        t.end()
-      })
-
-      t.test('number as string is casted', async t => {
-        await resetCollection()
-        const UPDATE_COMMAND = {
-          $set: {
-            metadata: {
-              somethingNumber: VALUE_AS_STRING,
-            },
-          },
-        }
-        const response = await fastify.inject({
-          method: 'PATCH',
-          url: `${prefix}/${DOC_TEST._id.toHexString()}`,
-          payload: UPDATE_COMMAND,
-          headers: {
-            userId: newUpdaterId,
-          },
-        })
-        t.strictSame(response.statusCode, 200)
-        t.equal(JSON.parse(response.payload).metadata.somethingNumber, VALUE_AS_NUMBER)
-
-        const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
-        t.strictSame(docOnDb.metadata.somethingNumber, VALUE_AS_NUMBER)
-        t.end()
-      })
-      t.end()
-    })
-
-    t.test('$.replace - positional operator', async t => {
-      t.test('ok', async t => {
-        const OLD_VALUE = 2
-        const NEW_VALUE = 5
-
-        const DOC_REPLACE_TEST = {
-          ...DOC_TEST,
-          metadata: {
-            ...DOC_TEST.metadata,
-            somethingArrayOfNumbers: [3, OLD_VALUE, 6],
-            somethingArrayObject: [{
-              arrayItemObjectChildNumber: 2,
-            }, {
-              arrayItemObjectChildNumber: OLD_VALUE,
-            }],
-          },
-        }
-        await resetCollection([DOC_REPLACE_TEST])
-
-        const UPDATE_COMMAND = {
-          $set: {
-            'metadata.somethingArrayOfNumbers.$.replace': `${NEW_VALUE}`,
-          },
-        }
-        const response = await fastify.inject({
-          method: 'PATCH',
-          url: `${prefix}/${DOC_TEST._id.toHexString()}`,
-          query: {
-            'metadata.somethingArrayOfNumbers': `${OLD_VALUE}`,
-          },
-          payload: UPDATE_COMMAND,
-          headers: {
-            userId: newUpdaterId,
-          },
-        })
-
-        t.equal(response.statusCode, 200)
-        t.strictSame(JSON.parse(response.payload).metadata.somethingArrayOfNumbers, [3, NEW_VALUE, 6])
-
-        const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
-        t.strictSame(docOnDb.metadata.somethingArrayOfNumbers, [3, NEW_VALUE, 6])
-
-        t.end()
-      })
-      t.end()
-    })
-
-    t.test('$.merge - positional operator', async t => {
-      t.test('ok', async t => {
-        const OLD_VALUE = 999
-        const NEW_VALUE = 5
-
-        const DOC_REPLACE_TEST = {
-          ...DOC_TEST,
-          metadata: {
-            ...DOC_TEST.metadata,
-            somethingArrayObject: [{
-              arrayItemObjectChildNumber: 2,
-            }, {
-              arrayItemObjectChildNumber: 3,
-              anotherNumber: OLD_VALUE,
-            }],
-          },
-        }
-
-        await resetCollection([DOC_REPLACE_TEST])
-        const UPDATE_COMMAND = {
-          $set: {
-            'metadata.somethingArrayObject.$.merge': { anotherNumber: `${NEW_VALUE}` },
-          },
-        }
-        const response = await fastify.inject({
-          method: 'PATCH',
-          url: `${prefix}/${DOC_TEST._id.toHexString()}`,
-          query: {
-            _q: JSON.stringify({
-              'metadata.somethingArrayObject': {
-                arrayItemObjectChildNumber: 3,
-                anotherNumber: OLD_VALUE,
-              },
-            }),
-          },
-          payload: UPDATE_COMMAND,
-          headers: {
-            userId: newUpdaterId,
-          },
-        })
-
-        t.equal(response.statusCode, 200)
-        t.strictSame(JSON.parse(response.payload).metadata.somethingArrayObject, [{
-          arrayItemObjectChildNumber: 2,
-        }, {
-          arrayItemObjectChildNumber: 3,
-          anotherNumber: NEW_VALUE,
-        }])
-
-        const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
-        t.strictSame(docOnDb.metadata.somethingArrayObject, [{
-          arrayItemObjectChildNumber: 2,
-        }, {
-          arrayItemObjectChildNumber: 3,
-          anotherNumber: NEW_VALUE,
-        }])
-        t.end()
-      })
-
-      t.test('ok - with multiple nested arrays', async t => {
-        const updatedAtDate = new Date('2017-11-11')
-        const createdAtDate = new Date('2017-11-10')
-        const creatorId = 'my-creator-id'
-        const updaterId = 'my-updated-id'
-
-        const DOC_TEST = {
-          _id: ObjectId.createFromHexString('111111111111111111111111'),
-          name: 'The Project',
-          environments: [{
-            label: 'Env 1',
-            value: 'env1',
-            envId: 'env1',
-            dashboards: [{
-              id: 'dashboard-1',
-              label: 'Dashboard 1',
-              url: 'the-url',
-            }, {
-              id: 'dashboard-2',
-              label: 'Dashboard 2',
-              url: 'the-other-url',
-            }],
-          }],
-          [CREATEDAT]: createdAtDate,
-          [CREATORID]: creatorId,
-          [UPDATERID]: updaterId,
-          [UPDATEDAT]: updatedAtDate,
-          [__STATE__]: STATES.PUBLIC,
-        }
-
-        const { fastify: projectsInstance, collection } = await setUpTest(t, [DOC_TEST], 'projects')
-        const UPDATE_COMMAND = {
-          $set: {
-            'environments.0.dashboards.$.merge': {
-              url: 'http://ciao',
-              label: 'foobar',
-            },
-          },
-        }
-        const response = await projectsInstance.inject({
-          method: 'PATCH',
-          url: `projects/${DOC_TEST._id.toHexString()}`,
-          query: {
-            _q: JSON.stringify({ 'environments.0.dashboards.id': 'dashboard-2' }),
-          },
-          payload: UPDATE_COMMAND,
-          headers: {
-            userId: newUpdaterId,
-          },
-        })
-
-        t.equal(response.statusCode, 200)
-        t.strictSame(lomit(JSON.parse(response.payload), [UPDATEDAT, CREATEDAT, UPDATERID]), {
-          _id: DOC_TEST._id.toHexString(),
-          name: DOC_TEST.name,
-          environments: [{
-            label: 'Env 1',
-            value: 'env1',
-            envId: 'env1',
-            dashboards: [{
-              id: 'dashboard-1',
-              label: 'Dashboard 1',
-              url: 'the-url',
-            }, {
-              id: 'dashboard-2',
-              url: 'http://ciao',
-              label: 'foobar',
-            }],
-          }],
-          [CREATORID]: DOC_TEST[CREATORID],
-          [__STATE__]: DOC_TEST[__STATE__],
-        })
-
-        const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
-        t.strictSame(docOnDb.environments, [{
-          label: 'Env 1',
-          value: 'env1',
-          envId: 'env1',
-          dashboards: [{
-            id: 'dashboard-1',
-            label: 'Dashboard 1',
-            url: 'the-url',
-          }, {
-            id: 'dashboard-2',
-            url: 'http://ciao',
-            label: 'foobar',
-          }],
-        }])
-        t.end()
-      })
-      t.end()
-    })
-
-    t.end()
-  })
-
-  t.test('$push', async t => {
-    const { fastify, collection, resetCollection } = await setUpTest(t)
-
-    t.test('ok with casting', async t => {
-      const UPDATE_COMMAND = {
-        $push: {
-          attachments: { detail: { size: '9999' }, name: 'pushed' },
-          'metadata.somethingArrayObject': { arrayItemObjectChildNumber: '8888' },
-          'metadata.somethingArrayOfNumbers': '7777',
-        },
-      }
-      const response = await fastify.inject({
-        method: 'PATCH',
-        url: `${prefix}/${DOC_TEST._id.toHexString()}`,
-        payload: UPDATE_COMMAND,
-        headers: {
-          userId: newUpdaterId,
-        },
-      })
-      t.equal(response.statusCode, 200)
-      const payload = JSON.parse(response.payload)
-
-      t.strictSame(
-        payload.attachments,
-        DOC_TEST.attachments.concat([{ detail: { size: 9999 }, name: 'pushed' }])
-      )
-      t.strictSame(
-        payload.metadata.somethingArrayObject,
-        DOC_TEST.metadata.somethingArrayObject.concat([{ arrayItemObjectChildNumber: 8888 }])
-      )
-      t.strictSame(
-        payload.metadata.somethingArrayOfNumbers,
-        DOC_TEST.metadata.somethingArrayOfNumbers.concat([7777])
-      )
-
-      const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
-      t.strictSame(
-        docOnDb.attachments,
-        DOC_TEST.attachments.concat([{ detail: { size: 9999 }, name: 'pushed' }])
-      )
-      t.strictSame(
-        docOnDb.metadata.somethingArrayObject,
-        DOC_TEST.metadata.somethingArrayObject.concat([{ arrayItemObjectChildNumber: 8888 }])
-      )
-      t.strictSame(
-        docOnDb.metadata.somethingArrayOfNumbers,
-        DOC_TEST.metadata.somethingArrayOfNumbers.concat([7777])
-      )
-
-      t.end()
-    })
-
-    t.test('ok with casting of array in array', async t => {
-      const DOC_TESTING_ARRAY = {
-        ...fixtures[0],
-        attachments: [{
-          name: 'attach-0',
-          neastedArr: [2],
-        }],
-      }
-
-      await resetCollection([DOC_TESTING_ARRAY])
-      const UPDATE_COMMAND = {
-        $push: {
-          'attachments.0.neastedArr': '55',
-        },
-      }
-      const response = await fastify.inject({
-        method: 'PATCH',
-        url: `${prefix}/${DOC_TESTING_ARRAY._id.toHexString()}`,
-        payload: UPDATE_COMMAND,
-        headers: {
-          userId: newUpdaterId,
-        },
-      })
-      t.equal(response.statusCode, 200)
-
-      const payload = JSON.parse(response.payload)
-      t.strictSame(payload.attachments, [{ name: 'attach-0', neastedArr: [2, 55] }])
-
-      const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
-      t.strictSame(docOnDb.attachments, [{ name: 'attach-0', neastedArr: [2, 55] }])
-
-      t.end()
-    })
-
-    t.test('ok with array of array', async t => {
-      const DOC_TESTING_ARRAY = {
-        ...fixtures[0],
-        metadata: {
-          ...fixtures[0].metadata,
-          exampleArrayOfArray: [
-            ['item1'],
-          ],
-        },
-      }
-
-      t.test('push to parent array', async t => {
-        await resetCollection([DOC_TESTING_ARRAY])
-        const UPDATE_COMMAND = {
-          $push: {
-            'metadata.exampleArrayOfArray': ['new-item'],
-          },
-        }
-        const response = await fastify.inject({
-          method: 'PATCH',
-          url: `${prefix}/${DOC_TESTING_ARRAY._id.toHexString()}`,
-          payload: UPDATE_COMMAND,
-          headers: {
-            userId: newUpdaterId,
-          },
-        })
-        t.equal(response.statusCode, 200)
-
-        const { metadata } = JSON.parse(response.payload)
-        t.strictSame(metadata.exampleArrayOfArray, [
-          ['item1'],
-          ['new-item'],
-        ])
-
-        const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
-        t.strictSame(docOnDb.metadata.exampleArrayOfArray, [
-          ['item1'],
-          ['new-item'],
-        ])
-
-        t.end()
-      })
-
-      t.test('push to child array', async t => {
-        await resetCollection([DOC_TESTING_ARRAY])
-
-        const UPDATE_COMMAND = {
-          $push: {
-            'metadata.exampleArrayOfArray.0': 'new-item',
-          },
-        }
-
-        const response = await fastify.inject({
-          method: 'PATCH',
-          url: `${prefix}/${DOC_TESTING_ARRAY._id.toHexString()}`,
-          payload: UPDATE_COMMAND,
-          headers: {
-            userId: newUpdaterId,
-          },
-        })
-        t.equal(response.statusCode, 200)
-
-        const { metadata } = JSON.parse(response.payload)
-        t.strictSame(metadata.exampleArrayOfArray, [
-          ['item1', 'new-item'],
-        ])
-
-        const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
-        t.strictSame(docOnDb.metadata.exampleArrayOfArray, [
-          ['item1', 'new-item'],
-        ])
-
-        t.end()
-      })
-
-      t.end()
-    })
-
-    t.test('fails if missing to push a required field of an object', async t => {
+  t.test('', async t => {
+    t.test('standard fields', async t => {
       await resetCollection()
 
-      const UPDATE_COMMAND = {
-        $push: {
-          attachments: {
-            other: 'foo',
-            // name is required
-          },
-        },
-      }
-      const response = await fastify.inject({
-        method: 'PATCH',
-        url: `${prefix}/${DOC_TEST._id.toHexString()}`,
-        payload: UPDATE_COMMAND,
-        headers: {
-          userId: newUpdaterId,
-        },
-      })
-
-      t.equal(response.statusCode, 400)
-      t.strictSame(JSON.parse(response.payload), {
-        statusCode: 400,
-        error: 'Bad Request',
-        message: "body/$push/attachments must have required property 'name'",
-        code: 'FST_ERR_VALIDATION',
-      })
-
-      t.end()
-    })
-
-    t.test('fails if push is not compliant to additionalProperties of the field', async t => {
-      await resetCollection()
-
-      const UPDATE_COMMAND = {
-        $push: {
-          attachments: {
-            name: 'foo',
-            unknownField: 'bar',
-            // additionalProperties is false
-          },
-        },
-      }
-      const response = await fastify.inject({
-        method: 'PATCH',
-        url: `${prefix}/${DOC_TEST._id.toHexString()}`,
-        payload: UPDATE_COMMAND,
-        headers: {
-          userId: newUpdaterId,
-        },
-      })
-
-      t.equal(response.statusCode, 400)
-      t.strictSame(JSON.parse(response.payload), {
-        statusCode: 400,
-        error: 'Bad Request',
-        message: 'body/$push/attachments must NOT have additional properties. Property "unknownField" is not defined in validation schema',
-      })
-
-      t.end()
-    })
-
-    t.end()
-  })
-
-  t.test('$addToSet', async t => {
-    const { fastify, collection, resetCollection } = await setUpTest(t)
-
-    t.test('ok with casting', async t => {
-      await resetCollection()
-
-      const UPDATE_COMMAND = {
-        $addToSet: {
-          attachments: { detail: { size: '9999' }, name: 'addedToSet' },
-          'metadata.somethingArrayObject': { arrayItemObjectChildNumber: '8888' },
-          'metadata.somethingArrayOfNumbers': '7777',
-        },
-      }
-
-      const response = await fastify.inject({
-        method: 'PATCH',
-        url: `${prefix}/${DOC_TEST._id.toHexString()}`,
-        payload: UPDATE_COMMAND,
-        headers: {
-          userId: newUpdaterId,
-        },
-      })
-      t.equal(response.statusCode, 200)
-      const payload = JSON.parse(response.payload)
-
-      t.strictSame(
-        payload.attachments,
-        DOC_TEST.attachments.concat([{ detail: { size: 9999 }, name: 'addedToSet' }])
-      )
-      t.strictSame(
-        payload.metadata.somethingArrayObject,
-        DOC_TEST.metadata.somethingArrayObject.concat([{ arrayItemObjectChildNumber: 8888 }])
-      )
-      t.strictSame(
-        payload.metadata.somethingArrayOfNumbers,
-        DOC_TEST.metadata.somethingArrayOfNumbers.concat([7777])
-      )
-
-      const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
-      t.strictSame(
-        docOnDb.attachments,
-        DOC_TEST.attachments.concat([{ detail: { size: 9999 }, name: 'addedToSet' }])
-      )
-      t.strictSame(
-        docOnDb.metadata.somethingArrayObject,
-        DOC_TEST.metadata.somethingArrayObject.concat([{ arrayItemObjectChildNumber: 8888 }])
-      )
-      t.strictSame(
-        docOnDb.metadata.somethingArrayOfNumbers,
-        DOC_TEST.metadata.somethingArrayOfNumbers.concat([7777])
-      )
-
-      t.end()
-    })
-
-    t.test('ok with casting of array in array', async t => {
-      const DOC_TESTING_ARRAY = {
-        ...fixtures[0],
-        attachments: [{
-          name: 'attach-0',
-          neastedArr: [2],
-        }],
-      }
-
-      await resetCollection([DOC_TESTING_ARRAY])
-      const UPDATE_COMMAND = {
-        $addToSet: {
-          'attachments.0.neastedArr': '55',
-        },
-      }
-
-      const response = await fastify.inject({
-        method: 'PATCH',
-        url: `${prefix}/${DOC_TESTING_ARRAY._id.toHexString()}`,
-        payload: UPDATE_COMMAND,
-        headers: {
-          userId: newUpdaterId,
-        },
-      })
-      t.equal(response.statusCode, 200)
-
-      const payload = JSON.parse(response.payload)
-      t.strictSame(payload.attachments, [{ name: 'attach-0', neastedArr: [2, 55] }])
-
-      const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
-      t.strictSame(docOnDb.attachments, [{ name: 'attach-0', neastedArr: [2, 55] }])
-
-      t.end()
-    })
-
-    t.test('ok with array of array', async t => {
-      const DOC_TESTING_ARRAY = {
-        ...fixtures[0],
-        metadata: {
-          ...fixtures[0].metadata,
-          exampleArrayOfArray: [
-            ['item1'],
-          ],
-        },
-      }
-
-      t.test('addToSet to parent array', async t => {
-        await resetCollection([DOC_TESTING_ARRAY])
-
-        const UPDATE_COMMAND = {
-          $addToSet: {
-            'metadata.exampleArrayOfArray': ['new-item'],
-          },
-        }
-        const response = await fastify.inject({
-          method: 'PATCH',
-          url: `${prefix}/${DOC_TESTING_ARRAY._id.toHexString()}`,
-          payload: UPDATE_COMMAND,
-          headers: {
-            userId: newUpdaterId,
-          },
-        })
-        t.equal(response.statusCode, 200)
-
-        const { metadata } = JSON.parse(response.payload)
-        t.strictSame(metadata.exampleArrayOfArray, [
-          ['item1'],
-          ['new-item'],
-        ])
-
-        const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
-        t.strictSame(docOnDb.metadata.exampleArrayOfArray, [
-          ['item1'],
-          ['new-item'],
-        ])
-
-        t.end()
-      })
-
-      t.test('addToSet to child array', async t => {
-        await resetCollection([DOC_TESTING_ARRAY])
-
-        const UPDATE_COMMAND = {
-          $addToSet: {
-            'metadata.exampleArrayOfArray.0': 'new-item',
-          },
-        }
-        const response = await fastify.inject({
-          method: 'PATCH',
-          url: `${prefix}/${DOC_TESTING_ARRAY._id.toHexString()}`,
-          payload: UPDATE_COMMAND,
-          headers: {
-            userId: newUpdaterId,
-          },
-        })
-        t.equal(response.statusCode, 200)
-
-        const { metadata } = JSON.parse(response.payload)
-        t.strictSame(metadata.exampleArrayOfArray, [
-          ['item1', 'new-item'],
-        ])
-
-        const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
-        t.strictSame(docOnDb.metadata.exampleArrayOfArray, [
-          ['item1', 'new-item'],
-        ])
-
-        t.end()
-      })
-
-      t.end()
-    })
-
-    t.test('fails if missing to addToSet a required field of an object', async t => {
-      await resetCollection()
-
-      const UPDATE_COMMAND = {
-        $addToSet: {
-          attachments: {
-            other: 'foo',
-            // name is required
-          },
-        },
-      }
-      const response = await fastify.inject({
-        method: 'PATCH',
-        url: `${prefix}/${DOC_TEST._id.toHexString()}`,
-        payload: UPDATE_COMMAND,
-        headers: {
-          userId: newUpdaterId,
-        },
-      })
-      t.equal(response.statusCode, 400)
-      t.strictSame(JSON.parse(response.payload), {
-        statusCode: 400,
-        error: 'Bad Request',
-        message: "body/$addToSet/attachments must have required property 'name'",
-        code: 'FST_ERR_VALIDATION',
-      })
-      t.end()
-    })
-
-    t.test('fails if addToSet is not compliant to additionalProperties of the field', async t => {
-      await resetCollection()
-
-      const UPDATE_COMMAND = {
-        $addToSet: {
-          attachments: {
-            name: 'foo',
-            unknownField: 'bar',
-            // additionalProperties is false
-          },
-        },
-      }
-      const response = await fastify.inject({
-        method: 'PATCH',
-        url: `${prefix}/${DOC_TEST._id.toHexString()}`,
-        payload: UPDATE_COMMAND,
-        headers: {
-          userId: newUpdaterId,
-        },
-      })
-      t.equal(response.statusCode, 400)
-      t.strictSame(JSON.parse(response.payload), {
-        statusCode: 400,
-        error: 'Bad Request',
-        message: 'body/$addToSet/attachments must NOT have additional properties. Property "unknownField" is not defined in validation schema',
-      })
-      t.end()
-    })
-
-    t.test('fails if addToSet if field is not an array', async t => {
-      await resetCollection()
-      const UPDATE_COMMAND = {
-        $addToSet: {
-          name: 'foo',
-        },
-      }
-      const response = await fastify.inject({
-        method: 'PATCH',
-        url: `${prefix}/${DOC_TEST._id.toHexString()}`,
-        payload: UPDATE_COMMAND,
-        headers: {
-          userId: newUpdaterId,
-        },
-      })
-
-      t.equal(response.statusCode, 400)
-      t.strictSame(JSON.parse(response.payload), {
-        statusCode: 400,
-        error: 'Bad Request',
-        message: 'body/$addToSet must NOT have additional properties. Property "name" is not defined in validation schema',
-      })
-      t.end()
-    })
-    t.end()
-  })
-
-  t.test('$unset', async t => {
-    const { fastify, collection, resetCollection } = await setUpTest(t, [])
-
-    const DOC_TO_UNSET = {
-      ...fixtures[0],
-      metadata: {
-        somethingNumber: 3,
-        somethingObject: {
-          childNumber: 4,
-        },
-        somethingString: 'unsetme',
-        somethingArrayObject: [{
-          arrayItemObjectChildNumber: 4,
-          anotherNumber: 99,
-        }],
-      },
-    }
-
-    t.test('can unset a nested property', async t => {
-      await resetCollection([DOC_TO_UNSET])
-
-      const UPDATE_COMMAND = {
-        $unset: {
-          'metadata.somethingString': true,
-          'metadata.somethingObject.childNumber': true,
-          'metadata.somethingArrayObject.0.anotherNumber': true,
-        },
-      }
-      const response = await fastify.inject({
-        method: 'PATCH',
-        url: `${prefix}/${DOC_TEST._id.toHexString()}`,
-        payload: UPDATE_COMMAND,
-        headers: {
-          userId: newUpdaterId,
-        },
-      })
-      t.strictSame(response.statusCode, 200)
-
-      const expectedMetadata = {
-        somethingNumber: 3,
-        somethingObject: {},
-        somethingArrayObject: [{
-          arrayItemObjectChildNumber: 4,
-        }],
-      }
-
-      t.strictSame(JSON.parse(response.payload).metadata, expectedMetadata)
-
-      const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
-      t.strictSame(docOnDb.metadata, expectedMetadata)
-      t.end()
-    })
-
-    t.test('there is NO validation to prevent unset of required properties', async t => {
-      // Documentation purpose
-      await resetCollection([DOC_TO_UNSET])
-
-      const UPDATE_COMMAND = {
-        $unset: {
-          'metadata.somethingNumber': true,
-        },
-      }
-      const response = await fastify.inject({
-        method: 'PATCH',
-        url: `${prefix}/${DOC_TEST._id.toHexString()}`,
-        payload: UPDATE_COMMAND,
-        headers: {
-          userId: newUpdaterId,
-        },
-      })
-      t.strictSame(response.statusCode, 500)
-
-      t.strictSame(JSON.parse(response.payload), {
-        statusCode: 500,
-        error: 'Internal Server Error',
-        message: '"somethingNumber" is required!',
-      })
-
-      const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
-      t.strictSame(docOnDb.metadata.somethingNumber, undefined)
-      t.end()
-    })
-    t.end()
-  })
-  t.end()
-})
-
-tap.test('HTTP PATCH /<id> - ', async t => {
-  const { fastify, collection, resetCollection } = await setUpTest(t)
-
-  t.test('standard fields', async t => {
-    await resetCollection()
-
-    const requiredFieldNames = collectionDefinition
-      .fields
-      .filter(field => field.required)
-      .map(field => field.name)
+      const requiredFieldNames = collectionDefinition
+        .fields
+        .filter(field => field.required)
+        .map(field => field.name)
 
 
-    function makeCheck(t, standardField, update) {
-      t.test(`${standardField} cannot be updated`, async t => {
-        const response = await fastify.inject({
-          method: 'PATCH',
-          url: `${prefix}/${DOC._id}`,
-          payload: update,
-        })
+      function makeCheck(t, standardField, update) {
+        t.test(`${standardField} cannot be updated`, async t => {
+          const response = await fastify.inject({
+            method: 'PATCH',
+            url: `${prefix}/${DOC._id}`,
+            payload: update,
+          })
 
-        t.test('should return 400', t => {
-          t.strictSame(response.statusCode, 400)
+          t.test('should return 400', t => {
+            t.strictSame(response.statusCode, 400)
+            t.end()
+          })
+          t.test('should return JSON', t => {
+            t.ok(/application\/json/.test(response.headers['content-type']))
+            t.end()
+          })
+          checkDocumentsInDatabase(t, collection, [], fixtures)
+
           t.end()
         })
-        t.test('should return JSON', t => {
-          t.ok(/application\/json/.test(response.headers['content-type']))
-          t.end()
-        })
-        checkDocumentsInDatabase(t, collection, [], fixtures)
+      }
 
-        t.end()
+      STANDARD_FIELDS.forEach(
+        standardField => makeCheck(t, standardField, { $set: { [standardField]: 'gg' } })
+      )
+      makeCheck(t, __STATE__, { $set: { [__STATE__]: 'gg' } })
+      requiredFieldNames.map(
+        name => makeCheck(t, name, { $unset: { [name]: true } })
+      )
+
+      t.end()
+    })
+
+    t.test('allow nullable field', async t => {
+      await resetCollection()
+
+      const nowDate = new Date()
+      const DOC = {
+        name: 'Name',
+        isbn: 'aaaaa',
+        price: 10.0,
+        publishDate: nowDate,
+        __STATE__: 'PUBLIC',
+        position: [0, 0], /* [ lon, lat ] */
+      }
+
+      const postResponse = await fastify.inject({
+        method: 'POST',
+        url: `${prefix}/`,
+        payload: DOC,
+        headers: {
+          userId: newUpdaterId,
+        },
       })
-    }
-
-    STANDARD_FIELDS.forEach(
-      standardField => makeCheck(t, standardField, { $set: { [standardField]: 'gg' } })
-    )
-    makeCheck(t, __STATE__, { $set: { [__STATE__]: 'gg' } })
-    requiredFieldNames.map(
-      name => makeCheck(t, name, { $unset: { [name]: true } })
-    )
-
-    t.end()
-  })
-
-  t.test('allow nullable field', async t => {
-    await resetCollection()
-
-    const nowDate = new Date()
-    const DOC = {
-      name: 'Name',
-      isbn: 'aaaaa',
-      price: 10.0,
-      publishDate: nowDate,
-      __STATE__: 'PUBLIC',
-      position: [0, 0], /* [ lon, lat ] */
-    }
-
-    const postResponse = await fastify.inject({
-      method: 'POST',
-      url: `${prefix}/`,
-      payload: DOC,
-      headers: {
-        userId: newUpdaterId,
-      },
-    })
-
-    t.test('should return 200', t => {
-      t.strictSame(postResponse.statusCode, 200)
-      t.end()
-    })
-    t.test('should return application/json', t => {
-      t.ok(/application\/json/.test(postResponse.headers['content-type']))
-      t.end()
-    })
-    t.test('should return the inserted id', t => {
-      const body = JSON.parse(postResponse.payload)
-
-      t.ok(body._id)
-      t.end()
-    })
-
-    t.test('PATCH', async t => {
-      const body = JSON.parse(postResponse.payload)
-      const update = { $set: { name: null } }
-      const patchResponse = await fastify.inject({
-        method: 'PATCH',
-        url: `${prefix}/${body._id}`,
-        payload: update,
-      })
-      const patchBody = JSON.parse(patchResponse.payload)
 
       t.test('should return 200', t => {
-        t.strictSame(patchResponse.statusCode, 200)
+        t.strictSame(postResponse.statusCode, 200)
         t.end()
       })
       t.test('should return application/json', t => {
-        t.ok(/application\/json/.test(patchResponse.headers['content-type']))
+        t.ok(/application\/json/.test(postResponse.headers['content-type']))
         t.end()
       })
       t.test('should return the inserted id', t => {
-        t.ok(patchBody._id)
+        const body = JSON.parse(postResponse.payload)
+
+        t.ok(body._id)
         t.end()
       })
-      t.test('should have null name', async t => {
+
+      t.test('PATCH', async t => {
+        const body = JSON.parse(postResponse.payload)
+        const update = { $set: { name: null } }
         const patchResponse = await fastify.inject({
-          method: 'GET',
-          url: `${prefix}/${patchBody._id}`,
+          method: 'PATCH',
+          url: `${prefix}/${body._id}`,
+          payload: update,
+        })
+        const patchBody = JSON.parse(patchResponse.payload)
+
+        t.test('should return 200', t => {
+          t.strictSame(patchResponse.statusCode, 200)
+          t.end()
+        })
+        t.test('should return application/json', t => {
+          t.ok(/application\/json/.test(patchResponse.headers['content-type']))
+          t.end()
+        })
+        t.test('should return the inserted id', t => {
+          t.ok(patchBody._id)
+          t.end()
+        })
+        t.test('should have null name', async t => {
+          const patchResponse = await fastify.inject({
+            method: 'GET',
+            url: `${prefix}/${patchBody._id}`,
+            headers: {
+              userId: newUpdaterId,
+            },
+          })
+
+          t.strictSame(patchResponse.statusCode, 200)
+          const result = JSON.parse(patchResponse.payload)
+          t.equal(result.name, null)
+          t.end()
+        })
+
+        t.end()
+      })
+
+      t.end()
+    })
+
+    t.test('trying to merge an array of non-object elements', async t => {
+      await resetCollection()
+
+      const response = await fastify.inject({
+        method: 'PATCH',
+        url: `${prefix}/${DOC._id}?_q=${JSON.stringify(MATCHING_TAGIDS_QUERY)}`,
+        payload: { $set: { 'tagIds.$.merge': { value: 12 } } },
+      })
+
+      t.test('should return 400', t => {
+        t.strictSame(response.statusCode, 400)
+        t.end()
+      })
+      t.test('should return JSON', t => {
+        t.ok(/application\/json/.test(response.headers['content-type']))
+        t.end()
+      })
+      t.test('body should be "Bad Request" error message', t => {
+        const expectedBody = '{"statusCode":400,"error":"Bad Request","message":"body/$set must NOT have additional properties. Property \\"tagIds.$.merge\\" is not defined in validation schema"}'
+        t.strictSame(response.body, expectedBody)
+        t.end()
+      })
+
+      t.end()
+    })
+
+    t.test('trying to replace an array without specifying an element matching query', async t => {
+      await resetCollection()
+
+      const response = await fastify.inject({
+        method: 'PATCH',
+        url: `${prefix}/${DOC._id}`,
+        payload: UPDATE_REPLACE_ARRAY_ELEMENT_COMMAND,
+      })
+      t.test('should return 500', t => {
+        t.strictSame(response.statusCode, 500)
+        t.end()
+      })
+      t.test('should return JSON', t => {
+        t.ok(/application\/json/.test(response.headers['content-type']))
+        t.end()
+      })
+      t.test('should return error message should be "Internal Server Error" error message', t => {
+        const expectedErrorMessage = 'The positional operator did not find the match needed from the query.'
+        t.match(response.body, expectedErrorMessage)
+        t.end()
+      })
+    })
+
+    t.test('trying to replace array number element with string by matching query', async t => {
+      await resetCollection()
+
+      const response = await fastify.inject({
+        method: 'PATCH',
+        url: `${prefix}/${DOC._id}?_q=${JSON.stringify(MATCHING_TAGIDS_QUERY)}`,
+        payload: { $set: { 'tagIds.$.replace': 'string' } },
+      })
+
+      t.test('should return 400', t => {
+        t.strictSame(response.statusCode, 400)
+        t.end()
+      })
+      t.test('should return JSON', t => {
+        t.ok(/application\/json/.test(response.headers['content-type']))
+        t.end()
+      })
+      t.test('body.$set["tagIds.$.replace"] should be number', t => {
+        const expectedErrorMessage = 'body/$set/tagIds.$.replace must be number'
+        t.strictSame(JSON.parse(response.body)?.message, expectedErrorMessage)
+        t.end()
+      })
+
+      t.end()
+    })
+
+    t.end()
+  })
+
+  t.test('nested object', t => {
+    t.test('$set', async t => {
+      t.test('with dot notation in $set', async t => {
+        t.test('ok', async t => {
+          await resetCollection()
+
+          const UPDATE_COMMAND = {
+            $set: {
+              'metadata.somethingNumber': VALUE_AS_NUMBER,
+            },
+          }
+          const response = await fastify.inject({
+            method: 'PATCH',
+            url: `${prefix}/${DOC_TEST._id.toHexString()}`,
+            payload: UPDATE_COMMAND,
+            headers: {
+              userId: newUpdaterId,
+            },
+          })
+
+          t.strictSame(response.statusCode, 200)
+          t.equal(JSON.parse(response.payload).metadata.somethingNumber, VALUE_AS_NUMBER)
+
+          const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
+          t.strictSame(docOnDb.metadata.somethingNumber, VALUE_AS_NUMBER)
+          t.end()
+        })
+
+        t.test('number as string is casted', async t => {
+          await resetCollection()
+
+          const UPDATE_COMMAND = {
+            $set: {
+              'metadata.somethingNumber': VALUE_AS_STRING,
+              'metadata.somethingArrayObject.0.arrayItemObjectChildNumber': VALUE_AS_STRING,
+              'metadata.somethingArrayOfNumbers.0': VALUE_AS_STRING,
+            },
+          }
+          const response = await fastify.inject({
+            method: 'PATCH',
+            url: `${prefix}/${DOC_TEST._id.toHexString()}`,
+            payload: UPDATE_COMMAND,
+            headers: {
+              userId: newUpdaterId,
+            },
+          })
+          t.strictSame(response.statusCode, 200)
+
+          const EXPECTED_CASTED_OBJECT = {
+            somethingNumber: VALUE_AS_NUMBER,
+            somethingString: 'the-saved-string',
+            somethingArrayObject: [{
+              arrayItemObjectChildNumber: VALUE_AS_NUMBER,
+            }],
+            somethingArrayOfNumbers: [VALUE_AS_NUMBER],
+          }
+
+          t.strictSame(JSON.parse(response.payload).metadata, EXPECTED_CASTED_OBJECT)
+
+          const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
+          t.strictSame(docOnDb.metadata, EXPECTED_CASTED_OBJECT)
+          t.end()
+        })
+
+        t.test('cast with middle path', async t => {
+          await resetCollection()
+
+          const UPDATE_COMMAND = {
+            $set: {
+              'metadata.somethingArrayObject.0': { arrayItemObjectChildNumber: VALUE_AS_STRING },
+              'metadata.somethingArrayOfNumbers': [VALUE_AS_STRING],
+              'metadata.somethingObject': { childNumber: VALUE_AS_STRING },
+            },
+          }
+
+          const response = await fastify.inject({
+            method: 'PATCH',
+            url: `${prefix}/${DOC_TEST._id.toHexString()}`,
+            payload: UPDATE_COMMAND,
+            headers: {
+              userId: newUpdaterId,
+            },
+          })
+          t.strictSame(response.statusCode, 200)
+          const metadataFromPayload = JSON.parse(response.payload).metadata
+
+          const EXPECTED_SOMETHING_ARRAY_OBJECT = [{ arrayItemObjectChildNumber: VALUE_AS_NUMBER }]
+          const EXPECTED_SOMETHING_ARRAT_OF_NUMBERS = [VALUE_AS_NUMBER]
+          const EXPECTED_SOMETHING_OBJECT = { childNumber: VALUE_AS_NUMBER }
+
+          t.strictSame(metadataFromPayload.somethingArrayObject, EXPECTED_SOMETHING_ARRAY_OBJECT)
+          t.strictSame(metadataFromPayload.somethingArrayOfNumbers, EXPECTED_SOMETHING_ARRAT_OF_NUMBERS)
+          t.strictSame(metadataFromPayload.somethingObject, EXPECTED_SOMETHING_OBJECT)
+
+          const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
+          const metadataOnDb = docOnDb.metadata
+
+          t.strictSame(metadataOnDb.somethingArrayObject, EXPECTED_SOMETHING_ARRAY_OBJECT)
+          t.strictSame(metadataOnDb.somethingArrayOfNumbers, EXPECTED_SOMETHING_ARRAT_OF_NUMBERS)
+          t.strictSame(metadataOnDb.somethingObject, EXPECTED_SOMETHING_OBJECT)
+
+          t.end()
+        })
+
+        t.test('support additionalProperties true', async t => {
+          await resetCollection()
+
+          const UPDATE_COMMAND = {
+            $set: {
+              'metadata.somethingArrayObject.0.additionalItem.leaf': '3',
+              'metadata.somethingArrayObject.0.additionalLeaf': 'foo',
+              'metadata.somethingObject.additionalField': '9',
+            },
+          }
+          const response = await fastify.inject({
+            method: 'PATCH',
+            url: `${prefix}/${DOC_TEST._id.toHexString()}`,
+            payload: UPDATE_COMMAND,
+            headers: {
+              userId: newUpdaterId,
+            },
+          })
+
+          t.strictSame(response.statusCode, 200)
+
+          const EXPECED_SOMETHING_ARRAY_OBJECT_0 = {
+            arrayItemObjectChildNumber: 4,
+            // is not cast
+            additionalItem: { leaf: '3' },
+            additionalLeaf: 'foo',
+          }
+          const EXPECTED_SOMETHING_OBJECT = {
+            // is not cast
+            additionalField: '9',
+          }
+
+          t.strictSame(JSON.parse(response.payload).metadata.somethingArrayObject[0], EXPECED_SOMETHING_ARRAY_OBJECT_0)
+          t.strictSame(JSON.parse(response.payload).metadata.somethingObject, EXPECTED_SOMETHING_OBJECT)
+
+          const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
+          t.strictSame(docOnDb.metadata.somethingArrayObject[0], EXPECED_SOMETHING_ARRAY_OBJECT_0)
+
+          t.strictSame(docOnDb.metadata.somethingObject, EXPECTED_SOMETHING_OBJECT)
+
+          t.end()
+        })
+        t.end()
+      })
+
+      t.test('with object in $set', async t => {
+        t.test('ok', async t => {
+          await resetCollection()
+          const UPDATE_COMMAND = {
+            $set: {
+              metadata: {
+                somethingNumber: VALUE_AS_NUMBER,
+              },
+            },
+          }
+          const response = await fastify.inject({
+            method: 'PATCH',
+            url: `${prefix}/${DOC_TEST._id.toHexString()}`,
+            payload: UPDATE_COMMAND,
+            headers: {
+              userId: newUpdaterId,
+            },
+          })
+
+          t.strictSame(response.statusCode, 200)
+          t.equal(JSON.parse(response.payload).metadata.somethingNumber, VALUE_AS_NUMBER)
+
+          const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
+          t.strictSame(docOnDb.metadata.somethingNumber, VALUE_AS_NUMBER)
+          t.end()
+        })
+
+        t.test('number as string is casted', async t => {
+          await resetCollection()
+          const UPDATE_COMMAND = {
+            $set: {
+              metadata: {
+                somethingNumber: VALUE_AS_STRING,
+              },
+            },
+          }
+          const response = await fastify.inject({
+            method: 'PATCH',
+            url: `${prefix}/${DOC_TEST._id.toHexString()}`,
+            payload: UPDATE_COMMAND,
+            headers: {
+              userId: newUpdaterId,
+            },
+          })
+          t.strictSame(response.statusCode, 200)
+          t.equal(JSON.parse(response.payload).metadata.somethingNumber, VALUE_AS_NUMBER)
+
+          const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
+          t.strictSame(docOnDb.metadata.somethingNumber, VALUE_AS_NUMBER)
+          t.end()
+        })
+        t.end()
+      })
+
+      t.test('$.replace - positional operator', async t => {
+        t.test('ok', async t => {
+          const OLD_VALUE = 2
+          const NEW_VALUE = 5
+
+          const DOC_REPLACE_TEST = {
+            ...DOC_TEST,
+            metadata: {
+              ...DOC_TEST.metadata,
+              somethingArrayOfNumbers: [3, OLD_VALUE, 6],
+              somethingArrayObject: [{
+                arrayItemObjectChildNumber: 2,
+              }, {
+                arrayItemObjectChildNumber: OLD_VALUE,
+              }],
+            },
+          }
+          await resetCollection([DOC_REPLACE_TEST])
+
+          const UPDATE_COMMAND = {
+            $set: {
+              'metadata.somethingArrayOfNumbers.$.replace': `${NEW_VALUE}`,
+            },
+          }
+          const response = await fastify.inject({
+            method: 'PATCH',
+            url: `${prefix}/${DOC_TEST._id.toHexString()}`,
+            query: {
+              'metadata.somethingArrayOfNumbers': `${OLD_VALUE}`,
+            },
+            payload: UPDATE_COMMAND,
+            headers: {
+              userId: newUpdaterId,
+            },
+          })
+
+          t.equal(response.statusCode, 200)
+          t.strictSame(JSON.parse(response.payload).metadata.somethingArrayOfNumbers, [3, NEW_VALUE, 6])
+
+          const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
+          t.strictSame(docOnDb.metadata.somethingArrayOfNumbers, [3, NEW_VALUE, 6])
+
+          t.end()
+        })
+        t.end()
+      })
+
+      t.test('$.merge - positional operator', async t => {
+        t.test('ok', async t => {
+          const OLD_VALUE = 999
+          const NEW_VALUE = 5
+
+          const DOC_REPLACE_TEST = {
+            ...DOC_TEST,
+            metadata: {
+              ...DOC_TEST.metadata,
+              somethingArrayObject: [{
+                arrayItemObjectChildNumber: 2,
+              }, {
+                arrayItemObjectChildNumber: 3,
+                anotherNumber: OLD_VALUE,
+              }],
+            },
+          }
+
+          await resetCollection([DOC_REPLACE_TEST])
+          const UPDATE_COMMAND = {
+            $set: {
+              'metadata.somethingArrayObject.$.merge': { anotherNumber: `${NEW_VALUE}` },
+            },
+          }
+          const response = await fastify.inject({
+            method: 'PATCH',
+            url: `${prefix}/${DOC_TEST._id.toHexString()}`,
+            query: {
+              _q: JSON.stringify({
+                'metadata.somethingArrayObject': {
+                  arrayItemObjectChildNumber: 3,
+                  anotherNumber: OLD_VALUE,
+                },
+              }),
+            },
+            payload: UPDATE_COMMAND,
+            headers: {
+              userId: newUpdaterId,
+            },
+          })
+
+          t.equal(response.statusCode, 200)
+          t.strictSame(JSON.parse(response.payload).metadata.somethingArrayObject, [{
+            arrayItemObjectChildNumber: 2,
+          }, {
+            arrayItemObjectChildNumber: 3,
+            anotherNumber: NEW_VALUE,
+          }])
+
+          const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
+          t.strictSame(docOnDb.metadata.somethingArrayObject, [{
+            arrayItemObjectChildNumber: 2,
+          }, {
+            arrayItemObjectChildNumber: 3,
+            anotherNumber: NEW_VALUE,
+          }])
+          t.end()
+        })
+
+        t.test('ok - with multiple nested arrays', async t => {
+          const updatedAtDate = new Date('2017-11-11')
+          const createdAtDate = new Date('2017-11-10')
+          const creatorId = 'my-creator-id'
+          const updaterId = 'my-updated-id'
+
+          const DOC_TEST = {
+            _id: ObjectId.createFromHexString('111111111111111111111111'),
+            name: 'The Project',
+            environments: [{
+              label: 'Env 1',
+              value: 'env1',
+              envId: 'env1',
+              dashboards: [{
+                id: 'dashboard-1',
+                label: 'Dashboard 1',
+                url: 'the-url',
+              }, {
+                id: 'dashboard-2',
+                label: 'Dashboard 2',
+                url: 'the-other-url',
+              }],
+            }],
+            [CREATEDAT]: createdAtDate,
+            [CREATORID]: creatorId,
+            [UPDATERID]: updaterId,
+            [UPDATEDAT]: updatedAtDate,
+            [__STATE__]: STATES.PUBLIC,
+          }
+
+          const { fastify: projectsInstance, collection } = await setUpTest(t, [DOC_TEST], 'projects')
+          const UPDATE_COMMAND = {
+            $set: {
+              'environments.0.dashboards.$.merge': {
+                url: 'http://ciao',
+                label: 'foobar',
+              },
+            },
+          }
+          const response = await projectsInstance.inject({
+            method: 'PATCH',
+            url: `projects/${DOC_TEST._id.toHexString()}`,
+            query: {
+              _q: JSON.stringify({ 'environments.0.dashboards.id': 'dashboard-2' }),
+            },
+            payload: UPDATE_COMMAND,
+            headers: {
+              userId: newUpdaterId,
+            },
+          })
+
+          t.equal(response.statusCode, 200)
+          t.strictSame(lomit(JSON.parse(response.payload), [UPDATEDAT, CREATEDAT, UPDATERID]), {
+            _id: DOC_TEST._id.toHexString(),
+            name: DOC_TEST.name,
+            environments: [{
+              label: 'Env 1',
+              value: 'env1',
+              envId: 'env1',
+              dashboards: [{
+                id: 'dashboard-1',
+                label: 'Dashboard 1',
+                url: 'the-url',
+              }, {
+                id: 'dashboard-2',
+                url: 'http://ciao',
+                label: 'foobar',
+              }],
+            }],
+            [CREATORID]: DOC_TEST[CREATORID],
+            [__STATE__]: DOC_TEST[__STATE__],
+          })
+
+          const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
+          t.strictSame(docOnDb.environments, [{
+            label: 'Env 1',
+            value: 'env1',
+            envId: 'env1',
+            dashboards: [{
+              id: 'dashboard-1',
+              label: 'Dashboard 1',
+              url: 'the-url',
+            }, {
+              id: 'dashboard-2',
+              url: 'http://ciao',
+              label: 'foobar',
+            }],
+          }])
+          t.end()
+        })
+        t.end()
+      })
+
+      t.end()
+    })
+
+    t.test('$push', async t => {
+      t.test('ok with casting', async t => {
+        await resetCollection()
+        const UPDATE_COMMAND = {
+          $push: {
+            attachments: { detail: { size: '9999' }, name: 'pushed' },
+            'metadata.somethingArrayObject': { arrayItemObjectChildNumber: '8888' },
+            'metadata.somethingArrayOfNumbers': '7777',
+          },
+        }
+        const response = await fastify.inject({
+          method: 'PATCH',
+          url: `${prefix}/${DOC_TEST._id.toHexString()}`,
+          payload: UPDATE_COMMAND,
+          headers: {
+            userId: newUpdaterId,
+          },
+        })
+        t.equal(response.statusCode, 200)
+        const payload = JSON.parse(response.payload)
+
+        t.strictSame(
+          payload.attachments,
+          DOC_TEST.attachments.concat([{ detail: { size: 9999 }, name: 'pushed' }])
+        )
+        t.strictSame(
+          payload.metadata.somethingArrayObject,
+          DOC_TEST.metadata.somethingArrayObject.concat([{ arrayItemObjectChildNumber: 8888 }])
+        )
+        t.strictSame(
+          payload.metadata.somethingArrayOfNumbers,
+          DOC_TEST.metadata.somethingArrayOfNumbers.concat([7777])
+        )
+
+        const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
+        t.strictSame(
+          docOnDb.attachments,
+          DOC_TEST.attachments.concat([{ detail: { size: 9999 }, name: 'pushed' }])
+        )
+        t.strictSame(
+          docOnDb.metadata.somethingArrayObject,
+          DOC_TEST.metadata.somethingArrayObject.concat([{ arrayItemObjectChildNumber: 8888 }])
+        )
+        t.strictSame(
+          docOnDb.metadata.somethingArrayOfNumbers,
+          DOC_TEST.metadata.somethingArrayOfNumbers.concat([7777])
+        )
+
+        t.end()
+      })
+
+      t.test('ok with casting of array in array', async t => {
+        const DOC_TESTING_ARRAY = {
+          ...fixtures[0],
+          attachments: [{
+            name: 'attach-0',
+            neastedArr: [2],
+          }],
+        }
+
+        await resetCollection([DOC_TESTING_ARRAY])
+        const UPDATE_COMMAND = {
+          $push: {
+            'attachments.0.neastedArr': '55',
+          },
+        }
+        const response = await fastify.inject({
+          method: 'PATCH',
+          url: `${prefix}/${DOC_TESTING_ARRAY._id.toHexString()}`,
+          payload: UPDATE_COMMAND,
+          headers: {
+            userId: newUpdaterId,
+          },
+        })
+        t.equal(response.statusCode, 200)
+
+        const payload = JSON.parse(response.payload)
+        t.strictSame(payload.attachments, [{ name: 'attach-0', neastedArr: [2, 55] }])
+
+        const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
+        t.strictSame(docOnDb.attachments, [{ name: 'attach-0', neastedArr: [2, 55] }])
+
+        t.end()
+      })
+
+      t.test('ok with array of array', async t => {
+        const DOC_TESTING_ARRAY = {
+          ...fixtures[0],
+          metadata: {
+            ...fixtures[0].metadata,
+            exampleArrayOfArray: [
+              ['item1'],
+            ],
+          },
+        }
+
+        t.test('push to parent array', async t => {
+          await resetCollection([DOC_TESTING_ARRAY])
+          const UPDATE_COMMAND = {
+            $push: {
+              'metadata.exampleArrayOfArray': ['new-item'],
+            },
+          }
+          const response = await fastify.inject({
+            method: 'PATCH',
+            url: `${prefix}/${DOC_TESTING_ARRAY._id.toHexString()}`,
+            payload: UPDATE_COMMAND,
+            headers: {
+              userId: newUpdaterId,
+            },
+          })
+          t.equal(response.statusCode, 200)
+
+          const { metadata } = JSON.parse(response.payload)
+          t.strictSame(metadata.exampleArrayOfArray, [
+            ['item1'],
+            ['new-item'],
+          ])
+
+          const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
+          t.strictSame(docOnDb.metadata.exampleArrayOfArray, [
+            ['item1'],
+            ['new-item'],
+          ])
+
+          t.end()
+        })
+
+        t.test('push to child array', async t => {
+          await resetCollection([DOC_TESTING_ARRAY])
+
+          const UPDATE_COMMAND = {
+            $push: {
+              'metadata.exampleArrayOfArray.0': 'new-item',
+            },
+          }
+
+          const response = await fastify.inject({
+            method: 'PATCH',
+            url: `${prefix}/${DOC_TESTING_ARRAY._id.toHexString()}`,
+            payload: UPDATE_COMMAND,
+            headers: {
+              userId: newUpdaterId,
+            },
+          })
+          t.equal(response.statusCode, 200)
+
+          const { metadata } = JSON.parse(response.payload)
+          t.strictSame(metadata.exampleArrayOfArray, [
+            ['item1', 'new-item'],
+          ])
+
+          const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
+          t.strictSame(docOnDb.metadata.exampleArrayOfArray, [
+            ['item1', 'new-item'],
+          ])
+
+          t.end()
+        })
+
+        t.end()
+      })
+
+      t.test('fails if missing to push a required field of an object', async t => {
+        await resetCollection()
+
+        const UPDATE_COMMAND = {
+          $push: {
+            attachments: {
+              other: 'foo',
+              // name is required
+            },
+          },
+        }
+        const response = await fastify.inject({
+          method: 'PATCH',
+          url: `${prefix}/${DOC_TEST._id.toHexString()}`,
+          payload: UPDATE_COMMAND,
           headers: {
             userId: newUpdaterId,
           },
         })
 
-        t.strictSame(patchResponse.statusCode, 200)
-        const result = JSON.parse(patchResponse.payload)
-        t.equal(result.name, null)
+        t.equal(response.statusCode, 400)
+        t.strictSame(JSON.parse(response.payload), {
+          statusCode: 400,
+          error: 'Bad Request',
+          message: "body/$push/attachments must have required property 'name'",
+          code: 'FST_ERR_VALIDATION',
+        })
+
+        t.end()
+      })
+
+      t.test('fails if push is not compliant to additionalProperties of the field', async t => {
+        await resetCollection()
+
+        const UPDATE_COMMAND = {
+          $push: {
+            attachments: {
+              name: 'foo',
+              unknownField: 'bar',
+              // additionalProperties is false
+            },
+          },
+        }
+        const response = await fastify.inject({
+          method: 'PATCH',
+          url: `${prefix}/${DOC_TEST._id.toHexString()}`,
+          payload: UPDATE_COMMAND,
+          headers: {
+            userId: newUpdaterId,
+          },
+        })
+
+        t.equal(response.statusCode, 400)
+        t.strictSame(JSON.parse(response.payload), {
+          statusCode: 400,
+          error: 'Bad Request',
+          message: 'body/$push/attachments must NOT have additional properties. Property "unknownField" is not defined in validation schema',
+        })
+
         t.end()
       })
 
       t.end()
     })
 
-    t.end()
-  })
+    t.test('$addToSet', async t => {
+      t.test('ok with casting', async t => {
+        await resetCollection()
 
-  t.test('trying to merge an array of non-object elements', async t => {
-    await resetCollection()
+        const UPDATE_COMMAND = {
+          $addToSet: {
+            attachments: { detail: { size: '9999' }, name: 'addedToSet' },
+            'metadata.somethingArrayObject': { arrayItemObjectChildNumber: '8888' },
+            'metadata.somethingArrayOfNumbers': '7777',
+          },
+        }
 
-    const response = await fastify.inject({
-      method: 'PATCH',
-      url: `${prefix}/${DOC._id}?_q=${JSON.stringify(MATCHING_TAGIDS_QUERY)}`,
-      payload: { $set: { 'tagIds.$.merge': { value: 12 } } },
-    })
+        const response = await fastify.inject({
+          method: 'PATCH',
+          url: `${prefix}/${DOC_TEST._id.toHexString()}`,
+          payload: UPDATE_COMMAND,
+          headers: {
+            userId: newUpdaterId,
+          },
+        })
+        t.equal(response.statusCode, 200)
+        const payload = JSON.parse(response.payload)
 
-    t.test('should return 400', t => {
-      t.strictSame(response.statusCode, 400)
+        t.strictSame(
+          payload.attachments,
+          DOC_TEST.attachments.concat([{ detail: { size: 9999 }, name: 'addedToSet' }])
+        )
+        t.strictSame(
+          payload.metadata.somethingArrayObject,
+          DOC_TEST.metadata.somethingArrayObject.concat([{ arrayItemObjectChildNumber: 8888 }])
+        )
+        t.strictSame(
+          payload.metadata.somethingArrayOfNumbers,
+          DOC_TEST.metadata.somethingArrayOfNumbers.concat([7777])
+        )
+
+        const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
+        t.strictSame(
+          docOnDb.attachments,
+          DOC_TEST.attachments.concat([{ detail: { size: 9999 }, name: 'addedToSet' }])
+        )
+        t.strictSame(
+          docOnDb.metadata.somethingArrayObject,
+          DOC_TEST.metadata.somethingArrayObject.concat([{ arrayItemObjectChildNumber: 8888 }])
+        )
+        t.strictSame(
+          docOnDb.metadata.somethingArrayOfNumbers,
+          DOC_TEST.metadata.somethingArrayOfNumbers.concat([7777])
+        )
+
+        t.end()
+      })
+
+      t.test('ok with casting of array in array', async t => {
+        const DOC_TESTING_ARRAY = {
+          ...fixtures[0],
+          attachments: [{
+            name: 'attach-0',
+            neastedArr: [2],
+          }],
+        }
+
+        await resetCollection([DOC_TESTING_ARRAY])
+        const UPDATE_COMMAND = {
+          $addToSet: {
+            'attachments.0.neastedArr': '55',
+          },
+        }
+
+        const response = await fastify.inject({
+          method: 'PATCH',
+          url: `${prefix}/${DOC_TESTING_ARRAY._id.toHexString()}`,
+          payload: UPDATE_COMMAND,
+          headers: {
+            userId: newUpdaterId,
+          },
+        })
+        t.equal(response.statusCode, 200)
+
+        const payload = JSON.parse(response.payload)
+        t.strictSame(payload.attachments, [{ name: 'attach-0', neastedArr: [2, 55] }])
+
+        const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
+        t.strictSame(docOnDb.attachments, [{ name: 'attach-0', neastedArr: [2, 55] }])
+
+        t.end()
+      })
+
+      t.test('ok with array of array', async t => {
+        const DOC_TESTING_ARRAY = {
+          ...fixtures[0],
+          metadata: {
+            ...fixtures[0].metadata,
+            exampleArrayOfArray: [
+              ['item1'],
+            ],
+          },
+        }
+
+        t.test('addToSet to parent array', async t => {
+          await resetCollection([DOC_TESTING_ARRAY])
+
+          const UPDATE_COMMAND = {
+            $addToSet: {
+              'metadata.exampleArrayOfArray': ['new-item'],
+            },
+          }
+          const response = await fastify.inject({
+            method: 'PATCH',
+            url: `${prefix}/${DOC_TESTING_ARRAY._id.toHexString()}`,
+            payload: UPDATE_COMMAND,
+            headers: {
+              userId: newUpdaterId,
+            },
+          })
+          t.equal(response.statusCode, 200)
+
+          const { metadata } = JSON.parse(response.payload)
+          t.strictSame(metadata.exampleArrayOfArray, [
+            ['item1'],
+            ['new-item'],
+          ])
+
+          const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
+          t.strictSame(docOnDb.metadata.exampleArrayOfArray, [
+            ['item1'],
+            ['new-item'],
+          ])
+
+          t.end()
+        })
+
+        t.test('addToSet to child array', async t => {
+          await resetCollection([DOC_TESTING_ARRAY])
+
+          const UPDATE_COMMAND = {
+            $addToSet: {
+              'metadata.exampleArrayOfArray.0': 'new-item',
+            },
+          }
+          const response = await fastify.inject({
+            method: 'PATCH',
+            url: `${prefix}/${DOC_TESTING_ARRAY._id.toHexString()}`,
+            payload: UPDATE_COMMAND,
+            headers: {
+              userId: newUpdaterId,
+            },
+          })
+          t.equal(response.statusCode, 200)
+
+          const { metadata } = JSON.parse(response.payload)
+          t.strictSame(metadata.exampleArrayOfArray, [
+            ['item1', 'new-item'],
+          ])
+
+          const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
+          t.strictSame(docOnDb.metadata.exampleArrayOfArray, [
+            ['item1', 'new-item'],
+          ])
+
+          t.end()
+        })
+
+        t.end()
+      })
+
+      t.test('fails if missing to addToSet a required field of an object', async t => {
+        await resetCollection()
+
+        const UPDATE_COMMAND = {
+          $addToSet: {
+            attachments: {
+              other: 'foo',
+              // name is required
+            },
+          },
+        }
+        const response = await fastify.inject({
+          method: 'PATCH',
+          url: `${prefix}/${DOC_TEST._id.toHexString()}`,
+          payload: UPDATE_COMMAND,
+          headers: {
+            userId: newUpdaterId,
+          },
+        })
+        t.equal(response.statusCode, 400)
+        t.strictSame(JSON.parse(response.payload), {
+          statusCode: 400,
+          error: 'Bad Request',
+          message: "body/$addToSet/attachments must have required property 'name'",
+          code: 'FST_ERR_VALIDATION',
+        })
+        t.end()
+      })
+
+      t.test('fails if addToSet is not compliant to additionalProperties of the field', async t => {
+        await resetCollection()
+
+        const UPDATE_COMMAND = {
+          $addToSet: {
+            attachments: {
+              name: 'foo',
+              unknownField: 'bar',
+              // additionalProperties is false
+            },
+          },
+        }
+        const response = await fastify.inject({
+          method: 'PATCH',
+          url: `${prefix}/${DOC_TEST._id.toHexString()}`,
+          payload: UPDATE_COMMAND,
+          headers: {
+            userId: newUpdaterId,
+          },
+        })
+        t.equal(response.statusCode, 400)
+        t.strictSame(JSON.parse(response.payload), {
+          statusCode: 400,
+          error: 'Bad Request',
+          message: 'body/$addToSet/attachments must NOT have additional properties. Property "unknownField" is not defined in validation schema',
+        })
+        t.end()
+      })
+
+      t.test('fails if addToSet if field is not an array', async t => {
+        await resetCollection()
+        const UPDATE_COMMAND = {
+          $addToSet: {
+            name: 'foo',
+          },
+        }
+        const response = await fastify.inject({
+          method: 'PATCH',
+          url: `${prefix}/${DOC_TEST._id.toHexString()}`,
+          payload: UPDATE_COMMAND,
+          headers: {
+            userId: newUpdaterId,
+          },
+        })
+
+        t.equal(response.statusCode, 400)
+        t.strictSame(JSON.parse(response.payload), {
+          statusCode: 400,
+          error: 'Bad Request',
+          message: 'body/$addToSet must NOT have additional properties. Property "name" is not defined in validation schema',
+        })
+        t.end()
+      })
       t.end()
     })
-    t.test('should return JSON', t => {
-      t.ok(/application\/json/.test(response.headers['content-type']))
-      t.end()
-    })
-    t.test('body should be "Bad Request" error message', t => {
-      const expectedBody = '{"statusCode":400,"error":"Bad Request","message":"body/$set must NOT have additional properties. Property \\"tagIds.$.merge\\" is not defined in validation schema"}'
-      t.strictSame(response.body, expectedBody)
-      t.end()
-    })
 
-    t.end()
-  })
+    t.test('$unset', async t => {
+      const DOC_TO_UNSET = {
+        ...fixtures[0],
+        metadata: {
+          somethingNumber: 3,
+          somethingObject: {
+            childNumber: 4,
+          },
+          somethingString: 'unsetme',
+          somethingArrayObject: [{
+            arrayItemObjectChildNumber: 4,
+            anotherNumber: 99,
+          }],
+        },
+      }
 
-  t.test('trying to replace an array without specifying an element matching query', async t => {
-    await resetCollection()
+      t.test('can unset a nested property', async t => {
+        await resetCollection([DOC_TO_UNSET])
 
-    const response = await fastify.inject({
-      method: 'PATCH',
-      url: `${prefix}/${DOC._id}`,
-      payload: UPDATE_REPLACE_ARRAY_ELEMENT_COMMAND,
-    })
-    t.test('should return 500', t => {
-      t.strictSame(response.statusCode, 500)
-      t.end()
-    })
-    t.test('should return JSON', t => {
-      t.ok(/application\/json/.test(response.headers['content-type']))
-      t.end()
-    })
-    t.test('should return error message should be "Internal Server Error" error message', t => {
-      const expectedErrorMessage = 'The positional operator did not find the match needed from the query.'
-      t.match(response.body, expectedErrorMessage)
-      t.end()
-    })
-  })
+        const UPDATE_COMMAND = {
+          $unset: {
+            'metadata.somethingString': true,
+            'metadata.somethingObject.childNumber': true,
+            'metadata.somethingArrayObject.0.anotherNumber': true,
+          },
+        }
+        const response = await fastify.inject({
+          method: 'PATCH',
+          url: `${prefix}/${DOC_TEST._id.toHexString()}`,
+          payload: UPDATE_COMMAND,
+          headers: {
+            userId: newUpdaterId,
+          },
+        })
+        t.strictSame(response.statusCode, 200)
 
-  t.test('trying to replace array number element with string by matching query', async t => {
-    await resetCollection()
+        const expectedMetadata = {
+          somethingNumber: 3,
+          somethingObject: {},
+          somethingArrayObject: [{
+            arrayItemObjectChildNumber: 4,
+          }],
+        }
 
-    const response = await fastify.inject({
-      method: 'PATCH',
-      url: `${prefix}/${DOC._id}?_q=${JSON.stringify(MATCHING_TAGIDS_QUERY)}`,
-      payload: { $set: { 'tagIds.$.replace': 'string' } },
-    })
+        t.strictSame(JSON.parse(response.payload).metadata, expectedMetadata)
 
-    t.test('should return 400', t => {
-      t.strictSame(response.statusCode, 400)
-      t.end()
-    })
-    t.test('should return JSON', t => {
-      t.ok(/application\/json/.test(response.headers['content-type']))
-      t.end()
-    })
-    t.test('body.$set["tagIds.$.replace"] should be number', t => {
-      const expectedErrorMessage = 'body/$set/tagIds.$.replace must be number'
-      t.strictSame(JSON.parse(response.body)?.message, expectedErrorMessage)
+        const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
+        t.strictSame(docOnDb.metadata, expectedMetadata)
+        t.end()
+      })
+
+      t.test('there is NO validation to prevent unset of required properties', async t => {
+      // Documentation purpose
+        await resetCollection([DOC_TO_UNSET])
+
+        const UPDATE_COMMAND = {
+          $unset: {
+            'metadata.somethingNumber': true,
+          },
+        }
+        const response = await fastify.inject({
+          method: 'PATCH',
+          url: `${prefix}/${DOC_TEST._id.toHexString()}`,
+          payload: UPDATE_COMMAND,
+          headers: {
+            userId: newUpdaterId,
+          },
+        })
+        t.strictSame(response.statusCode, 500)
+
+        t.strictSame(JSON.parse(response.payload), {
+          statusCode: 500,
+          error: 'Internal Server Error',
+          message: '"somethingNumber" is required!',
+        })
+
+        const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
+        t.strictSame(docOnDb.metadata.somethingNumber, undefined)
+        t.end()
+      })
       t.end()
     })
 
