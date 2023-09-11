@@ -39,7 +39,7 @@ const NON_MATCHING_PRICE = DOC.price + 1
 const MATCHING_QUERY = { price: { $gt: MATCHING_PRICE } }
 const NON_MATCHING_QUERY = { price: { $gt: NON_MATCHING_PRICE } }
 
-const [STATION_DOC] = stationFixtures
+const [STATION_DOC, STATION_DOC_NO_STATE] = stationFixtures
 const STATION_ID = STATION_DOC._id.toString()
 
 tap.test('HTTP POST /<id>/state', async t => {
@@ -115,7 +115,6 @@ tap.test('HTTP POST /<id>/state', async t => {
     },
   ]
 
-  t.plan(tests.length)
   const { fastify, collection, resetCollection } = await setUpTest(t)
 
   tests.forEach(testConf => {
@@ -197,9 +196,16 @@ tap.test('HTTP POST /<id>/state with string id', async t => {
       id: STATION_DOC._id,
       found: true,
     },
+    {
+      name: 'with document missing __STATE__field',
+      url: `/${STATION_DOC_NO_STATE._id}/state`,
+      acl_rows: undefined,
+      stateTo: STATES.PUBLIC,
+      id: STATION_DOC_NO_STATE._id,
+      found: true,
+    },
   ]
 
-  t.plan(tests.length)
   const { fastify, collection, resetCollection } = await setUpTest(t, stationFixtures, 'stations')
 
   tests.forEach(testConf => {
@@ -337,7 +343,6 @@ tap.test('HTTP POST /<id>/state passing to a wrong state', async t => {
     },
   ]
 
-  t.plan(tests.length)
   const { fastify, collection, resetCollection } = await setUpTest(t, stationFixtures, 'stations')
 
   tests.forEach(testConf => {
