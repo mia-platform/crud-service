@@ -220,7 +220,8 @@ function buildModelDependencies(fastify, collectionDefinition, collection) {
     collectionDefinition,
     {},
     fastify.config.CRUD_LIMIT_CONSTRAINT_ENABLED,
-    fastify.config.CRUD_MAX_LIMIT
+    fastify.config.CRUD_MAX_LIMIT,
+    fastify.config.ENABLE_STRICT_OUTPUT_VALIDATION
   )
   const jsonSchemaGeneratorWithNested = new JSONSchemaGenerator(
     collectionDefinition,
