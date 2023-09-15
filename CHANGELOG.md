@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fixed
+
+- add optional chaining to allow not to specify `pipeline` field in `$lookup` views when `enabledLookup` is set
+
 ## 6.9.1 - 2023-09-08
 
 ### Fixed

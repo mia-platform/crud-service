@@ -252,7 +252,7 @@ function createLookupModel(fastify, viewDefinition, mergedCollections) {
     const lookupIdType = getIdType(lookupCollection)
     const lookupCollectionMongo = fastify.mongo[getDatabaseNameByType(lookupIdType)].db.collection(from)
 
-    const lookupProjection = pipeline.find(({ $project }) => $project)?.$project ?? {}
+    const lookupProjection = pipeline?.find(({ $project }) => $project)?.$project ?? {}
     const parsedLookupProjection = []
     const lookupCollectionDefinition = {
       ...lomit(viewDefinition, ['fields']),
