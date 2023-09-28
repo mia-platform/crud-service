@@ -47,7 +47,6 @@
     "lodash.pick": "^4.4.0",
     "lodash.set": "^4.3.2",
     "lodash.unset": "^4.5.2",
-    "mongodb-client-encryption": "^6.0.0",
     "ndjson": "^2.0.0",
     "pino": "^8.15.1",
     "through2": "^4.0.2",
