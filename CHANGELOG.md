@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### BREAKING CHANGES
 
-- [#189](https://github.com/mia-platform/crud-service/pull/189) remove support to MongoDB v4.2
+- [#189](https://github.com/mia-platform/crud-service/pull/189) introduce support to MongoDB v7.0 and remove support to MongoDB v4.2
 - [#140](https://github.com/mia-platform/crud-service/pull/140) changed response code on unique constraint violation with respect to [mia-platform/#175](https://github.com/mia-platform/community/discussions/175)
 - [#53](https://github.com/mia-platform/crud-service/issues/53) request to transition to a disallowed state now returns HTTP error 400 instead of 404
 - [#55](https://github.com/mia-platform/crud-service/issues/55) additional query \_q now return _400 Bad Request_ in case a field is not included in the collection definition schema
