@@ -50,7 +50,7 @@
     "ndjson": "^2.0.0",
     "pino": "^8.15.1",
     "through2": "^4.0.2",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.1"
   },
   "peerDependencies": {
     "ajv": "^8.12.0"
