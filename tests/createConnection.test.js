@@ -51,8 +51,8 @@ tap.test('Fastify register two different mongo instance', async t => {
     assert.ok(stringDocument)
     assert.ok(objectIdDocument)
 
-    assert.throws(() => ObjectId(stringDocument._id), {}, { skip: false })
-    assert.doesNotThrow(() => ObjectId(objectIdDocument._id), {}, { skip: false })
+    assert.throws(() => new ObjectId(stringDocument._id), {}, { skip: false })
+    assert.doesNotThrow(() => new ObjectId(objectIdDocument._id), {}, { skip: false })
     assert.end()
   })
 })

@@ -4,9 +4,9 @@ WORKDIR /cryptd
 
 RUN apt-get update && \
     apt-get install curl -y && \
-    curl https://repo.mongodb.com/apt/debian/dists/bullseye/mongodb-enterprise/5.0/main/binary-amd64/mongodb-enterprise-cryptd_5.0.14_amd64.deb -o mongocryptd.deb && \
-    curl https://libmongocrypt.s3.amazonaws.com/apt/debian/dists/buster/libmongocrypt/1.6/main/binary-amd64/libmongocrypt-dev_1.6.2-0_amd64.deb -o libmongocrypt-dev.deb && \
-    curl https://libmongocrypt.s3.amazonaws.com/apt/debian/dists/buster/libmongocrypt/1.6/main/binary-amd64/libmongocrypt0_1.6.2-0_amd64.deb -o libmongocrypt0.deb
+    curl https://repo.mongodb.com/apt/debian/dists/bullseye/mongodb-enterprise/7.0/main/binary-amd64/mongodb-enterprise-cryptd_7.0.2_amd64.deb -o mongocryptd.deb && \
+    curl https://libmongocrypt.s3.amazonaws.com/apt/debian/dists/bullseye/libmongocrypt/1.8/main/binary-amd64/libmongocrypt-dev_1.8.2-0_amd64.deb -o libmongocrypt-dev.deb && \
+    curl https://libmongocrypt.s3.amazonaws.com/apt/debian/dists/bullseye/libmongocrypt/1.8/main/binary-amd64/libmongocrypt0_1.8.2-0_amd64.deb -o libmongocrypt0.deb
 
 ########################################################################################################################
 
