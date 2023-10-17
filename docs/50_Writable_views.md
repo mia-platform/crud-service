@@ -34,10 +34,6 @@ In order to configure the view pipeline to support this lookup feature, it is ne
 
 # Example
 
-In this example we will create a view on top of `orders` collection, that it is a collection containing a `id_rider`, who will deliver the order, and a `items` array, list of items to deliver. This view will return a rider object with the name and surname as label, instad of the plain `id_rider`.
-
-Here the view definition:
-
 In this example, we will create a view based on the `orders` collection. The orders collection contains an `id_rider` field representing the rider id assigned to deliver the order, as well as an items array listing the items to be delivered. The purpose of this view is to transform the `id_rider` into a more meaningful representation by returning a `rider` object with the `name` and `surname` as label.
 
 Here is the view definition:
