@@ -5,7 +5,7 @@
  * Make sure to inspect the output below.  Do not ignore changes!
  */
 'use strict'
-exports['tests/transformSchemaForSwagger.test.js TAP transformSchemaForSwagger remove unique id from schema > must match snapshot 1'] = `
+exports[`tests/transformSchemaForSwagger.test.js > TAP > transformSchemaForSwagger > remove unique id from schema > must match snapshot 1`] = `
 {
   "summary": "Update an item of the books collection by ID",
   "tags": [

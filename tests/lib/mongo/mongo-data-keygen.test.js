@@ -90,7 +90,7 @@ tap.test('Data keygen tests', async t => {
 
   t.test('Throws if error happen', async assert => {
     const collectionName = 'testCollection'
-    const dataKeygenMock = assert.mock('../../../lib/mongo/mongo-data-keygen', {
+    const dataKeygenMock = assert.mockRequire('../../../lib/mongo/mongo-data-keygen', {
       'mongodb': {
         ...mongodb,
         ClientEncryption: clientEncryptionMock,

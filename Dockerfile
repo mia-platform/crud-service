@@ -1,4 +1,4 @@
-FROM node:18.17.1-bullseye-slim as base-with-encryption
+FROM node:18.18.2-bullseye-slim as base-with-encryption
 
 WORKDIR /cryptd
 
@@ -10,7 +10,7 @@ RUN apt-get update && \
 
 ########################################################################################################################
 
-FROM node:18.17.1-bullseye-slim as build
+FROM node:18.18.2-bullseye-slim as build
 
 ARG COMMIT_SHA=<not-specified>
 ENV NODE_ENV=production
@@ -30,11 +30,11 @@ RUN echo "crud-service: $COMMIT_SHA" >> ./commit.sha
 
 # create a CRUD Service image that does not support automatic CSFLE
 # and therefore it can be employed by everybody in any MongoDB product
-FROM node:18.17.1-bullseye-slim as crud-service-no-encryption
+FROM node:18.18.2-bullseye-slim as crud-service-no-encryption
 
-# note: libssl1.1 can be removed once node image version is updated
+# note: zlib can be removed once node image version is updated
 RUN apt-get update \
-    && apt-get install -f tini libssl1.1 -y \
+    && apt-get install -f tini zlib1g -y \
     && apt-get clean autoclean -y \
     && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/*
@@ -43,7 +43,7 @@ LABEL maintainer="Mia Platform Core Team<core@mia-platform.eu>" \
     name="CRUD Service" \
     description="HTTP interface to perform CRUD operations on configured MongoDB collections" \
     eu.mia-platform.url="https://www.mia-platform.eu" \
-    eu.mia-platform.version="6.9.1"
+    eu.mia-platform.version="6.9.2"
 
 ENV NODE_ENV=production
 ENV LOG_LEVEL=info

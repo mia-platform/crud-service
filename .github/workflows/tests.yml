@@ -49,5 +49,7 @@ jobs:
         uses: coverallsapp/github-action@master
         with:
           github-token: ${{ secrets.token }}
+          files: .tap/report/lcov.info
+          format: lcov
         # allow the pipeline to continue even when the coverage decreases
         continue-on-error: true

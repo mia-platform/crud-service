@@ -19,6 +19,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - remove `additionalProperties` constraints from collection definition schema to allow greater flexibility in adding further config entries
 
+## 6.9.2 - 2023-10-25
+
+### Fixed
+
+- add optional chaining to allow not to specify `pipeline` field in `$lookup` views when `enabledLookup` is set
+
+### Changed
+
+- upgrade `tap` to `v18.5.2`
+- updated NodeJS version in Dockerfile to v18.18.2
+
 ## 6.9.1 - 2023-09-08
 
 ### Fixed
