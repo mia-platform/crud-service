@@ -16,3 +16,4 @@ kms
 *.key
 test-collections
 .npmrc
+.tap

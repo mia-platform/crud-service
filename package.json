@@ -16,14 +16,14 @@
   "scripts": {
     "bench": "node bench/queryParser.bench.js",
     "checkonly": "! grep -r '\\.only' tests/",
-    "coverage": "npm run unit -- --coverage-report=text-summary",
-    "postcoverage": "TAP_TIMEOUT=120 tap -b --timeout=120 --coverage-report=lcov --no-browser",
+    "coverage": "npm run unit",
+    "postcoverage": "tap report --coverage-report=text-summary",
     "lint": "eslint . --ignore-path=.gitignore",
     "start": "lc39 index.js",
     "start:local": "npm start -- --env-path ./local.env",
     "pretest": "node tests/generatedJSONSchemasToFiles.js && eslint --fix tests/expectedSchemas/*.js",
-    "test": "npm run lint && npm run unit && npm run checkonly",
-    "unit": "TAP_TIMEOUT=200 MONGO_HOST=${MONGO_HOST_CI:-127.0.0.1} MONGO_VERSION=${MONGO_VERSION:-6.0.2} tap -b --timeout=200 -o tap.log 'tests/**/*.test.js'",
+    "test": "npm run lint && npm run unit -- --disable-coverage && npm run checkonly",
+    "unit": "MONGO_HOST=${MONGO_HOST_CI:-127.0.0.1} MONGO_VERSION=${MONGO_VERSION:-6.0.2} tap -b --allow-incomplete-coverage 'tests/**/*.test.js'",
     "update-docker-version": "sed -i.bck \"s|version=\\\"[0-9]*\\.[0-9]*\\.[0-9]*.*\\\"|version=\\\"${npm_package_version}\\\"|\" Dockerfile",
     "update-changelog": "node ./scripts/update-changelog.js ${npm_package_version}",
     "version": "npm run update-changelog && npm run update-docker-version && rm -fr Dockerfile.bck && git add CHANGELOG.md Dockerfile"
@@ -66,7 +66,7 @@
     "mongodb": "^4.10.0",
     "pre-commit": "^1.2.2",
     "swagger-parser": "^10.0.3",
-    "tap": "^16.3.8",
+    "tap": "^18.5.2",
     "uuid-validate": "0.0.3"
   },
   "engines": {
@@ -74,7 +74,9 @@
   },
   "private": true,
   "tap": {
-    "check-coverage": false
+    "timeout": 240,
+    "allow-incomplete-coverage": true,
+    "allow-empty-coverage": true
   },
   "eslintConfig": {
     "extends": "@mia-platform/eslint-config-mia",
