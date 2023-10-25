@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 
 - upgrade `tap` to `v18.5.2`
+- updated NodeJS version in Dockerfile to v18.18.2
 
 ## 6.9.1 - 2023-09-08
 
