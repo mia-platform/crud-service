@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - remove `additionalProperties` constraints from collection definition schema to allow greater flexibility in adding further config entries
 - updated NodeJS version in Dockerfile to v20.8.1
+- updated `@fastify/mongodb` to v8.0.0
+- updated `@fastify/multipart` to v8.0.0
 
 ## 6.9.2 - 2023-10-25
 
