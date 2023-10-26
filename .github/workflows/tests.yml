@@ -13,12 +13,58 @@ jobs:
     strategy:
       matrix:
         node-version: [20.x]
-        mongodb-version: ["4.4", "5.0", "6.0", "7.0"]
+        mongodb-version: ["4.4", "5.0", "6.0"]
     steps:
       - uses: actions/checkout@v4
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: update libraries and install curl
+        run: sudo apt-get update && sudo apt-get install curl -y
+
+      - name: download MongoDB encryption libraries (to support testing encryption features)
+        run: curl https://repo.mongodb.com/apt/debian/dists/bullseye/mongodb-enterprise/6.0/main/binary-amd64/mongodb-enterprise-cryptd_6.0.9_amd64.deb -o mongocryptd.deb && curl https://libmongocrypt.s3.amazonaws.com/apt/debian/dists/bullseye/libmongocrypt/1.7/main/binary-amd64/libmongocrypt-dev_1.7.4-0_amd64.deb -o libmongocrypt-dev.deb && curl https://libmongocrypt.s3.amazonaws.com/apt/debian/dists/bullseye/libmongocrypt/1.7/main/binary-amd64/libmongocrypt0_1.7.4-0_amd64.deb -o libmongocrypt0.deb
+
+      - name: install MongoDB encryption libraries
+        run: sudo apt-get install -f ./mongocryptd.deb ./libmongocrypt0.deb ./libmongocrypt-dev.deb -y
+
+      - name: start MongoDB instance
+        uses: supercharge/mongodb-github-action@v1.10.0
+        with:
+          mongodb-version: ${{ matrix.mongodb-version }}
+
+      - name: Run tests
+        run: npm run coverage -- --jobs 3 # limit the number of jobs that can be run in parallel in the CI
+        env:
+          MONGO_VERSION: ${{ matrix.mongodb-version }}
+
+      - name: Coveralls
+        uses: coverallsapp/github-action@v2.2.3
+        with:
+          github-token: ${{ secrets.token }}
+          file: .tap/report/lcov.info
+          format: lcov
+        # allow the pipeline to continue even when the coverage decreases
+        continue-on-error: true
+
+  test-latest:
+    name: Execute tests on latest MongoDB
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20.x]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: npm
@@ -38,18 +84,11 @@ jobs:
       - name: start MongoDB instance
         uses: supercharge/mongodb-github-action@v1.10.0
         with:
-          mongodb-version: ${{ matrix.mongodb-version }}
+          mongodb-version: "7.0"
 
       - name: Run tests
         run: npm run coverage -- --jobs 3 # limit the number of jobs that can be run in parallel in the CI
         env:
-          MONGO_VERSION: ${{ matrix.mongodb-version }}
-
-      - name: Coveralls
-        uses: coverallsapp/github-action@master
-        with:
-          github-token: ${{ secrets.token }}
-          files: .tap/report/lcov.info
-          format: lcov
+          MONGO_VERSION: "7.0"
         # allow the pipeline to continue even when the coverage decreases
         continue-on-error: true
