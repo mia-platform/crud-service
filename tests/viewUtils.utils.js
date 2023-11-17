@@ -51,7 +51,6 @@ const expectedRidersLookup = ridersFixture.map(riderObjectToLookup)
 
 module.exports = {
   lookupAddressPrefix: '/orders-details-endpoint/lookup/rider',
-  viewPrefix: '/orders-details-endpoint',
   prefix: '/orders-endpoint',
   ordersFixture,
   ridersFixture,

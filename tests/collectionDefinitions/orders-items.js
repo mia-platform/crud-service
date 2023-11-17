@@ -17,8 +17,8 @@
 'use strict'
 
 module.exports = {
-  name: 'orders',
-  endpointBasePath: '/orders-endpoint',
+  name: 'orders-items',
+  endpointBasePath: '/orders-items-endpoint',
   defaultState: 'PUBLIC',
   fields: [
     {
@@ -57,21 +57,22 @@ module.exports = {
       required: true,
     },
     {
-      name: 'id_rider',
-      type: 'ObjectId',
-      description: 'The id of the rider who will deliver the items',
-      required: true,
-      nullable: false,
-    },
-    {
       name: 'items',
       type: 'Array',
       items: {
-        type: 'string',
+        type: 'RawObject',
+        schema: {
+          properties: {
+            value: {
+              type: 'string',
+            },
+            label: { type: 'string' },
+          },
+        },
       },
-      description: 'The id of items to deliver to the customer',
-      required: true,
-      nullable: false,
+      additionalProperties: false,
+      required: false,
+      nullable: true,
     },
     {
       name: 'paid',
