@@ -63,7 +63,7 @@
     "fastbench": "^1.0.1",
     "form-data": "^4.0.0",
     "mock-require": "^3.0.3",
-    "mongodb": "^6.2.0",
+    "mongodb": "^6.3.0",
     "pre-commit": "^1.2.2",
     "swagger-parser": "^10.0.3",
     "tap": "^18.5.2",
