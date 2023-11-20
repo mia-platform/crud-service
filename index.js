@@ -326,7 +326,7 @@ async function loadModels(fastify) {
     // match one of the two, depending on the existence of schema property
     if (!collectionDefinition.schema) {
       if (!compatibilityValidate(collectionDefinition)) {
-        fastify.log.error(compatibilityValidate.errors)
+        fastify.log.error({ collection: collectionDefinition.name }, compatibilityValidate.errors)
         throw new Error(`invalid collection definition: ${JSON.stringify(compatibilityValidate.errors)}`)
       }
     } else if (!validate(collectionDefinition)) {

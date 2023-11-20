@@ -163,14 +163,38 @@ Below are provided the collection and view definition:
   "defaultState": "PUBLIC",
   "fields": [
     {
-      "name": "_id",
-      "type": "ObjectId",
+      "name": "updaterId",
+      "type": "string",
+      "description": "User id that has requested the last change successfully",
+      "required": true
+    },
+    {
+      "name": "updatedAt",
+      "type": "Date",
+      "description": "Date of the request that has performed the last change",
+      "required": true
+    },
+    {
+      "name": "creatorId",
+      "type": "string",
+      "description": "User id that has created this object",
+      "required": true
+    },
+    {
+      "name": "createdAt",
+      "type": "Date",
+      "description": "Date of the request that has performed the object creation",
       "required": true
     },
     {
       "name": "__STATE__",
       "type": "string",
       "description": "The state of the document",
+      "required": true
+    },
+    {
+      "name": "_id",
+      "type": "ObjectId",
       "required": true
     },
     {
@@ -235,13 +259,13 @@ Below are provided the collection and view definition:
 ```json title=View Definition
 {
   "name": "orders-details",
-  "source": "orders",       // source collection
+  "source": "orders",        // source collection
   "type": "view",
-  "enableLookup": true,     // enable the lookup feature
+  "enableLookup": true,      // enable the lookup feature
   "pipeline": [
     {
       "$lookup": {
-        "from": "riders",   // lookup collection
+        "from": "riders",    // lookup collection
         "localField": "riderId",
         "foreignField": "_id",
         "as": "rider",
@@ -253,13 +277,13 @@ Below are provided the collection and view definition:
           },
           {
             "$project": {
-              "_id": 0,     // to hide the _id field in the view
+              "_id": 0,      // to hide the _id field in the view
               "value": {
-                "$toObjectId": "$_id" // foreign key
+                "$toObjectId": "$_id"     // foreign key
               },
               "label": {
                 "$toString": {
-                  "$concat": ["$firstName", " ", "$lastName"] // the aggregated value
+                  "$concat": ["$firstName", " ", "$lastName"]     // the aggregated value
                 }
               }
             }
@@ -339,14 +363,38 @@ Below are provided the collection and view definition:
   "defaultState": "PUBLIC",
   "fields": [
     {
-      "name": "_id",
-      "type": "ObjectId",
+      "name": "updaterId",
+      "type": "string",
+      "description": "User id that has requested the last change successfully",
+      "required": true
+    },
+    {
+      "name": "updatedAt",
+      "type": "Date",
+      "description": "Date of the request that has performed the last change",
+      "required": true
+    },
+    {
+      "name": "creatorId",
+      "type": "string",
+      "description": "User id that has created this object",
+      "required": true
+    },
+    {
+      "name": "createdAt",
+      "type": "Date",
+      "description": "Date of the request that has performed the object creation",
       "required": true
     },
     {
       "name": "__STATE__",
       "type": "string",
       "description": "The state of the document",
+      "required": true
+    },
+    {
+      "name": "_id",
+      "type": "ObjectId",
       "required": true
     },
     {
@@ -427,11 +475,11 @@ Below are provided the collection and view definition:
             "$project": {
               "_id": 0,      // to hide the _id field in the view
               "value": {
-                "$toObjectId": "$_id" // foreign key
+                "$toObjectId": "$_id"     // foreign key
               },
               "label": {
                 "$toString": {
-                  "$concat": ["$firstName", " ", "$lastName"] // the aggregated value
+                  "$concat": ["$firstName", " ", "$lastName"]     // the aggregated value
                 }
               }
             }
