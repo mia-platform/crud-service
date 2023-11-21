@@ -100,7 +100,7 @@ it poses a limitation whenever it is necessary to add, edit or delete references
 
 To address the problem mentioned in the previous section, CRUD Service provides a feature called _writable views_. This type of views are **limited** on what can actually be written back to the source collection and they require the adoption a specific format for lookup fields. However, the benefit is that they allow to **change lookup references** on the source collection using the same interface of the view endpoint.
 
-_Writable views_ feature can be enabled per CRUD Service view by setting the property `enableLookup` to `true` in the view definition model. This allows the service to create expose further `POST`, `PATCH`, and `DELETE` routes in addition to a view existing `GET` endpoints. These new routes gives the caller the possibility to add, change or delete records on the source collection using the view data model. In particular:
+_Writable views_ feature can be enabled per CRUD Service view by setting the property `enableLookup` to `true` in the view definition model. This allows the service to expose further `POST`, `PATCH`, and `DELETE` routes in addition to a view existing `GET` endpoints. These new routes gives the caller the possibility to add, change or delete records on the source collection using the view data model. In particular:
 
 - `POST`: allow adding a new record on the source collection
 - `PATCH`: allows editing the lookup fields on the source collection
@@ -115,7 +115,7 @@ Please note that resulting records are returned adopting the same format specifi
 
 Before enabling this feature on a CRUD Service view it important to consider the following limitations:
 
-- view aggregation pipeline must have at least one `$lookup` step in the view pipeline. On the contrary the feature would be useful, since there would not be any reference to other collection to be edited;  
+- view aggregation pipeline must have at least one `$lookup` step in the view pipeline. On the contrary the feature would not be useful, since there would not be any reference to other collection to be edited;  
 
 - it is specifically designed for collections with **one-to-one** or **one-to-many** relationships that have a **single level of depth**; 
 
@@ -141,7 +141,7 @@ Before enabling this feature on a CRUD Service view it important to consider the
 
 - `POST` operation can be successfully carried out only when a view definition matches the schema of _underlying_ source collection in all fields except for _lookup_ ones.  
 
-- `PATCH` operation is designed for changing lookup references. In all the other cases it falls batch to the same limitation of `POST` operation.  
+- `PATCH` operation is designed for changing lookup references. In all the other cases it falls back to the same limitation of `POST` operation.  
 
 - `DELETE` operation can be carried out without limitations on the source collection, but it does **not** perform a cascade delete. In fact, only the record on the source collection would be removed, but referenced records on the _lookup_ should be manually deleted with their collection endpoint.
 
@@ -328,7 +328,7 @@ the view `GET` endpoint would result in the following element:
 ]
 ```
 
-As it can be observed, the `riderId` has been replaced with an object representing the reference to the  record on the lookup collection. The application can now employ `PATCH` operations to change the reference on the underlying 
+As it can be observed, the `riderId` has been replaced with an object representing the reference to the  record on the lookup collection. The application can now employ `PATCH` operations to change the reference on the underlying collection
 
 As mentioned earlier, CRUD service also exposes a lookup route for the riders, `/orders-details-endpoint/lookup/rider`, so that it would be possible to know which riders can be associated to an order.
 
