@@ -307,9 +307,15 @@ Below are provided the collection and view definition:
 ```
 
 Configuring the CRUD Service with the above collection and view definitions, and calling
-the view `GET` endpoint would result in the following element:
+the view `GET` endpoint:
 
-[//]: # (TODO: add curl)
+```shell
+curl -X 'GET' \
+  'http://crud-service:3000/orders-details-endpoint/?_st=PUBLIC&_l=25' \
+  -H 'accept: application/json'
+```
+
+would result in the following elements:
 
 ```json
 [
@@ -332,7 +338,15 @@ As it can be observed, the `riderId` has been replaced with an object representi
 
 As mentioned earlier, CRUD service also exposes a lookup route for the riders, `/orders-details-endpoint/lookup/rider`, so that it would be possible to know which riders can be associated to an order.
 
-[//]: # (TODO: add curl)
+For example, calling the riders lookup endpoint over the _orders-details_ view:
+
+```shell
+curl -X 'GET' \
+  'http://crud-service:3000/orders-details-endpoint/lookup/rider/?_st=PUBLIC&_l=25' \
+  -H 'accept: application/json'
+```
+
+would yield the following response, that are all the available riders in the _riders_ collection:
 
 ```json
 [
@@ -349,6 +363,25 @@ As mentioned earlier, CRUD service also exposes a lookup route for the riders, `
 
 The data returned when accessing the `/orders-details-endpoint/lookup/rider` route will be a list of all riders present in the `riders` collection. The formatting of this data will adhere to the specific format specified in the lookup configuration.
 
+To modify the lookup references of the underlying order record it is possible to call the `PATCH` endpoint in the following manner:
+
+```shell
+curl -X 'PATCH' \
+  'http://crud-service:3000/orders-details-endpoint/?_st=PUBLIC' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "$set": {
+    "rider": {
+      "value": "64899570951afe064fd2d0d3"
+    }
+  }
+}'
+```
+
+:::info
+When a lookup field is an _array_ of references, the `$push`, `$addToSet` and `$pull` operators are also available in the `PATCH` update body.
+:::
 
 ## One-to-many Relationship
 
@@ -497,9 +530,15 @@ Below are provided the collection and view definition:
 ```
 
 Configuring the CRUD Service with the above collection and view definitions, and calling
-the view `GET` endpoint would result in the following element:
+the view `GET` endpoint:
 
-[//]: # (TODO: add curl)
+```shell
+curl -X 'GET' \
+  'http://crud-service:3000/orders-details-endpoint/?_st=PUBLIC&_l=25' \
+  -H 'accept: application/json'
+```
+
+would result in the following elements:
 
 ```json
 [

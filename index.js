@@ -40,7 +40,16 @@ const httpInterface = require('./lib/httpInterface')
 const JSONSchemaGenerator = require('./lib/JSONSchemaGenerator')
 const createIndexes = require('./lib/createIndexes')
 const { castCollectionId, getDatabaseNameByType } = require('./lib/pkFactories')
-const { SCHEMA_CUSTOM_KEYWORDS, OBJECTID, SETCMD, aggregationConversion, PUSHCMD, PULLCMD, UNSETCMD } = require('./lib/consts')
+const {
+  aggregationConversion,
+  SCHEMA_CUSTOM_KEYWORDS,
+  OBJECTID,
+  SETCMD,
+  PUSHCMD,
+  PULLCMD,
+  UNSETCMD,
+  ADDTOSETCMD,
+} = require('./lib/consts')
 const joinPlugin = require('./lib/joinPlugin')
 const generatePathFieldsForRawSchema = require('./lib/generatePathFieldsForRawSchema')
 const { getIdType, registerMongoInstances } = require('./lib/mongo/mongo-plugin')
@@ -114,7 +123,7 @@ async function registerViewCrud(fastify, { modelName, lookups }) {
         request.body[localField] = mapLookupToObjectId(lookupReference)
       }
 
-      for (const command of [SETCMD, UNSETCMD, PUSHCMD, PULLCMD]) {
+      for (const command of [SETCMD, UNSETCMD, PUSHCMD, PULLCMD, ADDTOSETCMD]) {
         if (request?.body?.[command]?.[as]) {
           const lookupReference = request.body[command][as]
           delete request.body[command][as]
