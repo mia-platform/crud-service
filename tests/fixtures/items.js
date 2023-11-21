@@ -33,13 +33,9 @@ const updaterId = 'my-updated-id'
 
 module.exports = [
   {
-    _id: ObjectId.createFromHexString('111111111111111111111111'),
-    id_rider: ObjectId.createFromHexString('222222222222222222222222'),
-    items: [
-      ObjectId.createFromHexString('555555555555555555555555'),
-      ObjectId.createFromHexString('666666666666666666666666'),
-    ],
-    paid: true,
+    _id: ObjectId.createFromHexString('555555555555555555555555'),
+    name: 'spatzle',
+    rating: 4.9,
     [CREATEDAT]: createdAtDate,
     [CREATORID]: creatorId,
     [UPDATERID]: updaterId,
@@ -47,13 +43,9 @@ module.exports = [
     [__STATE__]: STATES.PUBLIC,
   },
   {
-    _id: ObjectId.createFromHexString('222222222222222222222222'),
-    id_rider: ObjectId.createFromHexString('333333333333333333333333'),
-    items: [
-      ObjectId.createFromHexString('555555555555555555555555'),
-      ObjectId.createFromHexString('777777777777777777777777'),
-    ],
-    paid: true,
+    _id: ObjectId.createFromHexString('666666666666666666666666'),
+    name: 'lasagna',
+    rating: 3.8,
     [CREATEDAT]: createdAtDate,
     [CREATORID]: creatorId,
     [UPDATERID]: updaterId,
@@ -61,12 +53,19 @@ module.exports = [
     [__STATE__]: STATES.PUBLIC,
   },
   {
-    _id: ObjectId.createFromHexString('333333333333333333333333'),
-    id_rider: ObjectId.createFromHexString('333333333333333333333333'),
-    items: [
-      ObjectId.createFromHexString('888888888888888888888888'),
-    ],
-    paid: true,
+    _id: ObjectId.createFromHexString('777777777777777777777777'),
+    name: 'pizza',
+    rating: 4.5,
+    [CREATEDAT]: createdAtDate,
+    [CREATORID]: creatorId,
+    [UPDATERID]: updaterId,
+    [UPDATEDAT]: updatedAtDate,
+    [__STATE__]: STATES.PUBLIC,
+  },
+  {
+    _id: ObjectId.createFromHexString('888888888888888888888888'),
+    name: 'piadina',
+    rating: 4.3,
     [CREATEDAT]: createdAtDate,
     [CREATORID]: creatorId,
     [UPDATERID]: updaterId,

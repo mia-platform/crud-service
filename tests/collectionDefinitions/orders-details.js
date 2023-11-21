@@ -78,11 +78,18 @@ module.exports = {
       name: 'items',
       type: 'Array',
       items: {
-        type: 'string',
+        type: 'ObjectId',
       },
       description: 'The item to deliver to the customer',
       required: true,
       nullable: false,
+    },
+    {
+      name: 'paid',
+      type: 'boolean',
+      description: 'Whether the order has been payed',
+      required: false,
+      nullable: true,
     },
   ],
   indexes: [

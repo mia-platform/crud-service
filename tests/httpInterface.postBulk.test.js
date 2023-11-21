@@ -777,11 +777,11 @@ tap.test('MP4-462: default state ignored on /bulk when at least one document has
     },
     orders: {
       docs: [{
-        items: ['pizza'],
+        items: ['555555555555555555555555'],
         id_rider: '111111111111111111111111',
         __STATE__: STATES.PUBLIC,
       }, {
-        items: ['pasta'],
+        items: ['777777777777777777777777'],
         id_rider: '111111111111111111111111',
       }],
     },
@@ -789,7 +789,7 @@ tap.test('MP4-462: default state ignored on /bulk when at least one document has
 
   const collections = readdirSync(path.join(__dirname, 'collectionDefinitions'))
 
-  const collectionsToSkip = ['felines.js', 'canines.js', 'store.js', 'store-open.js', 'orders-details.js']
+  const collectionsToSkip = ['felines.js', 'canines.js', 'store.js', 'store-open.js', 'orders-details.js', 'items.js', 'orders-items.js']
 
   const filteredCollections = collections.filter(collection => !collectionsToSkip.includes(collection))
 

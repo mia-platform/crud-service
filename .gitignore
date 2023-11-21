@@ -17,3 +17,4 @@ kms
 test-collections
 .npmrc
 .tap
+.local
