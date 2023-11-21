@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## 6.9.3 - 2023-11-21
+
 ### Changed
 
 - review writable views to introduce a proper support of multi-lookup references (_one-to-many relationship_), addressing the point raised in this [discussion](https://github.com/mia-platform/community/discussions/328)
