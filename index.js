@@ -25,10 +25,12 @@ const Ajv = require('ajv')
 const ajvFormats = require('ajv-formats')
 const ajvKeywords = require('ajv-keywords')
 
-const { readdirSync } = require('fs')
-const { join } = require('path')
 const lomit = require('lodash.omit')
 const lunset = require('lodash.unset')
+
+const { readdirSync } = require('fs')
+const { join } = require('path')
+const { ObjectId } = require('mongodb')
 
 const myPackage = require('./package')
 const QueryParser = require('./lib/QueryParser')
@@ -38,7 +40,16 @@ const httpInterface = require('./lib/httpInterface')
 const JSONSchemaGenerator = require('./lib/JSONSchemaGenerator')
 const createIndexes = require('./lib/createIndexes')
 const { castCollectionId, getDatabaseNameByType } = require('./lib/pkFactories')
-const { SCHEMA_CUSTOM_KEYWORDS, OBJECTID, SETCMD, aggregationConversion } = require('./lib/consts')
+const {
+  aggregationConversion,
+  SCHEMA_CUSTOM_KEYWORDS,
+  OBJECTID,
+  SETCMD,
+  PUSHCMD,
+  PULLCMD,
+  UNSETCMD,
+  ADDTOSETCMD,
+} = require('./lib/consts')
 const joinPlugin = require('./lib/joinPlugin')
 const generatePathFieldsForRawSchema = require('./lib/generatePathFieldsForRawSchema')
 const { getIdType, registerMongoInstances } = require('./lib/mongo/mongo-plugin')
@@ -106,14 +117,22 @@ async function registerViewCrud(fastify, { modelName, lookups }) {
   fastify.addHook('preHandler', (request, _reply, done) => {
     for (const { as, localField } of lookups) {
       if (request?.body?.[as]) {
-        request.body[localField] = request.body[as].value
+        const lookupReference = request.body[as]
         delete request.body[as]
+
+        request.body[localField] = mapLookupToObjectId(lookupReference)
       }
-      if (request?.body?.[SETCMD]?.[as]) {
-        request.body[SETCMD][localField] = request.body[SETCMD][as].value
-        delete request.body[SETCMD][as]
+
+      for (const command of [SETCMD, UNSETCMD, PUSHCMD, PULLCMD, ADDTOSETCMD]) {
+        if (request?.body?.[command]?.[as]) {
+          const lookupReference = request.body[command][as]
+          delete request.body[command][as]
+
+          request.body[command][localField] = mapLookupToObjectId(lookupReference)
+        }
       }
     }
+
     done()
   })
 
@@ -134,6 +153,17 @@ async function registerViewCrud(fastify, { modelName, lookups }) {
   })
 
   fastify.register(httpInterface, { prefix, registerGetters: false, registerSetters: true })
+}
+
+function mapLookupToObjectId(reference) {
+  // consider both one-to-one and one-to-many relationships
+  if (Array.isArray(reference)) {
+    return reference
+      .map(ref => (ref?.value ? new ObjectId(ref.value) : undefined))
+      .filter(Boolean)
+  }
+
+  return reference?.value ? new ObjectId(reference.value) : undefined
 }
 
 async function registerViewCrudLookup(fastify, { modelName, lookupModel }) {
@@ -306,7 +336,7 @@ async function loadModels(fastify) {
     // match one of the two, depending on the existence of schema property
     if (!collectionDefinition.schema) {
       if (!compatibilityValidate(collectionDefinition)) {
-        fastify.log.error(compatibilityValidate.errors)
+        fastify.log.error({ collection: collectionDefinition.name }, compatibilityValidate.errors)
         throw new Error(`invalid collection definition: ${JSON.stringify(compatibilityValidate.errors)}`)
       }
     } else if (!validate(collectionDefinition)) {
@@ -436,6 +466,8 @@ async function setupCruds(fastify) {
       .register(joinPlugin, { prefix: '/join' })
   }
 }
+
+/* =============================================================================== */
 
 module.exports = async function plugin(fastify, opts) {
   await fastify

@@ -22,6 +22,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - updated `@fastify/mongodb` to v8.0.0
 - updated `@fastify/multipart` to v8.0.0
 
+## 6.9.3 - 2023-11-21
+
+### Changed
+
+- review writable views to introduce a proper support of multi-lookup references (_one-to-many relationship_), addressing the point raised in this [discussion](https://github.com/mia-platform/community/discussions/328)
+- rewritten writable views documentation to clarify their motivation and configuration
+
 ## 6.9.2 - 2023-10-25
 
 ### Fixed

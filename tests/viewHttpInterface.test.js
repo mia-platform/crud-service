@@ -23,12 +23,14 @@ const { ObjectId, MongoClient } = require('mongodb')
 
 const { getHeaders } = require('./httpInterface.utils')
 const {
-  viewPrefix,
   expectedOrderDetailsViewDocsPublic,
   ordersFixture,
   ridersFixture,
   expectedRidersLookup,
 } = require('./viewUtils.utils')
+
+const itemsFixtures = require('./fixtures/items')
+const orderItemsFixtures = require('./fixtures/orders-items')
 
 const {
   getMongoDatabaseName,
@@ -41,9 +43,12 @@ const VIEWS_DEFINITION_FOLDER = path.join(__dirname, 'viewsDefinitionsLookup')
 
 tap.test('Writable views (enableLookups: true)', async t => {
   if (process.env.MONGO_VERSION <= '4.4') {
-    t.test('Lookup view not supported on Mongo version <= 4.4')
+    t.test('Writable views not supported on Mongo version <= 4.4')
     return
   }
+
+  const viewPrefix = '/orders-details-endpoint'
+
   const databaseName = getMongoDatabaseName()
   const mongoURL = getMongoURL(databaseName)
 
@@ -61,9 +66,9 @@ tap.test('Writable views (enableLookups: true)', async t => {
   const fastify = await lc39('./index', { logLevel, envVariables })
 
   t.teardown(async() => {
+    await fastify.close()
     await database.dropDatabase()
     await client.close()
-    await fastify.close()
   })
 
   const ridersCollection = database.collection('riders')
@@ -76,7 +81,8 @@ tap.test('Writable views (enableLookups: true)', async t => {
       value: newRider.value,
       label: newRider.label,
     },
-    items: ['lasagna'],
+    items: [ObjectId.createFromHexString('888888888888888888888888')],
+    paid: true,
   }
 
   t.beforeEach(async() => {
@@ -166,12 +172,12 @@ tap.test('Writable views (enableLookups: true)', async t => {
         value: newRider.value,
         label: newRider.label,
       })
-      t.strictSame(viewDoc.items, ['lasagna'])
+      t.strictSame(viewDoc.items, ['888888888888888888888888'])
       t.notHas(viewDoc, 'id_rider')
 
       const orderDoc = await ordersCollection.findOne({ _id: new ObjectId(body._id) })
       t.strictSame(orderDoc.id_rider, newRider.value)
-      t.strictSame(orderDoc.items, ['lasagna'])
+      t.strictSame(orderDoc.items, ['888888888888888888888888'])
       t.notHas(orderDoc, 'rider')
 
       t.end()
@@ -199,7 +205,7 @@ tap.test('Writable views (enableLookups: true)', async t => {
         value: newRider.value.toString(),
         label: newRider.label,
       })
-      t.strictSame(body.items, items)
+      t.strictSame(body.items, items.map(it => it.toHexString()))
 
       const viewDoc = await orderDetailsCollection.findOne({ _id })
       t.strictSame(viewDoc.rider, {
@@ -259,3 +265,187 @@ tap.test('Writable views (enableLookups: true)', async t => {
 })
 
 
+tap.test('Writable views - list of lookup references', async t => {
+  if (process.env.MONGO_VERSION <= '4.4') {
+    t.test('Writable views not supported on Mongo version <= 4.4')
+    return
+  }
+
+  const viewPrefix = '/orders-items-endpoint'
+
+  const databaseName = getMongoDatabaseName()
+  const mongoURL = getMongoURL(databaseName)
+
+  const client = await MongoClient.connect(mongoURL)
+  const database = client.db(databaseName)
+
+  const logLevel = 'silent'
+  const envVariables = {
+    MONGODB_URL: mongoURL,
+    COLLECTION_DEFINITION_FOLDER,
+    USER_ID_HEADER_KEY: 'userId',
+    VIEWS_DEFINITION_FOLDER,
+  }
+
+  const fastify = await lc39('./index', { logLevel, envVariables })
+
+  t.teardown(async() => {
+    await fastify.close()
+    await database.dropDatabase()
+    await client.close()
+  })
+
+  const itemsCollection = database.collection('items')
+  const ordersCollection = database.collection('orders')
+  const orderItemsCollection = database.collection('orders-items')
+
+  t.beforeEach(async() => {
+    try {
+      await itemsCollection.drop()
+      await ordersCollection.drop()
+    } catch (error) { /* NOOP - ignore errors when a resource is missing*/
+    }
+
+    await ordersCollection.insertMany(ordersFixture)
+    await itemsCollection.insertMany(itemsFixtures)
+  })
+
+  t.test('HTTP GET /orders-items-endpoint/', async t => {
+    const tests = [
+      {
+        name: 'without filters',
+        url: '/',
+        acl_rows: undefined,
+        found: orderItemsFixtures.response,
+      },
+      {
+        name: 'with filter regex',
+        url: `/?_q=${JSON.stringify({ 'items.label': { $regex: 'piz', $options: 'i' } })}`,
+        acl_rows: undefined,
+        found: [orderItemsFixtures.response[1]],
+      },
+    ]
+
+    tests.forEach(testConf => {
+      const { name, found, ...conf } = testConf
+
+      t.test(name, async t => {
+        const response = await fastify.inject({
+          method: 'GET',
+          url: viewPrefix + conf.url,
+          headers: getHeaders(conf),
+        })
+
+        t.test('should return 200', t => {
+          t.strictSame(response.statusCode, 200)
+          t.end()
+        })
+
+        t.test('should return "application/json"', t => {
+          t.strictSame(response.headers['content-type'], 'application/json')
+          t.end()
+        })
+
+        t.test('should return the document', t => {
+          t.strictSame(JSON.parse(response.payload), found)
+          t.end()
+        })
+
+        t.end()
+      })
+    })
+
+    t.test('should keep the document as is in database', async t => {
+      const documents = await orderItemsCollection.find().toArray()
+      t.strictSame(documents, orderItemsFixtures.documents)
+      t.end()
+    })
+  })
+
+  t.test('HTTP POST /orders-items-endpoint/', async t => {
+    t.test('with items object list instead of ids list', async t => {
+      const response = await fastify.inject({
+        method: 'POST',
+        url: `${viewPrefix}/`,
+        payload: {
+          items: [{
+            value: '888888888888888888888888',
+            label: 'piadina',
+          }],
+          paid: false,
+        },
+      })
+
+      t.strictSame(response.statusCode, 200)
+
+      const body = JSON.parse(response.payload)
+      const viewDoc = await orderItemsCollection.findOne({ _id: new ObjectId(body._id) })
+      t.strictSame(viewDoc.items, [
+        {
+          value: ObjectId.createFromHexString('888888888888888888888888'),
+          label: 'piadina',
+        }]
+      )
+      t.strictSame(viewDoc.paid, false)
+
+      const orderDoc = await ordersCollection.findOne({ _id: new ObjectId(body._id) })
+      t.notHas(orderDoc, 'id_rider')
+      t.strictSame(orderDoc.items, [ObjectId.createFromHexString('888888888888888888888888')])
+      t.strictSame(orderDoc.paid, false)
+
+      t.end()
+    })
+  })
+
+  t.test('HTTP PATCH /orders-items-endpoint/', async t => {
+    t.test('with items object list instead of ids list', async t => {
+      const [orderItems] = orderItemsFixtures.response
+
+      const response = await fastify.inject({
+        method: 'PATCH',
+        url: `${viewPrefix}/${orderItems._id}`,
+        payload: {
+          $push: {
+            items: {
+              value: '888888888888888888888888',
+              label: 'piadina',
+            },
+          },
+        },
+      })
+
+      t.strictSame(response.statusCode, 200)
+
+      const body = JSON.parse(response.payload)
+      t.strictSame(
+        body.items,
+        [
+          { value: '555555555555555555555555', label: 'spatzle' },
+          { value: '666666666666666666666666', label: 'lasagna' },
+          { value: '888888888888888888888888', label: 'piadina' },
+        ]
+      )
+
+      const viewDoc = await orderItemsCollection.findOne({ _id: new ObjectId(orderItems._id) })
+      t.strictSame(
+        viewDoc.items,
+        [
+          { value: ObjectId.createFromHexString('555555555555555555555555'), label: 'spatzle' },
+          { value: ObjectId.createFromHexString('666666666666666666666666'), label: 'lasagna' },
+          { value: ObjectId.createFromHexString('888888888888888888888888'), label: 'piadina' },
+        ]
+      )
+      t.strictSame(viewDoc.paid, true)
+
+      const orderDoc = await ordersCollection.findOne({ _id: new ObjectId(orderItems._id) })
+      t.strictSame(orderDoc.items, [
+        ObjectId.createFromHexString('555555555555555555555555'),
+        ObjectId.createFromHexString('666666666666666666666666'),
+        ObjectId.createFromHexString('888888888888888888888888'),
+      ])
+      t.strictSame(orderDoc.paid, true)
+
+      t.end()
+    })
+  })
+})

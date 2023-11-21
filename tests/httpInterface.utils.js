@@ -124,8 +124,9 @@ async function setUpMultipleCollectionTest(t, testFixtures, mongoDBCollectionNam
   const fastify = await lc39('./index', { logLevel, envVariables, exposeMetrics: false })
 
   t.teardown(async() => {
-    await client.close()
     await fastify.close()
+    await database.dropDatabase()
+    await client.close()
   })
 
   return { fastify, collections, database }

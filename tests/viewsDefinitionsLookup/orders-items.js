@@ -17,17 +17,22 @@
 'use strict'
 
 module.exports = {
-  name: 'orders-details',
+  name: 'orders-items',
   source: 'orders',
   type: 'view',
   enableLookup: true,
   pipeline: [
     {
+      $match: {
+        __STATE__: 'PUBLIC',
+      },
+    },
+    {
       $lookup: {
-        from: 'riders',
-        localField: 'id_rider',
+        from: 'items',
+        localField: 'items',
         foreignField: '_id',
-        as: 'rider',
+        as: 'items',
         pipeline: [
           {
             $project: {
@@ -35,20 +40,10 @@ module.exports = {
               value: {
                 $toObjectId: '$_id',
               },
-              label: {
-                $toString: {
-                  $concat: ['$name', ' ', '$surname'],
-                },
-              },
+              label: { $toString: '$name' },
             },
           },
         ],
-      },
-    },
-    {
-      $unwind: {
-        path: '$rider',
-        preserveNullAndEmptyArrays: true,
       },
     },
     {
@@ -58,7 +53,6 @@ module.exports = {
         updatedAt: 1,
         creatorId: 1,
         createdAt: 1,
-        rider: 1,
         items: 1,
         paid: 1,
 
