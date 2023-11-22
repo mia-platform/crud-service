@@ -38,6 +38,7 @@ Below you can find all the environment variables that you can edit.
 | ENABLE_TRACING                  | Boolean | Optional | `false`                                   | Specifies if OpenTelemetry tracing should be enabled. It is possible to find more documentation [here](https://docs.mia-platform.eu/docs/runtime_suite_libraries/lc39/main-entrypoint#opentelemetry-tracing-experimental) |
 | ENABLE_STRICT_OUTPUT_VALIDATION | Boolean | Optional | `false`                                   | Specifies whether service responses should be strict compliant with the schema (when enabled the service would fail to return values in case underlying collection contains documents not compliant with the schema)      |
 | MAX_MULTIPART_FILE_BYTES        | Number  | Optional | 100                                       | Sets the max size (Mb) that is possible to process in multipart requests                                                                                                                                                  |
+| MONGODB_MAX_IDLE_TIME_MS        | Number  | Optional | 0                                         | Controls tbe MongoDB `maxIdleTimeMs` connection option (default set to 0 for backward compatibility, meaning the opened connection remain opened indefinitely) |
 
 :::warning
 Using `ALLOW_DISK_USE_IN_QUERIES` (either with `true` or `false` values) with a MongoDB version lower than 4.4 will make all the GET calls unusable since the MongoDB cluster will raise an error for the unrecognized option `allowDiskUse`.
