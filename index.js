@@ -24,8 +24,11 @@ const lunset = require('lodash.unset')
 const { readdirSync } = require('fs')
 const { join } = require('path')
 const { ObjectId } = require('mongodb')
+const { JSONPath } = require('jsonpath-plus')
 
 const myPackage = require('./package')
+const fastifyEnvSchema = require('./envSchema')
+
 const httpInterface = require('./lib/httpInterface')
 const { castCollectionId } = require('./lib/pkFactories')
 const {
@@ -38,10 +41,7 @@ const {
 } = require('./lib/consts')
 const joinPlugin = require('./lib/joinPlugin')
 const { registerMongoInstances } = require('./lib/mongo/mongo-plugin')
-
-const fastifyEnvSchema = require('./envSchema')
 const { getAjvResponseValidationFunction } = require('./lib/validatorGetters')
-const { JSONPath } = require('jsonpath-plus')
 const { pointerSeparator } = require('./lib/JSONPath.utils')
 const loadModels = require('./lib/loadModels')
 
