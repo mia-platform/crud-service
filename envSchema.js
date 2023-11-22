@@ -40,6 +40,7 @@ const noCryptSchema = {
 
 const properties = {
   MONGODB_URL: { type: 'string', description: 'the mongodb connection string' },
+  MONGODB_MAX_IDLE_TIME_MS: { type: 'number', description: 'idle time (in ms) to control the MongoDB maxIdleTimeMs connection option (default: 0, meaning there is no max idle time and connection remain open indefinitely)', default: 0 },
   COLLECTION_DEFINITION_FOLDER: { type: 'string', description: 'a path where all collections are defined' },
   VIEWS_DEFINITION_FOLDER: { type: 'string', description: 'a path where all views are defined' },
   USER_ID_HEADER_KEY: { type: 'string', description: 'Header key used to know which user makes the request' },
