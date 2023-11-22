@@ -9,7 +9,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
-- `MONGODB_MAX_IDLE_TIME_MS` env to control MongoDB `maxIdleTimeMs` connection option (default set to 0 for backward compatibility, meaning the opened connection remain opened indefinitely)
+- [#225](https://github.com/mia-platform/crud-service/pull/225): `MONGODB_MAX_IDLE_TIME_MS` env to control MongoDB `maxIdleTimeMs` connection option (default set to 0 for backward compatibility, meaning the opened connection remain opened indefinitely)
+
+### Fixed
+
+- [#227](https://github.com/mia-platform/crud-service/pull/227): create indexes limiting promises concurrency to prevent connection creation spikes at boot
 
 ## 6.9.3 - 2023-11-21
 
