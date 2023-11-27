@@ -14,62 +14,39 @@
  * limitations under the License.
  */
 
-/* eslint-disable no-await-in-loop */
 'use strict'
 
 const fp = require('fastify-plugin')
 const fastifyEnv = require('@fastify/env')
 const fastifyMultipart = require('@fastify/multipart')
 
-const Ajv = require('ajv')
 const ajvFormats = require('ajv-formats')
-const ajvKeywords = require('ajv-keywords')
-
-const lomit = require('lodash.omit')
 const lunset = require('lodash.unset')
 
 const { readdirSync } = require('fs')
 const { join } = require('path')
 const { ObjectId } = require('mongodb')
+const { JSONPath } = require('jsonpath-plus')
 
 const myPackage = require('./package')
-const QueryParser = require('./lib/QueryParser')
-const CrudService = require('./lib/CrudService')
-const AdditionalCaster = require('./lib/AdditionalCaster')
+const fastifyEnvSchema = require('./envSchema')
+
 const httpInterface = require('./lib/httpInterface')
-const JSONSchemaGenerator = require('./lib/JSONSchemaGenerator')
-const createIndexes = require('./lib/createIndexes')
-const { castCollectionId, getDatabaseNameByType } = require('./lib/pkFactories')
+const loadModels = require('./lib/loadModels')
+const joinPlugin = require('./lib/joinPlugin')
+
+const { castCollectionId } = require('./lib/pkFactories')
 const {
-  aggregationConversion,
   SCHEMA_CUSTOM_KEYWORDS,
-  OBJECTID,
   SETCMD,
   PUSHCMD,
   PULLCMD,
   UNSETCMD,
   ADDTOSETCMD,
 } = require('./lib/consts')
-const joinPlugin = require('./lib/joinPlugin')
-const generatePathFieldsForRawSchema = require('./lib/generatePathFieldsForRawSchema')
-const { getIdType, registerMongoInstances } = require('./lib/mongo/mongo-plugin')
-const mergeViewsInCollections = require('./lib/mergeViewsInCollections')
-
-const { compatibilityModelJsonSchema, modelJsonSchema } = require('./lib/model.jsonschema')
-const fastifyEnvSchema = require('./envSchema')
+const { registerMongoInstances } = require('./lib/mongo/mongo-plugin')
 const { getAjvResponseValidationFunction } = require('./lib/validatorGetters')
-const { JSONPath } = require('jsonpath-plus')
 const { pointerSeparator } = require('./lib/JSONPath.utils')
-
-const ajv = new Ajv({ useDefaults: true })
-ajvFormats(ajv)
-ajvKeywords(ajv)
-
-const compatibilityValidate = ajv.compile(compatibilityModelJsonSchema)
-const validate = ajv.compile(modelJsonSchema)
-
-const PREFIX_OF_INDEX_NAMES_TO_PRESERVE = 'preserve_'
-const VIEW_TYPE = 'view'
 
 async function registerCrud(fastify, { modelName, isView }) {
   if (!fastify.mongo) { throw new Error('`fastify.mongo` is undefined!') }
@@ -226,216 +203,6 @@ async function iterateOverCollectionDefinitionAndRegisterCruds(fastify) {
       isView,
     })
   }
-}
-
-function buildModelDependencies(fastify, collectionDefinition, collection) {
-  const {
-    defaultState,
-  } = collectionDefinition
-
-  const allFieldNames = collectionDefinition.fields
-    ? collectionDefinition.fields.map(field => field.name)
-    : Object.keys(collectionDefinition.schema.properties)
-  const pathsForRawSchema = generatePathFieldsForRawSchema(fastify.log, collectionDefinition)
-
-  // TODO: make this configurable
-  const crudService = new CrudService(
-    collection,
-    defaultState,
-    { allowDiskUse: fastify.config.ALLOW_DISK_USE_IN_QUERIES },
-  )
-  const queryParser = new QueryParser(collectionDefinition, pathsForRawSchema)
-  const additionalCaster = new AdditionalCaster(collectionDefinition)
-  const jsonSchemaGenerator = new JSONSchemaGenerator(
-    collectionDefinition,
-    {},
-    fastify.config.CRUD_LIMIT_CONSTRAINT_ENABLED,
-    fastify.config.CRUD_MAX_LIMIT,
-    fastify.config.ENABLE_STRICT_OUTPUT_VALIDATION
-  )
-  const jsonSchemaGeneratorWithNested = new JSONSchemaGenerator(
-    collectionDefinition,
-    pathsForRawSchema,
-    fastify.config.CRUD_LIMIT_CONSTRAINT_ENABLED,
-    fastify.config.CRUD_MAX_LIMIT
-  )
-
-  return {
-    crudService,
-    queryParser,
-    castResultsAsStream: () => additionalCaster.castResultsAsStream(),
-    castItem: (item) => additionalCaster.castItem(item),
-    allFieldNames,
-    jsonSchemaGenerator,
-    jsonSchemaGeneratorWithNested,
-  }
-}
-
-function createLookupModel(fastify, viewDefinition, mergedCollections) {
-  const lookupModels = []
-  const viewLookups = viewDefinition.pipeline
-    .filter(pipeline => '$lookup' in pipeline)
-    .map(lookup => Object.values(lookup).shift())
-
-  for (const lookup of viewLookups) {
-    const { from, pipeline } = lookup
-    const lookupCollection = mergedCollections.find(({ name }) => name === from)
-    const lookupIdType = getIdType(lookupCollection)
-    const lookupCollectionMongo = fastify.mongo[getDatabaseNameByType(lookupIdType)].db.collection(from)
-
-    const lookupProjection = pipeline?.find(({ $project }) => $project)?.$project ?? {}
-    const parsedLookupProjection = []
-    const lookupCollectionDefinition = {
-      ...lomit(viewDefinition, ['fields']),
-      schema: {
-        type: 'object',
-        properties: {},
-        required: [],
-      },
-    }
-
-    Object.entries(lookupProjection)
-      .forEach(([fieldName, schema]) => {
-        parsedLookupProjection.push({ [fieldName]: schema })
-        const conversion = Object.keys(schema).shift()
-        if (schema !== 0) {
-          if (!aggregationConversion[conversion]) {
-            throw new Error(`Invalid view lookup definition: no explicit type found in ${JSON.stringify({ [fieldName]: schema })}`)
-          }
-          lookupCollectionDefinition.schema.properties[fieldName] = {
-            type: aggregationConversion[conversion],
-          }
-        }
-      })
-
-    const lookupModel = {
-      ...buildModelDependencies(fastify, lookupCollectionDefinition, lookupCollectionMongo),
-      definition: lookupCollectionDefinition,
-      lookup,
-      parsedLookupProjection,
-    }
-    lookupModels.push(lookupModel)
-  }
-  return lookupModels
-}
-
-// eslint-disable-next-line max-statements
-async function loadModels(fastify) {
-  const { collections, views = [] } = fastify
-  const mergedCollections = mergeViewsInCollections(collections, views)
-
-  fastify.log.trace({ collectionNames: mergedCollections.map(coll => coll.name) }, 'Registering CRUDs and Views')
-
-  const models = {}
-  const existingStringCollection = []
-  const existingObjectIdCollection = []
-
-  // eslint-disable-next-line max-statements
-  const promises = mergedCollections.map(async(collectionDefinition) => {
-    // avoid validating the collection definition twice, since it would only
-    // match one of the two, depending on the existence of schema property
-    if (!collectionDefinition.schema) {
-      if (!compatibilityValidate(collectionDefinition)) {
-        fastify.log.error({ collection: collectionDefinition.name }, compatibilityValidate.errors)
-        throw new Error(`invalid collection definition: ${JSON.stringify(compatibilityValidate.errors)}`)
-      }
-    } else if (!validate(collectionDefinition)) {
-      fastify.log.error(validate.errors)
-      throw new Error(`invalid collection definition: ${JSON.stringify(validate.errors)}`)
-    }
-
-    const {
-      source: viewSourceCollectionName,
-      name: collectionName,
-      endpointBasePath: collectionEndpoint,
-      type,
-      indexes = [],
-      enableLookup,
-      source,
-      pipeline,
-    } = collectionDefinition ?? {}
-    const isView = type === VIEW_TYPE
-    const viewLookupsEnabled = isView && enableLookup
-
-    fastify.log.trace({ collectionEndpoint, collectionName }, 'Registering CRUD')
-
-    const collectionIdType = getIdType(collectionDefinition)
-    const collection = await fastify
-      .mongo[getDatabaseNameByType(collectionIdType)]
-      .db
-      .collection(collectionName)
-    const modelDependencies = buildModelDependencies(fastify, collectionDefinition, collection)
-
-    let viewDependencies = {}
-    if (viewLookupsEnabled) {
-      const sourceCollection = mergedCollections.find(mod => mod.name === viewSourceCollectionName)
-      const sourceCollectionDependencies = buildModelDependencies(fastify, sourceCollection)
-
-      const viewIdType = getIdType(sourceCollection)
-      const sourceCollectionMongo = await fastify
-        .mongo[getDatabaseNameByType(viewIdType)]
-        .db
-        .collection(viewSourceCollectionName)
-      viewDependencies = buildModelDependencies(fastify, collectionDefinition, sourceCollectionMongo)
-      viewDependencies.queryParser = sourceCollectionDependencies.queryParser
-      viewDependencies.allFieldNames = sourceCollectionDependencies.allFieldNames
-      viewDependencies.lookupsModels = createLookupModel(fastify, collectionDefinition, mergedCollections)
-    }
-
-    models[getCollectionNameFromEndpoint(collectionEndpoint)] = {
-      definition: collectionDefinition,
-      ...modelDependencies,
-      viewDependencies,
-      isView,
-      viewLookupsEnabled,
-    }
-
-    if (isView) {
-      const existingCollections = collectionIdType === OBJECTID ? existingObjectIdCollection : existingStringCollection
-      if (existingCollections.length === 0) {
-        existingCollections.push(
-          ...(
-            await fastify
-              .mongo[getDatabaseNameByType(collectionIdType)]
-              .db
-              .listCollections({}, { nameOnly: true })
-              .toArray()
-          )
-            .filter(({ type: collectionType }) => collectionType === VIEW_TYPE)
-            .map(({ name }) => name)
-        )
-      }
-
-      if (existingCollections.includes(collectionName)) {
-        await fastify
-          .mongo[getDatabaseNameByType(collectionIdType)]
-          .db
-          .collection(collectionName)
-          .drop()
-      }
-
-      return fastify
-        .mongo[getDatabaseNameByType(collectionIdType)]
-        .db
-        .createCollection(
-          collectionName,
-          {
-            viewOn: source,
-            pipeline,
-          }
-        )
-    }
-
-    return createIndexes(collection, indexes, PREFIX_OF_INDEX_NAMES_TO_PRESERVE)
-  })
-  while (promises.length) {
-    await Promise.all(promises.splice(0, 5))
-  }
-  fastify.decorate('models', models)
-}
-
-function getCollectionNameFromEndpoint(endpointBasePath) {
-  return endpointBasePath.replace('/', '').replace(/\//g, '-')
 }
 
 const validCrudFolder = path => !['.', '..'].includes(path) && /\.js(on)?$/.test(path)

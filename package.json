@@ -1,6 +1,6 @@
 {
   "name": "@mia-platform/crud-service",
-  "version": "6.9.3",
+  "version": "6.9.4",
   "description": "HTTP interface to perform CRUD operations on MongoDB collections defined in the API Console",
   "homepage": "https://www.mia-platform.eu/",
   "bugs": {
@@ -49,6 +49,7 @@
     "lodash.unset": "^4.5.2",
     "mongodb-client-encryption": "^6.0.0",
     "ndjson": "^2.0.0",
+    "p-limit": "^3.1.0",
     "pino": "^8.16.2",
     "through2": "^4.0.2",
     "uuid": "^9.0.1"

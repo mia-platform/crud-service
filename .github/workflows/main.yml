@@ -5,6 +5,7 @@ on:
   pull_request:
     branches:
       - main
+      - v6.x
     paths:
       - ".github/workflows/**"
       - "lib/**"

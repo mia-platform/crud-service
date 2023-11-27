@@ -226,7 +226,7 @@ The CRUD service offers the functionality to modify a view by editing the underl
 
 To enable this feature, you need to include the `enableLookup: true` property in the view configuration JSON. By default, this setting is set to false.
 
-For more information on correctly configuring and understanding the capabilities of writable views, please refer to the [writable views documentation](./docs/50_Writable_views.md).
+For more information on correctly configuring and understanding the capabilities of writable views, please refer to the [writable views documentation](./docs/50_Writable_Views.md).
 
 ### Headers
 
