@@ -898,7 +898,7 @@ tap.test('HTTP GET / ', async t => {
 
   t.test('serialize correctly data on GET (a string should be casted to number to match schema)', async t => {
     const DOC = {
-      ...fixtures[0],
+      ...fixtures[1],
       // expected to be casted to number
       price: '44',
       ignoreMe: 'expect to be ignored',
