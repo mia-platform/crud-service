@@ -202,6 +202,12 @@ tap.test('HTTP GET /', async t => {
       found: HTTP_PUBLIC_FIXTURES.filter(f => f.price > 20 && !f.additionalInfo),
     },
     {
+      name: 'with stringified ISO Date in query filter',
+      url: `/?_q=${JSON.stringify({ 'editionsDates.date': { $lt: new Date('2020').toISOString() } })}`,
+      acl_rows: undefined,
+      found: HTTP_PUBLIC_FIXTURES.filter(f => Boolean(f.editionsDates)),
+    },
+    {
       name: 'with filter by additionalInfo nested with dot notation',
       url: `/?_q=${JSON.stringify({ 'additionalInfo.notes.mynote': 'good' })}`,
       acl_rows: undefined,
