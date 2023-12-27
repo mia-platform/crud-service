@@ -306,6 +306,15 @@ module.exports = {
             'items': {
               'type': 'object',
               'additionalProperties': true,
+              'properties': {
+                'edition': {
+                  'type': 'number',
+                },
+                'date': {
+                  'type': 'string',
+                  'format': 'date-time',
+                },
+              },
               'nullable': true,
             },
             'nullable': true,
@@ -313,6 +322,15 @@ module.exports = {
           {
             'type': 'object',
             'additionalProperties': true,
+            'properties': {
+              'edition': {
+                'type': 'number',
+              },
+              'date': {
+                'type': 'string',
+                'format': 'date-time',
+              },
+            },
             'nullable': true,
           },
         ],
