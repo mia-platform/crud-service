@@ -222,7 +222,7 @@ module.exports = {
         schema: {
           properties: {
             edition: { type: 'number' },
-            date: { type: 'string', format: 'date' },
+            date: { type: 'string', format: 'date-time' },
           },
           additionalProperties: true,
         },
