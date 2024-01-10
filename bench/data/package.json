@@ -1,0 +1,17 @@
+{
+  "name": "data-generaotr",
+  "version": "1.0.0",
+  "description": "generate a batch of data into the specified collection",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js -c mongodb://localhost:27017/bench-test -d bench-test -cl users -s 5 -u 100 -b 1000"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "SEE LICENSE IN LICENSE",
+  "dependencies": {
+    "@faker-js/faker": "^8.3.1",
+    "commander": "^11.1.0",
+    "mongodb": "^6.3.0"
+  }
+}

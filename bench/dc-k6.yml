@@ -1,0 +1,16 @@
+services:
+  k6:
+    image: grafana/k6:0.48.0
+    deploy:
+      resources:
+        limits:
+          memory: 4Gb
+          cpus: "2"
+    volumes:
+      - ${PWD}/scripts:/app
+    networks:
+      - k6-net
+    command: [ "run", "/app/runner.js" ]
+
+networks:
+  k6-net:
