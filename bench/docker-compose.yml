@@ -37,7 +37,7 @@ services:
       - "-c"
       - mongorestore --uri="mongodb://database:27017" --drop --maintainInsertionOrder --gzip
     volumes:
-      - ${PWD}/data/dump:/dump
+      - ./data/dump:/dump
 
   crud-service:
     image: crud-service:latest
@@ -67,8 +67,8 @@ services:
       CRUD_MAX_LIMIT: 200
       MONGODB_URL: "mongodb://database:27017/bench-test"
     volumes:
-      - ${PWD}/collections:/home/node/app/collections
-      - ${PWD}/scripts/healthcheck.js:/home/node/app/healthcheck/healthcheck.js
+      - ./collections:/home/node/app/collections
+      - ./scripts/healthcheck.js:/home/node/app/healthcheck/healthcheck.js
     healthcheck:
       test: [ "CMD-SHELL", "node /home/node/app/healthcheck/healthcheck.js" ]
       interval: 10s

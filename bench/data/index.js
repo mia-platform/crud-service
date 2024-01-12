@@ -68,15 +68,21 @@ async function generateData(options) {
 }
 
 function getUser(shopIds) {
+  const firstName = faker.person.firstName()
+  const lastName = faker.person.lastName()
+  // email is generated manually to ensure unicity
+  const email = `${firstName}.${lastName}.${faker.number.int({ max: 99 })}@email.com`
+
+
   return {
     updaterId: faker.string.uuid(),
     updatedAt: faker.date.recent(),
     creatorId: faker.string.uuid(),
     createdAt: faker.date.past(),
     __STATE__: 'PUBLIC',
-    firstName: faker.person.firstName(),
-    lastName: faker.person.lastName(),
-    email: faker.internet.email(),
+    firstName,
+    lastName,
+    email,
     birthDate: faker.date.birthdate(),
     bio: faker.hacker.phrase(),
     shopID: faker.number.int({ min: 1, max: shopIds }),

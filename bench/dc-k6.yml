@@ -1,16 +1,28 @@
 services:
-  k6:
+  k6-smoke-test:
     image: grafana/k6:0.48.0
     deploy:
       resources:
         limits:
-          memory: 4Gb
-          cpus: "2"
+          memory: 512Mb
+          cpus: "1"
     volumes:
-      - ${PWD}/scripts:/app
+      - ./scripts:/app
     networks:
       - k6-net
-    command: [ "run", "/app/runner.js" ]
+    command: [ "run", "/app/customers/spike-test.js" ]
+  # k6-stress-test:
+  #   image: grafana/k6:0.48.0
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         memory: 512Mb
+  #         cpus: "1"
+  #   volumes:
+  #     - ./scripts:/app
+  #   networks:
+  #     - k6-net
+  #   command: [ "run", "/app/customers/stress-test.js" ]  
 
 networks:
   k6-net:

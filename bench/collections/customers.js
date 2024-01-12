@@ -17,8 +17,8 @@
 'use strict'
 
 module.exports = {
-  name: 'users',
-  endpointBasePath: '/users',
+  name: 'customers',
+  endpointBasePath: '/customers',
   defaultState: 'PUBLIC',
   fields: [
     {
@@ -57,6 +57,12 @@ module.exports = {
       required: true,
     },
     {
+      name: 'customerId',
+      type: 'string',
+      required: true,
+      nullable: false,
+    },
+    {
       name: 'firstName',
       type: 'string',
       required: true,
@@ -69,20 +75,85 @@ module.exports = {
       nullable: false,
     },
     {
+      name: 'gender',
+      type: 'string',
+      required: true,
+      nullable: false,
+    },
+    {
+      name: 'birthDate',
+      type: 'Date',
+      required: true,
+      nullable: false,
+    },
+    {
+      name: 'creditCardDetail',
+      type: 'RawObject',
+      required: true,
+      nullable: false,
+      schema: {
+        properties: {
+          name: { type: 'string' },
+          cardNo: { type: 'number' },
+          expirationDate: { type: 'string' },
+          cvv: { type: 'string' },
+        },
+        required: ['name', 'cardNo', 'expirationDate', 'cardCode'],
+      },
+    },
+    {
+      name: 'canBeContacted',
+      type: 'boolean',
+      required: false,
+      nullable: false,
+    },
+    {
       name: 'email',
       type: 'string',
       required: true,
       nullable: false,
     },
     {
-      name: 'bio',
+      name: 'phoneNumber',
       type: 'string',
       required: false,
       nullable: false,
     },
     {
-      name: 'birthDate',
-      type: 'Date',
+      name: 'address',
+      type: 'RawObject',
+      required: false,
+      nullable: true,
+      schema: {
+        properties: {
+          line: { type: 'string' },
+          city: { type: 'string' },
+          county: { type: 'string' },
+          country: { type: 'string' },
+        },
+        required: ['line', 'city', 'county', 'country'],
+      },
+    },
+    {
+      name: 'socialNetworkProfiles',
+      type: 'RawObject',
+      required: false,
+      nullable: true,
+      schema: {
+        properties: {
+          'twitter': { type: 'string' },
+          'instagram': { type: 'string' },
+          'facebook': { type: 'string' },
+          'threads': { type: 'string' },
+          'reddit': { type: 'string' },
+          'linkedin': { type: 'string' },
+          'tiktok': { type: 'string' },
+        },
+      },
+    },
+    {
+      name: 'subscriptionNumber',
+      type: 'string',
       required: true,
       nullable: false,
     },
@@ -93,20 +164,30 @@ module.exports = {
       nullable: false,
     },
     {
-      name: 'subscriptionNumber',
-      type: 'string',
+      name: 'purchasesCount',
+      type: 'number',
       required: true,
       nullable: false,
     },
     {
       name: 'purchases',
-      type: 'number',
-      required: false,
-      nullable: false,
+      type: 'Array',
+      items: {
+        type: 'RawObject',
+        schema: {
+          properties: {
+            name: { type: 'string' },
+            category: { type: 'string' },
+            price: { type: 'number' },
+            employeeId: { type: 'string' },
+            boughtOnline: { type: 'boolean' },
+          },
+        },
+      },
     },
     {
-      name: 'happy',
-      type: 'boolean',
+      name: 'details',
+      type: 'string',
       required: false,
       nullable: false,
     },
@@ -149,16 +230,16 @@ module.exports = {
         },
       ],
     },
-    // {
-    //   name: 'email',
-    //   type: 'normal',
-    //   unique: true,
-    //   fields: [
-    //     {
-    //       name: 'email',
-    //       order: 1,
-    //     },
-    //   ],
-    // },
+    {
+      name: 'customerId',
+      type: 'normal',
+      unique: true,
+      fields: [
+        {
+          name: 'customerId',
+          order: 1,
+        },
+      ],
+    },
   ],
 }
