@@ -17,8 +17,8 @@
 'use strict'
 
 module.exports = {
-  name: 'users',
-  endpointBasePath: '/users',
+  name: 'items',
+  endpointBasePath: '/items',
   defaultState: 'PUBLIC',
   fields: [
     {
@@ -57,58 +57,56 @@ module.exports = {
       required: true,
     },
     {
-      name: 'firstName',
-      type: 'string',
-      required: true,
-      nullable: false,
-    },
-    {
-      name: 'lastName',
-      type: 'string',
-      required: true,
-      nullable: false,
-    },
-    {
-      name: 'email',
-      type: 'string',
-      required: true,
-      nullable: false,
-    },
-    {
-      name: 'bio',
+      name: 'string',
       type: 'string',
       required: false,
-      nullable: false,
+      nullable: true,
     },
     {
-      name: 'birthDate',
-      type: 'Date',
-      required: true,
-      nullable: false,
-    },
-    {
-      name: 'shopID',
-      type: 'number',
-      required: true,
-      nullable: false,
-    },
-    {
-      name: 'subscriptionNumber',
-      type: 'string',
-      required: true,
-      nullable: false,
-    },
-    {
-      name: 'purchases',
+      name: 'number',
       type: 'number',
       required: false,
-      nullable: false,
+      nullable: true,
     },
     {
-      name: 'happy',
+      name: 'boolean',
       type: 'boolean',
       required: false,
-      nullable: false,
+      nullable: true,
+    },
+    {
+      name: 'date',
+      type: 'Date',
+      required: false,
+      nullable: true,
+    },
+    {
+      name: 'object',
+      type: 'RawObject',
+      required: false,
+      nullable: true,
+      schema: {
+        properties: {
+          string: { type: 'string' },
+          number: { type: 'number' },
+          boolean: { type: 'boolean' },
+          counter: { type: 'number' },
+        },
+      },
+    },
+    {
+      name: 'array',
+      type: 'Array',
+      items: {
+        type: 'RawObject',
+        schema: {
+          properties: {
+            string: { type: 'string' },
+            number: { type: 'number' },
+            boolean: { type: 'boolean' },
+          },
+        },
+      },
     },
   ],
   indexes: [
@@ -135,27 +133,12 @@ module.exports = {
       ],
     },
     {
-      name: 'exportIndex',
+      name: 'stringIndex',
       type: 'normal',
       unique: false,
       fields: [
         {
-          name: 'shopID',
-          order: 1,
-        },
-        {
-          name: '__STATE__',
-          order: 1,
-        },
-      ],
-    },
-    {
-      name: 'email',
-      type: 'normal',
-      unique: true,
-      fields: [
-        {
-          name: 'email',
+          name: 'string',
           order: 1,
         },
       ],
