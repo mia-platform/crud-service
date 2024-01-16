@@ -7,7 +7,7 @@ const { faker } = require('@faker-js/faker')
 
 const { version, description } = require('./package.json')
 
-function generateCustomer({ index, shopCount }) {
+function generateCustomers({ index, shopCount }) {
   const firstName = faker.person.firstName()
   const lastName = faker.person.lastName()
 
@@ -76,20 +76,6 @@ function generateCustomer({ index, shopCount }) {
   }
 }
 
-async function main() {
-  const program = new Command()
-
-  program.version(version)
-
-  program
-    .description(description)
-    .requiredOption('-c, --connection-string <string>', 'MongoDB connection string')
-    .requiredOption('-d, --database <database>', 'MongoDB database name')
-    .action(generateData)
-
-  await program.parseAsync()
-}
-
 async function generateData(options) {
   const {
     connectionString,
@@ -115,7 +101,7 @@ async function generateData(options) {
 
       const users = []
       for (let j = 0; j < numberToGenerate; j++) {
-        users.push(generateCustomer({ index: j + i, shopCount }))
+        users.push(generateCustomers({ index: j + i, shopCount }))
       }
 
       // eslint-disable-next-line no-await-in-loop
@@ -129,6 +115,20 @@ async function generateData(options) {
   } finally {
     await mongo.close()
   }
+}
+
+async function main() {
+  const program = new Command()
+
+  program.version(version)
+
+  program
+    .description(description)
+    .requiredOption('-c, --connection-string <string>', 'MongoDB connection string')
+    .requiredOption('-d, --database <database>', 'MongoDB database name')
+    .action(generateData)
+
+  await program.parseAsync()
 }
 
 if (require.main === module) {
