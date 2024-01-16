@@ -2,6 +2,14 @@ import http from 'k6/http';
 import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.2/index.js';
 import { check, group, sleep } from 'k6';
 
+// 
+// Test on collection "customers"
+// Type of test: spike test
+// 
+// 5 concurrent users for the first 5 seconds
+// Then number of users rise to 500 in a 20-seconds span
+// Before to cool down to 5 users in 20 seconds to conclude the test
+// 
 
 export const options = {
     stages: [

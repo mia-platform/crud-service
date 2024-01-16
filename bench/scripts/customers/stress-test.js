@@ -2,6 +2,15 @@ import http from 'k6/http';
 import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.2/index.js';
 import { check, group, sleep } from 'k6';
 
+// 
+// Test on collection "customers"
+// Type of test: stress test
+// 
+// 5 concurrent users for the first 5 seconds
+// Then number of users rise to 200 in a 10-seconds span
+// It stays high for 45 seconds
+// Then it goes back to 5 users in 30 seconds to conclude the test
+// 
 
 export const options = {
     stages: [

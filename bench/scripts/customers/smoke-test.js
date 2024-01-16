@@ -2,16 +2,21 @@ import http from 'k6/http';
 import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.2/index.js';
 import { check, group, sleep } from 'k6';
 
+// 
+// Test on collection "customers"
+// Type of test: smoke test
+// 
+// 5 concurrent users for 1 minutes
+// 
 
 export const options = {
     vus: 5,
-    iterations: 25,
-    duration: '2m',
+    duration: '1m',
     thresholds: {
         checks: ['rate==1'], // every check must pass
         http_req_failed: ['rate<0.01'], // http errors should be less than 1%
-        http_req_duration: ['p(90)<125'], // 90% of requests should be below 250ms, 95% below 500ms
-    },
+        http_req_duration: ['p(90)<150', 'p(95)<300'], // 90% of requests should be below 150ms, 95% below 300ms
+    }
 }
 
 export function setup() {
