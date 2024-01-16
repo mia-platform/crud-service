@@ -62,12 +62,14 @@ services:
       # Crud Service
       LOG_LEVEL: info
       COLLECTION_DEFINITION_FOLDER: /home/node/app/collections
+      VIEWS_DEFINITION_FOLDER: /home/node/app/views
       USER_ID_HEADER_KEY: userid
       CRUD_LIMIT_CONSTRAINT_ENABLED: true
       CRUD_MAX_LIMIT: 200
       MONGODB_URL: "mongodb://database:27017/bench-test"
     volumes:
       - ./collections:/home/node/app/collections
+      - ./views:/home/node/app/views
       - ./scripts/healthcheck.js:/home/node/app/healthcheck/healthcheck.js
     healthcheck:
       test: [ "CMD-SHELL", "node /home/node/app/healthcheck/healthcheck.js" ]
