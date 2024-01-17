@@ -22,8 +22,16 @@ jobs:
         - name: Checkout
           uses: actions/checkout@v4
 
+        # - name: start MongoDB instance
+        #   uses: supercharge/mongodb-github-action@v1.10.0
+        #   with:
+        #     mongodb-version: "7.0"
+
         - name: start MongoDB and CRUD Service via docker file
           run: docker compose --file bench/docker-compose.yml up -d --force-recreate
+
+        - name: Populate Customer collection and Registered Customer View
+          run: cd bench/data && npm i && node customer-data.js -c mongodb://localhost:27017/bench-test -d bench-test -n 100000 -s 250
         
         # - name: start MongoDB instance
         #   uses: supercharge/mongodb-github-action@v1.10.0
@@ -50,16 +58,28 @@ jobs:
         #     CRUD_MAX_LIMIT: 200
         #     MONGODB_URL: "mongodb://database:27017/bench-test"
 
-        - name: Run k6 test
+        - name: Run k6 load test (collection Item)
           uses: grafana/k6-action@v0.3.1
           with:
               filename: bench/scripts/items/load-test.js
-              flags: --out json=load-test-results.json
+              # flags: --out json=load-test-results.json
 
-        - name: Upload performance test results
-          uses: actions/upload-artifact@v3
+        - name: Run k6 spike test (collection Customers)
+          uses: grafana/k6-action@v0.3.1
           with:
-            name: load-test-report
-            path: load-test-results.json
+              filename: bench/scripts/customers/spike-test.js
+              # flags: --out json=spike-test-results.json
+
+        - name: Run k6 stress test (view Registered Customers)
+          uses: grafana/k6-action@v0.3.1
+          with:
+              filename: bench/scripts/registered-customers/stress-test.js
+              # flags: --out json=stress-test-results.json
+
+        # - name: Upload performance test results
+        #   uses: actions/upload-artifact@v3
+        #   with:
+        #     name: load-test-report
+        #     path: load-test-results.json
 
         

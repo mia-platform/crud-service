@@ -36,6 +36,7 @@ export const options = {
             tags: { test_type: 'loadTest' }
         }
     },
+    // TODO: Restore threshold
     // thresholds: {
     //     checks: ['rate==1'],
     //     http_req_failed: ['rate<0.01'],
