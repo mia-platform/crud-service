@@ -28,7 +28,8 @@ jobs:
         - name: start MongoDB instance
           uses: supercharge/mongodb-github-action@v1.10.0
           with:
-            mongodb-version: "7.0"
+            mongodb-version: "6.0"
+            mongodb-db: bench-test
 
         - name: Populate Customer collection and Registered Customer View
           run: cd bench/data && npm i && node generate-customer-data.js -c mongodb://localhost:27017/bench-test -d bench-test -n 100000 -s 250

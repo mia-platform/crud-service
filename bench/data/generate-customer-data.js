@@ -81,7 +81,7 @@ async function generateData(options) {
     connectionString,
     database,
     numDocumentsToCreate = 100000,
-    shopCount = 250
+    shopCount = 250,
   } = options
   // #region constants
   const customerCollectionName = 'customers'
