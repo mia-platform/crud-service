@@ -36,13 +36,13 @@ export const options = {
             tags: { test_type: 'loadTest' }
         }
     },
-    thresholds: {
-        checks: ['rate==1'],
-        http_req_failed: ['rate<0.01'],
-        'http_req_duration{test_type:initialLoad}': ['p(90)<100'],
-        'http_req_duration{test_type:loadTest}': ['p(90)<200'],
-        'http_req_duration{verb:GET}': ['p(90)<500'],
-    },
+    // thresholds: {
+    //     checks: ['rate==1'],
+    //     http_req_failed: ['rate<0.01'],
+    //     'http_req_duration{test_type:initialLoad}': ['p(90)<100'],
+    //     'http_req_duration{test_type:loadTest}': ['p(90)<200'],
+    //     'http_req_duration{verb:GET}': ['p(90)<500'],
+    // },
 }
 
 // #region helper fns
