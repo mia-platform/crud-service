@@ -86,7 +86,7 @@ const generateItem = () => {
 
 export function initialLoad () {
     let post = http.post(
-        '${CRUD_BASE_URL}', 
+        `${CRUD_BASE_URL}`, 
         JSON.stringify(generateItem()), 
         { headers: { 'Content-Type': 'application/json' } }
     );
