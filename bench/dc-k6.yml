@@ -1,5 +1,5 @@
 services:
-  k6-smoke-test:
+  k6-load-test:
     image: grafana/k6:0.48.0
     deploy:
       resources:
@@ -10,19 +10,7 @@ services:
       - ./scripts:/app
     networks:
       - k6-net
-    command: [ "run", "/app/customers/spike-test.js" ]
-  # k6-stress-test:
-  #   image: grafana/k6:0.48.0
-  #   deploy:
-  #     resources:
-  #       limits:
-  #         memory: 512Mb
-  #         cpus: "1"
-  #   volumes:
-  #     - ./scripts:/app
-  #   networks:
-  #     - k6-net
-  #   command: [ "run", "/app/customers/stress-test.js" ]  
+    command: [ "run", "/app/items/load-test.js" ]  
 
 networks:
   k6-net:
