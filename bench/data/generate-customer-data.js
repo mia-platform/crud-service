@@ -80,12 +80,12 @@ async function generateData(options) {
   const {
     connectionString,
     database,
+    numDocumentsToCreate = 100000,
+    shopCount = 250
   } = options
   // #region constants
   const customerCollectionName = 'customers'
-  const shopCount = 250
-  const customerCount = 85000
-  const customerBatchSize = 8500
+  const customerBatchSize = numDocumentsToCreate / 10
   // #endregion
 
   const mongo = new MongoClient(connectionString)
@@ -94,7 +94,7 @@ async function generateData(options) {
   const coll = mongo.db(database).collection(customerCollectionName)
 
   try {
-    let i = customerCount
+    let i = numDocumentsToCreate
     while (i > 0) {
       process.stdout.write(`\rStarting the creation of documents for collection "customers".`)
       const numberToGenerate = Math.min(customerBatchSize, i)
@@ -108,7 +108,7 @@ async function generateData(options) {
       await coll.insertMany(users)
 
       i -= numberToGenerate
-      process.stdout.write(`\r(${customerCount - i}/${customerCount}) ${((customerCount - i) / customerCount * 100).toFixed(2)}%`)
+      process.stdout.write(`\r(${numDocumentsToCreate - i}/${numDocumentsToCreate}) ${((numDocumentsToCreate - i) / numDocumentsToCreate * 100).toFixed(2)}%`)
     }
   } catch (error) {
     console.error(`failed to generate data: ${error}`)
@@ -126,6 +126,8 @@ async function main() {
     .description(description)
     .requiredOption('-c, --connection-string <string>', 'MongoDB connection string')
     .requiredOption('-d, --database <database>', 'MongoDB database name')
+    .requiredOption('-n, --number <number>', 'Number of documents to generate')
+    .requiredOption('-s, --v <string>', 'Number of shops to be used inside the "shopID" field inside each database document')
     .action(generateData)
 
   await program.parseAsync()

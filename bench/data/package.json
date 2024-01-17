@@ -4,7 +4,8 @@
   "description": "generate a batch of data into the specified collection",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js -c mongodb://localhost:27017/bench-test -d bench-test -cl users -s 5 -u 100 -b 1000"
+    "start": "node index.js -c mongodb://localhost:27017/bench-test -d bench-test -cl users -s 5 -u 100 -b 1000",
+    "start:customer": "node customer-data.js -c mongodb://localhost:27017/bench-test -d bench-test"
   },
   "keywords": [],
   "author": "",
