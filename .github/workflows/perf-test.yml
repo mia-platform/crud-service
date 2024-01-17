@@ -23,7 +23,7 @@ jobs:
           uses: actions/checkout@v4
         
         - name: start MongoDB and CRUD Service via docker file
-          run: docker compose up --file bench/docker-compose.yml up -d --force-recreate
+          run: docker compose --file bench/docker-compose.yml up -d --force-recreate
 
         - name: Run k6 test
           uses: grafana/k6-action@v0.3.1
