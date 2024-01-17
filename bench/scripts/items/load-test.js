@@ -1,7 +1,6 @@
 import http from 'k6/http';
 import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.2/index.js';
 import { check, group, sleep } from 'k6';
-import { is200, CRUD_BASE_URL } from '../utils';
 
 import {
     randomIntBetween,
@@ -47,6 +46,10 @@ export const options = {
 }
 
 // #region helper fns
+const CRUD_BASE_URL = 'http://localhost:3000'
+
+const is200 = res => res.status === 200
+
 let counter = 0
 let idToSearchCounter = 250
 let idToPatchCounter = 750
