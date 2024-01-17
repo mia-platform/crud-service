@@ -44,7 +44,7 @@ jobs:
           run: npm ci
 
         - name: 'Start CRUD Service instance'
-          run: npm run start
+          run: (npm run start&)
           env:
             LOG_LEVEL: info
             COLLECTION_DEFINITION_FOLDER: /home/runner/work/crud-service/crud-service/bench/collections
