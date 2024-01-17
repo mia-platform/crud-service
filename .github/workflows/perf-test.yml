@@ -51,7 +51,7 @@ jobs:
             USER_ID_HEADER_KEY: userid
             CRUD_LIMIT_CONSTRAINT_ENABLED: true
             CRUD_MAX_LIMIT: 200
-            MONGODB_URL: "mongodb://database:27017/bench-test"
+            MONGODB_URL: "mongodb://database:27017/bench-test?directConnection=true"
 
         - name: Run k6 load test (collection Item)
           uses: grafana/k6-action@v0.3.1
