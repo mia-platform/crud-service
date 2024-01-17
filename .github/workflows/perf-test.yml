@@ -1,0 +1,44 @@
+name: 'Performance Test'
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        default: 20.x
+        required: false
+        type: string
+  # TODO: Update this when we're ready to go - it should happen at every tag or something
+  push:
+    branches:
+      - 'feat/perf-test'
+
+
+jobs:
+  k6_ci_test:
+      name: k6 CI Test run
+      runs-on: ubuntu-latest
+
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v1
+        
+        - name: start MongoDB instance
+          uses: supercharge/mongodb-github-action@v1.10.0
+          with:
+            mongodb-version: "7.0"
+        
+        - name: 'start CRUD Service instance'
+          run: npm ci && npm run start
+          env:
+            LOG_LEVEL: info
+            COLLECTION_DEFINITION_FOLDER: ./bench/collections
+            VIEWS_DEFINITION_FOLDER: /bench/views
+            USER_ID_HEADER_KEY: userid
+            CRUD_LIMIT_CONSTRAINT_ENABLED: true
+            CRUD_MAX_LIMIT: 200
+            MONGODB_URL: "mongodb://database:27017/bench-test"
+
+        - name: Run k6 test
+          uses: grafana/k6-action@v0.3.1
+          with:
+              filename: bench/scripts/items/load-test.js
