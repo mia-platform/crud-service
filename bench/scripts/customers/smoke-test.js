@@ -13,9 +13,9 @@ export const options = {
     vus: 5,
     duration: '1m',
     thresholds: {
-        checks: ['rate==1'], // every check must pass
-        http_req_failed: ['rate<0.01'], // http errors should be less than 1%
-        http_req_duration: ['p(90)<150', 'p(95)<300'], // 90% of requests should be below 150ms, 95% below 300ms
+        checks: ['rate==1'],
+        http_req_failed: ['rate<0.01'],
+        http_req_duration: ['p(90)<150', 'p(95)<300'],
     }
 }
 

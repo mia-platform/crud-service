@@ -17,6 +17,7 @@ import {
 // 
 
 export const options = {
+    // TODO: Should I keep it?
     // discardResponseBodies: true,
     scenarios: {
         'initialLoad': {
@@ -36,11 +37,11 @@ export const options = {
         }
     },
     thresholds: {
-        checks: ['rate==1'], // every check must pass
-        http_req_failed: ['rate<0.01'], // http errors should be less than 1%
-        'http_req_duration{test_type:initialLoad}': ['p(90)<100'], // 90% of requests should be below 250ms, 95% below 500ms
-        'http_req_duration{test_type:loadTest}': ['p(90)<200'], // 90% of requests should be below 250ms, 95% below 500ms
-        'http_req_duration{verb:GET}': ['p(90)<500'], // 90% of requests should be below 250ms, 95% below 500ms
+        checks: ['rate==1'],
+        http_req_failed: ['rate<0.01'],
+        'http_req_duration{test_type:initialLoad}': ['p(90)<100'],
+        'http_req_duration{test_type:loadTest}': ['p(90)<200'],
+        'http_req_duration{verb:GET}': ['p(90)<500'],
     },
 }
 
@@ -93,6 +94,7 @@ export function initialLoad () {
 }
 
 export function loadTest () {
+    // TODO: Should I put everything in the same request so I can 
     group('GET requests', () => {
         // GET / request
         const get = http.get(`http://crud-service:3000/items?number=${randomIntBetween(1, 10)}`, { tags: { verb: 'GET' }})
@@ -104,20 +106,6 @@ export function loadTest () {
 
         sleep(1)
         idToSearchCounter += 1
-        // // GET /_q=... request
-        // const _q = JSON.stringify({ 'object.number': { $gte: randomIntBetween(1, 10) }})
-        // const getWithQuery = http.get(`http://crud-service:3000/items/?_q=${_q}`, { tags: { verb: 'GET' }})
-        // check(getWithQuery, { 'GET /?_q=... returns status 200': is200 })
-        
-        // // GET /count request
-        // const getCount = http.get(`http://crud-service:3000/items/count?number=${randomIntBetween(1, 10)}`, { tags: { verb: 'GET' }})
-        // check(getCount, { 'GET /count returns status 200': is200 })
-        
-        // // GET /export request
-        // const getExport = http.get(`http://crud-service:3000/items/export?number=${randomIntBetween(1, 10)}`, { tags: { verb: 'GET' }})
-        // check(getExport, { 'GET /export returns status 200': is200 })
-
-        // sleep(1)
     })
 
     group('PATCH requests', () => {

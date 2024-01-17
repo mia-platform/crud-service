@@ -14,15 +14,15 @@ import { check, group, sleep } from 'k6';
 
 export const options = {
     stages: [
-        { duration: '5s', target: 5 }, // base level, 5 users
-        { duration: '10s', target: 200 }, // traffic ramp-up from 5 to a higher 200 users over 10 seconds
-        { duration: '45s', target: 200 }, // stay at higher 200 users for 30 seconds
-        { duration: '30s', target: 5 }, // ramp-down to 5 users
+        { duration: '5s', target: 5 },
+        { duration: '10s', target: 200 },
+        { duration: '45s', target: 200 },
+        { duration: '30s', target: 5 },
     ],    
     thresholds: {
-        checks: ['rate==1'], // every check must pass
-        http_req_failed: ['rate<0.01'], // http errors should be less than 1%
-        // http_req_duration: ['p(95)<100'], // 95% of requests should be below 50ms
+        checks: ['rate==1'],
+        http_req_failed: ['rate<0.01'],
+        http_req_duration: ['p(95)<250'], 
     }
 }
 
