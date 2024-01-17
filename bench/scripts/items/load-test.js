@@ -1,6 +1,7 @@
 import http from 'k6/http';
 import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.2/index.js';
 import { check, group, sleep } from 'k6';
+import { is200, CRUD_BASE_URL } from '../utils';
 
 import {
     randomIntBetween,
@@ -36,19 +37,16 @@ export const options = {
             tags: { test_type: 'loadTest' }
         }
     },
-    // TODO: Restore threshold
-    // thresholds: {
-    //     checks: ['rate==1'],
-    //     http_req_failed: ['rate<0.01'],
-    //     'http_req_duration{test_type:initialLoad}': ['p(90)<100'],
-    //     'http_req_duration{test_type:loadTest}': ['p(90)<200'],
-    //     'http_req_duration{verb:GET}': ['p(90)<500'],
-    // },
+    thresholds: {
+        checks: ['rate==1'],
+        http_req_failed: ['rate<0.01'],
+        'http_req_duration{test_type:initialLoad}': ['p(90)<100'],
+        'http_req_duration{test_type:loadTest}': ['p(90)<200'],
+        'http_req_duration{verb:GET}': ['p(90)<500'],
+    },
 }
 
 // #region helper fns
-const is200 = r => r.status === 200
-
 let counter = 0
 let idToSearchCounter = 250
 let idToPatchCounter = 750
@@ -85,7 +83,7 @@ const generateItem = () => {
 
 export function initialLoad () {
     let post = http.post(
-        'http://crud-service:3000/items', 
+        '${CRUD_BASE_URL}', 
         JSON.stringify(generateItem()), 
         { headers: { 'Content-Type': 'application/json' } }
     );
@@ -98,11 +96,11 @@ export function loadTest () {
     // TODO: Should I put everything in the same request so I can 
     group('GET requests', () => {
         // GET / request
-        const get = http.get(`http://crud-service:3000/items?number=${randomIntBetween(1, 10)}`, { tags: { verb: 'GET' }})
+        const get = http.get(`${CRUD_BASE_URL}?number=${randomIntBetween(1, 10)}`, { tags: { verb: 'GET' }})
         check(get, { 'GET / returns status 200': is200 })
 
         const _q = JSON.stringify({ 'object.counter': idToSearchCounter })
-        const getById = http.get(`http://crud-service:3000/items/?_q=${_q}`, { tags: { verb: 'GET' }})
+        const getById = http.get(`${CRUD_BASE_URL}/?_q=${_q}`, { tags: { verb: 'GET' }})
         check(getById, { 'GET /{id} returns status 200': is200 })
 
         sleep(1)
@@ -114,7 +112,7 @@ export function loadTest () {
         
         // PATCH / request
         const patch = http.patch(
-        `http://crud-service:3000/items/?_q=${_q}`, 
+        `${CRUD_BASE_URL}/?_q=${_q}`, 
         JSON.stringify(generateItem()), 
         { 
             headers: { 'Content-Type': 'application/json' },
@@ -131,7 +129,7 @@ export function loadTest () {
         const _q = JSON.stringify({ 'object.counter': idToDeleteCounter })
         
         // DELETE / request
-        const deleteReq = http.del(`http://crud-service:3000/items/?_q=${_q}`, null,  { tags: { verb: 'DELETE' }}) 
+        const deleteReq = http.del(`${CRUD_BASE_URL}/?_q=${_q}`, null,  { tags: { verb: 'DELETE' }}) 
         check(deleteReq, { 'DELETE / returns status 200': is200 })
 
         sleep(1)

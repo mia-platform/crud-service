@@ -54,7 +54,7 @@ jobs:
             CRUD_MAX_LIMIT: 200
             MONGODB_URL: mongodb://localhost:27017/bench-test
 
-        - name: Run k6 load test (collection Item)
+        - name: Run k6 load test (collection Items)
           uses: grafana/k6-action@v0.3.1
           with:
               filename: bench/scripts/items/load-test.js
