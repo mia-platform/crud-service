@@ -19,25 +19,25 @@ services:
       retries: 3
       start_period: 5s
 
-  # restore-mongo:
-  #   image: mongo:6.0
-  #   depends_on:
-  #     database:
-  #       condition: service_healthy
-  #   networks:
-  #     - k6-net
-  #   deploy:
-  #     resources:
-  #       limits:
-  #         memory: 2GB
-  #         cpus: '1'
-  #   entrypoint:
-  #     - /bin/bash
-  #   command:
-  #     - "-c"
-  #     - mongorestore --uri="mongodb://database:27017" --drop --maintainInsertionOrder --gzip
-  #   volumes:
-  #     - ./data/dump:/dump
+  restore-mongo:
+    image: mongo:6.0
+    depends_on:
+      database:
+        condition: service_healthy
+    networks:
+      - k6-net
+    deploy:
+      resources:
+        limits:
+          memory: 2GB
+          cpus: '1'
+    entrypoint:
+      - /bin/bash
+    command:
+      - "-c"
+      - mongorestore --uri="mongodb://database:27017" --drop --maintainInsertionOrder --gzip
+    volumes:
+      - ./data/dump:/dump
 
   crud-service:
     image: crud-service:latest
