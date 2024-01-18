@@ -17,8 +17,6 @@ import {
 // 
 
 export const options = {
-    // TODO: Should I keep it?
-    // discardResponseBodies: true,
     scenarios: {
         'initialLoad': {
             executor: 'constant-vus',
@@ -39,12 +37,13 @@ export const options = {
     thresholds: {
         checks: ['rate==1'],
         http_req_failed: ['rate<0.01'],
-        'http_req_duration{test_type:initialLoad}': ['p(90)<100'],
-        'http_req_duration{test_type:loadTest}': ['p(90)<200'],
+        'http_req_duration{type:post}': ['p(90)<100'],
         'http_req_duration{type:getList}': ['p(90)<500'],
         'http_req_duration{type:getById}': ['p(90)<500'],
         'http_req_duration{type:patchByQuery}': ['p(90)<500'],
+        'http_req_duration{type:patchById}': ['p(90)<500'],
         'http_req_duration{type:deleteByQuery}': ['p(90)<500'],
+        'http_req_duration{type:deleteById}': ['p(90)<500'],
     },
 }
 
@@ -52,12 +51,10 @@ export const options = {
 const CRUD_BASE_URL = 'http://crud-service:3000'
 
 const is200 = res => res.status === 200
+const is200or404 = res => [200, 404].includes(res.status)
+const is204or404 = res => [204, 404].includes(res.status)
 
 let counter = 0
-let idToSearchCounter = 1250
-let idToPatchCounter = 2500
-let idToDeleteCounter = 3750
-
 const generateItem = () => {
     const array = []
     const len = randomIntBetween(0, 10)
@@ -91,9 +88,12 @@ export function initialLoad () {
     let post = http.post(
         `${CRUD_BASE_URL}/items`, 
         JSON.stringify(generateItem()), 
-        { headers: { 'Content-Type': 'application/json' } }
+        { 
+            headers: { 'Content-Type': 'application/json' },
+            tags: { type: 'post' }
+        }
     );
-    check(post, { 'POST / returns status 200': is200 })
+    check(post, { 'POST / returns status 200':  is200or404 })
 
     sleep(0.01)
 }
@@ -103,19 +103,48 @@ export function loadTest () {
     // TODO: Evaluate if add a post stage also here
     
     // GET / request
-    const get = http.get(`${CRUD_BASE_URL}/items?number=${randomIntBetween(1, 10)}`, { tags: { type: 'getList' }})
-    check(get, { 'GET / returns status 200': is200 })
-
-    const getQuery = JSON.stringify({ 'object.counter': idToSearchCounter })
-    const getById = http.get(`${CRUD_BASE_URL}/items?_q=${getQuery}`, { tags: { type: 'getById' }})
-    check(getById, { 'GET /{id} returns status 200': is200 })
-
+    const getList = http.get(`${CRUD_BASE_URL}/items?number=${randomIntBetween(1, 10)}`, { tags: { type: 'getList' }})
+    check(getList, { 'GET / returns status 200':  is200 })
     sleep(1)
-    idToSearchCounter += 1
 
-    const patchQuery = JSON.stringify({ 'object.counter': idToPatchCounter })
-    
-    // PATCH / request
+    // Fetch for the seventh document from the getList request to get an id to use for a getById request
+    const getListResults = JSON.parse(getList.body)
+    const count = getListResults.length
+    if (count === 0) {
+        return
+    }
+
+    // GET /{id} request
+    const documentIdToFetch = getListResults[randomIntBetween(0, count - 1)]._id
+    const getById = http.get(`${CRUD_BASE_URL}/items/${documentIdToFetch}`, { tags: { type: 'getById' }})
+    const isGetByIdValid = check(getById, { 'GET /{id} returns status 200 or 404':  is200or404 })
+    if (!isGetByIdValid) { console.log({ failed: 'getById', error: getById.error, status: getById.status, documentId: documentIdToFetch })}
+    sleep(1)
+
+    // PATCH /{id} request
+    const documentIdToPatch = getListResults[randomIntBetween(0, count - 1)]._id
+    const patchById = http.patch(
+        `${CRUD_BASE_URL}/items/${documentIdToPatch}`,
+        JSON.stringify({ $set: generateItem() }),
+        { 
+            headers: { 'Content-Type': 'application/json' }, 
+            tags: { type: 'patchById' } 
+        }
+    )
+    const isPatchByIdValid = check(patchById, { 'PATCH /{id} returns status 200 or 404':  is200or404 })
+    if (!isPatchByIdValid) { console.log({ failed: 'patchById', error: patchById.error, status: patchById.status, documentId: documentIdToFetch })}
+    sleep(1)
+
+    // DELETE /{id} request
+    const documentIdToDelete = getListResults[randomIntBetween(0, count - 1)]._id
+    const deleteById = http.del(`${CRUD_BASE_URL}/items/${documentIdToDelete}`, null,  { tags: { type: 'deleteById' }})
+    const isDeleteByIdValid = check(deleteById, { 'DELETE /{id} returns status 204 or 404':  is204or404 })
+    if (!isDeleteByIdValid) { console.log({ failed: 'deleteById', error: deleteById.error, status: deleteById.status, documentId: documentIdToFetch })}
+    sleep(1)
+
+    // PATCH /?_q=... request
+    const counterValueForPatch = getListResults[randomIntBetween(0, count - 1)].object.counter
+    const patchQuery = JSON.stringify({ 'object.counter': counterValueForPatch })
     const patch = http.patch(
     `${CRUD_BASE_URL}/items?_q=${patchQuery}`, 
     JSON.stringify({ $set: generateItem() }), 
@@ -124,19 +153,15 @@ export function loadTest () {
         tags: { type: 'patchByQuery' }
     }
     );
-    check(patch, { 'PATCH / returns status 200': is200 })
-    
+    check(patch, { 'PATCH / returns status 200':  is200 })
     sleep(1)
-    idToPatchCounter += 1
-
-    const deleteQuery = JSON.stringify({ 'object.counter': idToDeleteCounter })
     
-    // DELETE / request
+    // DELETE /?_q=... request
+    const counterValueForDelete = getListResults[randomIntBetween(0, count - 1)].object.counter
+    const deleteQuery = JSON.stringify({ 'object.counter': counterValueForDelete })
     const deleteReq = http.del(`${CRUD_BASE_URL}/items?_q=${deleteQuery}`, null,  { tags: { type: 'deleteByQuery' }}) 
     check(deleteReq, { 'DELETE / returns status 200': is200 })
-
     sleep(1)
-    idToDeleteCounter += 1
 }
 
 export function handleSummary(data) {

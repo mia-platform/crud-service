@@ -24,6 +24,7 @@ export const options = {
         checks: ['rate==1'],
         http_req_failed: ['rate<0.01'],
         'http_req_duration{type:getList}': ['p(90)<250'],
+        'http_req_duration{type:getById}': ['p(90)<250'],
         'http_req_duration{type:getListViaQuery}': ['p(90)<250'],
         'http_req_duration{type:count}': ['p(90)<250'],
         'http_req_duration{type:export}': ['p(90)<250'],
@@ -36,9 +37,21 @@ const is200 = r => r.status === 200
     
 export default function () {
     // GET / request
-    const get = http.get('http://crud-service:3000/registered-customers?shopID=2', { tags: { type: 'getList' }})
-    check(get, { 'GET / returns status 200': is200 })
+    const getList = http.get('http://crud-service:3000/registered-customers?shopID=2', { tags: { type: 'getList' }})
+    check(getList, { 'GET / returns status 200': is200 })
     sleep(0.1)
+
+    // Fetch for the seventh document from the getList request to get an id to use for a getById request
+    const getLitResults = JSON.parse(getList.body)
+    const count = getLitResults.length
+    const document = getLitResults[7 % count]
+
+    if (document) {
+        // GET /{id} request
+        const getById = http.get(`http://crud-service:3000/registered-customers/${document._id}`, { tags: { type: 'getById' }})
+        check(getById, { 'GET/{id} returns status 200': is200 })
+        sleep(0.1)
+    }
 
     // GET /_q=... request
     const _q = JSON.stringify({ purchasesCount: { $gte: 100 }})
