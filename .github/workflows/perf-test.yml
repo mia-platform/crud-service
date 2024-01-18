@@ -55,6 +55,7 @@ jobs:
             MONGODB_URL: mongodb://localhost:27017/bench-test
 
         - name: Run k6 load test (collection Items)
+          working-directory: bench
           # uses: grafana/k6-action@v0.3.1
           # with:
           #     filename: bench/scripts/items/load-test.js
@@ -62,6 +63,7 @@ jobs:
           run: docker compose -f dc-k6.yml up k6-load-test
 
         - name: Run k6 spike test (collection Customers)
+          working-directory: bench
           # uses: grafana/k6-action@v0.3.1
           # with:
           #     filename: bench/scripts/customers/spike-test.js
@@ -69,6 +71,7 @@ jobs:
           run: docker compose -f dc-k6.yml up k6-spike-test
 
         - name: Run k6 stress test (view Registered Customers)
+          working-directory: bench
           # uses: grafana/k6-action@v0.3.1
           # with:
           #     filename: bench/scripts/registered-customers/stress-test.js
