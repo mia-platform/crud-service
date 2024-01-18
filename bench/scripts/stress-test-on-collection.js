@@ -3,7 +3,7 @@ import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.2/index.js';
 import { check, sleep } from 'k6';
 
 // 
-// Test on view "registered-customers"
+// Test on collection "customers"
 // Type of test: stress test
 // 
 // 5 concurrent users for the first 5 seconds
@@ -37,9 +37,9 @@ const is200 = r => r.status === 200
     
 export default function () {
     // GET / request
-    const getList = http.get('http://crud-service:3000/registered-customers?shopID=2', { tags: { type: 'getList' }})
+    const getList = http.get('http://crud-service:3000/customers?shopID=2', { tags: { type: 'getList' }})
     check(getList, { 'GET / returns status 200': is200 })
-    sleep(0.1)
+    sleep(1)
 
     // Fetch for the seventh document from the getList request to get an id to use for a getById request
     const getLitResults = JSON.parse(getList.body)
@@ -48,26 +48,26 @@ export default function () {
 
     if (document) {
         // GET /{id} request
-        const getById = http.get(`http://crud-service:3000/registered-customers/${document._id}`, { tags: { type: 'getById' }})
+        const getById = http.get(`http://crud-service:3000/customers/${document._id}`, { tags: { type: 'getById' }})
         check(getById, { 'GET/{id} returns status 200': is200 })
         sleep(0.1)
     }
 
     // GET /_q=... request
     const _q = JSON.stringify({ purchasesCount: { $gte: 100 }})
-    const getWithQuery = http.get(`http://crud-service:3000/registered-customers/?_q=${_q}`, { tags: { type: 'getListViaQuery' }})
+    const getWithQuery = http.get(`http://crud-service:3000/customers/?_q=${_q}`, { tags: { type: 'getListViaQuery' }})
     check(getWithQuery, { 'GET /?_q=... returns status 200': is200 })
-    sleep(0.1)
+    sleep(1)
 
     // GET /count request
-    const getCount = http.get('http://crud-service:3000/registered-customers/count?canBeContacted=true',  { tags: { type: 'count' }})
+    const getCount = http.get('http://crud-service:3000/customers/count?canBeContacted=true',  { tags: { type: 'count' }})
     check(getCount, { 'GET /count returns status 200': is200 })
-    sleep(0.1)
+    sleep(1)
 
     // GET /export request
-    const getExport = http.get('http://crud-service:3000/registered-customers/export?shopID=2',  { tags: { type: 'export' }})
+    const getExport = http.get('http://crud-service:3000/customers/export?shopID=2',  { tags: { type: 'export' }})
     check(getExport, { 'GET /export returns status 200': is200 })
-    sleep(0.1)
+    sleep(1)
 }
 
 export function handleSummary(data) {

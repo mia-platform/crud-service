@@ -31,7 +31,7 @@ services:
       "run", 
       "--out",
       "json=load-test-results.json",
-      "/app/items/load-test.js",
+      "/app/load-test.js",
     ]
   k6-stress-test-on-collection:
     image: grafana/k6:0.48.0
@@ -48,7 +48,7 @@ services:
       "run", 
       "--out",
       "json=stress-test-on-collection-results.json",
-      "/app/customers/stress-test.js",
+      "/app/stress-test-on-collection.js",
     ]
   k6-stress-test-on-view:
     image: grafana/k6:0.48.0
@@ -65,7 +65,7 @@ services:
       "run", 
       "--out",
       "json=stress-test-on-view-results.json",
-      "/app/registered-customers/stress-test.js",
+      "/app/stress-test-on-view.js",
     ]
   k6-spike-test:
     image: grafana/k6:0.48.0
@@ -82,7 +82,7 @@ services:
       "run", 
       "--out",
       "json=spike-test-results.json",
-      "/app/customers/spike-test.js",
+      "/app/spike-test.js",
     ]
 
 networks:
