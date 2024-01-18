@@ -37,7 +37,7 @@ export const executeGetTests = (
   }
 
   // GET /_q=... request
-  const getWithQuery = http.get(`${CRUD_BASE_URL}/${collectionName}/?_q=${getWithQueryOperatorQueryString}`, { tags: { type: 'getWithQueryOperator' }})
+  const getWithQuery = http.get(`${CRUD_BASE_URL}/${collectionName}/?_q=${getWithQueryOperatorQueryString}`, { tags: { type: 'getListWithQueryOperator' }})
   check(getWithQuery, { 'GET /?_q=... returns status 200': is200 })
   sleep(sleepTime)
 

@@ -24,8 +24,8 @@ export const options = {
         checks: ['rate==1'],
         http_req_failed: ['rate<0.01'],
         'http_req_duration{type:getList}': ['p(90)<250'],
+        'http_req_duration{type:getListWithQueryOperator}': ['p(90)<250'],
         'http_req_duration{type:getById}': ['p(90)<250'],
-        'http_req_duration{type:getListViaQuery}': ['p(90)<250'],
         'http_req_duration{type:count}': ['p(90)<250'],
         'http_req_duration{type:export}': ['p(90)<250'],
     }

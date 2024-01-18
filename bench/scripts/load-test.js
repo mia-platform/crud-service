@@ -99,9 +99,6 @@ export function initialLoad () {
 }
 
 export function loadTest () {
-    // TODO: This can be improved by using results from GET to have values to execute GET (by Id), PATCH and DELETE methods
-    // TODO: Evaluate if add a post stage also here
-    
     // GET / request
     const getList = http.get(`${CRUD_BASE_URL}/items?number=${randomIntBetween(1, 10)}`, { tags: { type: 'getList' }})
     check(getList, { 'GET / returns status 200':  is200 })
