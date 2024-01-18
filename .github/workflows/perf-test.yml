@@ -22,8 +22,8 @@ jobs:
         - name: Checkout
           uses: actions/checkout@v4
 
-        # - name: start MongoDB and CRUD Service via docker file
-        #   run: docker compose --file bench/docker-compose.yml up -d --force-recreate
+        - name: start CRUD Service via docker file
+          run: docker compose --file bench/docker-compose.yml up crud-service -d
 
         - name: start MongoDB instance
           uses: supercharge/mongodb-github-action@v1.10.0
@@ -40,19 +40,19 @@ jobs:
             node-version: 20.x
             cache: npm
   
-        - name: Install CRUD Service node_modules
-          run: npm ci
+        # - name: Install CRUD Service node_modules
+        #   run: npm ci
 
-        - name: 'Start CRUD Service instance'
-          run: (npm run start&)
-          env:
-            LOG_LEVEL: info
-            COLLECTION_DEFINITION_FOLDER: /home/runner/work/crud-service/crud-service/bench/collections
-            VIEWS_DEFINITION_FOLDER: /home/runner/work/crud-service/crud-service/bench/views
-            USER_ID_HEADER_KEY: userid
-            CRUD_LIMIT_CONSTRAINT_ENABLED: true
-            CRUD_MAX_LIMIT: 200
-            MONGODB_URL: mongodb://localhost:27017/bench-test
+        # - name: 'Start CRUD Service instance'
+        #   run: (npm run start&)
+        #   env:
+        #     LOG_LEVEL: info
+        #     COLLECTION_DEFINITION_FOLDER: /home/runner/work/crud-service/crud-service/bench/collections
+        #     VIEWS_DEFINITION_FOLDER: /home/runner/work/crud-service/crud-service/bench/views
+        #     USER_ID_HEADER_KEY: userid
+        #     CRUD_LIMIT_CONSTRAINT_ENABLED: true
+        #     CRUD_MAX_LIMIT: 200
+        #     MONGODB_URL: mongodb://localhost:27017/bench-test
 
         - name: Run k6 load test (collection Items)
           working-directory: bench

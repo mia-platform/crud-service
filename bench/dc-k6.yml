@@ -83,7 +83,7 @@ services:
       "--out",
       "json=spike-test-results.json",
       "/app/customers/spike-test.js",
-    ]  
+    ]
 
 networks:
   k6-net:
