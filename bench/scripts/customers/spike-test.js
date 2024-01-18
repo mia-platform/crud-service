@@ -16,13 +16,12 @@ export const options = {
         { duration: '5s', target: 5 },
         { duration: '20s', target: 500 },
         { duration: '20s', target: 5 },
-    ],    
-    // TODO: Restore threshold
-    // thresholds: {
-    //     checks: ['rate==1'],
-    //     http_req_failed: ['rate<0.01'],
-    //     http_req_duration: ['p(95)<250'],
-    // }
+    ],
+    thresholds: {
+        checks: ['rate==1'],
+        http_req_failed: ['rate<0.01'],
+        http_req_duration: ['p(95)<250'],
+    }
 }
 
 export default function () {

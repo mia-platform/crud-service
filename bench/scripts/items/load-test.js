@@ -46,14 +46,14 @@ export const options = {
 }
 
 // #region helper fns
-const CRUD_BASE_URL = 'http://localhost:3000'
+const CRUD_BASE_URL = 'http://crud-service:3000'
 
 const is200 = res => res.status === 200
 
 let counter = 0
-let idToSearchCounter = 250
-let idToPatchCounter = 750
-let idToDeleteCounter = 1250
+let idToSearchCounter = 125
+let idToPatchCounter = 250
+let idToDeleteCounter = 375
 
 const generateItem = () => {
     const array = []
@@ -86,7 +86,7 @@ const generateItem = () => {
 
 export function initialLoad () {
     let post = http.post(
-        `${CRUD_BASE_URL}`, 
+        `${CRUD_BASE_URL}/items`, 
         JSON.stringify(generateItem()), 
         { headers: { 'Content-Type': 'application/json' } }
     );
@@ -99,11 +99,11 @@ export function loadTest () {
     // TODO: Should I put everything in the same request so I can 
     group('GET requests', () => {
         // GET / request
-        const get = http.get(`${CRUD_BASE_URL}?number=${randomIntBetween(1, 10)}`, { tags: { verb: 'GET' }})
+        const get = http.get(`${CRUD_BASE_URL}/items?number=${randomIntBetween(1, 10)}`, { tags: { verb: 'GET' }})
         check(get, { 'GET / returns status 200': is200 })
 
         const _q = JSON.stringify({ 'object.counter': idToSearchCounter })
-        const getById = http.get(`${CRUD_BASE_URL}/?_q=${_q}`, { tags: { verb: 'GET' }})
+        const getById = http.get(`${CRUD_BASE_URL}/items?_q=${_q}`, { tags: { verb: 'GET' }})
         check(getById, { 'GET /{id} returns status 200': is200 })
 
         sleep(1)
@@ -111,11 +111,12 @@ export function loadTest () {
     })
 
     group('PATCH requests', () => {
+        // TODO: Patch not working correctly, find out why
         const _q = JSON.stringify({ 'object.counter': idToPatchCounter })
         
         // PATCH / request
         const patch = http.patch(
-        `${CRUD_BASE_URL}/?_q=${_q}`, 
+        `${CRUD_BASE_URL}/items?_q=${_q}`, 
         JSON.stringify(generateItem()), 
         { 
             headers: { 'Content-Type': 'application/json' },
@@ -132,7 +133,7 @@ export function loadTest () {
         const _q = JSON.stringify({ 'object.counter': idToDeleteCounter })
         
         // DELETE / request
-        const deleteReq = http.del(`${CRUD_BASE_URL}/?_q=${_q}`, null,  { tags: { verb: 'DELETE' }}) 
+        const deleteReq = http.del(`${CRUD_BASE_URL}/items?_q=${_q}`, null,  { tags: { verb: 'DELETE' }}) 
         check(deleteReq, { 'DELETE / returns status 200': is200 })
 
         sleep(1)
@@ -142,42 +143,49 @@ export function loadTest () {
 
 export function handleSummary(data) {
     return {
-        stdout: textSummary(data, { enableColors: true }),
-        // TODO: "Permission denied" when trying to save to file. How to fix this?
-        // '/app/load-test-results.json': JSON.stringify(data)
+        stdout: textSummary(data, { enableColors: true })
     };
 }
 
-// bench-k6-load-test-1  | initialLoad ✓ [ 100% ] 10 VUs   20s
-// bench-k6-load-test-1  | loadTest    ↓ [ 100% ] 100 VUs  1m0s
-// bench-k6-load-test-1  |      ✗ POST / returns status 200
-// bench-k6-load-test-1  |       ↳  9% — ✓ 6147 / ✗ 61975
-// bench-k6-load-test-1  |      ✓ GET / returns status 200
-// bench-k6-load-test-1  |      ✓ GET /?_q=... returns status 200
-// bench-k6-load-test-1  |      ✓ GET /count returns status 200
-// bench-k6-load-test-1  |      ✓ GET /export returns status 200
+// bench-k6-load-test-1  |      ✓ POST / returns status 200
 // bench-k6-load-test-1  | 
-// bench-k6-load-test-1  |    ✗ checks.........................: 15.87% ✓ 11699      ✗ 61975
-// bench-k6-load-test-1  |      data_received..................: 345 MB 4.1 MB/s
-// bench-k6-load-test-1  |      data_sent......................: 22 MB  264 kB/s
-// bench-k6-load-test-1  |      http_req_blocked...............: avg=8.75µs   min=531ns    med=1.15µs  max=60.34ms p(90)=3.59µs   p(95)=5.6µs   
-// bench-k6-load-test-1  |      http_req_connecting............: avg=6.4µs    min=0s       med=0s      max=59.98ms p(90)=0s       p(95)=0s      
-// bench-k6-load-test-1  |      http_req_duration..............: avg=12.21ms  min=212.77µs med=1.98ms  max=1.67s   p(90)=6.14ms   p(95)=15.37ms 
-// bench-k6-load-test-1  |        { expected_response:true }...: avg=63.72ms  min=885.44µs med=5.76ms  max=1.67s   p(90)=186.8ms  p(95)=385.07ms
-// bench-k6-load-test-1  |      ✓ { test_type:initialLoad }....: avg=2.81ms   min=212.77µs med=1.89ms  max=60.03ms p(90)=4.78ms   p(95)=6.32ms  
-// bench-k6-load-test-1  |      ✗ { test_type:loadTest }.......: avg=127.57ms min=885.44µs med=24.53ms max=1.67s   p(90)=400.25ms p(95)=608.73ms
-// bench-k6-load-test-1  |    ✗ http_req_failed................: 84.12% ✓ 61975      ✗ 11699
-// bench-k6-load-test-1  |      http_req_receiving.............: avg=2.86ms   min=5.51µs   med=15.97µs max=1.38s   p(90)=48.76µs  p(95)=88.73µs 
-// bench-k6-load-test-1  |      http_req_sending...............: avg=12.08µs  min=3.22µs   med=7.58µs  max=11.12ms p(90)=17.17µs  p(95)=24.43µs 
-// bench-k6-load-test-1  |      http_req_tls_handshaking.......: avg=0s       min=0s       med=0s      max=0s      p(90)=0s       p(95)=0s      
-// bench-k6-load-test-1  |      http_req_waiting...............: avg=9.33ms   min=193.11µs med=1.95ms  max=1.48s   p(90)=6.04ms   p(95)=13.08ms 
-// bench-k6-load-test-1  |      http_reqs......................: 73674  875.496253/s
-// bench-k6-load-test-1  |      iteration_duration.............: avg=93ms     min=310.4µs  med=2.02ms  max=5.89s   p(90)=5.35ms   p(95)=7.9ms   
-// bench-k6-load-test-1  |      iterations.....................: 69510  826.013852/s
-// bench-k6-load-test-1  |      vus............................: 8      min=8        max=100
-// bench-k6-load-test-1  |      vus_max........................: 110    min=110      max=110
-// bench-k6-load-test-1  | running (1m24.2s), 000/110 VUs, 69510 complete and 0 interrupted iterations
-// bench-k6-load-test-1  | initialLoad ✓ [ 100% ] 10 VUs   20s
+// bench-k6-load-test-1  |      █ GET requests
+// bench-k6-load-test-1  | 
+// bench-k6-load-test-1  |        ✓ GET / returns status 200
+// bench-k6-load-test-1  |        ✓ GET /{id} returns status 200
+// bench-k6-load-test-1  | 
+// bench-k6-load-test-1  |      █ PATCH requests
+// bench-k6-load-test-1  | 
+// bench-k6-load-test-1  |        ✗ PATCH / returns status 200
+// bench-k6-load-test-1  |         ↳  0% — ✓ 0 / ✗ 2000
+// bench-k6-load-test-1  | 
+// bench-k6-load-test-1  |      █ DELETE requests
+// bench-k6-load-test-1  | 
+// bench-k6-load-test-1  |        ✓ DELETE / returns status 200
+// bench-k6-load-test-1  | 
+// bench-k6-load-test-1  |    ✗ checks.........................: 76.74% ✓ 6600      ✗ 2000 
+// bench-k6-load-test-1  |      data_received..................: 33 MB  272 kB/s
+// bench-k6-load-test-1  |      data_sent......................: 2.2 MB 18 kB/s
+// bench-k6-load-test-1  |      group_duration.................: avg=1.01s   min=1s       med=1s      max=1.69s    p(90)=1.02s    p(95)=1.03s   
+// bench-k6-load-test-1  |      http_req_blocked...............: avg=32.36µs min=553ns    med=2.84µs  max=21.67ms  p(90)=8µs      p(95)=12.93µs 
+// bench-k6-load-test-1  |      http_req_connecting............: avg=21.35µs min=0s       med=0s      max=20.69ms  p(90)=0s       p(95)=0s      
+// bench-k6-load-test-1  |      http_req_duration..............: avg=9.73ms  min=199.34µs med=3.16ms  max=642.29ms p(90)=14.21ms  p(95)=20.81ms 
+// bench-k6-load-test-1  |        { expected_response:true }...: avg=12.32ms min=633.29µs med=4.35ms  max=642.29ms p(90)=16.46ms  p(95)=24.39ms 
+// bench-k6-load-test-1  |      ✓ { test_type:initialLoad }....: avg=4.77ms  min=668.34µs med=4.01ms  max=23.76ms  p(90)=7.51ms   p(95)=11.65ms 
+// bench-k6-load-test-1  |      ✓ { test_type:loadTest }.......: avg=10.1ms  min=199.34µs med=3ms     max=642.29ms p(90)=14.53ms  p(95)=21.81ms 
+// bench-k6-load-test-1  |      ✓ { verb:GET }.................: avg=18.38ms min=782.67µs med=7ms     max=642.29ms p(90)=21.81ms  p(95)=34.3ms  
+// bench-k6-load-test-1  |    ✗ http_req_failed................: 23.25% ✓ 2000      ✗ 6600 
+// bench-k6-load-test-1  |      http_req_receiving.............: avg=58.79µs min=6.89µs   med=35.88µs max=1.98ms   p(90)=113.02µs p(95)=166.26µs
+// bench-k6-load-test-1  |      http_req_sending...............: avg=25.92µs min=3.02µs   med=11.77µs max=22.49ms  p(90)=39.13µs  p(95)=50.69µs 
+// bench-k6-load-test-1  |      http_req_tls_handshaking.......: avg=0s      min=0s       med=0s      max=0s       p(90)=0s       p(95)=0s      
+// bench-k6-load-test-1  |      http_req_waiting...............: avg=9.64ms  min=178.89µs med=3.08ms  max=642.23ms p(90)=14.11ms  p(95)=20.71ms 
+// bench-k6-load-test-1  |      http_reqs......................: 8600   70.885514/s
+// bench-k6-load-test-1  |      iteration_duration.............: avg=2.57s   min=1s       med=3.01s   max=3.7s     p(90)=3.04s    p(95)=3.07s   
+// bench-k6-load-test-1  |      iterations.....................: 2600   21.430504/s
+// bench-k6-load-test-1  |      vus............................: 39     min=10      max=100
+// bench-k6-load-test-1  |      vus_max........................: 110    min=110     max=110
+// bench-k6-load-test-1  | running (2m01.3s), 000/110 VUs, 2600 complete and 0 interrupted iterations
+// bench-k6-load-test-1  | initialLoad ✓ [ 100% ] 10 VUs   1m0s
 // bench-k6-load-test-1  | loadTest    ✓ [ 100% ] 100 VUs  1m0s
-// bench-k6-load-test-1  | time="2024-01-16T15:08:18Z" level=error msg="thresholds on metrics 'checks, http_req_duration{test_type:loadTest}, http_req_failed' have been crossed"
+// bench-k6-load-test-1  | time="2024-01-18T09:37:59Z" level=error msg="thresholds on metrics 'checks, http_req_failed' have been crossed"
 

@@ -54,11 +54,8 @@ export default function () {
 }
 
 export function handleSummary(data) {
-    // console.log({ data: JSON.stringify(data, null, 2)})
     return {
         stdout: textSummary(data, { enableColors: true }),
-        // TODO: "Permission denied" when trying to save to file. How to fix this?
-        // '/app/smoke-test-results.json': JSON.stringify(data)
     };
   }
 
