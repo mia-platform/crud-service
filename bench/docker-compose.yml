@@ -40,7 +40,6 @@ services:
       - ./data/dump:/dump
 
   crud-service:
-    image: crud-service:latest
     build:
       context: ..
       dockerfile: Dockerfile
