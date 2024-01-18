@@ -106,12 +106,23 @@ module.exports = {
       ],
     },
     {
-      name: 'customerId',
+      name: 'shopID',
       type: 'normal',
       unique: true,
       fields: [
         {
-          name: 'customerId',
+          name: 'shopID',
+          order: 1,
+        },
+      ],
+    },
+    {
+      name: 'purchasesCount',
+      type: 'normal',
+      unique: true,
+      fields: [
+        {
+          name: 'shopID',
           order: 1,
         },
       ],
