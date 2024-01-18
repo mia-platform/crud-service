@@ -23,13 +23,13 @@ jobs:
           uses: actions/checkout@v4
 
         - name: start CRUD Service via docker file
-          run: docker compose --file bench/docker-compose.yml up crud-service -d
+          run: docker compose --file bench/docker-compose.yml up -d
 
-        - name: start MongoDB instance
-          uses: supercharge/mongodb-github-action@v1.10.0
-          with:
-            mongodb-version: "6.0"
-            mongodb-db: bench-test
+        # - name: start MongoDB instance
+        #   uses: supercharge/mongodb-github-action@v1.10.0
+        #   with:
+        #     mongodb-version: "6.0"
+        #     mongodb-db: bench-test
 
         - name: Populate "Customer" collection and "Registered Customer" View
           run: cd bench/data && npm i && node generate-customer-data.js -c mongodb://localhost:27017/bench-test -d bench-test -n 100000 -s 250
