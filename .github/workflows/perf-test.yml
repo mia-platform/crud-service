@@ -31,7 +31,7 @@ jobs:
             mongodb-version: "6.0"
             mongodb-db: bench-test
 
-        - name: Populate Customer collection and Registered Customer View
+        - name: Populate "Customer" collection and "Registered Customer" View
           run: cd bench/data && npm i && node generate-customer-data.js -c mongodb://localhost:27017/bench-test -d bench-test -n 100000 -s 250
 
         - name: Use Node.js
@@ -40,7 +40,7 @@ jobs:
             node-version: 20.x
             cache: npm
   
-        - name: Install
+        - name: Install CRUD Service node_modules
           run: npm ci
 
         - name: 'Start CRUD Service instance'
@@ -55,22 +55,25 @@ jobs:
             MONGODB_URL: mongodb://localhost:27017/bench-test
 
         - name: Run k6 load test (collection Items)
-          uses: grafana/k6-action@v0.3.1
-          with:
-              filename: bench/scripts/items/load-test.js
-              # flags: --out json=load-test-results.json
+          # uses: grafana/k6-action@v0.3.1
+          # with:
+          #     filename: bench/scripts/items/load-test.js
+          #     # flags: --out json=load-test-results.json
+          run: docker compose -f dc-k6.yml up k6-load-test
 
         - name: Run k6 spike test (collection Customers)
-          uses: grafana/k6-action@v0.3.1
-          with:
-              filename: bench/scripts/customers/spike-test.js
-              # flags: --out json=spike-test-results.json
+          # uses: grafana/k6-action@v0.3.1
+          # with:
+          #     filename: bench/scripts/customers/spike-test.js
+          #     # flags: --out json=spike-test-results.json
+          run: docker compose -f dc-k6.yml up k6-spike-test
 
         - name: Run k6 stress test (view Registered Customers)
-          uses: grafana/k6-action@v0.3.1
-          with:
-              filename: bench/scripts/registered-customers/stress-test.js
-              # flags: --out json=stress-test-results.json
+          # uses: grafana/k6-action@v0.3.1
+          # with:
+          #     filename: bench/scripts/registered-customers/stress-test.js
+          #     # flags: --out json=stress-test-results.json
+          run: docker compose -f dc-k6.yml up k6-stress-test-on-view
 
         # - name: Upload performance test results
         #   uses: actions/upload-artifact@v3
