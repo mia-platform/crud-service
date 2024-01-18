@@ -1,5 +1,5 @@
 import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.2/index.js';
-import { executeGetTests } from './utils';
+import { executeGetTests } from './utils.js';
 
 // 
 // Test on collection "customers"
