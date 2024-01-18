@@ -1,4 +1,21 @@
 services:
+  runner:
+    image: grafana/k6:0.48.0
+    deploy:
+      resources:
+        limits:
+          memory: 512Mb
+          cpus: "1"
+    volumes:
+      - ./scripts:/app
+    networks:
+      - k6-net
+    command: [ 
+      "run", 
+      "--out",
+      "json=runner-results.json",
+      "/app/runner-test.js",
+    ]
   k6-load-test:
     image: grafana/k6:0.48.0
     deploy:
@@ -10,7 +27,63 @@ services:
       - ./scripts:/app
     networks:
       - k6-net
-    command: [ "run", "/app/items/load-test.js" ]  
+    command: [ 
+      "run", 
+      "--out",
+      "json=load-test-results.json",
+      "/app/items/load-test.js",
+    ]
+  k6-stress-test-on-collection:
+    image: grafana/k6:0.48.0
+    deploy:
+      resources:
+        limits:
+          memory: 512Mb
+          cpus: "1"
+    volumes:
+      - ./scripts:/app
+    networks:
+      - k6-net
+    command: [ 
+      "run", 
+      "--out",
+      "json=stress-test-on-collection-results.json",
+      "/app/customers/stress-test.js",
+    ]
+  k6-stress-test-on-view:
+    image: grafana/k6:0.48.0
+    deploy:
+      resources:
+        limits:
+          memory: 512Mb
+          cpus: "1"
+    volumes:
+      - ./scripts:/app
+    networks:
+      - k6-net
+    command: [ 
+      "run", 
+      "--out",
+      "json=stress-test-on-view-results.json",
+      "/app/registered-customers/stress-test.js",
+    ]
+  k6-spike-test:
+    image: grafana/k6:0.48.0
+    deploy:
+      resources:
+        limits:
+          memory: 512Mb
+          cpus: "1"
+    volumes:
+      - ./scripts:/app
+    networks:
+      - k6-net
+    command: [ 
+      "run", 
+      "--out",
+      "json=spike-test-results.json",
+      "/app/customers/spike-test.js",
+    ]  
 
 networks:
   k6-net:
