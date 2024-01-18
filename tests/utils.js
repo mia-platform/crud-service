@@ -224,6 +224,8 @@ const fixtures = [
   },
 ]
 
+const defaultSorting = { name: 1 }
+
 const RAW_PROJECTION = {
   attachments: {
     $filter: {
@@ -549,6 +551,7 @@ module.exports = {
   newUpdaterId: userId,
   oldUpdaterId: updaterId,
   fixtures,
+  defaultSorting,
   stationFixtures,
   lotOfBooksFixtures,
   publicFixtures: fixtures.filter(f => f[__STATE__] === STATES.PUBLIC),

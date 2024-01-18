@@ -28,6 +28,8 @@ const {
   getMongoDatabaseName,
   getMongoURL,
   BOOKS_COLLECTION_NAME,
+  defaultSorting,
+  fixtures,
 } = require('./utils')
 
 const ALL_FIELDS = Object.keys(publicFixtures[0])
@@ -73,7 +75,7 @@ tap.test('allowDiskUse', async t => {
       return
     }
 
-    const crudService = new CrudService(collection, STATES.PUBLIC, { allowDiskUse: true })
+    const crudService = new CrudService(collection, STATES.PUBLIC, null, { allowDiskUse: true })
 
     t.test('in findAll', async t => {
       await crudService.findAll(context, { price: { $gt: 20 } }).toArray()
@@ -100,7 +102,7 @@ tap.test('allowDiskUse', async t => {
       return
     }
 
-    const crudService = new CrudService(collection, STATES.PUBLIC, { allowDiskUse: false })
+    const crudService = new CrudService(collection, STATES.PUBLIC, null, { allowDiskUse: false })
 
     t.test('in findAll', async t => {
       await crudService.findAll(context, { price: { $gt: 20 } }, ALL_FIELDS).toArray()
@@ -140,6 +142,41 @@ tap.test('allowDiskUse', async t => {
       await crudService.count(context)
       t.strictSame(commandFailedEvents, [])
       t.strictSame(commandStartedEvents[0].command.allowDiskUse, undefined)
+    })
+  })
+
+  t.test('defaultSorting', async t => {
+    const crudService = new CrudService(collection, STATES.PUBLIC, defaultSorting)
+    t.plan(2)
+
+    const getSortedFixtures = (compareFn) => fixtures
+      .filter((document) => document.__STATE__ === STATES.PUBLIC)
+      .sort(compareFn)
+      .map(({ _id }) => ({ _id }))
+
+    const defaultAscendendFixtures = getSortedFixtures((a, b) => a.name.localeCompare(b.name))
+    t.test('if isn\'t defined, defaultSorting is applied', async t => {
+      const result = await crudService.findAll(context, {}).toArray()
+      t.strictSame(
+        result,
+        defaultAscendendFixtures
+      )
+    })
+
+    t.test('if sort is defined, defaultSorting is not applied', async t => {
+      const sort = {
+        price: 1,
+      }
+      const ascendedFixturesByPrice = getSortedFixtures((a, b) => a.price - b.price)
+
+      t.notSame(ascendedFixturesByPrice, defaultAscendendFixtures)
+
+      const result = await crudService.findAll(context, {}, null, sort).toArray()
+
+      t.strictSame(
+        result,
+        ascendedFixturesByPrice
+      )
     })
   })
 })
