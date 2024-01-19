@@ -36,6 +36,7 @@ const {
 const { setUpTest, prefix, stationsPrefix, getHeaders } = require('./httpInterface.utils')
 const booksCollectionDefinition = require('./collectionDefinitions/books')
 const csvStringify = require('csv-stringify/sync')
+const xlsx = require('node-xlsx')
 
 const [STATION_DOC] = stationFixtures
 const HTTP_STATION_DOC = JSON.parse(JSON.stringify(STATION_DOC))
@@ -968,7 +969,6 @@ tap.test('HTTP GET /export - $text search', async t => {
   t.end()
 })
 
-
 tap.test('HTTP GET /export with _id in querystring', async t => {
   const tests = [
     {
@@ -1098,6 +1098,101 @@ tap.test('HTTP GET /export with _id in querystring', async t => {
       t.test('should keep the document as is in database', async t => {
         const documents = await collection.find().toArray()
         t.strictSame(documents, stationFixtures)
+        t.end()
+      })
+
+      t.end()
+    })
+
+    t.test(`EXPORT xls ${name}`, async t => {
+      const accept = 'application/vnd.ms-excel'
+      const response = await fastify.inject({
+        method: 'GET',
+        url: stationsPrefix + conf.url,
+        headers: {
+          ...getHeaders(conf),
+          accept,
+        },
+      })
+
+      t.test('should return 200', t => {
+        t.strictSame(response.statusCode, 200)
+        t.end()
+      })
+
+      t.test('should return "application/vnd.ms-excel"', t => {
+        t.ok(/application\/vnd.ms-excel/.test(response.headers['content-type']))
+        t.end()
+      })
+
+      t.test('file has proper content', t => {
+        const [{ data }] = xlsx.parse(response.rawPayload)
+        t.strictSame(data.length, 2)
+        const [row1, row2] = data
+        t.strictSame(row1, Object.keys(HTTP_STATION_DOC))
+        t.strictSame(row2, [
+          '002415b0-8d6d-427c-b654-9857183e57a7',
+          25040,
+          'S01788',
+          'Borgonato',
+          // NOTE: array and objects are stringified in the generated document
+          '["D028"]',
+          'Via Stazione, 24',
+          'it',
+          '2017-11-10T00:00:00.000Z',
+          'my-creator-id',
+          'my-updated-id',
+          '2017-11-11T00:00:00.000Z',
+          'PUBLIC',
+        ])
+        t.end()
+      })
+
+      t.end()
+    })
+
+    t.test(`EXPORT xlsx ${name}`, async t => {
+      const accept = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      const response = await fastify.inject({
+        method: 'GET',
+        url: stationsPrefix + conf.url,
+        headers: {
+          ...getHeaders(conf),
+          accept,
+        },
+      })
+
+      t.test('should return 200', t => {
+        t.strictSame(response.statusCode, 200)
+        t.end()
+      })
+
+      t.test('should return "application/vnd.ms-excel"', t => {
+        t.ok(/application\/vnd.openxmlformats-officedocument.spreadsheetml.sheet/.test(response.headers['content-type']))
+        t.end()
+      })
+
+
+      t.test('file has proper content', t => {
+        const [{ data }] = xlsx.parse(response.rawPayload)
+        t.strictSame(data.length, 2)
+        const [row1, row2] = data
+        t.strictSame(row1, Object.keys(HTTP_STATION_DOC))
+        t.strictSame(row2, [
+          '002415b0-8d6d-427c-b654-9857183e57a7',
+          25040,
+          'S01788',
+          'Borgonato',
+          // NOTE: array and objects are stringified in the generated document
+          '["D028"]',
+          'Via Stazione, 24',
+          'it',
+          '2017-11-10T00:00:00.000Z',
+          'my-creator-id',
+          'my-updated-id',
+          '2017-11-11T00:00:00.000Z',
+          'PUBLIC',
+        ])
         t.end()
       })
 
