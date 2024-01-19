@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 
 - updated service dependencies
+- updated NodeJS version in Dockerfile to v18.19.0
 
 ## 6.9.4 - 2023-11-22
 
