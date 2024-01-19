@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## 6.9.5 - 2024-01-19
+
+### Added
+
+- [#247](https://github.com/mia-platform/crud-service/pull/247): `xls` and `xlsx` export formats
+
+### Changed
+
+- updated service dependencies
+- updated NodeJS version in Dockerfile to v18.19.0
+
 ## 6.9.4 - 2023-11-22
 
 ### Added
