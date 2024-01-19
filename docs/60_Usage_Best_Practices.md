@@ -268,13 +268,18 @@ These data can be dynamic or static, but in the case of dynamic data, it is impo
 
 When the dataset of a collection has a high rate of **UPDATE/DELETE** operations compared to the rate of incoming HTTP requests, we suggest avoiding pagination mechanisms in favor of a data streaming approach.
 
-The `GET /export` method exposed by each endpoint associated with a collection opens a data stream in `nd-json` format in the HTTP response. By using this method, the CRUD Service will open **only one cursor** to the MongoDB cluster, and the `ResultSet` will remain unaffected by concurrent **UPDATE/DELETE** operations.
+The `GET /export` method exposed by each endpoint associated with a collection opens a data stream in different formats. By using this method, the CRUD Service will open **only one cursor** to the MongoDB cluster, and the `ResultSet` will remain unaffected by concurrent **UPDATE/DELETE** operations.
 
-:::info
-[ndjson](http://ndjson.org/) is a format that ensures the streaming of data structures, where each record is processed individually and separated by a newline (`\n`) delimiter.
+The export format can be specified through the `Accept` header, supported formats (and relative headers) are the following ones:
 
-To properly read this format, it is necessary to specify the header `"Accept: application/x-ndjson" `within the HTTP request. This header informs the server that the client expects the response to be in `nd-json` format.
-:::
+
+| Format | Accept Header value | Description |
+|--------|---------------------|-------------|
+| `json` | `application/json` | Data is exported in JSON format. |
+| [`ndjson`](http://ndjson.org/) | `application/x-ndjson` | Data is exported in JSON, each record is processed individually and separated by a newline (`\n`) delimiter. |
+| `csv` | `text/csv` | Data is exported in CSV format using comma as separator (the CSV includes the header with column names) |
+| `xlsx` | `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet` | Data is exported in XLS format (the file includes the header with column names) |
+| `xls` | `application/vnd.ms-excel` | Data is exported in XLS format (the file includes the header with column names) |
 
 In the given scenario, we can make a single HTTP request:
 
