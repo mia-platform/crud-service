@@ -18,9 +18,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 
 - remove `additionalProperties` constraints from collection definition schema to allow greater flexibility in adding further config entries
-- updated NodeJS version in Dockerfile to v20.8.1
+- updated NodeJS version in Dockerfile to v20.11.0
 - updated `@fastify/mongodb` to v8.0.0
 - updated `@fastify/multipart` to v8.0.0
+
+## 6.9.5 - 2024-01-19
+
+### Added
+
+- [#247](https://github.com/mia-platform/crud-service/pull/247): `xls` and `xlsx` export formats
+
+### Changed
+
+- updated service dependencies
+- updated NodeJS version in Dockerfile to v18.19.0
 
 ## 6.9.4 - 2023-11-22
 
@@ -28,7 +39,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - [#225](https://github.com/mia-platform/crud-service/pull/225): `MONGODB_MAX_IDLE_TIME_MS` env to control MongoDB `maxIdleTimeMs` connection option (default set to 0 for backward compatibility, meaning the opened connection remain opened indefinitely)
 
-### Fixed
+### Fixed
 
 - [#227](https://github.com/mia-platform/crud-service/pull/227): create indexes limiting promises concurrency to prevent connection creation spikes at boot
 

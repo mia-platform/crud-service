@@ -10,6 +10,32 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
+    groups:
+      fastify:
+        patterns:
+        - "@fastify*"
+        update-types:
+        - "minor"
+        - "patch"
+      miaPlatform:
+        patterns:
+        - "@mia-platform*"
+        update-types:
+        - "minor"
+        - "patch"
+      lodash:
+        patterns:
+        - "@lodash*"
+        update-types:
+        - "minor"
+        - "patch"
+      ajv:
+        patterns:
+        - "ajv"
+        - "ajv-*"
+        update-types:
+        - "minor"
+        - "patch"
 
   - package-ecosystem: "docker"
     directory: "/"
