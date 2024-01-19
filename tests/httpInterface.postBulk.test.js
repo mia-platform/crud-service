@@ -184,7 +184,7 @@ tap.test('HTTP POST /bulk', async t => {
       },
     })
 
-    t.strictSame(response.statusCode, 422)
+    t.strictSame(response.statusCode, 409)
     t.ok(/application\/json/.test(response.headers['content-type']))
 
     t.test('on database', async t => {

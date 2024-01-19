@@ -19,8 +19,10 @@
 const fp = require('fastify-plugin')
 const fastifyEnv = require('@fastify/env')
 const fastifyMultipart = require('@fastify/multipart')
+
 const ajvFormats = require('ajv-formats')
 const lunset = require('lodash.unset')
+
 const { readdirSync } = require('fs')
 const { join } = require('path')
 const { ObjectId } = require('mongodb')
@@ -30,6 +32,9 @@ const myPackage = require('./package')
 const fastifyEnvSchema = require('./envSchema')
 
 const httpInterface = require('./lib/httpInterface')
+const loadModels = require('./lib/loadModels')
+const joinPlugin = require('./lib/joinPlugin')
+
 const { castCollectionId } = require('./lib/pkFactories')
 const {
   SCHEMA_CUSTOM_KEYWORDS,
@@ -39,11 +44,9 @@ const {
   UNSETCMD,
   ADDTOSETCMD,
 } = require('./lib/consts')
-const joinPlugin = require('./lib/joinPlugin')
 const { registerMongoInstances } = require('./lib/mongo/mongo-plugin')
 const { getAjvResponseValidationFunction } = require('./lib/validatorGetters')
 const { pointerSeparator } = require('./lib/JSONPath.utils')
-const loadModels = require('./lib/loadModels')
 
 async function registerCrud(fastify, { modelName, isView }) {
   if (!fastify.mongo) { throw new Error('`fastify.mongo` is undefined!') }

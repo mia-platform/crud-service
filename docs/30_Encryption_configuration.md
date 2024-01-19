@@ -41,7 +41,7 @@ In order to guarantee a correct data encryption, it is necessary to configure a 
 Currently, we support two different KMS: `Local` and [Google Cloud Key Management](https://cloud.google.com/security-key-management) (available from Google Cloud Platform).
 
 To configure the CRUD Service in order to enable CSFLE it is necessary to add some environment variables to the configuration.
-To add the environment variables, please refer to [the dedicated section](https://docs.mia-platform.eu/docs/development_suite/set-up-infrastructure/env-var).
+To add the environment variables, please refer to [the dedicated section](https://docs.mia-platform.eu/docs/console/project-configuration/manage-environment-variables).
 
 ### Configure CSFLE with the Google Cloud Platform (GCP)
 

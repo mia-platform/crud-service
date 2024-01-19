@@ -7,13 +7,39 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### BREAKING CHANGES
+
+- [#189](https://github.com/mia-platform/crud-service/pull/189) introduce support to MongoDB v7.0 and remove support to MongoDB v4.2
+- [#140](https://github.com/mia-platform/crud-service/pull/140) changed response code on unique constraint violation with respect to [mia-platform/#175](https://github.com/mia-platform/community/discussions/175)
+- [#53](https://github.com/mia-platform/crud-service/issues/53) request to transition to a disallowed state now returns HTTP error 400 instead of 404
+- [#55](https://github.com/mia-platform/crud-service/issues/55) additional query \_q now return _400 Bad Request_ in case a field is not included in the collection definition schema
+- [#144](https://github.com/mia-platform/crud-service/pull/144) method `GET /:id` returns document containing only fields defined in the JSON Schema of the collection
+
+### Changed
+
+- remove `additionalProperties` constraints from collection definition schema to allow greater flexibility in adding further config entries
+- updated NodeJS version in Dockerfile to v20.11.0
+- updated `@fastify/mongodb` to v8.0.0
+- updated `@fastify/multipart` to v8.0.0
+
+## 6.9.5 - 2024-01-19
+
+### Added
+
+- [#247](https://github.com/mia-platform/crud-service/pull/247): `xls` and `xlsx` export formats
+
+### Changed
+
+- updated service dependencies
+- updated NodeJS version in Dockerfile to v18.19.0
+
 ## 6.9.4 - 2023-11-22
 
 ### Added
 
 - [#225](https://github.com/mia-platform/crud-service/pull/225): `MONGODB_MAX_IDLE_TIME_MS` env to control MongoDB `maxIdleTimeMs` connection option (default set to 0 for backward compatibility, meaning the opened connection remain opened indefinitely)
 
-### Fixed
+### Fixed
 
 - [#227](https://github.com/mia-platform/crud-service/pull/227): create indexes limiting promises concurrency to prevent connection creation spikes at boot
 

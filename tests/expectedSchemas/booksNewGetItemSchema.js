@@ -736,6 +736,7 @@ module.exports = {
           'nullable': true,
         },
       },
+      'additionalProperties': true,
     },
   },
 }

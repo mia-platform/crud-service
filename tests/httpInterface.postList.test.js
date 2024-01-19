@@ -170,7 +170,7 @@ tap.test('HTTP POST /', async t => {
       },
     })
 
-    t.strictSame(response.statusCode, 422)
+    t.strictSame(response.statusCode, 409)
     t.ok(/application\/json/.test(response.headers['content-type']))
     t.equal(await collection.countDocuments(), fixtures.length + 1, 'only one was inserted')
   })
