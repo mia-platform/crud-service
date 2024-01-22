@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fixed
+
+- improved excel export to ensure column consistency
+
 ## 6.9.5 - 2024-01-19
 
 ### Added
