@@ -33,6 +33,23 @@ services:
       "json=load-test-results.json",
       "/app/load-test.js",
     ]
+  k6-smoke-test:
+    image: grafana/k6:0.48.0
+    deploy:
+      resources:
+        limits:
+          memory: 512Mb
+          cpus: "1"
+    volumes:
+      - ./scripts:/app
+    networks:
+      - k6-net
+    command: [ 
+      "run", 
+      "--out",
+      "json=smoke-test-results.json",
+      "/app/smoke-test.js",
+    ]
   k6-stress-test-on-collection:
     image: grafana/k6:0.48.0
     deploy:
