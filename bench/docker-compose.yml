@@ -19,26 +19,6 @@ services:
       retries: 3
       start_period: 5s
 
-  restore-mongo:
-    image: mongo:6.0
-    depends_on:
-      database:
-        condition: service_healthy
-    networks:
-      - k6-net
-    deploy:
-      resources:
-        limits:
-          memory: 2GB
-          cpus: '1'
-    entrypoint:
-      - /bin/bash
-    command:
-      - "-c"
-      - mongorestore --uri="mongodb://database:27017" --drop --maintainInsertionOrder --gzip
-    volumes:
-      - ./data/dump:/dump
-
   crud-service:
     build:
       context: ..
@@ -48,8 +28,6 @@ services:
     depends_on:
       database:
         condition: service_healthy
-      restore-mongo:
-        condition: service_completed_successfully
     networks:
       - k6-net
     deploy:
@@ -67,8 +45,7 @@ services:
       CRUD_MAX_LIMIT: 200
       MONGODB_URL: "mongodb://database:27017/bench-test"
     volumes:
-      - ./collections:/home/node/app/collections
-      - ./views:/home/node/app/views
+      - ./definitions:/home/node/app
       - ./scripts/healthcheck.js:/home/node/app/healthcheck/healthcheck.js
     healthcheck:
       test: [ "CMD-SHELL", "node /home/node/app/healthcheck/healthcheck.js" ]
