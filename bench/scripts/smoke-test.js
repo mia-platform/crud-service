@@ -17,10 +17,6 @@ export const options = {
         http_req_duration: ['p(90)<150', 'p(95)<300'],
     }
 }
-
-export function setup() {
-    // Here it goes any code we want to execute before running our tests
-}
     
 export default function () {
     executeGetTests('customers')
@@ -30,8 +26,4 @@ export function handleSummary(data) {
     return {
         stdout: textSummary(data, { enableColors: true }),
     };
-}
-
-export function teardown(data) {
-    // Here it goes any code we want to execute after running our tests
 }
