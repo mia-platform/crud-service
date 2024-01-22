@@ -5,7 +5,7 @@ const { Command } = require('commander')
 const { MongoClient } = require('mongodb')
 const { faker } = require('@faker-js/faker')
 
-const { version, description } = require('./package.json')
+const { version } = require('../../package.json')
 
 function generateCustomers({ index, shopCount }) {
   const firstName = faker.person.firstName()
@@ -78,8 +78,8 @@ function generateCustomers({ index, shopCount }) {
 
 async function generateData(options) {
   const {
-    connectionString,
-    database,
+    connectionString = 'mongodb://localhost:27017',
+    database = 'benchTest',
     numDocumentsToCreate = 100000,
     shopCount = 250,
   } = options
@@ -123,11 +123,10 @@ async function main() {
   program.version(version)
 
   program
-    .description(description)
-    .requiredOption('-c, --connection-string <string>', 'MongoDB connection string')
-    .requiredOption('-d, --database <database>', 'MongoDB database name')
-    .requiredOption('-n, --number <number>', 'Number of documents to generate')
-    .requiredOption('-s, --v <string>', 'Number of shops to be used inside the "shopID" field inside each database document')
+    .option('-c, --connection-string <string>', 'MongoDB connection string')
+    .option('-d, --database <database>', 'MongoDB database name')
+    .option('-n, --number <number>', 'Number of documents to generate')
+    .option('-s, --v <string>', 'Number of shops to be used inside the "shopID" field inside each database document')
     .action(generateData)
 
   await program.parseAsync()
