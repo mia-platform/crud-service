@@ -1,11 +1,11 @@
 import http from 'k6/http';
 import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.2/index.js';
 import { check, sleep } from 'k6';
-
 import {
     randomIntBetween,
     randomString,
-  } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
+} from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
+import { is200, is200or404, is204or404, CRUD_BASE_URL } from './utils.js'
 
 // 
 // Test on collection "items"
@@ -48,11 +48,6 @@ export const options = {
 }
 
 // #region helper fns
-const CRUD_BASE_URL = 'http://crud-service:3000'
-
-const is200 = res => res.status === 200
-const is200or404 = res => [200, 404].includes(res.status)
-const is204or404 = res => [204, 404].includes(res.status)
 
 let counter = 0
 const generateItem = () => {
