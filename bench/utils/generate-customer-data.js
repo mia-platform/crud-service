@@ -5,8 +5,6 @@ const { Command } = require('commander')
 const { MongoClient } = require('mongodb')
 const { faker } = require('@faker-js/faker')
 
-const { version } = require('../../package.json')
-
 function generateCustomers({ index, shopCount }) {
   const firstName = faker.person.firstName()
   const lastName = faker.person.lastName()
@@ -119,8 +117,6 @@ async function generateData(options) {
 
 async function main() {
   const program = new Command()
-
-  program.version(version)
 
   program
     .option('-c, --connection-string <string>', 'MongoDB connection string')

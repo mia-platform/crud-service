@@ -1,4 +1,5 @@
 'use strict'
+
 import http from 'k6/http';
 import { check, sleep } from 'k6';
 
@@ -40,9 +41,9 @@ export const executeGetTests = (
   sleep(sleepTime)
 
   // Fetch for the seventh document from the getList request to get an id to use for a getById request
-  const getLitResults = JSON.parse(getList.body)
-  const count = getLitResults.length
-  const document = getLitResults[7 % count]
+  const getListResults = JSON.parse(getList.body)
+  const count = getListResults.length
+  const document = getListResults[7 % count]
 
   if (document) {
       // GET /{id} request
