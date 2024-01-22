@@ -14,7 +14,8 @@
     "url": "https://github.com/mia-platform/crud-service"
   },
   "scripts": {
-    "bench": "node bench/queryParser.bench.js",
+    "bench:queryParser": "node bench/queryParser.bench.js",
+    "bench:init": "docker compose -f bench/docker-compose.yml up -d --force-recreate && node bench/utils/generate-customer-data.js",
     "checkonly": "! grep -r '\\.only' tests/",
     "coverage": "npm run unit -- --jobs=4",
     "postcoverage": "tap report --coverage-report=lcovonly --coverage-report=text-summary",

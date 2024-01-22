@@ -323,6 +323,55 @@ This API responses always in `application/application/x-ndjson`
 
 See the documentation to see which parameters are available.
 
+## Performance test
+
+We use [k6](TODO) to simulate load of traffic directed to the CRUD Service and retrieve some performance metrics. At every version released, a workflow automatically starts executing the following tests:
+- **Load Test**: 10 virtual users execute POST requests for one minute on the same collection, then 100 virtual users execute GET, PATCH and DELETE requests for another minute on the data created
+- **Spike Test**: we simulate a spike of activity by increasing the number of users from 5 to 500 in 30 seconds, then a decrement of activity from 500 to 5 in another 30 seconds: during this test only GET requests are executed (returning a list of documents, search by `_id`, search via `_q` operator, count of documents and export of documents) on a collection that includes 100000 documents
+- **Stress Test**: we simulate a brief time of intense activity by having 250 users for 90 seconds, then a decrement of activity to 5 in 30 seconds: during this test only GET requests are executed (returning a list of documents, search by `_id`, search via `_q` operator, count of documents and export of documents) on a collection that includes 100000 documents
+
+These tests are executed ahead of every version released to ensure that further updates do not cause a degradation of performance that might affect the usage of the CRUD Service.
+
+### Execute performance test on a local environment
+
+In case you want to run the tests on your local environment you have to:
+- start the CRUD Service on a Docker container
+- have a Mongo instance ready to be used, eventually already loaded with existing documents to simulate tests
+
+To simplify performing these operation, you can use the same setup for the tests executed during the GitHub workflow, by starting an instance of the CRUD Service using collections and view included in the folder `_bench/definitions`, and using the script `bench/utils/generate-customer-data.js` to quickly include mock documents on the _customers_ collection.
+
+The `generate-customer-data.js` script can be run at every time with the following command:
+
+```
+node bench/utils/generate-customer-data.js -c <connection string> -d <database name> -n <number of documents> -s <number of total shops>
+```
+Where the script arguments are the following:
+- **connection string** (default: _mongodb://localhost:27017_) to connect to your mongo instance
+- **database name** (default: _bench-test_), the name of the database to write in
+- **number of documents** (default: _100000_) that will be created and saved in the _customers_ collection of the aforementioned database
+- **number of total shops** (default: _250_) that will be used to define a random value (from 1 to the chosen number) that will be applied to the _shopID_ field of each document to be saved
+
+To simplify these operations, you can execute the command `npm run bench:init` from your shell to start a container with a MongoDB 6.0 instance, a container with the CRUD Service (built from your current branch) and populate the collection _customers_ with 100000 documents.
+
+To execute any test, you should start the k6 service by executing the following command:
+```
+docker compose -f bench/dc-k6.yml up <service name>
+```
+Where the service name can be one of the following:
+
+| Service Name                   | Description                                                                                     | File name containing the test            | 
+|--------------------------------|-------------------------------------------------------------------------------------------------|------------------------------------------|
+| k6-load-test                   | Executes a Load Test (1 minute of POST, 1 minute of GET/PATCH/DELETE) on the _items_ collection | [load-test.js](bench/scripts/load-test.js)         |
+| k6-smoke-test                  | Executes a Smoke Test (1 minute of GET requests) on the _customers_ collection                  | [smoke-test.js](bench/scripts/smoke-test.js)         |
+| k6-stress-test-on-collections  | Executes a Stress Test (GET requests for 90 seconds by 250 users) on the _customers_ collection | [stress-test-on-collections.js](bench/scripts/stress-test-on-collections.js)         |
+| k6-stress-test-on-view         | Executes a Stress Test (GET requests for 90 seconds by 250 users) on the _registered-customers_ view | [stress-test-on-view.js](bench/scripts/stress-test-on-view.js)         |
+| k6-spike-test                  | Executes a Spike Test (simulate a spike of 500 concurrent users for GET requests) on the _customers_ collection | [spike-test.js](bench/scripts/spike-test.js)         |
+| runner                         | An empty test that can be populated for tests on local environment | [runner.js](bench/scripts/runner.js)         |
+
+We suggest you to use the runner to execute customized tests for your own research.
+
+You are free to modify and improve those tests and the definitions used for them but please remember to not use any sensible data.
+
 ## FAQ
 
 ### How do I change the Mongocryptd version on Debian
