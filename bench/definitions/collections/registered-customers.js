@@ -134,7 +134,7 @@ module.exports = {
     {
       name: 'canBeContactedIndex',
       type: 'normal',
-      unique: true,
+      unique: false,
       fields: [
         {
           name: 'canBeContacted',

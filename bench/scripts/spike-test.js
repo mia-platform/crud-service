@@ -12,9 +12,9 @@ import { executeGetTests } from './utils.js';
 
 export const options = {
     stages: [
-        { duration: '5s', target: 5 },
-        { duration: '20s', target: 500 },
-        { duration: '20s', target: 5 },
+        { duration: '10s', target: 5 },
+        { duration: '30s', target: 500 },
+        { duration: '30s', target: 5 },
     ],
     thresholds: {
         checks: ['rate==1'],
