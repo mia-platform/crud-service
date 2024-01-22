@@ -32,7 +32,7 @@ jobs:
             cache: npm
 
         - name: Populate "Customer" collection and "Registered Customer" View
-          run: node bench/utils/generate-customer-data.js -c mongodb://localhost:27017/bench-test -d bench-test -n 100000 -s 250
+          run: npm i && node bench/utils/generate-customer-data.js -c mongodb://localhost:27017/bench-test -d bench-test -n 100000 -s 250
 
         - name: Run k6 load test (collection Items)
           working-directory: bench
