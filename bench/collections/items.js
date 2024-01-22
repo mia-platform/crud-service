@@ -122,23 +122,23 @@ module.exports = {
       ],
     },
     {
-      name: 'createdAt',
+      name: 'numberIndex',
       type: 'normal',
       unique: false,
       fields: [
         {
-          name: 'createdAt',
-          order: -1,
+          name: 'number',
+          order: 1,
         },
       ],
     },
     {
-      name: 'stringIndex',
+      name: 'counterIndex',
       type: 'normal',
       unique: false,
       fields: [
         {
-          name: 'string',
+          name: 'object.counter',
           order: 1,
         },
       ],

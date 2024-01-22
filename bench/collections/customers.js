@@ -205,18 +205,7 @@ module.exports = {
       ],
     },
     {
-      name: 'createdAt',
-      type: 'normal',
-      unique: false,
-      fields: [
-        {
-          name: 'createdAt',
-          order: -1,
-        },
-      ],
-    },
-    {
-      name: 'exportIndex',
+      name: 'shopIdIndex',
       type: 'normal',
       unique: false,
       fields: [
@@ -231,12 +220,23 @@ module.exports = {
       ],
     },
     {
-      name: 'customerId',
+      name: 'purchasesCountIndex',
       type: 'normal',
       unique: true,
       fields: [
         {
-          name: 'customerId',
+          name: 'purchasesCount',
+          order: 1,
+        },
+      ],
+    },
+    {
+      name: 'canBeContactedIndex',
+      type: 'normal',
+      unique: true,
+      fields: [
+        {
+          name: 'canBeContacted',
           order: 1,
         },
       ],

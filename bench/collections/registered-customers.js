@@ -106,23 +106,38 @@ module.exports = {
       ],
     },
     {
-      name: 'shopID',
+      name: 'shopIdIndex',
       type: 'normal',
-      unique: true,
+      unique: false,
       fields: [
         {
           name: 'shopID',
           order: 1,
         },
+        {
+          name: '__STATE__',
+          order: 1,
+        },
       ],
     },
     {
-      name: 'purchasesCount',
+      name: 'purchasesCountIndex',
       type: 'normal',
       unique: true,
       fields: [
         {
-          name: 'shopID',
+          name: 'purchasesCount',
+          order: 1,
+        },
+      ],
+    },
+    {
+      name: 'canBeContactedIndex',
+      type: 'normal',
+      unique: true,
+      fields: [
+        {
+          name: 'canBeContacted',
           order: 1,
         },
       ],
