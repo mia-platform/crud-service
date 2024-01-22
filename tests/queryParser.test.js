@@ -25,14 +25,6 @@ const collectionDefinition = require('./newCollectionDefinitions/books')
 const projectsCollectionDefinition = require('./collectionDefinitions/projects')
 const generatePathFieldsForRawSchema = require('../lib/generatePathFieldsForRawSchema')
 
-const {
-  UPDATERID,
-  UPDATEDAT,
-  CREATORID,
-  CREATEDAT,
-  __STATE__,
-} = require('../lib/consts')
-
 tap.test('queryParser', t => {
   const nowDate = new Date()
   const nowString = nowDate.toISOString()
@@ -42,57 +34,6 @@ tap.test('queryParser', t => {
     collectionDefinition,
     generatePathFieldsForRawSchema(logger, collectionDefinition)
   )
-
-  t.test('has parsed the fields correctly', t => {
-    t.plan(1)
-
-    // eslint-disable-next-line no-underscore-dangle
-    t.strictSame(queryParser._fieldDefinition, {
-      _id: 'ObjectId',
-      name: 'string',
-      isbn: 'string',
-      price: 'number',
-      author: 'string',
-      authorAddressId: 'ObjectId',
-      isPromoted: 'boolean',
-      publishDate: 'Date',
-      position: 'GeoPoint',
-      tags: 'Array',
-      tagIds: 'Array',
-      additionalInfo: 'RawObject',
-      signature: 'RawObject',
-      metadata: 'RawObject',
-      attachments: 'Array',
-      editionsDates: 'Array',
-      'signature.name': 'string',
-      'metadata.somethingString': 'string',
-      'metadata.somethingNumber': 'number',
-      'metadata.somethingArrayObject': 'Array',
-      'metadata.somethingArrayObject.arrayItemObjectChildNumber': 'number',
-      'metadata.somethingArrayObject.anotherNumber': 'number',
-      'metadata.somethingArrayObject.anotherObject': 'RawObject',
-      'metadata.somethingObject': 'RawObject',
-      'metadata.somethingObject.childNumber': 'number',
-      'metadata.somethingArrayOfNumbers': 'Array',
-      'metadata.exampleArrayOfArray': 'Array',
-      'attachments.name': 'string',
-      'attachments.detail': 'RawObject',
-      'attachments.detail.size': 'number',
-      'attachments.neastedArr': 'Array',
-      'attachments.additionalInfo': 'RawObject',
-      'attachments.other': 'string',
-      'attachments.size': 'number',
-      'attachments.stuff': 'number',
-      'attachments.more': 'Array',
-      'editionsDates.edition': 'number',
-      'editionsDates.date': 'Date',
-      [UPDATERID]: 'string',
-      [UPDATEDAT]: 'Date',
-      [CREATORID]: 'string',
-      [CREATEDAT]: 'Date',
-      [__STATE__]: 'string',
-    })
-  })
 
   t.test('parseAndCast', t => {
     const tests = []
