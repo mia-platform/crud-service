@@ -25,12 +25,6 @@ jobs:
         - name: start CRUD Service via docker file
           run: docker compose --file bench/docker-compose.yml up -d
 
-        # - name: start MongoDB instance
-        #   uses: supercharge/mongodb-github-action@v1.10.0
-        #   with:
-        #     mongodb-version: "6.0"
-        #     mongodb-db: bench-test
-
         - name: Populate "Customer" collection and "Registered Customer" View
           run: cd bench/data && npm i && node generate-customer-data.js -c mongodb://localhost:27017/bench-test -d bench-test -n 100000 -s 250
 
@@ -39,49 +33,17 @@ jobs:
           with:
             node-version: 20.x
             cache: npm
-  
-        # - name: Install CRUD Service node_modules
-        #   run: npm ci
-
-        # - name: 'Start CRUD Service instance'
-        #   run: (npm run start&)
-        #   env:
-        #     LOG_LEVEL: info
-        #     COLLECTION_DEFINITION_FOLDER: /home/runner/work/crud-service/crud-service/bench/collections
-        #     VIEWS_DEFINITION_FOLDER: /home/runner/work/crud-service/crud-service/bench/views
-        #     USER_ID_HEADER_KEY: userid
-        #     CRUD_LIMIT_CONSTRAINT_ENABLED: true
-        #     CRUD_MAX_LIMIT: 200
-        #     MONGODB_URL: mongodb://localhost:27017/bench-test
 
         - name: Run k6 load test (collection Items)
           working-directory: bench
-          # uses: grafana/k6-action@v0.3.1
-          # with:
-          #     filename: bench/scripts/items/load-test.js
-          #     # flags: --out json=load-test-results.json
           run: docker compose -f dc-k6.yml up k6-load-test
 
         - name: Run k6 spike test (collection Customers)
           working-directory: bench
-          # uses: grafana/k6-action@v0.3.1
-          # with:
-          #     filename: bench/scripts/customers/spike-test.js
-          #     # flags: --out json=spike-test-results.json
           run: docker compose -f dc-k6.yml up k6-spike-test
 
         - name: Run k6 stress test (view Registered Customers)
           working-directory: bench
-          # uses: grafana/k6-action@v0.3.1
-          # with:
-          #     filename: bench/scripts/registered-customers/stress-test.js
-          #     # flags: --out json=stress-test-results.json
           run: docker compose -f dc-k6.yml up k6-stress-test-on-view
-
-        # - name: Upload performance test results
-        #   uses: actions/upload-artifact@v3
-        #   with:
-        #     name: load-test-report
-        #     path: load-test-results.json
 
         
