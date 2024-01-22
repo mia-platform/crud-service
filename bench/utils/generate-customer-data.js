@@ -126,7 +126,7 @@ async function main() {
     .option('-c, --connection-string <string>', 'MongoDB connection string')
     .option('-d, --database <database>', 'MongoDB database name')
     .option('-n, --number <number>', 'Number of documents to generate')
-    .option('-s, --v <string>', 'Number of shops to be used inside the "shopID" field inside each database document')
+    .option('-s, --shopCount <string>', 'Number of shops to be used inside the "shopID" field inside each database document')
     .action(generateData)
 
   await program.parseAsync()
