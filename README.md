@@ -325,39 +325,44 @@ See the documentation to see which parameters are available.
 
 ## Performance test
 
-We use [k6](TODO) to simulate load of traffic directed to the CRUD Service and retrieve some performance metrics. At every version released, a workflow automatically starts executing the following tests:
-- **Load Test**: 10 virtual users execute POST requests for one minute on the same collection, then 100 virtual users execute GET, PATCH and DELETE requests for another minute on the data created
-- **Spike Test**: we simulate a spike of activity by increasing the number of users from 5 to 500 in 30 seconds, then a decrement of activity from 500 to 5 in another 30 seconds: during this test only GET requests are executed (returning a list of documents, search by `_id`, search via `_q` operator, count of documents and export of documents) on a collection that includes 100000 documents
-- **Stress Test**: we simulate a brief time of intense activity by having 250 users for 90 seconds, then a decrement of activity to 5 in 30 seconds: during this test only GET requests are executed (returning a list of documents, search by `_id`, search via `_q` operator, count of documents and export of documents) on a collection that includes 100000 documents
+## Performance Test
 
-These tests are executed ahead of every version released to ensure that further updates do not cause a degradation of performance that might affect the usage of the CRUD Service.
+We use [k6](https://example.com/k6) to simulate the load of traffic directed to the CRUD Service and retrieve some performance metrics. At every version released, a workflow automatically starts executing the following tests:
 
-### Execute performance test on a local environment
+- **Load Test**: 10 virtual users execute POST requests for one minute on the same collection, then 100 virtual users execute GET, PATCH, and DELETE requests for another minute on the data created.
+- **Spike Test**: We simulate a spike of activity by increasing the number of users from 5 to 500 in 30 seconds, then a decrement of activity from 500 to 5 in another 30 seconds. During this test, only GET requests are executed on a collection that includes 100,000 documents.
+- **Stress Test**: We simulate a brief time of intense activity with 250 users for 90 seconds, followed by a decrement of activity to 5 in 30 seconds. During this test, only GET requests are executed on a collection that includes 100,000 documents.
 
-In case you want to run the tests on your local environment you have to:
-- start the CRUD Service on a Docker container
-- have a Mongo instance ready to be used, eventually already loaded with existing documents to simulate tests
+These tests are executed ahead of every version release to ensure that further updates do not cause a degradation of performance that might affect the usage of the CRUD Service.
 
-To simplify performing these operation, you can use the same setup for the tests executed during the GitHub workflow, by starting an instance of the CRUD Service using collections and view included in the folder `_bench/definitions`, and using the script `bench/utils/generate-customer-data.js` to quickly include mock documents on the _customers_ collection.
+### Execute Performance Test on a Local Environment
 
-The `generate-customer-data.js` script can be run at every time with the following command:
+In case you want to run the tests on your local environment, follow these steps:
 
-```
+- Start the CRUD Service in a Docker container.
+- Have a MongoDB instance ready for use, eventually loaded with existing documents to simulate tests.
+
+To simplify these operations, you can use the same setup for the tests executed during the GitHub workflow, by starting an instance of the CRUD Service using collections and views included in the folder `_bench/definitions`. Use the script `bench/utils/generate-customer-data.js` to quickly include mock documents in the _customers_ collection.
+
+The `generate-customer-data.js` script can be executed at any time with the following command:
+
+```bash
 node bench/utils/generate-customer-data.js -c <connection string> -d <database name> -n <number of documents> -s <number of total shops>
 ```
 Where the script arguments are the following:
-- **connection string** (default: _mongodb://localhost:27017_) to connect to your mongo instance
-- **database name** (default: _bench-test_), the name of the database to write in
-- **number of documents** (default: _100000_) that will be created and saved in the _customers_ collection of the aforementioned database
-- **number of total shops** (default: _250_) that will be used to define a random value (from 1 to the chosen number) that will be applied to the _shopID_ field of each document to be saved
+- **connection string** (default: _mongodb://localhost:27017_): Connects to your MongoDB instance.
+- **database name** (default: _bench-test_): Specifies the name of the database to write to.
+- **number of documents** (default: _100000_): Sets the number of documents to be created and saved in the customers collection of the specified database.
+- **number of total shops** (default: _250_): Defines a random value (from 1 to the specified number) applied to the shopID field of each document to be saved.
 
-To simplify these operations, you can execute the command `npm run bench:init` from your shell to start a container with a MongoDB 6.0 instance, a container with the CRUD Service (built from your current branch) and populate the collection _customers_ with 100000 documents.
 
-To execute any test, you should start the k6 service by executing the following command:
+To simplify these operations, you can execute the command npm run bench:init from your shell. This command starts a container with a MongoDB 6.0 instance, a container with the CRUD Service (built from your current branch), and populates the _customers_ collection with 100,000 documents.
+
+To execute any test, start the k6 service with the following command:
 ```
 docker compose -f bench/dc-k6.yml up <service name>
 ```
-Where the service name can be one of the following:
+Remember to replace `<service name>` with one of the following:
 
 | Service Name                   | Description                                                                                     | File name containing the test            | 
 |--------------------------------|-------------------------------------------------------------------------------------------------|------------------------------------------|
