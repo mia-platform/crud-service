@@ -77,7 +77,7 @@ function generateCustomers({ index, shopCount }) {
 async function generateData(options) {
   const {
     connectionString = 'mongodb://localhost:27017',
-    database = 'benchTest',
+    database = 'bench.test',
     numDocumentsToCreate = 100000,
     shopCount = 250,
   } = options
