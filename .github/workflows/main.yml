@@ -69,4 +69,6 @@ jobs:
   perf-test:
     needs:
       - checks
+      - release-docker
+      - tests
     uses: ./.github/workflows/perf-test.yml
