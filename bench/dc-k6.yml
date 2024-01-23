@@ -14,7 +14,7 @@ services:
       "run", 
       "--out",
       "json=runner-results.json",
-      "/app/runner-test.js",
+      "/app/runner.js",
     ]
   k6-load-test:
     image: grafana/k6:0.48.0

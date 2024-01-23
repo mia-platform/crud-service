@@ -123,7 +123,7 @@ module.exports = {
     {
       name: 'purchasesCountIndex',
       type: 'normal',
-      unique: true,
+      unique: false,
       fields: [
         {
           name: 'purchasesCount',
