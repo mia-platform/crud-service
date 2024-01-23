@@ -92,6 +92,7 @@
         "jsx": true
       }
     },
+    "ignorePatterns": ["bench"],
     "overrides": [
       {
         "files": [
