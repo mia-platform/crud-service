@@ -119,10 +119,10 @@ async function main() {
   const program = new Command()
 
   program
-    .option('-c, --connection-string <string>', 'MongoDB connection string')
-    .option('-d, --database <database>', 'MongoDB database name')
-    .option('-n, --number <number>', 'Number of documents to generate')
-    .option('-s, --shopCount <string>', 'Number of shops to be used inside the "shopID" field inside each database document')
+    .option('-c, --connection-string <string>', 'MongoDB connection string', 'mongodb://localhost:27017')
+    .option('-d, --database <database>', 'MongoDB database name', 'bench-test')
+    .option('-n, --number <number>', 'Number of documents to generate', 100000)
+    .option('-s, --shopCount <string>', 'Number of shops to be used inside the "shopID" field inside each database document', 250)
     .action(generateData)
 
   await program.parseAsync()
@@ -135,7 +135,7 @@ if (require.main === module) {
       process.exitCode = 0
     })
     .catch(error => {
-      console.error(`\n ❌ failed to create records ${error.message}\n`)
+      console.error(`\n ❌ failed to create records: ${error.message}\n`)
       process.exitCode = 1
     })
 }
