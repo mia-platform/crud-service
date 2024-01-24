@@ -7,10 +7,9 @@ on:
         default: 20.x
         required: false
         type: string
-  # TODO: Update this when we're ready to go - it should happen at every tag or something
   push:
-    branches:
-      - 'feat/perf-test'
+    tags:
+      - "v*"
 
 
 jobs:
