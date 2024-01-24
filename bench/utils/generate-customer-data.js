@@ -78,12 +78,12 @@ async function generateData(options) {
   const {
     connectionString = 'mongodb://localhost:27017',
     database = 'bench.test',
-    numDocumentsToCreate = 100000,
+    number = 100000,
     shopCount = 250,
   } = options
   // #region constants
   const customerCollectionName = 'customers'
-  const customerBatchSize = numDocumentsToCreate / 10
+  const customerBatchSize = number / 10
   // #endregion
 
   const mongo = new MongoClient(connectionString)
@@ -92,9 +92,9 @@ async function generateData(options) {
   const coll = mongo.db(database).collection(customerCollectionName)
 
   try {
-    let i = numDocumentsToCreate
+    let i = number
     while (i > 0) {
-      process.stdout.write(`\rStarting the creation of documents for collection "customers".`)
+      process.stdout.write(`\rStarting the creation of ${number} documents for collection "customers".`)
       const numberToGenerate = Math.min(customerBatchSize, i)
 
       const users = []
@@ -106,7 +106,7 @@ async function generateData(options) {
       await coll.insertMany(users)
 
       i -= numberToGenerate
-      process.stdout.write(`\r(${numDocumentsToCreate - i}/${numDocumentsToCreate}) ${((numDocumentsToCreate - i) / numDocumentsToCreate * 100).toFixed(2)}%`)
+      process.stdout.write(`\r(${number - i}/${number}) ${((number - i) / number * 100).toFixed(2)}%`)
     }
   } catch (error) {
     console.error(`failed to generate data: ${error}`)
@@ -119,7 +119,7 @@ async function main() {
   const program = new Command()
 
   program
-    .option('-c, --connection-string <string>', 'MongoDB connection string', 'mongodb://localhost:27017')
+    .option('-c, --connectionString <string>', 'MongoDB connection string', 'mongodb://localhost:27017')
     .option('-d, --database <database>', 'MongoDB database name', 'bench-test')
     .option('-n, --number <number>', 'Number of documents to generate', 100000)
     .option('-s, --shopCount <string>', 'Number of shops to be used inside the "shopID" field inside each database document', 250)
