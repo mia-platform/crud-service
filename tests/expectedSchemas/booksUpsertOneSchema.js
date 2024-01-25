@@ -232,6 +232,15 @@ module.exports = {
             'items': {
               'type': 'object',
               'additionalProperties': true,
+              'properties': {
+                'edition': {
+                  'type': 'number',
+                },
+                'date': {
+                  'type': 'string',
+                  'format': 'date-time',
+                },
+              },
               'nullable': true,
             },
             'nullable': true,
@@ -239,6 +248,15 @@ module.exports = {
           {
             'type': 'object',
             'additionalProperties': true,
+            'properties': {
+              'edition': {
+                'type': 'number',
+              },
+              'date': {
+                'type': 'string',
+                'format': 'date-time',
+              },
+            },
             'nullable': true,
           },
         ],
@@ -319,6 +337,14 @@ module.exports = {
       },
       'attachments\\.\\d+\\.more\\.\\d+$': {
         'type': 'string',
+      },
+      'editionsDates\\.\\d+\\..+$': true,
+      'editionsDates\\.\\d+\\.edition$': {
+        'type': 'number',
+      },
+      'editionsDates\\.\\d+\\.date$': {
+        'type': 'string',
+        'format': 'date-time',
       },
     },
     'additionalProperties': false,
@@ -606,6 +632,15 @@ module.exports = {
                 'items': {
                   'type': 'object',
                   'additionalProperties': true,
+                  'properties': {
+                    'edition': {
+                      'type': 'number',
+                    },
+                    'date': {
+                      'type': 'string',
+                      'format': 'date-time',
+                    },
+                  },
                   'nullable': true,
                 },
                 'nullable': true,
@@ -613,6 +648,15 @@ module.exports = {
               {
                 'type': 'object',
                 'additionalProperties': true,
+                'properties': {
+                  'edition': {
+                    'type': 'number',
+                  },
+                  'date': {
+                    'type': 'string',
+                    'format': 'date-time',
+                  },
+                },
                 'nullable': true,
               },
             ],
@@ -714,9 +758,27 @@ module.exports = {
           'editionsDates.$.replace': {
             'type': 'object',
             'additionalProperties': true,
+            'properties': {
+              'edition': {
+                'type': 'number',
+              },
+              'date': {
+                'type': 'string',
+                'format': 'date-time',
+              },
+            },
           },
           'editionsDates.$.merge': {
             'type': 'object',
+            'properties': {
+              'edition': {
+                'type': 'number',
+              },
+              'date': {
+                'type': 'string',
+                'format': 'date-time',
+              },
+            },
             'additionalProperties': true,
           },
           'signature.name': {
@@ -956,6 +1018,27 @@ module.exports = {
           'attachments\\.\\d+\\.more\\.\\d+$': {
             'type': 'string',
           },
+          'editionsDates\\.\\d+$': {
+            'type': 'object',
+            'properties': {
+              'edition': {
+                'type': 'number',
+              },
+              'date': {
+                'type': 'string',
+                'format': 'date-time',
+              },
+            },
+            'additionalProperties': true,
+          },
+          'editionsDates\\.\\d+\\..+$': true,
+          'editionsDates\\.\\d+\\.edition$': {
+            'type': 'number',
+          },
+          'editionsDates\\.\\d+\\.date$': {
+            'type': 'string',
+            'format': 'date-time',
+          },
           'metadata\\.exampleArrayOfArray\\.\\d+\\.\\$\\.replace$': {
             'type': 'string',
           },
@@ -1070,6 +1153,12 @@ module.exports = {
               true,
             ],
           },
+          '^editionsDates\\..+': {
+            'type': 'boolean',
+            'enum': [
+              true,
+            ],
+          },
         },
       },
       '$inc': {
@@ -1109,6 +1198,9 @@ module.exports = {
           'attachments\\.\\d+\\.stuff$': {
             'type': 'number',
           },
+          'editionsDates\\.\\d+\\.edition$': {
+            'type': 'number',
+          },
         },
       },
       '$mul': {
@@ -1146,6 +1238,9 @@ module.exports = {
             'type': 'number',
           },
           'attachments\\.\\d+\\.stuff$': {
+            'type': 'number',
+          },
+          'editionsDates\\.\\d+\\.edition$': {
             'type': 'number',
           },
         },
@@ -1219,6 +1314,15 @@ module.exports = {
           'editionsDates': {
             'type': 'object',
             'additionalProperties': true,
+            'properties': {
+              'edition': {
+                'type': 'number',
+              },
+              'date': {
+                'type': 'string',
+                'format': 'date-time',
+              },
+            },
           },
           'metadata.somethingArrayObject': {
             'type': 'object',
@@ -1262,6 +1366,7 @@ module.exports = {
           'attachments\\.\\d+\\.more$': {
             'type': 'string',
           },
+          'editionsDates\\.\\d+\\..+$': {},
         },
         'additionalProperties': false,
       },
@@ -1342,6 +1447,15 @@ module.exports = {
           'editionsDates': {
             'type': 'object',
             'additionalProperties': true,
+            'properties': {
+              'edition': {
+                'type': 'number',
+              },
+              'date': {
+                'type': 'string',
+                'format': 'date-time',
+              },
+            },
           },
           'metadata.somethingArrayObject': {
             'type': 'object',
@@ -1437,6 +1551,17 @@ module.exports = {
               {
                 'type': 'string',
               },
+              {
+                'type': 'object',
+                'patternProperties': {
+                  '^$': {},
+                },
+              },
+            ],
+          },
+          'editionsDates\\.\\d+\\..+$': {
+            'oneOf': [
+              {},
               {
                 'type': 'object',
                 'patternProperties': {
@@ -1525,6 +1650,15 @@ module.exports = {
           'editionsDates': {
             'type': 'object',
             'additionalProperties': true,
+            'properties': {
+              'edition': {
+                'type': 'number',
+              },
+              'date': {
+                'type': 'string',
+                'format': 'date-time',
+              },
+            },
           },
           'metadata.somethingArrayObject': {
             'type': 'object',
@@ -1620,6 +1754,17 @@ module.exports = {
               {
                 'type': 'string',
               },
+              {
+                'type': 'object',
+                'patternProperties': {
+                  '^$': {},
+                },
+              },
+            ],
+          },
+          'editionsDates\\.\\d+\\..+$': {
+            'oneOf': [
+              {},
               {
                 'type': 'object',
                 'patternProperties': {
@@ -1910,6 +2055,15 @@ module.exports = {
                 'items': {
                   'type': 'object',
                   'additionalProperties': true,
+                  'properties': {
+                    'edition': {
+                      'type': 'number',
+                    },
+                    'date': {
+                      'type': 'string',
+                      'format': 'date-time',
+                    },
+                  },
                   'nullable': true,
                 },
                 'nullable': true,
@@ -1917,6 +2071,15 @@ module.exports = {
               {
                 'type': 'object',
                 'additionalProperties': true,
+                'properties': {
+                  'edition': {
+                    'type': 'number',
+                  },
+                  'date': {
+                    'type': 'string',
+                    'format': 'date-time',
+                  },
+                },
                 'nullable': true,
               },
             ],
@@ -2236,6 +2399,15 @@ module.exports = {
               'items': {
                 'type': 'object',
                 'additionalProperties': true,
+                'properties': {
+                  'edition': {
+                    'type': 'number',
+                  },
+                  'date': {
+                    'type': 'string',
+                    'format': 'date-time',
+                  },
+                },
                 'nullable': true,
               },
               'nullable': true,
@@ -2243,6 +2415,15 @@ module.exports = {
             {
               'type': 'object',
               'additionalProperties': true,
+              'properties': {
+                'edition': {
+                  'type': 'number',
+                },
+                'date': {
+                  'type': 'string',
+                  'format': 'date-time',
+                },
+              },
               'nullable': true,
             },
           ],

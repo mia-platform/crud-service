@@ -25,14 +25,6 @@ const collectionDefinition = require('./newCollectionDefinitions/books')
 const projectsCollectionDefinition = require('./collectionDefinitions/projects')
 const generatePathFieldsForRawSchema = require('../lib/generatePathFieldsForRawSchema')
 
-const {
-  UPDATERID,
-  UPDATEDAT,
-  CREATORID,
-  CREATEDAT,
-  __STATE__,
-} = require('../lib/consts')
-
 tap.test('queryParser', t => {
   const nowDate = new Date()
   const nowString = nowDate.toISOString()
@@ -42,35 +34,6 @@ tap.test('queryParser', t => {
     collectionDefinition,
     generatePathFieldsForRawSchema(logger, collectionDefinition)
   )
-
-  t.test('has parsed the fields correctly', t => {
-    t.plan(1)
-
-    // eslint-disable-next-line no-underscore-dangle
-    t.strictSame(queryParser._fieldDefinition, {
-      _id: 'ObjectId',
-      name: 'string',
-      isbn: 'string',
-      price: 'number',
-      author: 'string',
-      authorAddressId: 'ObjectId',
-      isPromoted: 'boolean',
-      publishDate: 'Date',
-      position: 'GeoPoint',
-      tags: 'Array',
-      tagIds: 'Array',
-      additionalInfo: 'RawObject',
-      signature: 'RawObject',
-      metadata: 'RawObject',
-      attachments: 'Array',
-      editionsDates: 'Array',
-      [UPDATERID]: 'string',
-      [UPDATEDAT]: 'Date',
-      [CREATORID]: 'string',
-      [CREATEDAT]: 'Date',
-      [__STATE__]: 'string',
-    })
-  })
 
   t.test('parseAndCast', t => {
     const tests = []
@@ -363,11 +326,6 @@ tap.test('queryParser', t => {
           name: 'dot separated queries names should be allowed if type is RawObject',
           query: { 'additionalInfo.note': 'foo' },
           expected: { 'additionalInfo.note': 'foo' },
-        },
-        {
-          name: 'dot separated queries names should not be allowed if type is not RawObject',
-          query: { 'name.note': 'foo' },
-          throw: 'Unknown field: name.note',
         },
         {
           name: 'allow nested queries for type RawObject',

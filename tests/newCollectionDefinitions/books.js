@@ -200,6 +200,10 @@ module.exports = {
         type: 'array',
         items: {
           type: 'object',
+          properties: {
+            edition: { type: 'number' },
+            date: { type: 'string', format: 'date-time' },
+          },
           additionalProperties: true,
         },
         nullable: true,
