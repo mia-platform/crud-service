@@ -203,6 +203,10 @@ async function iterateOverCollectionDefinitionAndRegisterCruds(fastify) {
 }
 
 async function registerHelperRoutes(fastify) {
+  registerGetSchemasRoute(fastify)
+}
+
+async function registerGetSchemasRoute(fastify) {
   const jsonSchemasMap = {}
   fastify.get('/schemas', () => {
     if (Object.keys(jsonSchemasMap).length <= 0) {
