@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fixed
+
+- [#237](https://github.com/mia-platform/crud-service/issues/237): casting values in `_q` queries are now even if case of nested fields
+
 ## 6.9.6 - 2024-01-23
 
 ### Fixed
