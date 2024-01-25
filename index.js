@@ -202,6 +202,19 @@ async function iterateOverCollectionDefinitionAndRegisterCruds(fastify) {
   }
 }
 
+async function registerHelperRoutes(fastify) {
+  const jsonSchemasMap = {}
+  fastify.get('/schemas', () => {
+    if (Object.keys(jsonSchemasMap).length <= 0) {
+      for (const model of Object.values(fastify.models)) {
+        const jsonSchema = model.jsonSchemaGeneratorWithNested.generateGetItemJSONSchema().response['200'].properties
+        jsonSchemasMap[model.definition.name] = jsonSchema
+      }
+    }
+    return jsonSchemasMap
+  })
+}
+
 const validCrudFolder = path => !['.', '..'].includes(path) && /\.js(on)?$/.test(path)
 
 async function setupCruds(fastify) {
@@ -228,6 +241,7 @@ async function setupCruds(fastify) {
       .register(fp(loadModels))
       .register(iterateOverCollectionDefinitionAndRegisterCruds)
       .register(joinPlugin, { prefix: '/join' })
+      .register(registerHelperRoutes)
   }
 }
 
