@@ -125,7 +125,7 @@ try {
 
 #### How to generate a local master key using Shell Command
 ```shell
-cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 96 | head -n 1 > YOUR_KEY_PATH
+LC_CTYPE=C tr -dc 'a-zA-Z0-9' < /dev/urandom | fold -w 96 | head -1
 ```
 
 ## Migration and change of the configurations

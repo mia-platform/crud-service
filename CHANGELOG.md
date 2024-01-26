@@ -22,6 +22,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - updated `@fastify/mongodb` to v8.0.0
 - updated `@fastify/multipart` to v8.0.0
 
+## 6.9.6 - 2024-01-23
+
+### Fixed
+
+- improved excel export to ensure column consistency
+
 ## 6.9.5 - 2024-01-19
 
 ### Added

@@ -1129,9 +1129,28 @@ tap.test('HTTP GET /export with _id in querystring', async t => {
         const [{ data }] = xlsx.parse(response.rawPayload)
         t.strictSame(data.length, 2)
         const [row1, row2] = data
-        t.strictSame(row1, Object.keys(HTTP_STATION_DOC))
+        t.strictSame(row1, [
+          '_id',
+          'updaterId',
+          'updatedAt',
+          'creatorId',
+          'createdAt',
+          '__STATE__',
+          'Cap',
+          'CodiceMIR',
+          'Comune',
+          'Direttrici',
+          'Indirizzo',
+          'country',
+          'nonNullableDate',
+        ])
         t.strictSame(row2, [
           '002415b0-8d6d-427c-b654-9857183e57a7',
+          'my-updated-id',
+          '2017-11-11T00:00:00.000Z',
+          'my-creator-id',
+          '2017-11-10T00:00:00.000Z',
+          'PUBLIC',
           25040,
           'S01788',
           'Borgonato',
@@ -1139,11 +1158,8 @@ tap.test('HTTP GET /export with _id in querystring', async t => {
           '["D028"]',
           'Via Stazione, 24',
           'it',
-          '2017-11-10T00:00:00.000Z',
-          'my-creator-id',
-          'my-updated-id',
-          '2017-11-11T00:00:00.000Z',
-          'PUBLIC',
+          // Missing column data
+          '',
         ])
         t.end()
       })
@@ -1177,9 +1193,28 @@ tap.test('HTTP GET /export with _id in querystring', async t => {
         const [{ data }] = xlsx.parse(response.rawPayload)
         t.strictSame(data.length, 2)
         const [row1, row2] = data
-        t.strictSame(row1, Object.keys(HTTP_STATION_DOC))
+        t.strictSame(row1, [
+          '_id',
+          'updaterId',
+          'updatedAt',
+          'creatorId',
+          'createdAt',
+          '__STATE__',
+          'Cap',
+          'CodiceMIR',
+          'Comune',
+          'Direttrici',
+          'Indirizzo',
+          'country',
+          'nonNullableDate',
+        ])
         t.strictSame(row2, [
           '002415b0-8d6d-427c-b654-9857183e57a7',
+          'my-updated-id',
+          '2017-11-11T00:00:00.000Z',
+          'my-creator-id',
+          '2017-11-10T00:00:00.000Z',
+          'PUBLIC',
           25040,
           'S01788',
           'Borgonato',
@@ -1187,11 +1222,8 @@ tap.test('HTTP GET /export with _id in querystring', async t => {
           '["D028"]',
           'Via Stazione, 24',
           'it',
-          '2017-11-10T00:00:00.000Z',
-          'my-creator-id',
-          'my-updated-id',
-          '2017-11-11T00:00:00.000Z',
-          'PUBLIC',
+          // Missing column data
+          '',
         ])
         t.end()
       })
