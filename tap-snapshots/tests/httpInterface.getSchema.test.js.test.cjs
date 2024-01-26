@@ -13,7 +13,7 @@ Object {
   },
   "_id": Object {
     "description": "Hexadecimal identifier of the document in the collection",
-    "example": "65b385287c22620874650778",
+    "example": "000000000000000000000000",
     "pattern": "^[a-fA-F\\\\d]{24}$",
     "type": "string",
   },
@@ -134,7 +134,7 @@ Object {
   },
   "authorAddressId": Object {
     "description": "The address of the author",
-    "example": "65b385287c2262087465077a",
+    "example": "000000000000000000000000",
     "pattern": "^[a-fA-F\\\\d]{24}$",
     "type": "string",
   },

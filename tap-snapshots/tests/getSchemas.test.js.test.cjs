@@ -14,13 +14,13 @@ Object {
     },
     "_id": Object {
       "description": "Hexadecimal identifier of the document in the collection",
-      "example": "65b29b2e8756001368da8815",
+      "example": "000000000000000000000000",
       "pattern": "^[a-fA-F\\\\d]{24}$",
       "type": "string",
     },
     "addressId": Object {
       "description": "The address to refer to",
-      "example": "65b29b2e8756001368da8817",
+      "example": "000000000000000000000000",
       "pattern": "^[a-fA-F\\\\d]{24}$",
       "type": "string",
     },
@@ -60,7 +60,7 @@ Object {
     },
     "_id": Object {
       "description": "Hexadecimal identifier of the document in the collection",
-      "example": "65b29b2e8756001368da8821",
+      "example": "000000000000000000000000",
       "pattern": "^[a-fA-F\\\\d]{24}$",
       "type": "string",
     },
@@ -104,7 +104,7 @@ Object {
     },
     "_id": Object {
       "description": "Hexadecimal identifier of the document in the collection",
-      "example": "65b29b2e8756001368da882b",
+      "example": "000000000000000000000000",
       "pattern": "^[a-fA-F\\\\d]{24}$",
       "type": "string",
     },
@@ -148,7 +148,7 @@ Object {
     },
     "_id": Object {
       "description": "Hexadecimal identifier of the document in the collection",
-      "example": "65b29b2e8756001368da884d",
+      "example": "000000000000000000000000",
       "pattern": "^[a-fA-F\\\\d]{24}$",
       "type": "string",
     },
@@ -269,7 +269,7 @@ Object {
     },
     "authorAddressId": Object {
       "description": "The address of the author",
-      "example": "65b29b2e8756001368da884f",
+      "example": "000000000000000000000000",
       "pattern": "^[a-fA-F\\\\d]{24}$",
       "type": "string",
     },
@@ -483,7 +483,7 @@ Object {
     },
     "_id": Object {
       "description": "Hexadecimal identifier of the document in the collection",
-      "example": "65b29b2e8756001368da885f",
+      "example": "000000000000000000000000",
       "pattern": "^[a-fA-F\\\\d]{24}$",
       "type": "string",
     },
@@ -598,7 +598,7 @@ Object {
     },
     "authorAddressId": Object {
       "description": "The address of the author",
-      "example": "65b29b2e8756001368da8861",
+      "example": "000000000000000000000000",
       "pattern": "^[a-fA-F\\\\d]{24}$",
       "type": "string",
     },
@@ -819,7 +819,7 @@ Object {
     },
     "_id": Object {
       "description": "Hexadecimal identifier of the document in the collection",
-      "example": "65b29b2e8756001368da886b",
+      "example": "000000000000000000000000",
       "pattern": "^[a-fA-F\\\\d]{24}$",
       "type": "string",
     },
@@ -905,7 +905,7 @@ Object {
     },
     "_id": Object {
       "description": "Hexadecimal identifier of the document in the collection",
-      "example": "65b29b2f8756001368da8875",
+      "example": "000000000000000000000000",
       "pattern": "^[a-fA-F\\\\d]{24}$",
       "type": "string",
     },
@@ -945,7 +945,7 @@ Object {
     },
     "_id": Object {
       "description": "Hexadecimal identifier of the document in the collection",
-      "example": "65b29b2f8756001368da887f",
+      "example": "000000000000000000000000",
       "pattern": "^[a-fA-F\\\\d]{24}$",
       "type": "string",
     },
@@ -984,7 +984,7 @@ Object {
     },
     "_id": Object {
       "description": "Hexadecimal identifier of the document in the collection",
-      "example": "65b29b2f8756001368da88af",
+      "example": "000000000000000000000000",
       "pattern": "^[a-fA-F\\\\d]{24}$",
       "type": "string",
     },
@@ -1000,7 +1000,7 @@ Object {
     },
     "id_rider": Object {
       "description": "The id of the rider who will deliver the items",
-      "example": "65b29b2f8756001368da88b1",
+      "example": "000000000000000000000000",
       "pattern": "^[a-fA-F\\\\d]{24}$",
       "type": "string",
     },
@@ -1045,7 +1045,7 @@ Object {
     },
     "_id": Object {
       "description": "Hexadecimal identifier of the document in the collection",
-      "example": "65b29b2f8756001368da8891",
+      "example": "000000000000000000000000",
       "pattern": "^[a-fA-F\\\\d]{24}$",
       "type": "string",
     },
@@ -1064,7 +1064,7 @@ Object {
         Object {
           "items": Object {
             "description": "Hexadecimal identifier of the document in the collection",
-            "example": "65b29b2f8756001368da8893",
+            "example": "000000000000000000000000",
             "pattern": "^[a-fA-F\\\\d]{24}$",
             "type": "string",
           },
@@ -1072,7 +1072,7 @@ Object {
         },
         Object {
           "description": "Hexadecimal identifier of the document in the collection",
-          "example": "65b29b2f8756001368da8893",
+          "example": "000000000000000000000000",
           "pattern": "^[a-fA-F\\\\d]{24}$",
           "type": "string",
         },
@@ -1121,7 +1121,7 @@ Object {
     },
     "_id": Object {
       "description": "Hexadecimal identifier of the document in the collection",
-      "example": "65b29b2f8756001368da889f",
+      "example": "000000000000000000000000",
       "pattern": "^[a-fA-F\\\\d]{24}$",
       "type": "string",
     },
@@ -1198,7 +1198,7 @@ Object {
     },
     "_id": Object {
       "description": "Hexadecimal identifier of the document in the collection",
-      "example": "65b29b2f8756001368da88c3",
+      "example": "000000000000000000000000",
       "pattern": "^[a-fA-F\\\\d]{24}$",
       "type": "string",
     },
@@ -1217,7 +1217,7 @@ Object {
         Object {
           "items": Object {
             "description": "Hexadecimal identifier of the document in the collection",
-            "example": "65b29b2f8756001368da88c5",
+            "example": "000000000000000000000000",
             "pattern": "^[a-fA-F\\\\d]{24}$",
             "type": "string",
           },
@@ -1225,7 +1225,7 @@ Object {
         },
         Object {
           "description": "Hexadecimal identifier of the document in the collection",
-          "example": "65b29b2f8756001368da88c5",
+          "example": "000000000000000000000000",
           "pattern": "^[a-fA-F\\\\d]{24}$",
           "type": "string",
         },
@@ -1262,7 +1262,7 @@ Object {
     },
     "_id": Object {
       "description": "_id",
-      "example": "65b29b2f8756001368da88d1",
+      "example": "000000000000000000000000",
       "pattern": "^[a-fA-F\\\\d]{24}$",
       "type": "string",
     },
@@ -1375,7 +1375,7 @@ Object {
     },
     "_id": Object {
       "description": "Hexadecimal identifier of the document in the collection",
-      "example": "65b29b2f8756001368da88db",
+      "example": "000000000000000000000000",
       "pattern": "^[a-fA-F\\\\d]{24}$",
       "type": "string",
     },
@@ -1490,7 +1490,7 @@ Object {
     },
     "_id": Object {
       "description": "Hexadecimal identifier of the document in the collection",
-      "example": "65b29b2f8756001368da88ef",
+      "example": "000000000000000000000000",
       "pattern": "^[a-fA-F\\\\d]{24}$",
       "type": "string",
     },
@@ -1538,7 +1538,7 @@ Object {
     },
     "_id": Object {
       "description": "Hexadecimal identifier of the document in the collection",
-      "example": "65b29b2f8756001368da88e5",
+      "example": "000000000000000000000000",
       "pattern": "^[a-fA-F\\\\d]{24}$",
       "type": "string",
     },
