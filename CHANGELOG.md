@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## 6.9.7-rc.0 - 2024-01-26
+
 ### Added
 
 - Added `/schemas` and `/collection/schema` routes to discover/inspect the data models' json schemas for each collection
