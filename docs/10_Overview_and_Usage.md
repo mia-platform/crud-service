@@ -1103,69 +1103,67 @@ You can retrieve the data model of every collection in a JSON schema format usin
 The `/schemas` endpoint returns a map-like object of every collection with its json schema, such as this:
 
 ```json
-[
-  {
-    "books": {
-      "__STATE__": {
-        "description": "The state of the document",
-        "type": "string",
-      },
-      "_id": {
-        "description": "Hexadecimal identifier of the document in the collection",
-        "example": "000000000000000000000000",
-        "pattern": "^[a-fA-F\\\\d]{24}$",
-        "type": "string",
-      },
-      "additionalInfo": {
-        "additionalProperties": true,
-        "nullable": true,
-        "type": "object",
-      },
-      "author": {
-        "description": "The author of the book",
-        "type": "string",
-      },
-      ...
+{
+  "books": {
+    "__STATE__": {
+      "description": "The state of the document",
+      "type": "string",
     },
-    "projects": {
-      "__STATE__": {
-        "description": "__STATE__",
-        "type": "string",
-      },
-      "_id": {
-        "description": "_id",
-        "example": "000000000000000000000000",
-        "pattern": "^[a-fA-F\\\\d]{24}$",
-        "type": "string",
-      },
-      "createdAt": {
-        "description": "createdAt",
-        "example": "1997-04-24T07:00:00.000Z",
-        "nullable": false,
-        "type": "string",
-      },
-      "creatorId": {
-        "description": "creatorId",
-        "type": "string",
-      },
-      "name": {
-        "description": "The name of the project",
-        "type": "string",
-      },
-      "updatedAt": {
-        "description": "updatedAt",
-        "example": "1997-04-24T07:00:00.000Z",
-        "nullable": false,
-        "type": "string",
-      },
-      "updaterId": {
-        "description": "updaterId",
-        "type": "string",
-      },
-      ...
-    }
+    "_id": {
+      "description": "Hexadecimal identifier of the document in the collection",
+      "example": "000000000000000000000000",
+      "pattern": "^[a-fA-F\\\\d]{24}$",
+      "type": "string",
+    },
+    "additionalInfo": {
+      "additionalProperties": true,
+      "nullable": true,
+      "type": "object",
+    },
+    "author": {
+      "description": "The author of the book",
+      "type": "string",
+    },
+    ...
+  },
+  "projects": {
+    "__STATE__": {
+      "description": "__STATE__",
+      "type": "string",
+    },
+    "_id": {
+      "description": "_id",
+      "example": "000000000000000000000000",
+      "pattern": "^[a-fA-F\\\\d]{24}$",
+      "type": "string",
+    },
+    "createdAt": {
+      "description": "createdAt",
+      "example": "1997-04-24T07:00:00.000Z",
+      "nullable": false,
+      "type": "string",
+    },
+    "creatorId": {
+      "description": "creatorId",
+      "type": "string",
+    },
+    "name": {
+      "description": "The name of the project",
+      "type": "string",
+    },
+    "updatedAt": {
+      "description": "updatedAt",
+      "example": "1997-04-24T07:00:00.000Z",
+      "nullable": false,
+      "type": "string",
+    },
+    "updaterId": {
+      "description": "updaterId",
+      "type": "string",
+    },
+    ...
   }
-]
+}
 ```
 
 You can curl the endpoint with the following command: 
