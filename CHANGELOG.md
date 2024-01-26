@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+- Added `/schemas` and `/collection/schema` routes to discover/inspect the data schemas for each collection
+
 ### Fixed
 
 - [#237](https://github.com/mia-platform/crud-service/issues/237): casting values in `_q` queries are now even if case of nested fields
