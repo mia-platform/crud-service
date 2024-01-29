@@ -18,7 +18,4 @@ test-collections
 .npmrc
 .tap
 .local
-bench/definitions
-#bench/definitions/views
-#bench/definitions/collections
 
