@@ -22,6 +22,51 @@ const path = require('path')
 const lc39 = require('@mia-platform/lc39')
 
 tap.test('getSchemas', async t => {
+  t.test('return json', async t => {
+    const fastify = await startFastify(t)
+    const response = await fastify.inject({
+      method: 'GET',
+      url: '/-/schemas',
+    })
+
+    t.strictSame(response.statusCode, 200)
+    t.matchSnapshot(response.payload)
+  })
+
+  t.test('return ndjson', async t => {
+    const fastify = await startFastify(t)
+    const response = await fastify.inject({
+      method: 'GET',
+      url: '/-/schemas',
+      headers: {
+        accept: 'application/x-ndjson',
+      },
+    })
+
+    t.strictSame(response.statusCode, 200)
+    t.matchSnapshot(response.payload)
+  })
+
+  t.test('return ndjson', async t => {
+    const fastify = await startFastify(t, {
+      HELPERS_PREFIX: '/_/',
+    })
+
+    const wrongUrlResponse = await fastify.inject({
+      method: 'GET',
+      url: '/-/schemas',
+    })
+    t.strictSame(wrongUrlResponse.statusCode, 404)
+
+    const rightUrlResponse = await fastify.inject({
+      method: 'GET',
+      url: '/_/schemas',
+    })
+    t.strictSame(rightUrlResponse.statusCode, 200)
+  })
+})
+
+async function startFastify(t, envs = {}) {
   const databaseName = getMongoDatabaseName()
   const mongoURL = getMongoURL(databaseName)
 
@@ -30,6 +75,7 @@ tap.test('getSchemas', async t => {
       MONGODB_URL: mongoURL,
       COLLECTION_DEFINITION_FOLDER: path.join(__dirname, 'collectionDefinitions'),
       USER_ID_HEADER_KEY: 'userid',
+      ...envs,
     },
     logLevel: 'silent',
   })
@@ -38,11 +84,5 @@ tap.test('getSchemas', async t => {
     await fastify.close()
   })
 
-  const response = await fastify.inject({
-    method: 'GET',
-    url: '/-/schemas',
-  })
-
-  t.strictSame(response.statusCode, 200)
-  t.matchSnapshot(JSON.parse(response.payload))
-})
+  return fastify
+}
