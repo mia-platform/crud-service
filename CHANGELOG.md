@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - [#53](https://github.com/mia-platform/crud-service/issues/53) request to transition to a disallowed state now returns HTTP error 400 instead of 404
 - [#55](https://github.com/mia-platform/crud-service/issues/55) additional query \_q now return _400 Bad Request_ in case a field is not included in the collection definition schema
 - [#144](https://github.com/mia-platform/crud-service/pull/144) method `GET /:id` returns document containing only fields defined in the JSON Schema of the collection
+- [#236](https://github.com/mia-platform/crud-service/issues/236) added `defaultSorting` field to collection definition: the field applies a sorting object document to find queries, if no explicit `_s` parameter is set on request 
 
 ### Changed
 
