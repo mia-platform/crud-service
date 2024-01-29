@@ -1098,9 +1098,9 @@ Dune,143535,14.99,Frank Herbert
 
 ### Get Schemas
 
-You can retrieve the data model of every collection in a JSON schema format using the `/schemas` and `/<collection>/schema` endpoints.
+You can retrieve the data model of every collection in a JSON schema format using the `/-/schemas` and `/<collection>/schema` endpoints.
 
-The `/schemas` endpoint returns a map-like object of every collection with its json schema, such as this:
+The `/-/schemas` endpoint returns a map-like object of every collection with its json schema, such as this:
 
 ```json
 {
@@ -1165,11 +1165,12 @@ The `/schemas` endpoint returns a map-like object of every collection with its j
   }
 }
 ```
+Notice how the endpoint has a `/-/` prefix before the `/schemas`. This is a prefix used by the helper routes that do not belong to a specific collection. You can change this prefix by changing the `HELPERS_PREFIX` environment variable.
 
 You can curl the endpoint with the following command: 
 
 ```shell
-curl -X GET https://your-url/v2/schemas \
+curl -X GET https://your-url/v2/-/schemas \
 -H  "accept: application/json"  \
 -H  "content-type: application/json" \
 -H  "client-key: client-key"
