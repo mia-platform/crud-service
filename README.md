@@ -356,14 +356,13 @@ Where the script arguments are the following:
 - **number of total shops** (default: _250_): Defines a random value (from 1 to the specified number) applied to the shopID field of each document to be saved.
 
 
-To simplify these operations, you can execute the command npm run bench:init from your shell. This command starts a container with a MongoDB 6.0 instance, a container with the CRUD Service (built from your current branch), and populates the _customers_ collection with 100,000 documents.
+To simplify these operations, you can execute the command `npm run bench:init` from your shell. This command starts a container with a MongoDB 6.0 instance, a container with the CRUD Service (built from your current branch), and populates the _customers_ collection with 100,000 documents.
 
 To execute any test, start the k6 service with the following command:
 ```
 docker compose -f bench/dc-k6.yml up <service name>
 ```
 Remember to replace `<service name>` with one of the following:
-
 | Service Name                   | Description                                                                                     | File name containing the test            | 
 |--------------------------------|-------------------------------------------------------------------------------------------------|------------------------------------------|
 | k6-load-test                   | Executes a Load Test (1 minute of POST, 1 minute of GET/PATCH/DELETE) on the _items_ collection | [load-test.js](bench/scripts/load-test.js)         |
@@ -373,7 +372,9 @@ Remember to replace `<service name>` with one of the following:
 | k6-spike-test                  | Executes a Spike Test (simulate a spike of 500 concurrent users for GET requests) on the _customers_ collection | [spike-test.js](bench/scripts/spike-test.js)         |
 | runner                         | An empty test that can be populated for tests on local environment | [runner.js](bench/scripts/runner.js)         |
 
-We suggest you to use the runner to execute customized tests for your own research.
+We suggest you use the runner to execute customized tests for your research.
+
+Also, do not run all the tests alltogether via `docker compose -f bench/dc-k6.yml up`, without specifying a test name, otherwise all the tests will run at the same time and the results will not be specific to any test but a global indication on how to service worked during the execution of **all** the tests.
 
 You are free to modify and improve those tests and the definitions used for them but please remember to not use any sensible data.
 
