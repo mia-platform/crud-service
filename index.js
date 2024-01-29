@@ -44,7 +44,7 @@ const { registerMongoInstances } = require('./lib/mongo/mongo-plugin')
 const { getAjvResponseValidationFunction } = require('./lib/validatorGetters')
 const { pointerSeparator } = require('./lib/JSONPath.utils')
 const loadModels = require('./lib/loadModels')
-const getAccept = require('./lib/acceptHeaderParser')
+const { registerHelperRoutes } = require('./lib/helpersRoutes')
 
 async function registerCrud(fastify, { modelName, isView }) {
   if (!fastify.mongo) { throw new Error('`fastify.mongo` is undefined!') }
@@ -203,34 +203,6 @@ async function iterateOverCollectionDefinitionAndRegisterCruds(fastify) {
   }
 }
 
-async function registerHelperRoutes(fastify) {
-  registerGetSchemasRoute(fastify)
-}
-
-async function registerGetSchemasRoute(fastify) {
-
-  fastify.get(
-    '/schemas', {
-      config: { replyType: (acceptHeader) => {
-        const accept = getAccept(acceptHeader)
-
-        if (!accept || accept === '*/*') { return 'application/x-ndjson' }
-
-        return accept
-      },
-      },
-    },
-  const jsonSchemasMap = {}
-    () => {
-      if (Object.keys(jsonSchemasMap).length <= 0) {
-        for (const model of Object.values(fastify.models)) {
-          const jsonSchema = model.jsonSchemaGeneratorWithNested.generateGetItemJSONSchema().response['200'].properties
-          jsonSchemasMap[model.definition.name] = jsonSchema
-        }
-      }
-      return jsonSchemasMap
-    })
-}
 
 const validCrudFolder = path => !['.', '..'].includes(path) && /\.js(on)?$/.test(path)
 
