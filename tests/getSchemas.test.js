@@ -40,7 +40,7 @@ tap.test('getSchemas', async t => {
 
   const response = await fastify.inject({
     method: 'GET',
-    url: '/schemas',
+    url: '/-/schemas',
   })
 
   t.strictSame(response.statusCode, 200)
