@@ -14,7 +14,8 @@
     "url": "https://github.com/mia-platform/crud-service"
   },
   "scripts": {
-    "bench": "node bench/queryParser.bench.js",
+    "bench:queryParser": "node bench/queryParser.bench.js",
+    "bench:init": "docker compose -f bench/docker-compose.yml up -d --force-recreate && node bench/utils/generate-customer-data.js",
     "checkonly": "! grep -r '\\.only' tests/",
     "coverage": "npm run unit -- --jobs=4",
     "postcoverage": "tap report --coverage-report=lcovonly --coverage-report=text-summary",
@@ -59,8 +60,10 @@
     "ajv": "^8.12.0"
   },
   "devDependencies": {
+    "@faker-js/faker": "^8.3.1",
     "@mia-platform/eslint-config-mia": "^3.0.0",
     "abstract-logging": "^2.0.1",
+    "commander": "^11.1.0",
     "eslint": "^8.56.0",
     "fastbench": "^1.0.1",
     "form-data": "^4.0.0",
@@ -89,6 +92,7 @@
         "jsx": true
       }
     },
+    "ignorePatterns": ["bench"],
     "overrides": [
       {
         "files": [

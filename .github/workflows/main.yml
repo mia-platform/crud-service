@@ -65,3 +65,10 @@ jobs:
       version: main
     secrets:
       security_checks_token: ${{ secrets.CRUD_SERVICE_SYSDIG_CHECK_TRIGGER }}
+
+  perf-test:
+    needs:
+      - checks
+      - release-docker
+      - tests
+    uses: ./.github/workflows/perf-test.yml

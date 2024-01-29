@@ -1,0 +1,106 @@
+services:
+  runner:
+    image: grafana/k6:0.48.0
+    deploy:
+      resources:
+        limits:
+          memory: 512Mb
+          cpus: "1"
+    volumes:
+      - ./scripts:/app
+    networks:
+      - k6-net
+    command: [ 
+      "run", 
+      "--out",
+      "json=runner-results.json",
+      "/app/runner.js",
+    ]
+  k6-load-test:
+    image: grafana/k6:0.48.0
+    deploy:
+      resources:
+        limits:
+          memory: 512Mb
+          cpus: "1"
+    volumes:
+      - ./scripts:/app
+    networks:
+      - k6-net
+    command: [ 
+      "run", 
+      "--out",
+      "json=load-test-results.json",
+      "/app/load-test.js",
+    ]
+  k6-smoke-test:
+    image: grafana/k6:0.48.0
+    deploy:
+      resources:
+        limits:
+          memory: 512Mb
+          cpus: "1"
+    volumes:
+      - ./scripts:/app
+    networks:
+      - k6-net
+    command: [ 
+      "run", 
+      "--out",
+      "json=smoke-test-results.json",
+      "/app/smoke-test.js",
+    ]
+  k6-stress-test-on-collection:
+    image: grafana/k6:0.48.0
+    deploy:
+      resources:
+        limits:
+          memory: 512Mb
+          cpus: "1"
+    volumes:
+      - ./scripts:/app
+    networks:
+      - k6-net
+    command: [ 
+      "run", 
+      "--out",
+      "json=stress-test-on-collection-results.json",
+      "/app/stress-test-on-collection.js",
+    ]
+  k6-stress-test-on-view:
+    image: grafana/k6:0.48.0
+    deploy:
+      resources:
+        limits:
+          memory: 512Mb
+          cpus: "1"
+    volumes:
+      - ./scripts:/app
+    networks:
+      - k6-net
+    command: [ 
+      "run", 
+      "--out",
+      "json=stress-test-on-view-results.json",
+      "/app/stress-test-on-view.js",
+    ]
+  k6-spike-test:
+    image: grafana/k6:0.48.0
+    deploy:
+      resources:
+        limits:
+          memory: 512Mb
+          cpus: "1"
+    volumes:
+      - ./scripts:/app
+    networks:
+      - k6-net
+    command: [ 
+      "run", 
+      "--out",
+      "json=spike-test-results.json",
+      "/app/spike-test.js",
+    ]
+
+networks:
+  k6-net:
