@@ -20,6 +20,9 @@ module.exports = {
   name: 'books',
   endpointBasePath: '/books-endpoint',
   defaultState: 'DRAFT',
+  defaultSorting: {
+    _id: 1,
+  },
   fields: [
     {
       name: '_id',

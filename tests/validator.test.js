@@ -107,6 +107,79 @@ tap.test('validate schema', async t => {
     t.end()
   })
 
+  await t.test('should throw if defaultSorting has wrong order', t => {
+    const ajv = new Ajv({ useDefaults: true, coerceTypes: true })
+    const validate = ajv.compile(compatibilityModelJsonSchema)
+
+    const jsonFile = {
+      name: 'addresses',
+      endpointBasePath: '/addresses-endpoint',
+      defaultState: 'DRAFT',
+      defaultSorting: {
+        _id: 2,
+      },
+      fields: [
+        {
+          name: '_id',
+          type: 'ObjectId',
+          required: true,
+        },
+        {
+          name: 'displayName',
+          type: 'string',
+          description: 'The display name',
+          required: true,
+        },
+        {
+          name: 'street',
+          type: 'string',
+          description: 'The street of the house',
+          required: true,
+        },
+        {
+          name: 'house_number',
+          type: 'string',
+          description: 'The number of the house',
+          required: true,
+        },
+        {
+          name: 'updaterId',
+          type: 'string',
+          description: 'User id that has requested the last change successfully',
+          required: true,
+        },
+        {
+          name: 'updatedAt',
+          type: 'Date',
+          description: 'Date of the request that has performed the last change',
+          required: true,
+        },
+        {
+          name: 'creatorId',
+          type: 'string',
+          description: 'User id that has created this object',
+          required: true,
+        },
+        {
+          name: 'createdAt',
+          type: 'Date',
+          description: 'Date of the request that has performed the object creation',
+          required: true,
+        },
+        {
+          name: '__STATE__',
+          type: 'string',
+          description: 'The state of the document',
+          required: true,
+        },
+      ],
+      indexes: [],
+    }
+
+    t.strictSame(validate(jsonFile), false)
+    t.end()
+  })
+
   await t.test('should validate old schema', t => {
     const ajv = new Ajv({ useDefaults: true, coerceTypes: true })
     const validate = ajv.compile(compatibilityModelJsonSchema)

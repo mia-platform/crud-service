@@ -169,13 +169,16 @@ The collections should be included in separate JSON or JavaScript files in the f
 | endpointBasePath | String | &check; | - | The endpoint path, used as entry point to CRUD operations |
 | name | String | &check; | - | The name of the collection on MongoDB. |
 | defaultState | String | - | `DRAFT` | The default state assigned to a document when inserted. Can be one of the [\_\_STATE__ available values](#metadata-fields) |
-| schema | JSONSchemaStandard | &check; | - | The JSON Schema configuration of the fields to be included in the collection object. A complete description of its fields can be found in the [ _schema_](./lib/model.jsonschema.js#L447)  section of the collection JSON Schema. |
-| indexes | Array of objects | &check; | - | The list of indexes to be created when starting the service and initializing all the collections. A complete description of its fields can be found [in the _indexes_ section of the collection JSON Schema](./lib/model.jsonschema.js#L240) |
+| defaultSorting | Object | - | - |  [MongoDB document](https://www.mongodb.com/docs/manual/reference/method/cursor.sort/#ascending-descending-sort) defining the default order applied to the result set during find operations, **only if no explicit sorting is defined**. A complete description of the field can be found [in the section of the collection JSON Schema](./lib/model.jsonschema.js#L487). |
+| schema | JSONSchemaStandard | &check; | - | The JSON Schema configuration of the fields to be included in the collection object. A complete description of its fields can be found in the [ _schema_](./lib/model.jsonschema.js#L495)  section of the collection JSON Schema. |
+| indexes | Array of objects | &check; | - | The list of indexes to be created when starting the service and initializing all the collections. A complete description of its fields can be found [in the _indexes_ section of the collection JSON Schema](./lib/model.jsonschema.js#L692) |
 | tags | Array of strings | - | [] | The list of tags to be associated to the collection's endpoints, useful to group different endpoint under the same section inside the swagger. |
 
-**WARNING:** The definition of _unique_ indexes makes the CRUD Service fail at startup if the database contains inconsistent documents (e.g. documents that have the same value for that key). Also documents without that key are all considered to have the same value (_null_), thus [violating the uniqueness](https://docs.mongodb.com/manual/core/index-unique/#unique-index-and-missing-field), and causing the index generation (and the CRUD Service) to fail at startup.
+> **WARNING:** The definition of _unique_ indexes makes the CRUD Service fail at startup if the database contains inconsistent documents (e.g. documents that have the same value for that key). Also documents without that key are all considered to have the same value (_null_), thus [violating the uniqueness](https://docs.mongodb.com/manual/core/index-unique/#unique-index-and-missing-field), and causing the index generation (and the CRUD Service) to fail at startup.
 
-**WARNING:** every index that is not specified in the collection definition wil be **dropped** at startup of the application, unless its _name_ starts with the `preserve_` prefix.
+> **WARNING:** every index that is not specified in the collection definition wil be **dropped** at startup of the application, unless its _name_ starts with the `preserve_` prefix.
+
+> **TIP:** if a default sorting is defined, is suggested to have its fields covered by an index. 
 
 Several examples of collections can be found in the [Collections Definitions folder](./tests/newCollectionDefinitions/),
 whereas the schema that defines and validate the data model definition can be found [here](./lib/model.jsonschema.js).
@@ -190,17 +193,19 @@ The collections should be included in separate JSON or JavaScript files in the f
 | endpointBasePath | String | &check; | - | The endpoint path, used as entry point to CRUD operations |
 | name | String | &check; | - | The name of the collection on MongoDB. |
 | defaultState | String | - | `DRAFT` | The default state assigned to a document when inserted. Can be one of the [\_\_STATE__ available values](#metadata-fields) |
-| fields | Array of objects | &check; | - | The list of fields to be included in the collection object. A complete description of its fields can be found [in the _fields_ section of the collection JSON Schema](./lib/model.jsonschema.js#L77). |
-| indexes | Array of objects | &check; | - | The list of indexes to be created when starting the service and initializing all the collections. A complete description of its fields can be found [in the _indexes_ section of the collection JSON Schema](./lib/model.jsonschema.js#L240) |
+| defaultSorting | Object | - | - |  [MongoDB document](https://www.mongodb.com/docs/manual/reference/method/cursor.sort/#ascending-descending-sort) defining the default order applied to the result set during find operations, **only if no explicit sorting is defined**. A complete description of the field can be found [in the section of the collection JSON Schema](./lib/model.jsonschema.js#L76). |
+| fields | Array of objects | &check; | - | The list of fields to be included in the collection object. A complete description of its fields can be found [in the _fields_ section of the collection JSON Schema](./lib/model.jsonschema.js#L84). |
+| indexes | Array of objects | &check; | - | The list of indexes to be created when starting the service and initializing all the collections. A complete description of its fields can be found [in the _indexes_ section of the collection JSON Schema](./lib/model.jsonschema.js#L247) |
 | tags | Array of strings | - | [] | The list of tags to be associated to the collection's endpoints, useful to group different endpoint under the same section inside the swagger. |
 
-**WARNING:** The definition of _unique_ indexes makes the CRUD Service fail at startup if the database contains inconsistent documents (e.g. documents that have the same value for that key). Also documents without that key are all considered to have the same value (_null_), thus [violating the uniqueness](https://docs.mongodb.com/manual/core/index-unique/#unique-index-and-missing-field), and causing the index generation (and the CRUD Service) to fail at startup.
+> **WARNING:** The definition of _unique_ indexes makes the CRUD Service fail at startup if the database contains inconsistent documents (e.g. documents that have the same value for that key). Also documents without that key are all considered to have the same value (_null_), thus [violating the uniqueness](https://docs.mongodb.com/manual/core/index-unique/#unique-index-and-missing-field), and causing the index generation (and the CRUD Service) to fail at startup.
 
-**WARNING:** every index that is not specified in the collection definition wil be **dropped** at startup of the application, unless its _name_ starts with the `preserve_` prefix.
+> **WARNING:** every index that is not specified in the collection definition wil be **dropped** at startup of the application, unless its _name_ starts with the `preserve_` prefix.
+
+> **TIP:** if a default sorting is defined, is suggested to have its fields covered by an index. 
 
 Several examples of collections can be found in the [Collections Definitions folder](./tests/collectionDefinitions/),
 whereas the schema that defines and validate the data model definition can be found [here](./lib/model.jsonschema.js).
-
 
 ### Define your views
 
