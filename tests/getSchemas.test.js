@@ -47,7 +47,7 @@ tap.test('getSchemas', async t => {
     t.matchSnapshot(response.payload)
   })
 
-  t.test('return ndjson', async t => {
+  t.test('HELPERS_PREFIX', async t => {
     const fastify = await startFastify(t, {
       HELPERS_PREFIX: '/_/',
     })
