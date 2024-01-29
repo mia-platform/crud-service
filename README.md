@@ -325,8 +325,6 @@ See the documentation to see which parameters are available.
 
 ## Performance test
 
-## Performance Test
-
 We use [k6](https://example.com/k6) to simulate the load of traffic directed to the CRUD Service and retrieve some performance metrics. At every version released, a workflow automatically starts executing the following tests:
 
 - **Load Test**: 10 virtual users execute POST requests for one minute on the same collection, then 100 virtual users execute GET, PATCH, and DELETE requests for another minute on the data created.
