@@ -769,7 +769,7 @@ You can add the parameter `_useEstimate`, to be set to true, to execute the coun
 curl -X GET https://your-url/v2/plates/count?_useEstimate=true -H  "accept: application/json" -H  "content-type: application/json" -H  "client-key: client-key"
 ```
 
-The result will be the total of every document in the collection, regarding the `__STATE__`.
+The result will be the total number of documents in the collection, regardless of their `__STATE__`.
 
 #### Geospatial Queries
 
