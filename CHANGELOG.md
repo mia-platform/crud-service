@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+- Includes query paramater `_useEstimate` on `GET \count` requests to execute the MongoDB `estimatedDocumentCount`   
+
 ### Fixed
 
 - [#237](https://github.com/mia-platform/crud-service/issues/237): casting values in `_q` queries are now even if case of nested fields
