@@ -763,6 +763,14 @@ This will return:
 Filters can be applied to the count. By default, only PUBLIC documents are counted.
 :::
 
+You can add the parameter `_useEstimate`, to be set to true, to execute the count request using the collection metadata instead of scanning the entire collection. This method drastically improves speed of the request, but it does not allow to use any filter (any other parameter included will be ignored).
+
+```shell
+curl -X GET https://your-url/v2/plates/count?_useEstimate=true -H  "accept: application/json" -H  "content-type: application/json" -H  "client-key: client-key"
+```
+
+The result will be the total number of documents in the collection, regardless of their `__STATE__`.
+
 #### Geospatial Queries
 
 On CRUD service, it is possible to filter data also for proximity, using MongoDB Geospatial Queries.
