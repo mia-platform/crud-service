@@ -38,8 +38,8 @@ const fs = require('fs')
 const collections = Object.keys(collectionDefinitions)
 
 const { JSONPath } = require('jsonpath-plus')
-const lget = require('lodash.get')
-const lset = require('lodash.set')
+const { get: lget, set: lset } = require('lodash')
+
 const validationOperations = ['GetList', 'GetItem', 'Delete', 'Count', 'Patch', 'PatchBulk',
   'ChangeState', 'ChangeStateMany', 'Export']
 const serializationOperation = ['Post', 'Bulk', 'DeleteList', 'UpsertOne', 'PatchMany', 'GetListLookup']

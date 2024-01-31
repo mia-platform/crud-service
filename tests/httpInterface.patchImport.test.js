@@ -24,7 +24,7 @@ const { bookToUpdate, expectedBooks } = require('./filesFixtures/expectedResults
 const { setUpTest, prefix } = require('./httpInterface.utils')
 const { newUpdaterId } = require('./utils')
 const FormData = require('form-data')
-const lomit = require('lodash.omit')
+const { omit: lomit } = require('lodash')
 const { CREATORID, UPDATERID, CREATEDAT, UPDATEDAT } = require('../lib/consts')
 const { ObjectId } = require('mongodb')
 

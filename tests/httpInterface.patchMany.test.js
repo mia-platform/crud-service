@@ -17,7 +17,7 @@
 'use strict'
 
 const tap = require('tap')
-const lomit = require('lodash.omit')
+const { omit: lomit } = require('lodash')
 const { STANDARD_FIELDS } = require('../lib/CrudService')
 
 const { STATES, __STATE__, ARRAY_MERGE_ELEMENT_OPERATOR } = require('../lib/consts')
