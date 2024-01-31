@@ -7,11 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-## 6.9.7-rc.0 - 2024-01-26
-
 ### Added
 
-- Added `/-/schemas` and `/<collection>/schema` routes to discover/inspect the data models' json schemas for each collection
+- introduce new query parameter `_useEstimate` on `GET /count` request. In this manner the endpoint employs the `estimatedDocumentCount`
+method of MongoDB, returning the number of documents from the collection metadata
+- added `/-/schemas` and `/<collection>/schema` routes to discover/inspect the data models' of each collection as JSON schema
 
 ### Fixed
 
