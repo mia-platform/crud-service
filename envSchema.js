@@ -81,6 +81,11 @@ const properties = {
   KMS_GCP_KEY_RING: { type: 'string', description: 'GCP keyring' },
   KMS_GCP_KEY_NAME: { type: 'string', description: 'GCP key name' },
   KMS_GCP_PRIVATE_KEY_PATH: { type: 'string', description: 'GCP private key path', minLength: 1 },
+  HELPERS_PREFIX: {
+    type: 'string',
+    description: 'prefix string to assign to the helpers plugin, which exposes additional routes, such as /schemas',
+    default: '/-/',
+  },
 }
 
 const fastifyEnvSchema = {

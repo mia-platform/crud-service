@@ -44,6 +44,7 @@ const { registerMongoInstances } = require('./lib/mongo/mongo-plugin')
 const { getAjvResponseValidationFunction } = require('./lib/validatorGetters')
 const { pointerSeparator } = require('./lib/JSONPath.utils')
 const loadModels = require('./lib/loadModels')
+const { registerHelperRoutes } = require('./lib/helpersRoutes')
 
 async function registerCrud(fastify, { modelName, isView }) {
   if (!fastify.mongo) { throw new Error('`fastify.mongo` is undefined!') }
@@ -202,17 +203,24 @@ async function iterateOverCollectionDefinitionAndRegisterCruds(fastify) {
   }
 }
 
+
 const validCrudFolder = path => !['.', '..'].includes(path) && /\.js(on)?$/.test(path)
 
 async function setupCruds(fastify) {
-  const collections = readdirSync(fastify.config.COLLECTION_DEFINITION_FOLDER)
+  const {
+    COLLECTION_DEFINITION_FOLDER,
+    VIEWS_DEFINITION_FOLDER,
+    HELPERS_PREFIX,
+  } = fastify.config
+
+  const collections = readdirSync(COLLECTION_DEFINITION_FOLDER)
     .filter(validCrudFolder)
-    .map(path => join(fastify.config.COLLECTION_DEFINITION_FOLDER, path))
+    .map(path => join(COLLECTION_DEFINITION_FOLDER, path))
     .map(require)
 
   fastify.decorate('collections', collections)
 
-  const viewsFolder = fastify.config.VIEWS_DEFINITION_FOLDER
+  const viewsFolder = VIEWS_DEFINITION_FOLDER
   if (viewsFolder) {
     const views = readdirSync(viewsFolder)
       .filter(validCrudFolder)
@@ -228,6 +236,7 @@ async function setupCruds(fastify) {
       .register(fp(loadModels))
       .register(iterateOverCollectionDefinitionAndRegisterCruds)
       .register(joinPlugin, { prefix: '/join' })
+      .register(registerHelperRoutes, { prefix: HELPERS_PREFIX })
   }
 }
 

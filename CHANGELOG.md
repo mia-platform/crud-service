@@ -9,7 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
-- Includes query paramater `_useEstimate` on `GET \count` requests to execute the MongoDB `estimatedDocumentCount`   
+- introduce new query parameter `_useEstimate` on `GET /count` request. In this manner the endpoint employs the `estimatedDocumentCount`
+method of MongoDB, returning the number of documents from the collection metadata
+- added `/-/schemas` and `/<collection>/schema` routes to discover/inspect the data models' of each collection as JSON schema
 
 ### Fixed
 
