@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## 7.0.0 - 2024-02-01
+
 ### BREAKING CHANGES
 
 - [#189](https://github.com/mia-platform/crud-service/pull/189) introduce support to MongoDB v7.0 and remove support to MongoDB v4.2
