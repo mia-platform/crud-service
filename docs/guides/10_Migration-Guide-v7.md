@@ -35,7 +35,7 @@ key, are appropriately modified to accept the new response code.
 
 ### Access to Fields Outside the Collection Schema Model [#127](https://github.com/mia-platform/crud-service/pull/127) | [#144](https://github.com/mia-platform/crud-service/pull/144)
 
-In response to issue [#55](https://github.com/mia-platform/crud-service/issues/53), the access
+In response to issue [#55](https://github.com/mia-platform/crud-service/issues/55), the access
 to collection properties has been enforced to cover only fields defined in the collection schema model.
 Requesting to access an unexpected field now returns an HTTP error `400 Bad request`. At
 the same time, when requesting documents via `GET /<collection>/` and `GET /<collection>/:id` endpoints,
