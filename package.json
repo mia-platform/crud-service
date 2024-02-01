@@ -55,7 +55,7 @@
     "ajv": "^8.12.0"
   },
   "devDependencies": {
-    "@faker-js/faker": "^8.3.1",
+    "@faker-js/faker": "^8.4.0",
     "@mia-platform/eslint-config-mia": "^3.0.0",
     "abstract-logging": "^2.0.1",
     "commander": "^11.1.0",
@@ -67,7 +67,7 @@
     "node-xlsx": "^0.23.0",
     "pre-commit": "^1.2.2",
     "swagger-parser": "^10.0.3",
-    "tap": "^18.6.1",
+    "tap": "^18.7.0",
     "uuid-validate": "0.0.3"
   },
   "engines": {
@@ -87,7 +87,9 @@
         "jsx": true
       }
     },
-    "ignorePatterns": ["bench"],
+    "ignorePatterns": [
+      "bench"
+    ],
     "overrides": [
       {
         "files": [
