@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## 6.10.0 - 2024-02-01
+
 ### Added
 
 - introduce new query parameter `_useEstimate` on `GET /count` request. In this manner the endpoint employs the `estimatedDocumentCount`
