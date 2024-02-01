@@ -18,7 +18,7 @@
 
 const tap = require('tap')
 const pino = require('pino')
-const lpick = require('lodash.pick')
+const { pick: lpick } = require('lodash')
 
 const generatePathFieldsForRawSchema = require('../lib/generatePathFieldsForRawSchema')
 

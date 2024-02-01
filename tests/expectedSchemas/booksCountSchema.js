@@ -238,6 +238,15 @@ module.exports = {
             'items': {
               'type': 'object',
               'additionalProperties': true,
+              'properties': {
+                'edition': {
+                  'type': 'number',
+                },
+                'date': {
+                  'type': 'string',
+                  'format': 'date-time',
+                },
+              },
               'nullable': true,
             },
             'nullable': true,
@@ -245,6 +254,15 @@ module.exports = {
           {
             'type': 'object',
             'additionalProperties': true,
+            'properties': {
+              'edition': {
+                'type': 'number',
+              },
+              'date': {
+                'type': 'string',
+                'format': 'date-time',
+              },
+            },
             'nullable': true,
           },
         ],
@@ -263,6 +281,15 @@ module.exports = {
       '_rawp': {
         'type': 'string',
         'description': 'Additional raw stringified projection for MongoDB',
+      },
+      '_useEstimate': {
+        'type': 'boolean',
+        'enum': [
+          true,
+          false,
+        ],
+        'description': 'If "true", returns the count of all documents in the collection based on the metadata of the collection. It works only there are no other query parameters.',
+        'default': false,
       },
       'signature.name': {
         'type': 'string',
@@ -325,6 +352,14 @@ module.exports = {
       },
       'attachments\\.\\d+\\.more\\.\\d+$': {
         'type': 'string',
+      },
+      'editionsDates\\.\\d+\\..+$': true,
+      'editionsDates\\.\\d+\\.edition$': {
+        'type': 'number',
+      },
+      'editionsDates\\.\\d+\\.date$': {
+        'type': 'string',
+        'format': 'date-time',
       },
     },
     'additionalProperties': false,

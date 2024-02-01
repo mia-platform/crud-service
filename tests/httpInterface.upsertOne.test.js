@@ -17,7 +17,7 @@
 'use strict'
 
 const tap = require('tap')
-const lomit = require('lodash.omit')
+const { omit: lomit } = require('lodash')
 
 const { fixtures, newUpdaterId } = require('./utils')
 const { setUpTest, prefix, getHeaders } = require('./httpInterface.utils')

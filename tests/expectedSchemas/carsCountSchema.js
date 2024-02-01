@@ -71,6 +71,15 @@ module.exports = {
         'type': 'string',
         'description': 'Additional raw stringified projection for MongoDB',
       },
+      '_useEstimate': {
+        'type': 'boolean',
+        'enum': [
+          true,
+          false,
+        ],
+        'description': 'If "true", returns the count of all documents in the collection based on the metadata of the collection. It works only there are no other query parameters.',
+        'default': false,
+      },
     },
     'additionalProperties': false,
   },

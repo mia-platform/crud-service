@@ -18,7 +18,7 @@
 
 const tap = require('tap')
 const { ObjectId } = require('mongodb')
-const lomit = require('lodash.omit')
+const { omit: lomit } = require('lodash')
 const { STANDARD_FIELDS } = require('../lib/CrudService')
 
 const {

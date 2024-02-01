@@ -123,6 +123,20 @@ tap.test('HTTP GET /count', async t => {
       acl_rows: undefined,
       count: 0,
     },
+    {
+      name: 'query with _useEstimate parameter',
+      method: 'GET',
+      url: `${prefix}/count?_useEstimate=true`,
+      count: fixtures.length,
+      acl_rows: undefined,
+    },
+    {
+      name: 'query with _useEstimate parameter should ignore other query parameters',
+      method: 'GET',
+      url: `${prefix}/count?_useEstimate=true&_q=${JSON.stringify({ price: { $gt: Infinity } })}`,
+      count: fixtures.length,
+      acl_rows: undefined,
+    },
   ]
 
   t.plan(tests.length)

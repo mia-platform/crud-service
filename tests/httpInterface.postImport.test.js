@@ -25,7 +25,7 @@ const { setUpTest, prefix } = require('./httpInterface.utils')
 const { newUpdaterId } = require('./utils')
 const FormData = require('form-data')
 const { __STATE__, STATES, CREATORID, UPDATEDAT, UPDATERID, CREATEDAT } = require('../lib/consts')
-const lomit = require('lodash.omit')
+const { omit: lomit } = require('lodash')
 
 tap.test('HTTP POST /import', async t => {
   const jsonFileReader = () => createReadStream(path.join(__dirname, 'filesFixtures/books.json'))

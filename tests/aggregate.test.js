@@ -18,7 +18,7 @@
 
 const tap = require('tap')
 const abstractLogger = require('abstract-logging')
-const lomit = require('lodash.omit')
+const { omit: lomit } = require('lodash')
 
 const { STATES } = require('../lib/consts')
 const CrudService = require('../lib/CrudService')

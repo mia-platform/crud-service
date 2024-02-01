@@ -222,6 +222,13 @@ module.exports = {
       type: 'Array',
       items: {
         type: 'RawObject',
+        schema: {
+          properties: {
+            edition: { type: 'number' },
+            date: { type: 'string', format: 'date-time' },
+          },
+          additionalProperties: true,
+        },
       },
       required: false,
       nullable: true,

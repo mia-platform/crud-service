@@ -104,6 +104,12 @@ tap.test('HTTP GET /<id>', async t => {
       found: false,
     },
     {
+      name: 'with stringified ISO Date in query filter',
+      url: `/${ID}?_q=${JSON.stringify({ 'editionsDates.date': { $lt: new Date('2020').toISOString() } })}`,
+      acl_rows: undefined,
+      found: HTTP_DOC,
+    },
+    {
       name: 'with acl_rows',
       url: `/${ID}`,
       acl_rows: [{ price: { $gt: MATCHING_PRICE } }],

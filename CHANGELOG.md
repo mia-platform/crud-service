@@ -23,6 +23,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - updated `@fastify/mongodb` to v8.0.0
 - updated `@fastify/multipart` to v8.0.0
 
+## 6.10.0 - 2024-02-01
+
+### Added
+
+- introduce new query parameter `_useEstimate` on `GET /count` request. In this manner the endpoint employs the `estimatedDocumentCount`
+method of MongoDB, returning the number of documents from the collection metadata
+- added `/-/schemas` and `/<collection>/schema` routes to discover/inspect the data models' of each collection as JSON schema
+
+### Fixed
+
+- [#237](https://github.com/mia-platform/crud-service/issues/237): casting values in `_q` queries are now executed even in case of nested fields
+
 ## 6.9.6 - 2024-01-23
 
 ### Fixed
