@@ -1328,5 +1328,31 @@ tap.test('HTTP PATCH /bulk', async t => {
     })
   })
 
+  t.test('filter with text query (_q) with not fields not included in JSON Schema returns 400', async t => {
+    const { fastify, collection } = await setUpTest(t)
+
+    const response = await fastify.inject({
+      method: 'PATCH',
+      url: `${prefix}/?_q=${JSON.stringify({ not_a_field: { $gt: 20 } })}`,
+      payload: UPDATE_COMMAND,
+      headers: { userId: 'another_user_id' },
+    })
+
+    const expectedResponse = {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'Unknown field: not_a_field',
+    }
+
+    t.strictSame(response.statusCode, 400)
+    t.ok(/application\/json/.test(response.headers['content-type']))
+    t.strictSame(JSON.parse(response.payload), expectedResponse)
+
+    const documents = await collection.find().toArray()
+    t.strictSame(documents, fixtures)
+
+    t.end()
+  })
+
   t.end()
 })

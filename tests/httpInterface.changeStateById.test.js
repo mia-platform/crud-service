@@ -18,7 +18,14 @@
 
 const tap = require('tap')
 
-const { STATES, __STATE__ } = require('../lib/consts')
+const {
+  STATES,
+  __STATE__,
+  UPDATERID,
+  UPDATEDAT,
+  CREATORID,
+  CREATEDAT,
+} = require('../lib/consts')
 const { publicFixtures, fixtures, stationFixtures, newUpdaterId, oldUpdaterId } = require('./utils')
 const { setUpTest, prefix, stationsPrefix, getHeaders } = require('./httpInterface.utils')
 
@@ -32,7 +39,7 @@ const NON_MATCHING_PRICE = DOC.price + 1
 const MATCHING_QUERY = { price: { $gt: MATCHING_PRICE } }
 const NON_MATCHING_QUERY = { price: { $gt: NON_MATCHING_PRICE } }
 
-const [STATION_DOC] = stationFixtures
+const [STATION_DOC, STATION_DOC_NO_STATE] = stationFixtures
 const STATION_ID = STATION_DOC._id.toString()
 
 tap.test('HTTP POST /<id>/state', async t => {
@@ -94,14 +101,6 @@ tap.test('HTTP POST /<id>/state', async t => {
       found: false,
     },
     {
-      name: 'to wrong state',
-      url: `/${ID}/state`,
-      acl_rows: undefined,
-      stateTo: 'DELETED',
-      id: DOC._id,
-      found: false,
-    },
-    {
       name: 'with query filter on nested object',
       url: `/${ID}/state?`
       + `metadata.somethingNumber=2`
@@ -116,7 +115,6 @@ tap.test('HTTP POST /<id>/state', async t => {
     },
   ]
 
-  t.plan(tests.length)
   const { fastify, collection, resetCollection } = await setUpTest(t)
 
   tests.forEach(testConf => {
@@ -198,9 +196,16 @@ tap.test('HTTP POST /<id>/state with string id', async t => {
       id: STATION_DOC._id,
       found: true,
     },
+    {
+      name: 'with document missing __STATE__field',
+      url: `/${STATION_DOC_NO_STATE._id}/state`,
+      acl_rows: undefined,
+      stateTo: STATES.PUBLIC,
+      id: STATION_DOC_NO_STATE._id,
+      found: true,
+    },
   ]
 
-  t.plan(tests.length)
   const { fastify, collection, resetCollection } = await setUpTest(t, stationFixtures, 'stations')
 
   tests.forEach(testConf => {
@@ -262,4 +267,153 @@ tap.test('HTTP POST /<id>/state with string id', async t => {
       t.end()
     })
   })
+})
+
+tap.test('HTTP POST /<id>/state passing to a wrong state', async t => {
+  const baseFields = {
+    Cap: 25040,
+    CodiceMIR: 'S01787',
+    Comune: 'Borgonato',
+    Direttrici: [
+      'D028',
+    ],
+    Indirizzo: 'Via Stazione, 24',
+    country: 'it',
+    [CREATEDAT]: new Date('2017-11-11'),
+    [CREATORID]: 'my-creator-id',
+    [UPDATERID]: 'my-updated-id',
+    [UPDATEDAT]: new Date('2017-11-10'),
+  }
+
+  const stationFixtures = [
+    {
+      _id: '002415b0-8d6d-427c-b654-9857183e57a6',
+      ...baseFields,
+      [__STATE__]: STATES.DELETED,
+    },
+    {
+      _id: '002415b0-8d6d-427c-b654-9857183e57a7',
+      ...baseFields,
+      [__STATE__]: STATES.PUBLIC,
+    },
+    {
+      _id: '002415b0-8d6d-427c-b654-9857183e57a8',
+      ...baseFields,
+      [__STATE__]: STATES.DRAFT,
+    },
+    {
+      _id: '002415b0-8d6d-427c-b654-9857183e57a9',
+      ...baseFields,
+      [__STATE__]: STATES.TRASH,
+    },
+  ]
+
+  const [DELETED_STATION_DOC, PUBLIC_STATION_DOC, DRAFT_STATION_DOC] = stationFixtures
+
+  const tests = [
+    {
+      name: 'from PUBLIC to DELETED',
+      url: `/${PUBLIC_STATION_DOC._id.toString()}/state`,
+      stateTo: STATES.DELETED,
+      id: PUBLIC_STATION_DOC._id,
+    },
+    {
+      name: 'from DRAFT to DELETED',
+      url: `/${DRAFT_STATION_DOC._id.toString()}/state`,
+      stateTo: STATES.DELETED,
+      id: DRAFT_STATION_DOC._id,
+    },
+    {
+      name: 'from TRASH to PUBLIC',
+      url: `/${DELETED_STATION_DOC._id.toString()}/state`,
+      stateTo: STATES.PUBLIC,
+      id: DELETED_STATION_DOC._id,
+    },
+    {
+      name: 'from DELETED to PUBLIC',
+      url: `/${DELETED_STATION_DOC._id.toString()}/state`,
+      stateTo: STATES.PUBLIC,
+      id: DELETED_STATION_DOC._id,
+    },
+    {
+      name: 'from DELETED to DRAFT',
+      url: `/${DELETED_STATION_DOC._id.toString()}/state`,
+      stateTo: STATES.PUBLIC,
+      id: DELETED_STATION_DOC._id,
+    },
+  ]
+
+  const { fastify, collection, resetCollection } = await setUpTest(t, stationFixtures, 'stations')
+
+  tests.forEach(testConf => {
+    const { name, ...conf } = testConf
+
+    t.test(`(${name})`, async t => {
+      await resetCollection()
+
+      const response = await fastify.inject({
+        method: 'POST',
+        url: stationsPrefix + conf.url,
+        payload: { stateTo: conf.stateTo },
+        headers: {
+          userId: newUpdaterId,
+          ...getHeaders(conf),
+        },
+      })
+
+      t.test(`should return 400`, t => {
+        t.strictSame(response.statusCode, 400, response.payload)
+        t.end()
+      })
+
+      t.test('should return the application/json content-type', t => {
+        t.strictSame(response.headers['content-type'], 'application/json; charset=utf-8')
+        t.end()
+      })
+
+      t.test('on database', t => {
+        t.test(`document should not be updated`, async t => {
+          const doc = await collection.findOne({ _id: conf.id })
+          t.ok(Math.abs(Date.now() - doc.updatedAt.getTime()) > 5000, '`updatedAt` should not be updated')
+          t.end()
+        })
+
+        t.test('should keep the other documents as is', async t => {
+          const documents = await collection.find({ _id: { $ne: conf.id } }).toArray()
+          t.strictSame(documents, stationFixtures.filter(d => d._id.toString() !== conf.id.toString()))
+          t.end()
+        })
+
+        t.end()
+      })
+
+      t.end()
+    })
+  })
+})
+
+tap.test('HTTP POST /<id>/state - filter with text query (_q) with not fields not included in JSON Schema returns 400', async t => {
+  const { fastify, collection } = await setUpTest(t)
+
+  const response = await fastify.inject({
+    method: 'POST',
+    url: `${prefix}/${ID}/state?_q=${JSON.stringify({ not_a_field: 'not_a_value' })}`,
+    payload: { stateTo: STATES.PUBLIC },
+    headers: { userId: newUpdaterId },
+  })
+
+  const expectedResponse = {
+    statusCode: 400,
+    error: 'Bad Request',
+    message: 'Unknown field: not_a_field',
+  }
+
+  t.strictSame(response.statusCode, 400)
+  t.ok(/application\/json/.test(response.headers['content-type']))
+  t.strictSame(JSON.parse(response.payload), expectedResponse)
+
+  const documents = await collection.find().toArray()
+  t.strictSame(documents, fixtures)
+
+  t.end()
 })

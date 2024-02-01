@@ -14,10 +14,11 @@
     "url": "https://github.com/mia-platform/crud-service"
   },
   "scripts": {
-    "bench": "node bench/queryParser.bench.js",
+    "bench:queryParser": "node bench/queryParser.bench.js",
+    "bench:init": "docker compose -f bench/docker-compose.yml up -d --force-recreate && node bench/utils/generate-customer-data.js",
     "checkonly": "! grep -r '\\.only' tests/",
     "coverage": "npm run unit -- --jobs=4",
-    "postcoverage": "tap report --coverage-report=text-summary",
+    "postcoverage": "tap report --coverage-report=lcovonly --coverage-report=text-summary",
     "lint": "eslint . --ignore-path=.gitignore",
     "start": "lc39 index.js",
     "start:local": "npm start -- --env-path ./local.env",
@@ -30,8 +31,8 @@
   },
   "dependencies": {
     "@fastify/env": "^4.3.0",
-    "@fastify/mongodb": "^6.2.0",
-    "@fastify/multipart": "^7.7.3",
+    "@fastify/mongodb": "^8.0.0",
+    "@fastify/multipart": "^8.1.0",
     "@mia-platform/lc39": "^7.0.3",
     "@mia-platform/mongodb-healthchecker": "^1.0.1",
     "ajv-formats": "^2.1.1",
@@ -39,10 +40,10 @@
     "csv-parse": "^5.5.3",
     "csv-stringify": "^6.4.5",
     "fastify-plugin": "^4.5.1",
-    "jsonpath-plus": "^7.2.0",
+    "jsonpath-plus": "^8.0.0",
     "JSONStream": "^1.3.5",
     "lodash": "^4.17.21",
-    "mongodb-client-encryption": "^2.9.0",
+    "mongodb-client-encryption": "^6.0.0",
     "ndjson": "^2.0.0",
     "p-limit": "^3.1.0",
     "pino": "^8.17.2",
@@ -54,13 +55,15 @@
     "ajv": "^8.12.0"
   },
   "devDependencies": {
+    "@faker-js/faker": "^8.3.1",
     "@mia-platform/eslint-config-mia": "^3.0.0",
     "abstract-logging": "^2.0.1",
+    "commander": "^11.1.0",
     "eslint": "^8.56.0",
     "fastbench": "^1.0.1",
     "form-data": "^4.0.0",
     "mock-require": "^3.0.3",
-    "mongodb": "^4.17.2",
+    "mongodb": "^6.3.0",
     "node-xlsx": "^0.23.0",
     "pre-commit": "^1.2.2",
     "swagger-parser": "^10.0.3",
@@ -84,6 +87,7 @@
         "jsx": true
       }
     },
+    "ignorePatterns": ["bench"],
     "overrides": [
       {
         "files": [

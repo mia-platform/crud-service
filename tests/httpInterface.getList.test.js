@@ -243,9 +243,9 @@ tap.test('HTTP GET /', async t => {
       acl_rows: undefined,
       found: [
         { _id: '111111111111111111111111' },
-        { _id: '444444444444444444444444' },
         { _id: '222222222222222222222222' },
         { _id: '333333333333333333333333' },
+        { _id: '444444444444444444444444' },
       ],
     },
     {
@@ -254,9 +254,9 @@ tap.test('HTTP GET /', async t => {
       acl_rows: undefined,
       found: [
         { _id: '111111111111111111111111' },
-        { _id: '444444444444444444444444' },
         { _id: '222222222222222222222222' },
         { _id: '333333333333333333333333' },
+        { _id: '444444444444444444444444' },
       ],
     },
     {
@@ -845,6 +845,32 @@ tap.test('HTTP GET / ', async t => {
 
     t.end()
   })
+
+  t.test('filter with text query (_q) with not fields not included in JSON Schema returns 400', async t => {
+    const { fastify, collection } = await setUpTest(t)
+
+    const response = await fastify.inject({
+      method: 'GET',
+      url: `${prefix}/?_q=${JSON.stringify({ not_a_field: { $gt: 20 } })}`,
+      headers: {},
+    })
+
+    const expectedResponse = {
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'Unknown field: not_a_field',
+    }
+
+    t.strictSame(response.statusCode, 400)
+    t.ok(/application\/json/.test(response.headers['content-type']))
+    t.strictSame(JSON.parse(response.payload), expectedResponse)
+
+    const documents = await collection.find().toArray()
+    t.strictSame(documents, fixtures)
+
+    t.end()
+  })
+
 
   t.test('(missing property)', async t => {
     await resetCollection()

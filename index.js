@@ -19,7 +19,9 @@
 const fp = require('fastify-plugin')
 const fastifyEnv = require('@fastify/env')
 const fastifyMultipart = require('@fastify/multipart')
+
 const ajvFormats = require('ajv-formats')
+
 const { unset: lunset } = require('lodash')
 const { readdirSync } = require('fs')
 const { join } = require('path')
@@ -30,6 +32,9 @@ const myPackage = require('./package')
 const fastifyEnvSchema = require('./envSchema')
 
 const httpInterface = require('./lib/httpInterface')
+const loadModels = require('./lib/loadModels')
+const joinPlugin = require('./lib/joinPlugin')
+
 const { castCollectionId } = require('./lib/pkFactories')
 const {
   SCHEMA_CUSTOM_KEYWORDS,
@@ -39,11 +44,9 @@ const {
   UNSETCMD,
   ADDTOSETCMD,
 } = require('./lib/consts')
-const joinPlugin = require('./lib/joinPlugin')
 const { registerMongoInstances } = require('./lib/mongo/mongo-plugin')
 const { getAjvResponseValidationFunction } = require('./lib/validatorGetters')
 const { pointerSeparator } = require('./lib/JSONPath.utils')
-const loadModels = require('./lib/loadModels')
 const { registerHelperRoutes } = require('./lib/helpersRoutes')
 
 async function registerCrud(fastify, { modelName, isView }) {
@@ -202,7 +205,6 @@ async function iterateOverCollectionDefinitionAndRegisterCruds(fastify) {
     })
   }
 }
-
 
 const validCrudFolder = path => !['.', '..'].includes(path) && /\.js(on)?$/.test(path)
 

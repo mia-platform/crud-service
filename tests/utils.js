@@ -224,6 +224,8 @@ const fixtures = [
   },
 ]
 
+const defaultSorting = { name: 1 }
+
 const RAW_PROJECTION = {
   attachments: {
     $filter: {
@@ -389,6 +391,22 @@ const stationFixtures = [
     [UPDATEDAT]: updatedAtDate,
     [__STATE__]: STATES.PUBLIC,
   },
+  {
+    _id: '3bb78876-c8bb-4e02-bad5-440f220e9f73',
+    Cap: 20831,
+    CodiceMIR: 'S09001',
+    Comune: 'Seregno',
+    Direttrici: [
+      'D042',
+    ],
+    Indirizzo: 'Via Montello',
+    country: 'it',
+    [CREATEDAT]: createdAtDate,
+    [CREATORID]: creatorId,
+    [UPDATERID]: updaterId,
+    [UPDATEDAT]: updatedAtDate,
+    // Note: this document has been intentionally left without __STATE__ field
+  },
 ]
 
 async function clearCollectionAndInsertFixtures(collection, testFixtures = fixtures) {
@@ -533,6 +551,7 @@ module.exports = {
   newUpdaterId: userId,
   oldUpdaterId: updaterId,
   fixtures,
+  defaultSorting,
   stationFixtures,
   lotOfBooksFixtures,
   publicFixtures: fixtures.filter(f => f[__STATE__] === STATES.PUBLIC),

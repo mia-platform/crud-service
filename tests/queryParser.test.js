@@ -103,14 +103,14 @@ tap.test('queryParser', t => {
       ])
       .concat([
         {
-          name: 'should cast 24-lenght string to ObjectId',
+          name: 'should cast 24-length string to ObjectId',
           query: { _id: 'aaaaaaaaaaaaaaaaaaaaaaaa' },
           expected: { _id: new ObjectId('aaaaaaaaaaaaaaaaaaaaaaaa') },
         },
         {
-          name: 'should cast 12-lenght string to ObjectId',
-          query: { _id: 'bbbbbbbbbbbb' },
-          expected: { _id: new ObjectId('bbbbbbbbbbbb') },
+          name: 'should cast 12-length string to ObjectId',
+          query: { _id: 'bbbbbbbbbbbbbbbbbbbbbbbb' },
+          expected: { _id: new ObjectId('bbbbbbbbbbbbbbbbbbbbbbbb') },
         },
         {
           name: 'should not cast null to ObjectId',
@@ -128,22 +128,22 @@ tap.test('queryParser', t => {
           throw: 'Invalid objectId',
         },
         {
-          name: 'should cast 24-lenght string to ObjectId $in',
+          name: 'should cast 24-length string to ObjectId $in',
           query: { _id: { $in: ['aaaaaaaaaaaaaaaaaaaaaaaa', 'aaaaaaaaaaaaaaaaaaaaaaaa'] } },
           expected: { _id: { $in: [new ObjectId('aaaaaaaaaaaaaaaaaaaaaaaa'), new ObjectId('aaaaaaaaaaaaaaaaaaaaaaaa')] } },
         },
         {
-          name: 'should cast 24-lenght string to ObjectId $in empty',
+          name: 'should cast 24-length string to ObjectId $in empty',
           query: { _id: { $in: [] } },
           expected: { _id: { $in: [] } },
         },
         {
-          name: 'should cast 24-lenght string to ObjectId $nin',
+          name: 'should cast 24-length string to ObjectId $nin',
           query: { _id: { $nin: ['aaaaaaaaaaaaaaaaaaaaaaaa', 'aaaaaaaaaaaaaaaaaaaaaaaa'] } },
           expected: { _id: { $nin: [new ObjectId('aaaaaaaaaaaaaaaaaaaaaaaa'), new ObjectId('aaaaaaaaaaaaaaaaaaaaaaaa')] } },
         },
         {
-          name: 'should cast 24-lenght string to ObjectId $nin empty',
+          name: 'should cast 24-length string to ObjectId $nin empty',
           query: { _id: { $nin: [] } },
           expected: { _id: { $nin: [] } },
         },
@@ -414,8 +414,8 @@ tap.test('queryParser', t => {
     const tests = [
       {
         name: 'empty',
-        body: { },
-        expected: { },
+        body: {},
+        expected: {},
       },
       {
         name: 'number should not be converted',
@@ -487,8 +487,8 @@ tap.test('queryParser', t => {
     const tests = [
       {
         name: 'empty',
-        commands: { },
-        expected: { },
+        commands: {},
+        expected: {},
         editableFields: ALL_FIELDS,
       },
       {
@@ -778,7 +778,7 @@ tap.test('queryParser', t => {
     const tests = [
       {
         name: 'empty',
-        query: { },
+        query: {},
         expected: false,
       },
       {

@@ -211,11 +211,11 @@ tap.test('HTTP POST /import', async t => {
       headers: form.getHeaders(),
     })
 
-    t.strictSame(response.statusCode, 422, response.payload)
+    t.strictSame(response.statusCode, 409, response.payload)
     t.ok(/application\/json/.test(response.headers['content-type']))
     const body = JSON.parse(response.payload)
-    t.strictSame(body.statusCode, 422)
-    t.strictSame(body.error, 'Unprocessable Entity')
+    t.strictSame(body.statusCode, 409)
+    t.strictSame(body.error, 'Conflict')
     t.match(body.message, 'E11000 duplicate key error collection')
     t.end()
   })

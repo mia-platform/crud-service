@@ -169,13 +169,16 @@ The collections should be included in separate JSON or JavaScript files in the f
 | endpointBasePath | String | &check; | - | The endpoint path, used as entry point to CRUD operations |
 | name | String | &check; | - | The name of the collection on MongoDB. |
 | defaultState | String | - | `DRAFT` | The default state assigned to a document when inserted. Can be one of the [\_\_STATE__ available values](#metadata-fields) |
-| schema | JSONSchemaStandard | &check; | - | The JSON Schema configuration of the fields to be included in the collection object. A complete description of its fields can be found in the [ _schema_](./lib/model.jsonschema.js#L447)  section of the collection JSON Schema. |
-| indexes | Array of objects | &check; | - | The list of indexes to be created when starting the service and initializing all the collections. A complete description of its fields can be found [in the _indexes_ section of the collection JSON Schema](./lib/model.jsonschema.js#L240) |
+| defaultSorting | Object | - | - |  [MongoDB document](https://www.mongodb.com/docs/manual/reference/method/cursor.sort/#ascending-descending-sort) defining the default order applied to the result set during find operations, **only if no explicit sorting is defined**. A complete description of the field can be found [in the section of the collection JSON Schema](./lib/model.jsonschema.js#L487). |
+| schema | JSONSchemaStandard | &check; | - | The JSON Schema configuration of the fields to be included in the collection object. A complete description of its fields can be found in the [ _schema_](./lib/model.jsonschema.js#L495)  section of the collection JSON Schema. |
+| indexes | Array of objects | &check; | - | The list of indexes to be created when starting the service and initializing all the collections. A complete description of its fields can be found [in the _indexes_ section of the collection JSON Schema](./lib/model.jsonschema.js#L692) |
 | tags | Array of strings | - | [] | The list of tags to be associated to the collection's endpoints, useful to group different endpoint under the same section inside the swagger. |
 
-**WARNING:** The definition of _unique_ indexes makes the CRUD Service fail at startup if the database contains inconsistent documents (e.g. documents that have the same value for that key). Also documents without that key are all considered to have the same value (_null_), thus [violating the uniqueness](https://docs.mongodb.com/manual/core/index-unique/#unique-index-and-missing-field), and causing the index generation (and the CRUD Service) to fail at startup.
+> **WARNING:** The definition of _unique_ indexes makes the CRUD Service fail at startup if the database contains inconsistent documents (e.g. documents that have the same value for that key). Also documents without that key are all considered to have the same value (_null_), thus [violating the uniqueness](https://docs.mongodb.com/manual/core/index-unique/#unique-index-and-missing-field), and causing the index generation (and the CRUD Service) to fail at startup.
 
-**WARNING:** every index that is not specified in the collection definition wil be **dropped** at startup of the application, unless its _name_ starts with the `preserve_` prefix.
+> **WARNING:** every index that is not specified in the collection definition wil be **dropped** at startup of the application, unless its _name_ starts with the `preserve_` prefix.
+
+> **TIP:** if a default sorting is defined, is suggested to have its fields covered by an index. 
 
 Several examples of collections can be found in the [Collections Definitions folder](./tests/newCollectionDefinitions/),
 whereas the schema that defines and validate the data model definition can be found [here](./lib/model.jsonschema.js).
@@ -190,17 +193,19 @@ The collections should be included in separate JSON or JavaScript files in the f
 | endpointBasePath | String | &check; | - | The endpoint path, used as entry point to CRUD operations |
 | name | String | &check; | - | The name of the collection on MongoDB. |
 | defaultState | String | - | `DRAFT` | The default state assigned to a document when inserted. Can be one of the [\_\_STATE__ available values](#metadata-fields) |
-| fields | Array of objects | &check; | - | The list of fields to be included in the collection object. A complete description of its fields can be found [in the _fields_ section of the collection JSON Schema](./lib/model.jsonschema.js#L77). |
-| indexes | Array of objects | &check; | - | The list of indexes to be created when starting the service and initializing all the collections. A complete description of its fields can be found [in the _indexes_ section of the collection JSON Schema](./lib/model.jsonschema.js#L240) |
+| defaultSorting | Object | - | - |  [MongoDB document](https://www.mongodb.com/docs/manual/reference/method/cursor.sort/#ascending-descending-sort) defining the default order applied to the result set during find operations, **only if no explicit sorting is defined**. A complete description of the field can be found [in the section of the collection JSON Schema](./lib/model.jsonschema.js#L76). |
+| fields | Array of objects | &check; | - | The list of fields to be included in the collection object. A complete description of its fields can be found [in the _fields_ section of the collection JSON Schema](./lib/model.jsonschema.js#L84). |
+| indexes | Array of objects | &check; | - | The list of indexes to be created when starting the service and initializing all the collections. A complete description of its fields can be found [in the _indexes_ section of the collection JSON Schema](./lib/model.jsonschema.js#L247) |
 | tags | Array of strings | - | [] | The list of tags to be associated to the collection's endpoints, useful to group different endpoint under the same section inside the swagger. |
 
-**WARNING:** The definition of _unique_ indexes makes the CRUD Service fail at startup if the database contains inconsistent documents (e.g. documents that have the same value for that key). Also documents without that key are all considered to have the same value (_null_), thus [violating the uniqueness](https://docs.mongodb.com/manual/core/index-unique/#unique-index-and-missing-field), and causing the index generation (and the CRUD Service) to fail at startup.
+> **WARNING:** The definition of _unique_ indexes makes the CRUD Service fail at startup if the database contains inconsistent documents (e.g. documents that have the same value for that key). Also documents without that key are all considered to have the same value (_null_), thus [violating the uniqueness](https://docs.mongodb.com/manual/core/index-unique/#unique-index-and-missing-field), and causing the index generation (and the CRUD Service) to fail at startup.
 
-**WARNING:** every index that is not specified in the collection definition wil be **dropped** at startup of the application, unless its _name_ starts with the `preserve_` prefix.
+> **WARNING:** every index that is not specified in the collection definition wil be **dropped** at startup of the application, unless its _name_ starts with the `preserve_` prefix.
+
+> **TIP:** if a default sorting is defined, is suggested to have its fields covered by an index. 
 
 Several examples of collections can be found in the [Collections Definitions folder](./tests/collectionDefinitions/),
 whereas the schema that defines and validate the data model definition can be found [here](./lib/model.jsonschema.js).
-
 
 ### Define your views
 
@@ -226,7 +231,7 @@ The CRUD service offers the functionality to modify a view by editing the underl
 
 To enable this feature, you need to include the `enableLookup: true` property in the view configuration JSON. By default, this setting is set to false.
 
-For more information on correctly configuring and understanding the capabilities of writable views, please refer to the [writable views documentation](./docs/50_Writable_views.md).
+For more information on correctly configuring and understanding the capabilities of writable views, please refer to the [writable views documentation](./docs/50_Writable_Views.md).
 
 ### Headers
 
@@ -253,13 +258,16 @@ When working with collections via CRUD Service, some fields will be automaticall
 
 #### Document State management
 
-We've just explained the difference between the four possible states of a document. This property can be set directly during an _insert_, and can be changed via REST API calls only in case of the following transformations:
+We've just explained the difference between the four possible states of a document. This property can be set directly during an _insert_, and can be changed via REST API calls only in the case of the following transformations:
 - a document in `PUBLIC` can be moved to `DRAFT` or `TRASH`; 
 - a document in `DRAFT` can be moved to `PUBLIC` or `TRASH`; 
 - a document in `TRASH` can be moved to `DRAFT` or `DELETED`; 
-- a document in `DELETED` can be moved to only to `TRASH`; 
+- a document in `DELETED` can be moved only to `TRASH`;
+Any request to transition to a not allowed state will be refused and a _400 Bad Request_ will be returned.
 
-Operations of hard delete are supported, although the permissions over this type of operations is defined via ACL.
+**NOTE**: If you request to update the state to its current value (e.g., from `PUBLIC` to `PUBLIC`), it will be successful. The `__STATE__` will remain the same, but the _updaterId_ and _updatedAt_ metadata fields will be updated.
+
+Operations of hard delete are supported, although the permissions over this type of operation are defined via ACL.
   
 ### Crud service
 
@@ -319,6 +327,59 @@ The CRUD Service includes also the `join` feature, to join two different models.
 This API responses always in `application/application/x-ndjson`
 
 See the documentation to see which parameters are available.
+
+## Performance test
+
+We use [k6](https://example.com/k6) to simulate the load of traffic directed to the CRUD Service and retrieve some performance metrics. At every version released, a workflow automatically starts executing the following tests:
+
+- **Load Test**: 10 virtual users execute POST requests for one minute on the same collection, then 100 virtual users execute GET, PATCH, and DELETE requests for another minute on the data created.
+- **Spike Test**: We simulate a spike of activity by increasing the number of users from 5 to 500 in 30 seconds, then a decrement of activity from 500 to 5 in another 30 seconds. During this test, only GET requests are executed on a collection that includes 100,000 documents.
+- **Stress Test**: We simulate a brief time of intense activity with 250 users for 90 seconds, followed by a decrement of activity to 5 in 30 seconds. During this test, only GET requests are executed on a collection that includes 100,000 documents.
+
+These tests are executed ahead of every version release to ensure that further updates do not cause a degradation of performance that might affect the usage of the CRUD Service.
+
+### Execute Performance Test on a Local Environment
+
+In case you want to run the tests on your local environment, follow these steps:
+
+- Start the CRUD Service in a Docker container.
+- Have a MongoDB instance ready for use, eventually loaded with existing documents to simulate tests.
+
+To simplify these operations, you can use the same setup for the tests executed during the GitHub workflow, by starting an instance of the CRUD Service using collections and views included in the folder `_bench/definitions`. Use the script `bench/utils/generate-customer-data.js` to quickly include mock documents in the _customers_ collection.
+
+The `generate-customer-data.js` script can be executed at any time with the following command:
+
+```bash
+node bench/utils/generate-customer-data.js -c <connection string> -d <database name> -n <number of documents> -s <number of total shops>
+```
+Where the script arguments are the following:
+- **connection string** (default: _mongodb://localhost:27017_): Connects to your MongoDB instance.
+- **database name** (default: _bench-test_): Specifies the name of the database to write to.
+- **number of documents** (default: _100000_): Sets the number of documents to be created and saved in the customers collection of the specified database.
+- **number of total shops** (default: _250_): Defines a random value (from 1 to the specified number) applied to the shopID field of each document to be saved.
+
+
+To simplify these operations, you can execute the command `npm run bench:init` from your shell. This command starts a container with a MongoDB 6.0 instance, a container with the CRUD Service (built from your current branch), and populates the _customers_ collection with 100,000 documents.
+
+To execute any test, start the k6 service with the following command:
+```
+docker compose -f bench/dc-k6.yml up <service name>
+```
+Remember to replace `<service name>` with one of the following:
+| Service Name                   | Description                                                                                     | File name containing the test            | 
+|--------------------------------|-------------------------------------------------------------------------------------------------|------------------------------------------|
+| k6-load-test                   | Executes a Load Test (1 minute of POST, 1 minute of GET/PATCH/DELETE) on the _items_ collection | [load-test.js](bench/scripts/load-test.js)         |
+| k6-smoke-test                  | Executes a Smoke Test (1 minute of GET requests) on the _customers_ collection                  | [smoke-test.js](bench/scripts/smoke-test.js)         |
+| k6-stress-test-on-collections  | Executes a Stress Test (GET requests for 90 seconds by 250 users) on the _customers_ collection | [stress-test-on-collections.js](bench/scripts/stress-test-on-collections.js)         |
+| k6-stress-test-on-view         | Executes a Stress Test (GET requests for 90 seconds by 250 users) on the _registered-customers_ view | [stress-test-on-view.js](bench/scripts/stress-test-on-view.js)         |
+| k6-spike-test                  | Executes a Spike Test (simulate a spike of 500 concurrent users for GET requests) on the _customers_ collection | [spike-test.js](bench/scripts/spike-test.js)         |
+| runner                         | An empty test that can be populated for tests on local environment | [runner.js](bench/scripts/runner.js)         |
+
+We suggest you use the runner to execute customized tests for your research.
+
+Also, do not run all the tests alltogether via `docker compose -f bench/dc-k6.yml up`, without specifying a test name, otherwise all the tests will run at the same time and the results will not be specific to any test but a global indication on how to service worked during the execution of **all** the tests.
+
+You are free to modify and improve those tests and the definitions used for them but please remember to not use any sensible data.
 
 ## FAQ
 

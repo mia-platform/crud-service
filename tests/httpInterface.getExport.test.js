@@ -238,9 +238,9 @@ tap.test('HTTP GET /export', async t => {
       acl_rows: undefined,
       found: [
         { _id: '111111111111111111111111' },
-        { _id: '444444444444444444444444' },
         { _id: '222222222222222222222222' },
         { _id: '333333333333333333333333' },
+        { _id: '444444444444444444444444' },
       ],
     },
     {
@@ -249,9 +249,9 @@ tap.test('HTTP GET /export', async t => {
       acl_rows: undefined,
       found: [
         { _id: '111111111111111111111111' },
-        { _id: '444444444444444444444444' },
         { _id: '222222222222222222222222' },
         { _id: '333333333333333333333333' },
+        { _id: '444444444444444444444444' },
       ],
     },
     {
@@ -796,7 +796,7 @@ tap.test('HTTP GET /export - $text search', async t => {
       acl_rows: undefined,
       found: HTTP_PUBLIC_FIXTURES.filter(f => f.name === 'Ulysses' || f.isbn === 'fake isbn 2'),
       textIndex: true,
-      scores: removeZeroScoresBasedOnMongoVersion({ 'fake isbn 1': 1, 'fake isbn 2': 0 }, process.env.MONGO_VERSION),
+      scores: { 'fake isbn 1': 1 },
     },
     {
       name: 'with filter with $text search with all options',
@@ -1283,14 +1283,3 @@ tap.test('HTTP GET /export', async t => {
 
   t.end()
 })
-
-function removeZeroScoresBasedOnMongoVersion(scores, mongoVersion) {
-  // Update code to handle MongoDB version 4.4 change.
-  // Previous versions accepted "score: 0" field in response on $text search,
-  // but it is now removed
-  if (mongoVersion >= '4.4') {
-    return Object.fromEntries(Object.entries(scores).filter((_, value) => value === 0))
-  }
-
-  return scores
-}

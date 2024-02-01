@@ -36,13 +36,103 @@ const {
   BOOKS_COLLECTION_NAME,
 } = require('./utils')
 
+// #region Test cases
+
 const context = {
   log: abstractLogger,
   userId: 'my-user-id',
   now: new Date('2018-02-08'),
 }
 
-tap.test('changeState', async t => {
+const allowedTransitionTests = [
+  {
+    name: 'PUBLIC -> DRAFT',
+    chosenDoc: publicFixtures[0],
+    stateTo: 'DRAFT',
+  },
+  {
+    name: 'PUBLIC -> TRASH',
+    chosenDoc: publicFixtures[0],
+    stateTo: 'TRASH',
+  },
+  {
+    name: 'PUBLIC -> PUBLIC',
+    chosenDoc: publicFixtures[0],
+    stateTo: 'PUBLIC',
+  },
+  {
+    name: 'DRAFT -> PUBLIC',
+    chosenDoc: draftFixture,
+    stateTo: 'PUBLIC',
+  },
+  {
+    name: 'DRAFT -> DRAFT',
+    chosenDoc: draftFixture,
+    stateTo: 'DRAFT',
+  },
+  {
+    name: 'DRAFT -> TRASH',
+    chosenDoc: draftFixture,
+    stateTo: 'TRASH',
+  },
+  {
+    name: 'TRASH -> DRAFT',
+    chosenDoc: trashFixture,
+    stateTo: 'DRAFT',
+  },
+  {
+    name: 'TRASH -> TRASH',
+    chosenDoc: trashFixture,
+    stateTo: 'TRASH',
+  },
+  {
+    name: 'TRASH -> DELETED',
+    chosenDoc: trashFixture,
+    stateTo: 'DELETED',
+  },
+  {
+    name: 'DELETED -> TRASH',
+    chosenDoc: deletedFixture,
+    stateTo: 'TRASH',
+  },
+  {
+    name: 'DELETED -> DELETED',
+    chosenDoc: deletedFixture,
+    stateTo: 'DELETED',
+  },
+]
+
+const unallowedTransitionTests = [
+  {
+    name: 'PUBLIC -> DELETED',
+    chosenDoc: publicFixtures[0],
+    stateTo: 'DELETED',
+  },
+  {
+    name: 'DRAFT -> DELETED',
+    chosenDoc: draftFixture,
+    stateTo: 'DELETED',
+  },
+  {
+    name: 'TRASH -> PUBLIC',
+    chosenDoc: trashFixture,
+    stateTo: 'PUBLIC',
+  },
+  {
+    name: 'DELETED -> PUBLIC',
+    chosenDoc: deletedFixture,
+    stateTo: 'PUBLIC',
+  },
+  {
+    name: 'DELETED -> DRAFT',
+    chosenDoc: deletedFixture,
+    stateTo: 'DRAFT',
+  },
+]
+
+// #endregion
+
+tap.test('CrudService -> changeStateById ->', async t => {
   const databaseName = getMongoDatabaseName()
   const mongoURL = getMongoURL(databaseName)
 
@@ -57,149 +147,59 @@ tap.test('changeState', async t => {
 
   const crudService = new CrudService(collection, STATES.PUBLIC)
 
-  const testConf = [
-    // PUBLIC
-    {
-      name: 'PUBLIC -> DRAFT',
-      chosenDoc: publicFixtures[0],
-      stateTo: 'DRAFT',
-      ok: true,
-    },
-    {
-      name: 'PUBLIC -> TRASH',
-      chosenDoc: publicFixtures[0],
-      stateTo: 'TRASH',
-      ok: true,
-    },
-    {
-      name: 'PUBLIC -> PUBLIC',
-      chosenDoc: publicFixtures[0],
-      stateTo: 'PUBLIC',
-      ok: false,
-    },
-    {
-      name: 'PUBLIC -> DELETED',
-      chosenDoc: publicFixtures[0],
-      stateTo: 'DELETED',
-      ok: false,
-    },
-    // DRAFT
-    {
-      name: 'DRAFT -> PUBLIC',
-      chosenDoc: draftFixture,
-      stateTo: 'PUBLIC',
-      ok: true,
-    },
-    {
-      name: 'DRAFT -> DRAFT',
-      chosenDoc: draftFixture,
-      stateTo: 'DRAFT',
-      ok: false,
-    },
-    {
-      name: 'DRAFT -> TRASH',
-      chosenDoc: draftFixture,
-      stateTo: 'TRASH',
-      ok: true,
-    },
-    {
-      name: 'DRAFT -> DELETED',
-      chosenDoc: draftFixture,
-      stateTo: 'DELETED',
-      ok: false,
-    },
-    // TRASH
-    {
-      name: 'TRASH -> PUBLIC',
-      chosenDoc: trashFixture,
-      stateTo: 'PUBLIC',
-      ok: false,
-    },
-    {
-      name: 'TRASH -> DRAFT',
-      chosenDoc: trashFixture,
-      stateTo: 'DRAFT',
-      ok: true,
-    },
-    {
-      name: 'TRASH -> TRASH',
-      chosenDoc: trashFixture,
-      stateTo: 'TRASH',
-      ok: false,
-    },
-    {
-      name: 'TRASH -> DELETED',
-      chosenDoc: trashFixture,
-      stateTo: 'DELETED',
-      ok: true,
-    },
-    // DELETED
-    {
-      name: 'DELETED -> PUBLIC',
-      chosenDoc: deletedFixture,
-      stateTo: 'PUBLIC',
-      ok: false,
-    },
-    {
-      name: 'DELETED -> DRAFT',
-      chosenDoc: deletedFixture,
-      stateTo: 'DRAFT',
-      ok: false,
-    },
-    {
-      name: 'DELETED -> TRASH',
-      chosenDoc: deletedFixture,
-      stateTo: 'TRASH',
-      ok: true,
-    },
-    {
-      name: 'DELETED -> DELETED',
-      chosenDoc: deletedFixture,
-      stateTo: 'DELETED',
-      ok: false,
-    },
-  ]
-
-  testConf.forEach(conf => {
-    const { chosenDoc, ok } = conf
-    t.test(conf.name, async t => {
-      if (ok) {
-        t.plan(3)
+  t.test('Allowed transition', async t => {
+    allowedTransitionTests.forEach(conf => {
+      const { chosenDoc, name, stateTo } = conf
+      t.test(name, async t => {
         await clearCollectionAndInsertFixtures(collection)
+        const ret = await crudService.changeStateById(context, chosenDoc._id, stateTo)
 
-        const ret = await crudService.changeStateById(context, chosenDoc._id, conf.stateTo)
-
-        t.test('should return the document', t => {
-          t.plan(4)
-          t.strictSame(ret._id, chosenDoc._id)
-          t.strictSame(ret.__STATE__, conf.stateTo)
-          t.strictSame(ret.updaterId, context.userId)
-          t.strictSame(ret.updatedAt, context.now)
+        t.test('should acknowledge the update', t => {
+          t.strictSame(ret, 1)
+          t.plan(1)
         })
 
         t.test('should update the doc from the database', async t => {
-          t.plan(4)
           const doc = await collection.findOne({ _id: chosenDoc._id })
-          t.strictSame(doc._id, chosenDoc._id)
-          t.strictSame(doc.__STATE__, conf.stateTo)
+
+          t.strictSame(doc.__STATE__, stateTo)
           t.strictSame(doc.updaterId, context.userId)
-          t.strictSame(ret.updatedAt, context.now)
+          // t.strictSame(ret.updatedAt, context.now)
+
+          t.end()
         })
 
         checkDocumentsInDatabase(t, collection, [chosenDoc._id], fixtures.filter(d => d._id !== chosenDoc._id))
-      } else {
+        t.end()
+      })
+    })
+
+    t.end()
+  })
+
+  t.test('Unallowed transition', async t => {
+    unallowedTransitionTests.forEach(conf => {
+      const { chosenDoc, name, stateTo } = conf
+      t.test(name, async t => {
         t.plan(2)
         await clearCollectionAndInsertFixtures(collection)
 
-        const ret = await crudService.changeStateById(context, chosenDoc._id, conf.stateTo)
-
-        t.test('should not be possible', t => {
+        t.test('should fail', async t => {
           t.plan(1)
-          t.strictSame(ret, null)
+          try {
+            await crudService.changeStateById(context, chosenDoc._id, stateTo)
+            t.fail('The changeStateById request should throw an exception')
+          } catch {
+            t.ok(true)
+          }
+
+          t.end()
         })
 
-        checkDocumentsInDatabase(t, collection, [''], fixtures)
-      }
+        checkDocumentsInDatabase(t, collection, [chosenDoc._id], fixtures.filter(d => d._id !== chosenDoc._id))
+      })
     })
   })
+
+  t.end()
 })
