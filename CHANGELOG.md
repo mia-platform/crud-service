@@ -15,7 +15,7 @@ method of MongoDB, returning the number of documents from the collection metadat
 
 ### Fixed
 
-- [#237](https://github.com/mia-platform/crud-service/issues/237): casting values in `_q` queries are now even if case of nested fields
+- [#237](https://github.com/mia-platform/crud-service/issues/237): casting values in `_q` queries are now executed even in case of nested fields
 
 ## 6.9.6 - 2024-01-23
 
