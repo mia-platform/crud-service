@@ -276,7 +276,7 @@ The export format can be specified through the `Accept` header, supported forma
 | Format | Accept Header value | Description |
 |--------|---------------------|-------------|
 | `json` | `application/json` | Data is exported in JSON format. |
-| [`ndjson`](http://ndjson.org/) | `application/x-ndjson` | Data is exported in JSON, each record is processed individually and separated by a newline (`\n`) delimiter. |
+| [`ndjson`](https://en.wikipedia.org/wiki/JSON_streaming#Newline-delimited_JSON) | `application/x-ndjson` | Data is exported in JSON, each record is processed individually and separated by a newline (`\n`) delimiter. |
 | `csv` | `text/csv` | Data is exported in CSV format using comma as separator (the CSV includes the header with column names) |
 | `xlsx` | `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet` | Data is exported in XLS format (the file includes the header with column names) |
 | `xls` | `application/vnd.ms-excel` | Data is exported in XLS format (the file includes the header with column names) |
