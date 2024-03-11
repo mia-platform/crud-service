@@ -40,7 +40,7 @@
     "csv-parse": "^5.5.3",
     "csv-stringify": "^6.4.5",
     "fastify-plugin": "^4.5.1",
-    "jsonpath-plus": "^8.0.0",
+    "jsonpath-plus": "^8.1.0",
     "JSONStream": "^1.3.5",
     "lodash": "^4.17.21",
     "mongodb-client-encryption": "^6.0.0",
