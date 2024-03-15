@@ -100,6 +100,12 @@
           "id-length": "off",
           "max-lines": "off"
         }
+      },
+      {
+        "files": ["lib/**/*.js"],
+        "rules": {
+          "valid-jsdoc": "off"
+        }
       }
     ]
   },
