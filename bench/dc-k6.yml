@@ -16,6 +16,23 @@ services:
       "json=runner-results.json",
       "/app/runner.js",
     ]
+  k6-bulk-test:
+    image: grafana/k6:0.48.0
+    deploy:
+      resources:
+        limits:
+          memory: 512Mb
+          cpus: "1"
+    volumes:
+      - ./scripts:/app
+    networks:
+      - k6-net
+    command: [ 
+      "run", 
+      "--out",
+      "json=bulk-test-results.json",
+      "/app/bulk-test.js",
+    ]
   k6-load-test:
     image: grafana/k6:0.48.0
     deploy:
