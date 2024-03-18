@@ -375,7 +375,7 @@ Remember to replace `<service name>` with one of the following:
 | k6-stress-test-on-collections  | Executes a Stress Test (GET requests for 90 seconds by 250 users) on the _customers_ collection | [stress-test-on-collections.js](bench/scripts/stress-test-on-collections.js)         |
 | k6-stress-test-on-view         | Executes a Stress Test (GET requests for 90 seconds by 250 users) on the _registered-customers_ view | [stress-test-on-view.js](bench/scripts/stress-test-on-view.js)         |
 | k6-spike-test                  | Executes a Spike Test (simulate a spike of 500 concurrent users for GET requests) on the _customers_ collection | [spike-test.js](bench/scripts/spike-test.js)         |
-| k6-bulk-test                  | Executes a Bulk Test (simulate a spike of 80 bulk requests of 10k records) on the _items_ collection | [bulk-test.js](bench/scripts/bulk-test.js)         |
+| k6-bulk-test                  | Executes a Bulk Test (simulate a spike of 40 `POST /bulk` requests and 40 `PATCH /bulk` requests of 10k records each) on the _items_ collection | [bulk-test.js](bench/scripts/bulk-test.js)         |
 | runner                         | An empty test that can be populated for tests on local environment | [runner.js](bench/scripts/runner.js)         |
 
 We suggest you use the runner to execute customized tests for your research.
