@@ -1,3 +1,4 @@
+/* eslint-disable no-empty-function */
 /*
  * Copyright 2023 Mia s.r.l.
  *
@@ -18,7 +19,7 @@
 
 const t = require('tap')
 const abstractLogger = require('abstract-logging')
-const { MongoClient } = require('mongodb')
+const { MongoClient, ObjectId } = require('mongodb')
 
 const { STATES } = require('../lib/consts')
 const CrudService = require('../lib/CrudService')
@@ -52,6 +53,14 @@ t.test('patchBulk', async t => {
   const collection = database.collection(BOOKS_COLLECTION_NAME)
   const crudService = new CrudService(collection, STATES.PUBLIC)
 
+  const mockQueryParser = {
+    parseAndCastCommands: () => {},
+    parseAndCast: () => {},
+    parseAndCastTextSearchQuery: () => {},
+  }
+
+  const castCollectionId = (_id) => new ObjectId(_id)
+
   t.teardown(async() => {
     await database.dropDatabase()
     await client.close()
@@ -75,11 +84,16 @@ t.test('patchBulk', async t => {
     await clearCollectionAndInsertFixtures(collection)
 
     const filterUpdateCommands = [{
-      _id: fixtures[firstDocIndex]._id,
-      state: ['PUBLIC'],
-      commands: updateCommand(),
+      filter: {
+        _id: fixtures[firstDocIndex]._id,
+        _st: 'PUBLIC',
+      },
+      update: updateCommand(),
     }]
-    const ret = await crudService.patchBulk(context, filterUpdateCommands)
+    const ret = await crudService.patchBulk(
+      context, filterUpdateCommands,
+      mockQueryParser, castCollectionId
+    )
 
     t.test('should return ok and one modification', t => {
       t.plan(1)
@@ -114,17 +128,23 @@ t.test('patchBulk', async t => {
 
     const filterUpdateCommands = [
       {
-        _id: fixtures[firstDocIndex]._id,
-        state: [STATES.PUBLIC],
-        commands: updateCommand(),
+        filter: {
+          _id: fixtures[firstDocIndex]._id,
+          _st: STATES.PUBLIC,
+        },
+        update: updateCommand(),
       },
       {
-        _id: fixtures[secondDocIndex]._id,
-        state: [STATES.PUBLIC],
-        commands: updateCommand(),
+        filter: {
+          _id: fixtures[secondDocIndex]._id,
+          _st: STATES.PUBLIC,
+        },
+        update: updateCommand(),
       },
     ]
-    const ret = await crudService.patchBulk(context, filterUpdateCommands)
+    const ret = await crudService.patchBulk(
+      context, filterUpdateCommands, mockQueryParser, castCollectionId
+    )
 
     t.test('should return ok and two modifications', t => {
       t.plan(1)
@@ -154,12 +174,16 @@ t.test('patchBulk', async t => {
 
     const matchingQuery = { price: { $gt: 0 } }
     const filterUpdateCommands = [{
-      _id: fixtures[firstDocIndex]._id,
-      state: [STATES.PUBLIC],
-      commands: updateCommand(),
-      query: matchingQuery,
+      filter: {
+        _id: fixtures[firstDocIndex]._id,
+        _st: STATES.PUBLIC,
+        _q: JSON.stringify(matchingQuery),
+      },
+      update: updateCommand(),
     }]
-    const ret = await crudService.patchBulk(context, filterUpdateCommands)
+    const ret = await crudService.patchBulk(
+      context, filterUpdateCommands, mockQueryParser, castCollectionId
+    )
 
     t.test('should return ok and one modification', t => {
       t.plan(1)
@@ -186,12 +210,16 @@ t.test('patchBulk', async t => {
     await clearCollectionAndInsertFixtures(collection)
 
     const filterUpdateCommands = [{
-      _id: fixtures[firstDocIndex]._id,
-      state: [STATES.PUBLIC],
-      commands: updateCommand(),
-      query: nonMatchingQuery(),
+      filter: {
+        _id: fixtures[firstDocIndex]._id,
+        _st: STATES.PUBLIC,
+        _q: JSON.stringify(nonMatchingQuery()),
+      },
+      update: updateCommand(),
     }]
-    const ret = await crudService.patchBulk(context, filterUpdateCommands)
+    const ret = await crudService.patchBulk(
+      context, filterUpdateCommands, mockQueryParser, castCollectionId
+    )
 
     t.test('should return ok and no modifications', t => {
       t.plan(1)
@@ -213,18 +241,24 @@ t.test('patchBulk', async t => {
 
     const filterUpdateCommands = [
       {
-        _id: fixtures[firstDocIndex]._id,
-        state: [STATES.PUBLIC],
-        commands: updateCommand(),
+        filter: {
+          _id: fixtures[firstDocIndex]._id,
+          _st: STATES.PUBLIC,
+        },
+        update: updateCommand(),
       },
       {
-        _id: fixtures[secondDocIndex]._id,
-        commands: updateCommand(),
-        state: [STATES.PUBLIC],
-        query: nonMatchingQuery(),
+        filter: {
+          _id: fixtures[secondDocIndex]._id,
+          _q: JSON.stringify(nonMatchingQuery()),
+          _st: STATES.PUBLIC,
+        },
+        update: updateCommand(),
       },
     ]
-    const ret = await crudService.patchBulk(context, filterUpdateCommands)
+    const ret = await crudService.patchBulk(
+      context, filterUpdateCommands, mockQueryParser, castCollectionId
+    )
 
     t.test('should return ok and one modifications', t => {
       t.plan(1)
@@ -254,16 +288,20 @@ t.test('patchBulk', async t => {
 
     const filterUpdateCommands = [
       {
-        query: {
-          isbn: 'fake isbn 1',
+        filter: {
+          _q: JSON.stringify({
+            isbn: 'fake isbn 1',
+          }),
+          _st: STATES.PUBLIC,
         },
-        state: [STATES.PUBLIC],
-        commands: {
+        update: {
           $set: { price: 55 },
         },
       },
     ]
-    const ret = await crudService.patchBulk(context, filterUpdateCommands)
+    const ret = await crudService.patchBulk(
+      context, filterUpdateCommands, mockQueryParser, castCollectionId
+    )
 
     t.test('should return ok and one modifications', t => {
       t.plan(1)
@@ -321,9 +359,9 @@ t.test('patchBulk', async t => {
       t.test(JSON.stringify(testConf.cmd), async t => {
         try {
           await crudService.patchBulk(context, [
-            { _id: fixtures[firstDocIndex]._id, commands: testConf.cmd },
-            { _id: fixtures[secondDocIndex]._id, commands: testConf.cmd },
-          ])
+            { filter: { _id: fixtures[firstDocIndex]._id, _st: STATES.PUBLIC }, update: testConf.cmd },
+            { filter: { _id: fixtures[secondDocIndex]._id, _st: STATES.PUBLIC }, update: testConf.cmd },
+          ], mockQueryParser, castCollectionId)
           t.fail()
         } catch (error) {
           t.ok(testConf.regex.test(error.message), error.message)
@@ -367,15 +405,19 @@ t.test('patchBulk', async t => {
     await clearCollectionAndInsertFixtures(collection)
 
     const filterUpdateCommands = [{
-      query: { 'attachments.name': 'note' },
-      state: ['PUBLIC'],
-      commands: updateArrayNestedObject(),
+      filter: {
+        _q: JSON.stringify({ 'attachments.name': 'note' }),
+        _st: 'PUBLIC',
+      },
+      update: updateArrayNestedObject(),
     }, {
-      query: { 'attachments.name': 'my-name' },
-      state: ['PUBLIC'],
-      commands: updateSecondArrayNestedObject(),
+      filter: {
+        _q: JSON.stringify({ 'attachments.name': 'my-name' }),
+        _st: 'PUBLIC',
+      },
+      update: updateSecondArrayNestedObject(),
     }]
-    const ret = await crudService.patchBulk(context, filterUpdateCommands)
+    const ret = await crudService.patchBulk(context, filterUpdateCommands, mockQueryParser, castCollectionId)
 
     t.test('should return ok and one modification', t => {
       t.plan(1)
