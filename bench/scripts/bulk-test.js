@@ -50,7 +50,7 @@ export const options = {
     stages: [
         { duration: '10s', target: 5 },
         { duration: '20s', target: 20 },
-        { duration: '150s', target: 50 },
+        { duration: '80s', target: 40 },
         { duration: '20s', target: 20 },
         { duration: '10s', target: 5 },
     ],
@@ -75,9 +75,26 @@ export default function () {
     
     const postList = http.post(`http://crud-service:3000/items/bulk`, JSON.stringify(items), { 
         headers: { 'Content-Type': 'application/json', 'accept': 'application/json' },
-        tags: { type: 'bulk' }
+        tags: { type: 'post-bulk' }
     })
-    check(postList, { 'POST / returns status 200': res => res.status === 200 }) 
+    check(postList, { 'POST /items/bulk returns status 200': res => res.status === 200 }) 
+    // get ids from post
+    const ids = JSON.parse(postList.body) 
+    // perform patch bulk
+    const patchResult = http.patch(
+        `http://crud-service:3000/items/bulk`, 
+        JSON.stringify(ids.map(({_id}) => ({
+            filter: { _id },
+            update: {$set: {'object.boolean': true}}
+        }))), { 
+        headers: { 'Content-Type': 'application/json' },
+        tags: { type: 'patch-bulk' }
+    })
+    check(patchResult, { 
+        'PATCH /items/bulk returns status 200 after updating all items': (res) => {
+            return res.status === 200 && Number(res.body) === items.length 
+        }
+    }) 
 }
 
 export function teardown(data) {
