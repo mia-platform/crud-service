@@ -21,7 +21,7 @@
     "postcoverage": "tap report --coverage-report=lcovonly --coverage-report=text-summary",
     "lint": "eslint . --ignore-path=.gitignore",
     "start": "lc39 index.js",
-    "start:local": "set -a && . ./local.env && npm start",
+    "start:local": "set -a && . ./local.env && lc39 index.js",
     "pretest": "node tests/generatedJSONSchemasToFiles.js && eslint --fix tests/expectedSchemas/*.js",
     "test": "npm run lint && npm run unit -- --disable-coverage && npm run checkonly",
     "unit": "MONGO_HOST=${MONGO_HOST_CI:-127.0.0.1} MONGO_VERSION=${MONGO_VERSION:-6.0.2} tap -b --allow-incomplete-coverage 'tests/**/*.test.js'",
