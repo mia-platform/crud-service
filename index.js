@@ -271,7 +271,7 @@ module.exports.options = {
 }
 
 module.exports.swaggerDefinition = {
-  openApiSpecification: 'swagger',
+  openApiSpecification: process.env.OPEN_API_SPECIFICATION ?? 'swagger',
   info: {
     title: 'Crud Service',
     description: myPackage.description,
