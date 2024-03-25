@@ -66,7 +66,7 @@ const properties = {
     minimum: 1,
   },
   TRUSTED_PROXIES: { type: 'string', default: '10.0.0.0/8,172.16.0.0/12,192.168.0.0/16' },
-  KMS_PROVIDER: { type: 'string', enum: ['gcp', 'local', 'none'], description: 'Master key manager', default: 'none' },
+  OPEN_API_SPECIFICATION: { type: 'string', enum: ['swagger', 'openapi'], description: 'OpenAPI specification used to expose Swagger', default: 'swagger' },
   ALLOW_DISK_USE_IN_QUERIES: {
     type: 'boolean',
     description: 'Allow disk use in queries to mongo. It works with Mongo 4.4 or above. WARNING: using this variable set to true with MongoDB version below 4.4 will break all the GETs.',
@@ -75,6 +75,7 @@ const properties = {
   KEY_VAULT_NAMESPACE: { type: 'string', pattern: DATABASE_DOT_COLLECTION },
   LOCAL_MASTER_KEY_PATH: { type: 'string', description: 'Path for the local Master key', minLength: 1 },
   // Google Cloud Platform encryption properties
+  KMS_PROVIDER: { type: 'string', enum: ['gcp', 'local', 'none'], description: 'Master key manager', default: 'none' },
   KMS_GCP_EMAIL: { type: 'string', description: 'GCP email of the kms' },
   KMS_GCP_PROJECT_ID: { type: 'string', description: 'GCP project id for kms' },
   KMS_GCP_LOCATION: { type: 'string', description: 'GCP location' },

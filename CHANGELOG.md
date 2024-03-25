@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+- `OPEN_API_SPECIFICATION` env to choose specification used for exposing Swagger
+
 ## 6.10.0 - 2024-02-01
 
 ### Added

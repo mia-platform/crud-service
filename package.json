@@ -20,7 +20,7 @@
     "postcoverage": "tap report --coverage-report=text-summary",
     "lint": "eslint . --ignore-path=.gitignore",
     "start": "lc39 index.js",
-    "start:local": "npm start -- --env-path ./local.env",
+    "start:local": "set -a && . ./local.env && lc39 index.js",
     "pretest": "node tests/generatedJSONSchemasToFiles.js && eslint --fix tests/expectedSchemas/*.js",
     "test": "npm run lint && npm run unit -- --disable-coverage && npm run checkonly",
     "unit": "MONGO_HOST=${MONGO_HOST_CI:-127.0.0.1} MONGO_VERSION=${MONGO_VERSION:-6.0.2} tap -b --allow-incomplete-coverage 'tests/**/*.test.js'",
@@ -63,7 +63,6 @@
     "mongodb": "^4.17.2",
     "node-xlsx": "^0.23.0",
     "pre-commit": "^1.2.2",
-    "swagger-parser": "^10.0.3",
     "tap": "^18.6.1",
     "uuid-validate": "0.0.3"
   },
@@ -93,6 +92,14 @@
         "rules": {
           "id-length": "off",
           "max-lines": "off"
+        }
+      },
+      {
+        "files": [
+          "lib/**/*.js"
+        ],
+        "rules": {
+          "valid-jsdoc": "off"
         }
       }
     ]
