@@ -270,19 +270,6 @@ module.exports.options = {
   },
 }
 
-// Errori in Swagger 2
-// - non riconosce oneOf, anyOf ...
-// - additional property encryption non riconosciuta
-// - additional property __mia_configuration non riconosciuta
-// - additional property nullable non riconosciuta
-// - additional property example non riconosciuta
-
-// //////////////////////////////////////////////////////////////////////////////////////
-
-// Errori in OAS 3
-// - type file non riconosciuto
-// - additional property encryption non riconosciuta
-// - additional property __mia_configuration non riconosciuta
 module.exports.swaggerDefinition = {
   openApiSpecification: process.env.OPEN_API_SPECIFICATION ?? 'swagger',
   info: {

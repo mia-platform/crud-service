@@ -101,9 +101,7 @@
         }
       },
       {
-        "files": [
-          "lib/**/*.js"
-        ],
+        "files": ["lib/**/*.js"],
         "rules": {
           "valid-jsdoc": "off"
         }
