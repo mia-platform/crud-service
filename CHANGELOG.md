@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - `OPEN_API_SPECIFICATION` env to choose specification used for exposing Swagger
 
+### Changed
+
+- improve internal logic bulk `POST` and `PATCH` operations
+
 ## 7.0.0 - 2024-02-01
 
 ### BREAKING CHANGES
