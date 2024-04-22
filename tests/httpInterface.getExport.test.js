@@ -82,6 +82,18 @@ const EXPECTED_PUBLIC_DOCS_FOR_INCLUSIVE_RAW_PROJECTION = publicFixtures.map((do
 tap.test('HTTP GET /export', async t => {
   const tests = [
     {
+      name: 'with delimiter specifier',
+      url: `/export?_exportOpts=${JSON.stringify({ delimiter: ';' })}`,
+      acl_rows: undefined,
+      delimiter: ';',
+      found: HTTP_PUBLIC_FIXTURES.concat([]).sort((a, b) => {
+        if (a._id === b._id) {
+          return 0
+        }
+        return a._id >= b._id ? 1 : -1
+      }),
+    },
+    {
       name: 'without filters',
       url: '/export',
       acl_rows: undefined,
@@ -695,7 +707,7 @@ tap.test('HTTP GET /export', async t => {
       t.test('should return the document', t => {
         const foundCsv = csvStringify.stringify(found, {
           encoding: 'utf8',
-          delimiter: ',',
+          delimiter: conf.delimiter || ',',
           escape: '\\',
           header: true,
           quote: false,
