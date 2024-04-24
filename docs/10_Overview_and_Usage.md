@@ -12,6 +12,32 @@ It's possible to configure CRUD Service with more than one collection and to sca
 
 CRUD Service is available also as an Open Source Software (OSS), you can find the official repository [here](https://github.com/mia-platform/crud-service).
 
+## Table of Contents
+
+1. [Introduction](#introduction)
+    1. [Conventions](#conventions)
+2. [CRUD Collection Properties](#crud-collection-properties)
+    1. [Predefined Collection Properties](#predefined-collection-properties)
+    2. [Collection Properties Types](#collection-properties-types)
+    3. [Collection document properties](#collection-document-properties)
+    4. [Indexes](#indexes)
+3. [CRUD Headers](#crud-headers)
+4. [CRUD Security](#crud-security)
+    1. [Expose a CRUD Service](#expose-a-crud-service)
+    2. [API Key](#api-key)
+4. [CRUD Endpoints](#crud-endpoints)
+    1. [Create](#create)
+    2. [Read](#read)
+    3. [Update](#update)
+    4. [Delete](#delete)
+    5. [Import](#import)
+    6. [Export](#export)
+    7. [Get Schemas](#get-schemas)
+    8. [RawObject and Array_RawObject with schemas](#rawobject-and-array_rawobject-with-schemas)
+    9. [CRUD Limits](#crud-limits)
+    10. [Response codes of CRUD](#response-codes-of-crud)
+
+
 ## Introduction
 
 The CRUD Service is a microservice that exposes via Restful API a set of MongoDB Collection. CRUD Service is configured in the Console.
@@ -1103,6 +1129,56 @@ name,isbn,price,author
 The Fellowship Of The Ring,54453,13.99,J.R.R. Tolkien
 Dune,143535,14.99,Frank Herbert
 ```
+
+### Export
+
+To export all the elements of a collection you have to use the `GET /export` method exposed by each endpoint associated with a collection. It opens a data stream in different formats.
+
+#### Headers
+
+By default, the export format is `ndjson` but other formats can be specified through the `Accept` header. Supported formats (and relative headers) are the following ones:
+
+| Format | Accept Header value | Description |
+|--------|---------------------|-------------|
+| [`ndjson`](https://en.wikipedia.org/wiki/JSON_streaming#Newline-delimited_JSON) | `application/x-ndjson` | Data is exported in JSON, each record is processed individually and separated by a newline (`\n`) delimiter. |
+| `json` | `application/json` | Data is exported in JSON format. |
+| `csv` | `text/csv` | Data is exported in CSV format using comma as separator as default (the CSV includes the header with column names) |
+| `xlsx` | `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet` | Data is exported in XLS format (the file includes the header with column names) |
+| `xls` | `application/vnd.ms-excel` | Data is exported in XLS format (the file includes the header with column names) |
+
+
+#### Query parameters
+
+It accepts all the query parameters accepted by the `GET /` method plus the `_exportOpts` used for specify the separator for the `csv` format.
+
+```javascript
+  _exportOpts: {
+    type: 'object',
+    properties: {
+      delimiter: string
+    }
+  }
+```
+
+#### Example
+
+An example of a basic export request:
+
+```shell
+curl -X GET https://your-url/v2/plates/export \
+-H  "content-type: application/json" \
+-H  "client-key: client-key"
+```
+
+An example of an export request with accept header:
+
+```shell
+curl -X GET https://your-url/v2/plates/export \
+-H  "accept: text/csv"  \
+-H  "content-type: application/json" \
+-H  "client-key: client-key"
+```
+
 
 ### Get Schemas
 
