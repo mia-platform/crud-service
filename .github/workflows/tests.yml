@@ -27,7 +27,10 @@ jobs:
         run: npm ci
 
       - name: update libraries and install curl
-        run: sudo apt-get update && sudo apt-get install curl -y
+        # temporary workaround for https://github.com/actions/runner-images/issues/9733
+        run: |
+          sudo rm /etc/apt/sources.list.d/microsoft-prod.list
+          sudo apt-get update && sudo apt-get install curl -y
 
       - name: download MongoDB encryption libraries (to support testing encryption features)
         run: curl https://repo.mongodb.com/apt/debian/dists/bullseye/mongodb-enterprise/6.0/main/binary-amd64/mongodb-enterprise-cryptd_6.0.9_amd64.deb -o mongocryptd.deb && curl https://libmongocrypt.s3.amazonaws.com/apt/debian/dists/bullseye/libmongocrypt/1.7/main/binary-amd64/libmongocrypt-dev_1.7.4-0_amd64.deb -o libmongocrypt-dev.deb && curl https://libmongocrypt.s3.amazonaws.com/apt/debian/dists/bullseye/libmongocrypt/1.7/main/binary-amd64/libmongocrypt0_1.7.4-0_amd64.deb -o libmongocrypt0.deb
@@ -73,7 +76,10 @@ jobs:
         run: npm ci
 
       - name: update libraries and install curl
-        run: sudo apt-get update && sudo apt-get install curl -y
+        # temporary workaround for https://github.com/actions/runner-images/issues/9733
+        run: |
+          sudo rm /etc/apt/sources.list.d/microsoft-prod.list
+          sudo apt-get update && sudo apt-get install curl -y
 
       - name: download MongoDB encryption libraries (to support testing encryption features)
         run: curl https://repo.mongodb.com/apt/debian/dists/bullseye/mongodb-enterprise/7.0/main/binary-amd64/mongodb-enterprise-cryptd_7.0.2_amd64.deb -o mongocryptd.deb && curl https://libmongocrypt.s3.amazonaws.com/apt/debian/dists/bullseye/libmongocrypt/1.8/main/binary-amd64/libmongocrypt-dev_1.8.2-0_amd64.deb -o libmongocrypt-dev.deb && curl https://libmongocrypt.s3.amazonaws.com/apt/debian/dists/bullseye/libmongocrypt/1.8/main/binary-amd64/libmongocrypt0_1.8.2-0_amd64.deb -o libmongocrypt0.deb
