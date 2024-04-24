@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+- added `_exportOpts` query parameter for `GET /export` calls
+
 ### Fixed 
 
 - allow running raw queries with `_q` over fields containing a digit in their name
