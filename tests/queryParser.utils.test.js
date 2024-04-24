@@ -32,7 +32,7 @@ const {
   CREATEDAT,
   __STATE__,
 } = require('../lib/consts')
-const { getFieldDefinition } = require('../lib/QueryParser.utils')
+const { getFieldDefinition, getFieldDefinitionNameFromQuery } = require('../lib/QueryParser.utils')
 
 tap.test('queryParser utils', t => {
   t.test('getFieldDefinition', t => {
@@ -187,4 +187,51 @@ tap.test('queryParser utils', t => {
   })
 
   t.end()
+})
+
+
+tap.test('getFieldDefinitionNameFromQuery', async t => {
+  const testCases = [
+    {
+      description: 'parse root level field',
+      input: 'ciaone',
+      output: 'ciaone',
+    },
+    {
+      description: 'parse root level field with digit inside',
+      input: 'up2you',
+      output: 'up2you',
+    },
+    {
+      description: 'parse root level field with digit at the end',
+      input: 'level1',
+      output: 'level1',
+    },
+    {
+      description: 'parse nested level field',
+      input: 'configuration.consumer',
+      output: 'configuration.consumer',
+    },
+    {
+      description: 'parse multiple nested level field',
+      input: 'configuration.consumer.broker.id',
+      output: 'configuration.consumer.broker.id',
+    },
+    {
+      description: 'parse nested level where array index is removed',
+      input: 'orders.1.productId',
+      output: 'orders.productId',
+    },
+    {
+      description: 'parse nested level where array index is removed | digit in name is untouched',
+      input: 'orders2.1.productId',
+      output: 'orders2.productId',
+    },
+  ]
+
+  testCases.forEach(testCase => {
+    t.test(testCase.description, async assert => {
+      assert.strictSame(getFieldDefinitionNameFromQuery(testCase.input), testCase.output)
+    })
+  })
 })
