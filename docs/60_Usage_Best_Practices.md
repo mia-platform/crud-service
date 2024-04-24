@@ -270,6 +270,14 @@ When the dataset of a collection has a high rate of **UPDATE/DELETE** operations
 
 The `GET /export` method opens a data stream in different formats. By using this method, the CRUD Service will open **only one cursor** to the MongoDB cluster, and the `ResultSet` will remain unaffected by concurrent **UPDATE/DELETE** operations.
 
+The route to call is the following:
+
+`GET` `https://your-url/<CRUD collection endpoint>/export`
+
+Alternatively, if we want to apply the previous filter on the updatedAt field, we can write:
+
+`GET /my_single_view/export?&_q=<mongodb query url-encoded>`
+
 Now let's analyze the two possible operations that can be performed concurrently on the collection:
 
 - **UPDATE**: If a record is updated during the cursor iteration, it will appear again in the result set. However, no records will be lost within the batches during the request.

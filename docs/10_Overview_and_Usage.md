@@ -1136,12 +1136,12 @@ To export all the elements of a collection you have to use the `GET /export` met
 
 #### Headers
 
-The export format can be specified through the `Accept` header, supported formats (and relative headers) are the following ones:
+By default, the export format is `ndjson` but other formats can be specified through the `Accept` header. Supported formats (and relative headers) are the following ones:
 
 | Format | Accept Header value | Description |
 |--------|---------------------|-------------|
-| `json` | `application/json` | Data is exported in JSON format. |
 | [`ndjson`](https://en.wikipedia.org/wiki/JSON_streaming#Newline-delimited_JSON) | `application/x-ndjson` | Data is exported in JSON, each record is processed individually and separated by a newline (`\n`) delimiter. |
+| `json` | `application/json` | Data is exported in JSON format. |
 | `csv` | `text/csv` | Data is exported in CSV format using comma as separator as default (the CSV includes the header with column names) |
 | `xlsx` | `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet` | Data is exported in XLS format (the file includes the header with column names) |
 | `xls` | `application/vnd.ms-excel` | Data is exported in XLS format (the file includes the header with column names) |
@@ -1162,14 +1162,22 @@ It accepts all the query parameters accepted by the `GET /` method plus the `_ex
 
 #### Example
 
-The route to call is the following:
+An example of a basic export request:
 
-`GET` `https://your-url/<CRUD collection endpoint>/export`
+```shell
+curl -X GET https://your-url/v2/plates/export \
+-H  "content-type: application/json" \
+-H  "client-key: client-key"
+```
 
-Alternatively, if we want to apply the previous filter on the updatedAt field, we can write:
+An example of an export request with accept header:
 
-`GET /my_single_view/export?&_q=<mongodb query url-encoded>`
-
+```shell
+curl -X GET https://your-url/v2/plates/export \
+-H  "accept: text/csv"  \
+-H  "content-type: application/json" \
+-H  "client-key: client-key"
+```
 
 
 ### Get Schemas
