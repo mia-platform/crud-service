@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fixed 
+
+- allow running raw queries with `_q` over fields containing a digit in their name
+
 ## 7.0.1 - 2024-04-08
 
 ### Added
