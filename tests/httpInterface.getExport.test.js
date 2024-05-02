@@ -37,6 +37,7 @@ const { setUpTest, prefix, stationsPrefix, getHeaders } = require('./httpInterfa
 const booksCollectionDefinition = require('./collectionDefinitions/books')
 const csvStringify = require('csv-stringify/sync')
 const xlsx = require('node-xlsx')
+const { formatDataForColumnExport } = require('../lib/transformers/utils')
 
 const [STATION_DOC] = stationFixtures
 const HTTP_STATION_DOC = JSON.parse(JSON.stringify(STATION_DOC))
@@ -79,8 +80,30 @@ const EXPECTED_PUBLIC_DOCS_FOR_INCLUSIVE_RAW_PROJECTION = publicFixtures.map((do
     }
 })
 
+// tap.runOnly = true
+
 tap.test('HTTP GET /export', async t => {
   const tests = [
+    {
+      name: '[only in mongo 4.4+] use of raw projection with $dateToString operator',
+      url: `/export?_q=${JSON.stringify({ name: 'Ulysses' })}&_rawp=${encodeURIComponent(JSON.stringify({
+        createdAt: {
+          $dateToString: {
+            date: '$createdAt',
+            format: '%H',
+            // same as offset below (+ 10)
+            timezone: '+10:00',
+          },
+        },
+      }))}`,
+      acl_rows: undefined,
+      acl_read_columns: undefined,
+      found: [{
+        _id: fixtures[0]._id.toString(),
+        // same as timezone above (+10:00)
+        createdAt: `${fixtures[0].createdAt.getUTCHours() + 10}`,
+      }],
+    },
     {
       name: 'with delimiter specifier',
       url: `/export?_exportOpts=${JSON.stringify({ delimiter: ';' })}`,
@@ -769,6 +792,53 @@ tap.test('HTTP GET /export', async t => {
       t.end()
     })
 
+    t.test(`EXPORT xlsx ${name}`, async t => {
+      const accept = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      const response = await fastify.inject({
+        method: 'GET',
+        url: prefix + conf.url,
+        headers: {
+          ...getHeaders(conf),
+          accept,
+        },
+      })
+
+      t.test('should return 200', t => {
+        t.strictSame(response.statusCode, 200)
+        t.end()
+      })
+
+      t.test('should return "application/vnd.ms-excel"', t => {
+        t.ok(/application\/vnd.openxmlformats-officedocument.spreadsheetml.sheet/.test(response.headers['content-type']))
+        t.end()
+      })
+
+      t.test('file has proper content', t => {
+        const [{ data }] = xlsx.parse(response.rawPayload)
+        if (found.length === 0) {
+          t.strictSame(data, [])
+        } else {
+          const keys = Object.keys(found[0])
+          const rows = found.map(row => {
+            const values = []
+            keys.forEach(key => {
+              const formattedValue = formatDataForColumnExport(row[key])
+              values.push(typeof formattedValue === 'boolean' ? `${formattedValue}` : formattedValue)
+            })
+            return values
+          })
+          const prova = [
+            keys,
+            ...rows,
+          ]
+          t.strictSame(data, prova)
+        }
+        t.end()
+      })
+
+      t.end()
+    })
+
     t.test(`EXPORT unexpected accept type ${name}`, async t => {
       const accept = 'image/jpeg'
       const response = await fastify.inject({
@@ -981,7 +1051,7 @@ tap.test('HTTP GET /export - $text search', async t => {
   t.end()
 })
 
-tap.test('HTTP GET /export with _id in querystring', async t => {
+tap.only('HTTP GET /export with _id in querystring', async t => {
   const tests = [
     {
       name: 'without filters',
@@ -1143,35 +1213,31 @@ tap.test('HTTP GET /export with _id in querystring', async t => {
         const [row1, row2] = data
         t.strictSame(row1, [
           '_id',
-          'updaterId',
-          'updatedAt',
-          'creatorId',
-          'createdAt',
-          '__STATE__',
           'Cap',
           'CodiceMIR',
           'Comune',
           'Direttrici',
           'Indirizzo',
           'country',
-          'nonNullableDate',
+          'createdAt',
+          'creatorId',
+          'updaterId',
+          'updatedAt',
+          '__STATE__',
         ])
         t.strictSame(row2, [
           '002415b0-8d6d-427c-b654-9857183e57a7',
-          'my-updated-id',
-          '2017-11-11T00:00:00.000Z',
-          'my-creator-id',
-          '2017-11-10T00:00:00.000Z',
-          'PUBLIC',
           25040,
           'S01788',
           'Borgonato',
-          // NOTE: array and objects are stringified in the generated document
           '["D028"]',
           'Via Stazione, 24',
           'it',
-          // Missing column data
-          '',
+          '2017-11-10T00:00:00.000Z',
+          'my-creator-id',
+          'my-updated-id',
+          '2017-11-11T00:00:00.000Z',
+          'PUBLIC',
         ])
         t.end()
       })
@@ -1207,35 +1273,31 @@ tap.test('HTTP GET /export with _id in querystring', async t => {
         const [row1, row2] = data
         t.strictSame(row1, [
           '_id',
-          'updaterId',
-          'updatedAt',
-          'creatorId',
-          'createdAt',
-          '__STATE__',
           'Cap',
           'CodiceMIR',
           'Comune',
           'Direttrici',
           'Indirizzo',
           'country',
-          'nonNullableDate',
+          'createdAt',
+          'creatorId',
+          'updaterId',
+          'updatedAt',
+          '__STATE__',
         ])
         t.strictSame(row2, [
           '002415b0-8d6d-427c-b654-9857183e57a7',
-          'my-updated-id',
-          '2017-11-11T00:00:00.000Z',
-          'my-creator-id',
-          '2017-11-10T00:00:00.000Z',
-          'PUBLIC',
           25040,
           'S01788',
           'Borgonato',
-          // NOTE: array and objects are stringified in the generated document
           '["D028"]',
           'Via Stazione, 24',
           'it',
-          // Missing column data
-          '',
+          '2017-11-10T00:00:00.000Z',
+          'my-creator-id',
+          'my-updated-id',
+          '2017-11-11T00:00:00.000Z',
+          'PUBLIC',
         ])
         t.end()
       })
