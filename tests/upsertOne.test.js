@@ -73,7 +73,7 @@ tap.test('upsertOne', async t => {
     [UPDATERID]: context.userId,
   }
 
-  const updatedDocProjection = Object.keys(updatedDoc)
+  const updatedDocProjection = Object.keys(updatedDoc).reduce((acc, key) => { return { ...acc, [key]: 1 } }, {})
   t.test('one matching doc', async t => {
     t.plan(3)
 
@@ -100,7 +100,7 @@ tap.test('upsertOne', async t => {
 
     await clearCollectionAndInsertFixtures(collection)
 
-    const ret = await crudService.upsertOne(context, updateCommand(), { name: 'Strange Book' }, ['name', 'price'])
+    const ret = await crudService.upsertOne(context, updateCommand(), { name: 'Strange Book' }, { name: 1, price: 1 })
     t.test('should return the new object', t => {
       t.plan(2)
       t.equal(ret.name, 'Strange Book')
@@ -133,7 +133,7 @@ tap.test('upsertOne', async t => {
       $setOnInsert: {
         price: 50,
       },
-    }, { name: 'Strange Book' }, ['name', 'price'])
+    }, { name: 'Strange Book' }, { name: 1, price: 1 })
 
     t.test('should return the new object', t => {
       t.plan(2)

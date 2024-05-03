@@ -32,7 +32,7 @@ const {
   fixtures,
 } = require('./utils')
 
-const ALL_FIELDS = Object.keys(publicFixtures[0])
+const ALL_FIELDS = Object.keys(publicFixtures[0]).reduce((acc, key) => { return { ...acc, [key]: 1 } }, {})
 
 const [firstPublicFixture] = publicFixtures
 const OBJECT_ID = firstPublicFixture._id
@@ -42,6 +42,7 @@ const context = {
   userId: 'my-user-id',
   now: new Date('2018-02-08'),
 }
+const DEFAULT_PROJECTION = { _id: 1 }
 
 tap.test('allowDiskUse', async t => {
   const databaseName = getMongoDatabaseName()
@@ -78,7 +79,7 @@ tap.test('allowDiskUse', async t => {
     const crudService = new CrudService(collection, STATES.PUBLIC, null, { allowDiskUse: true })
 
     t.test('in findAll', async t => {
-      await crudService.findAll(context, { price: { $gt: 20 } }).toArray()
+      await crudService.findAll(context, { price: { $gt: 20 } }, DEFAULT_PROJECTION).toArray()
       t.strictSame(commandFailedEvents, [])
       t.match(commandStartedEvents, [{ commandName: 'find', command: { allowDiskUse: true } }])
     })
@@ -156,7 +157,7 @@ tap.test('allowDiskUse', async t => {
 
     const defaultAscendendFixtures = getSortedFixtures((a, b) => a.name.localeCompare(b.name))
     t.test('if isn\'t defined, defaultSorting is applied', async t => {
-      const result = await crudService.findAll(context, {}).toArray()
+      const result = await crudService.findAll(context, {}, DEFAULT_PROJECTION).toArray()
       t.strictSame(
         result,
         defaultAscendendFixtures
@@ -171,7 +172,7 @@ tap.test('allowDiskUse', async t => {
 
       t.notSame(ascendedFixturesByPrice, defaultAscendendFixtures)
 
-      const result = await crudService.findAll(context, {}, null, sort).toArray()
+      const result = await crudService.findAll(context, {}, DEFAULT_PROJECTION, sort).toArray()
 
       t.strictSame(
         result,

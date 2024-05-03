@@ -43,6 +43,7 @@ const context = {
   userId: newUpdaterId,
   now: new Date('2018-02-08'),
 }
+const DEFAULT_PROJECTION = { _id: 1 }
 
 tap.test('patchById', async t => {
   const databaseName = getMongoDatabaseName()
@@ -62,7 +63,7 @@ tap.test('patchById', async t => {
   // eslint-disable-next-line prefer-destructuring
   const chosenDoc = fixtures[1]
   const chosenDocId = chosenDoc._id
-  const chosenDocProjection = Object.keys(chosenDoc)
+  const chosenDocProjection = Object.keys(chosenDoc).reduce((acc, key) => { return { ...acc, [key]: 1 } }, {})
   const updateCommand = () => ({ $set: { price: 44.0 } })
   const updatedDoc = {
     ...fixtures[1],
@@ -138,7 +139,7 @@ tap.test('patchById', async t => {
 
     const matchingQuery = { price: { $lt: 0 } }
 
-    const r = await crudService.patchById(context, fixtures[4]._id, updateCommand(), matchingQuery)
+    const r = await crudService.patchById(context, fixtures[4]._id, updateCommand(), matchingQuery, DEFAULT_PROJECTION)
 
     t.test('should return null', t => {
       t.plan(1)
@@ -160,7 +161,7 @@ tap.test('patchById', async t => {
       fixtures[4]._id,
       updateCommand(),
       matchingQuery,
-      {},
+      DEFAULT_PROJECTION,
       [STATES.DRAFT]
     )
 
@@ -247,7 +248,7 @@ tap.test('patchById', async t => {
     veryBadCommands.forEach((testConf) => {
       t.test(JSON.stringify(testConf.cmd), async t => {
         try {
-          await crudService.patchById(context, chosenDocId, testConf.cmd)
+          await crudService.patchById(context, chosenDocId, testConf.cmd, {}, DEFAULT_PROJECTION)
           t.fail()
         } catch (error) {
           t.ok(testConf.regex.test(error.message), error.message)
@@ -283,7 +284,7 @@ tap.test('patchById', async t => {
   const arrayQuery = { 'attachments.name': 'note' }
   const [doc] = fixtures
   const docId = doc._id
-  const docProjection = Object.keys(doc)
+  const docProjection = Object.keys(doc).reduce((acc, key) => { return { ...acc, [key]: 1 } }, {})
 
   t.test('update nested object in array', async t => {
     t.plan(2)

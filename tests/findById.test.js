@@ -30,13 +30,11 @@ const {
   getMongoDatabaseName,
   getMongoURL,
   BOOKS_COLLECTION_NAME,
-  RAW_PROJECTION_PLAIN_INCLUSIVE,
-  RAW_PROJECTION_PLAIN_EXCLUSIVE,
 } = require('./utils')
 
 const [firstPublicFixture] = publicFixtures
 const OBJECT_ID = firstPublicFixture._id
-const { attachments, price, isbn, ...docWithExcludedFields } = firstPublicFixture
+const DEFAULT_PROJECTION = { _id: 1 }
 
 const context = {
   log: abstractLogger,
@@ -64,7 +62,7 @@ tap.test('findById', async t => {
   t.test('without query', async t => {
     t.plan(1)
 
-    const doc = await crudService.findById(context, OBJECT_ID)
+    const doc = await crudService.findById(context, OBJECT_ID, {}, DEFAULT_PROJECTION)
 
     t.test('should return the document', t => {
       t.plan(1)
@@ -75,7 +73,7 @@ tap.test('findById', async t => {
   t.test('with unexistent id', async t => {
     t.plan(1)
 
-    const doc = await crudService.findById(context, 'foo bar')
+    const doc = await crudService.findById(context, 'foo bar', {}, DEFAULT_PROJECTION)
 
     t.test('should return null', t => {
       t.plan(1)
@@ -90,7 +88,8 @@ tap.test('findById', async t => {
       const doc = await crudService.findById(
         context,
         OBJECT_ID,
-        { price: { $gt: 20 } }
+        { price: { $gt: 20 } },
+        DEFAULT_PROJECTION
       )
 
       t.test('should return the document', t => {
@@ -104,7 +103,7 @@ tap.test('findById', async t => {
 
       const doc = await crudService.findById(
         context,
-        OBJECT_ID, { price: { $lt: 20 } })
+        OBJECT_ID, { price: { $lt: 20 } }, DEFAULT_PROJECTION)
 
       t.test('should return null', t => {
         t.plan(1)
@@ -118,7 +117,8 @@ tap.test('findById', async t => {
       const doc = await crudService.findById(
         context,
         OBJECT_ID,
-        { _id: ObjectId.createFromHexString('bbbbbbbbbbbbbbbbbbbbbbbb') }
+        { _id: ObjectId.createFromHexString('bbbbbbbbbbbbbbbbbbbbbbbb') },
+        DEFAULT_PROJECTION
       )
 
       t.test('should return null', t => {
@@ -136,7 +136,7 @@ tap.test('findById', async t => {
 
       const doc = await crudService.findById(
         context,
-        OBJECT_ID, {}, ['name', 'isbn'])
+        OBJECT_ID, {}, { name: 1, isbn: 1 })
 
       t.test('should return the correct fields', t => {
         t.plan(1)
@@ -148,22 +148,6 @@ tap.test('findById', async t => {
       })
     })
 
-    t.test('with an empty projection', async t => {
-      t.plan(1)
-
-      const doc = await crudService.findById(
-        context,
-        OBJECT_ID,
-        {},
-        []
-      )
-
-      t.test('only _id should be returned', t => {
-        t.plan(1)
-        t.strictSame(doc, { _id: OBJECT_ID })
-      })
-    })
-
     t.end()
   })
 
@@ -172,8 +156,8 @@ tap.test('findById', async t => {
       t.plan(1)
 
       const doc = await crudService.findById(
-        context,
-        draftFixture._id)
+        context, draftFixture._id, {}, DEFAULT_PROJECTION
+      )
 
       t.test('should return null', t => {
         t.plan(1)
@@ -188,7 +172,7 @@ tap.test('findById', async t => {
         context,
         draftFixture._id,
         {},
-        [],
+        DEFAULT_PROJECTION,
         [STATES.DRAFT]
       )
 
@@ -206,7 +190,7 @@ tap.test('findById', async t => {
         context,
         draftFixture._id,
         matchingQuery,
-        [],
+        DEFAULT_PROJECTION,
         [STATES.DRAFT]
       )
 
@@ -224,93 +208,13 @@ tap.test('findById', async t => {
         context,
         draftFixture._id,
         nonMatchingQuery,
-        [],
+        DEFAULT_PROJECTION,
         [STATES.DRAFT]
       )
 
       t.test('should return null', t => {
         t.plan(1)
         t.strictSame(doc, null)
-      })
-    })
-
-    t.end()
-  })
-
-  t.test('with raw projection', t => {
-    t.test('should merge with existing _p projection', async t => {
-      t.plan(1)
-
-      const doc = await crudService.findById(
-        context,
-        OBJECT_ID, {}, ['name', 'isbn', RAW_PROJECTION_PLAIN_INCLUSIVE])
-
-      t.test('should return the correct fields', t => {
-        t.plan(1)
-        t.strictSame(doc, {
-          _id: OBJECT_ID,
-          name: 'Ulysses',
-          price,
-          isbn,
-          attachments,
-        })
-      })
-    })
-
-    t.test('with an empty projection', async t => {
-      t.plan(1)
-
-      const doc = await crudService.findById(
-        context,
-        OBJECT_ID,
-        {},
-        [RAW_PROJECTION_PLAIN_INCLUSIVE]
-      )
-
-      t.test('should return included fields', t => {
-        t.plan(1)
-        t.strictSame(doc, {
-          _id: OBJECT_ID,
-          price,
-          isbn,
-          attachments,
-        })
-      })
-    })
-
-    t.test('should override existing fields in _p parameter', async t => {
-      t.plan(1)
-
-      const doc = await crudService.findById(
-        context,
-        OBJECT_ID, {}, ['attachments', 'price', RAW_PROJECTION_PLAIN_INCLUSIVE])
-
-      t.test('should return included fields plus _p overridden fields', t => {
-        t.plan(1)
-        t.strictSame(doc, {
-          _id: OBJECT_ID,
-          price,
-          isbn,
-          attachments,
-        })
-      })
-    })
-
-    t.test('should exclude fields specified in _rawp', async t => {
-      t.plan(1)
-
-      const doc = await crudService.findById(
-        context,
-        OBJECT_ID,
-        {},
-        ['attachments', 'price', RAW_PROJECTION_PLAIN_EXCLUSIVE]
-      )
-
-      t.test('should return all fields less _p excluded overridden fields', t => {
-        t.plan(1)
-        t.strictSame(doc, {
-          ...docWithExcludedFields,
-        })
       })
     })
 
