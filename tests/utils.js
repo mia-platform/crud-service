@@ -533,6 +533,10 @@ function mockUuidV4() {
   mock('uuid', { v4: () => '00000000-0000-4000-0000-000000000000' })
 }
 
+function getProjectionFromObject(collectionObj) {
+  return Object.keys(collectionObj).reduce((acc, key) => { return { ...acc, [key]: 1 } }, {})
+}
+
 module.exports = {
   BOOKS_COLLECTION_NAME,
   STATIONS_COLLECTION_NAME,
@@ -565,4 +569,5 @@ module.exports = {
   sortByAdditionalInfo,
   mockObjectId,
   mockUuidV4,
+  getProjectionFromObject,
 }

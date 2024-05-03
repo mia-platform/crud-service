@@ -18,23 +18,20 @@
 
 const tap = require('tap')
 const abstractLogger = require('abstract-logging')
-const { omit: lomit } = require('lodash')
 
 const { STATES } = require('../lib/consts')
 const CrudService = require('../lib/CrudService')
 const { sortByPrice, sortByName, sortByDate, sortByAttachmentsName } = require('./utils')
 const {
-  fixtures,
   publicFixtures,
   draftFixture,
-  RAW_PROJECTION_PLAIN_INCLUSIVE,
-  RAW_PROJECTION_PLAIN_EXCLUSIVE,
+  getProjectionFromObject,
 } = require('./utils')
 const { setUpTest } = require('./httpInterface.utils')
 
 const EMPTY_QUERY = {}
-const ONLY_ID_PROJECTION = []
-const ALL_FIELDS = Object.keys(publicFixtures[0])
+const DEFAULT_PROJECTION = { _id: 1 }
+const ALL_FIELDS = getProjectionFromObject(publicFixtures[0])
 
 const context = {
   log: abstractLogger,
@@ -62,7 +59,7 @@ tap.test('aggregate', async t => {
     })
 
     await t.test('could return an empty array', async t => {
-      const data = await crudService.aggregate(context, { foo: 'bar' }, ONLY_ID_PROJECTION).toArray()
+      const data = await crudService.aggregate(context, { foo: 'bar' }, DEFAULT_PROJECTION).toArray()
 
       t.strictSame(data, [])
     })
@@ -81,7 +78,7 @@ tap.test('aggregate', async t => {
     })
 
     await t.test('could return an empty array', async t => {
-      const data = await crudService.aggregate(context, { foo: 'bar' }, ONLY_ID_PROJECTION).toArray()
+      const data = await crudService.aggregate(context, { foo: 'bar' }, DEFAULT_PROJECTION).toArray()
 
       t.strictSame(data, [])
     })
@@ -89,7 +86,7 @@ tap.test('aggregate', async t => {
 
   await t.test('projection', async t => {
     await t.test('should return only the specified fields', async t => {
-      const data = await crudService.aggregate(context, EMPTY_QUERY, ['name', 'price', 'isPromoted']).toArray()
+      const data = await crudService.aggregate(context, EMPTY_QUERY, { name: 1, price: 1, isPromoted: 1 }).toArray()
 
       t.strictSame(data, publicFixtures.map(d => {
         return {
@@ -102,21 +99,17 @@ tap.test('aggregate', async t => {
     })
 
     await t.test('should manage custom projection', async t => {
-      const customProjection = [
-        { _id: 0 },
-        {
-          value: {
-            $toObjectId: '$_id',
+      const customProjection = {
+        _id: 0,
+        value: {
+          $toObjectId: '$_id',
+        },
+        label: {
+          $toString: {
+            $concat: ['$name', ' ', '$author', ' (', '$isbn', ')'],
           },
         },
-        {
-          label: {
-            $toString: {
-              $concat: ['$name', ' ', '$author', ' (', '$isbn', ')'],
-            },
-          },
-        },
-      ]
+      }
 
       const data = await crudService.aggregate(context, EMPTY_QUERY, customProjection).toArray()
 
@@ -129,13 +122,13 @@ tap.test('aggregate', async t => {
     })
 
     await t.test('should return only _id if no projection is specified', async t => {
-      const data = await crudService.aggregate(context, EMPTY_QUERY, ONLY_ID_PROJECTION).toArray()
+      const data = await crudService.aggregate(context, EMPTY_QUERY, DEFAULT_PROJECTION).toArray()
 
       t.strictSame(data.map(mapOnlyId), publicFixtures.map(mapOnlyId))
     })
 
     await t.test('should return only _id without projection', async t => {
-      const data = await crudService.aggregate(context, EMPTY_QUERY).toArray()
+      const data = await crudService.aggregate(context, EMPTY_QUERY, DEFAULT_PROJECTION).toArray()
 
       t.strictSame(data.map(mapOnlyId), publicFixtures.map(mapOnlyId))
     })
@@ -143,7 +136,7 @@ tap.test('aggregate', async t => {
 
   await t.test('order', async t => {
     await t.test('should return with the correct order ascendant', async t => {
-      const data = (await crudService.aggregate(context, EMPTY_QUERY, ['price'], { price: 1 }).toArray())
+      const data = (await crudService.aggregate(context, EMPTY_QUERY, { price: 1 }, { price: 1 }).toArray())
         .map(mapOnlyId)
 
       const expectedSortedIds = publicFixtures
@@ -154,7 +147,7 @@ tap.test('aggregate', async t => {
     })
 
     await t.test('should return with the correct order descendent', async t => {
-      const data = (await crudService.aggregate(context, EMPTY_QUERY, ['price'], { price: -1 }).toArray())
+      const data = (await crudService.aggregate(context, EMPTY_QUERY, { price: 1 }, { price: -1 }).toArray())
         .map(mapOnlyId)
 
       const expectedSortedIds = publicFixtures
@@ -165,7 +158,9 @@ tap.test('aggregate', async t => {
     })
 
     await t.test('should return with the correct order ascendant for multiple fields', async t => {
-      const data = (await crudService.aggregate(context, EMPTY_QUERY, ['price', 'name'], { price: 1, name: 1 }).toArray())
+      const data = (
+        await crudService.aggregate(context, EMPTY_QUERY, { price: 1, name: 1 }, { price: 1, name: 1 }).toArray()
+      )
         .map(mapOnlyId)
 
       const expectedSortedIds = publicFixtures
@@ -180,7 +175,7 @@ tap.test('aggregate', async t => {
       const data = (await crudService.aggregate(
         context,
         EMPTY_QUERY,
-        ['price', 'name'],
+        { price: 1, name: 1 },
         { price: -1, name: -1 }
       ).toArray()).map(mapOnlyId)
 
@@ -193,7 +188,9 @@ tap.test('aggregate', async t => {
     })
 
     await t.test('should return with the correct order: ascendant for the first field, descendent for the second', async t => {
-      const data = (await crudService.aggregate(context, EMPTY_QUERY, ['price', 'name'], { price: 1, name: -1 }).toArray())
+      const data = (
+        await crudService.aggregate(context, EMPTY_QUERY, { price: 1, name: 1 }, { price: 1, name: -1 }).toArray()
+      )
         .map(mapOnlyId)
 
       const expectedSortedIds = publicFixtures
@@ -205,7 +202,9 @@ tap.test('aggregate', async t => {
     })
 
     await t.test('should return with the correct order: descendent for the first field, ascendant for the second', async t => {
-      const data = (await crudService.aggregate(context, EMPTY_QUERY, ['price', 'name'], { price: -1, name: 1 }).toArray())
+      const data = (
+        await crudService.aggregate(context, EMPTY_QUERY, { price: 1, name: 1 }, { price: -1, name: 1 }).toArray()
+      )
         .map(mapOnlyId)
 
       const expectedSortedIds = publicFixtures
@@ -220,7 +219,11 @@ tap.test('aggregate', async t => {
       const data = (await crudService.aggregate(
         context,
         EMPTY_QUERY,
-        ['price', 'name', 'publishDate'],
+        {
+          price: 1,
+          name: 1,
+          publishDate: 1,
+        },
         { price: -1, name: 1, publishDate: 1 }
       ).toArray()).map(mapOnlyId)
 
@@ -237,7 +240,11 @@ tap.test('aggregate', async t => {
       const data = (await crudService.aggregate(
         context,
         EMPTY_QUERY,
-        ['price', 'name', 'publishDate'],
+        {
+          price: 1,
+          name: 1,
+          publishDate: 1,
+        },
         { price: -1, 'attachments.name': 1, publishDate: 1 }
       ).toArray()).map(mapOnlyId)
 
@@ -258,7 +265,7 @@ tap.test('aggregate', async t => {
       const data = (await crudService.aggregate(
         context,
         EMPTY_QUERY,
-        ['price'],
+        { price: 1 },
         { price: 1 },
         SKIP_COUNT
       ).toArray()).map(mapOnlyId)
@@ -279,7 +286,7 @@ tap.test('aggregate', async t => {
       const data = (await crudService.aggregate(
         context,
         EMPTY_QUERY,
-        ['price'],
+        { price: 1 },
         { price: 1 },
         0,
         LIMIT
@@ -300,7 +307,7 @@ tap.test('aggregate', async t => {
       const data = await crudService.aggregate(
         context,
         EMPTY_QUERY,
-        ['price'],
+        { price: 1 },
         { price: 1 },
         0,
         500,
@@ -308,111 +315,6 @@ tap.test('aggregate', async t => {
       ).toArray()
 
       t.strictSame(data.map(mapOnlyId), [mapOnlyId(draftFixture)])
-    })
-  })
-
-  await t.test('rawProjection', async t => {
-    const SORT = undefined
-    const SKIP = 0
-    const LIMIT = 20
-
-    const expectedDocs = fixtures.map((doc) => {
-      return doc.attachments
-        ? {
-          _id: doc._id,
-          isbn: doc.isbn,
-          price: doc.price,
-          attachments: doc.attachments,
-        }
-        : {
-          _id: doc._id,
-          isbn: doc.isbn,
-          price: doc.price,
-        }
-    })
-
-    const expectedDocsWithExcludedFields = fixtures.map((doc) => {
-      const docCopy = { ...doc }
-      return lomit(docCopy, ['attachments', 'isbn', 'price'])
-    })
-
-    await t.test('should return only the right fields', async t => {
-      const data = await crudService.aggregate(
-        context,
-        EMPTY_QUERY,
-        [...ONLY_ID_PROJECTION, RAW_PROJECTION_PLAIN_INCLUSIVE],
-        SORT,
-        SKIP,
-        LIMIT,
-        [STATES.DRAFT, STATES.PUBLIC, STATES.TRASH, STATES.DELETED]
-      ).toArray()
-
-      t.strictSame(data, expectedDocs)
-    })
-
-    await t.test('should override fields in _p parameter', async t => {
-      const data = await crudService.aggregate(
-        context,
-        EMPTY_QUERY,
-        ['attachments', RAW_PROJECTION_PLAIN_INCLUSIVE],
-        SORT,
-        SKIP,
-        LIMIT,
-        [STATES.DRAFT, STATES.PUBLIC, STATES.TRASH, STATES.DELETED]
-      ).toArray()
-
-      t.strictSame(data, expectedDocs)
-    })
-
-    await t.test('should exclude specified fields', async t => {
-      const data = await crudService.aggregate(
-        context,
-        EMPTY_QUERY,
-        [RAW_PROJECTION_PLAIN_EXCLUSIVE],
-        SORT,
-        SKIP,
-        LIMIT,
-        [STATES.DRAFT, STATES.PUBLIC, STATES.TRASH, STATES.DELETED]
-      ).toArray()
-
-      t.strictSame(data, expectedDocsWithExcludedFields)
-    })
-
-    await t.test('should exclude specified fields overriding existing _p specification', async t => {
-      const data = await crudService.aggregate(
-        context,
-        EMPTY_QUERY,
-        ['attachments', RAW_PROJECTION_PLAIN_EXCLUSIVE],
-        SORT,
-        SKIP,
-        LIMIT,
-        [STATES.DRAFT, STATES.PUBLIC, STATES.TRASH, STATES.DELETED]
-      ).toArray()
-
-      t.strictSame(data, expectedDocsWithExcludedFields)
-    })
-
-    await t.test('should exclude specified fields overriding existing _p specification', async t => {
-      const data = await crudService.aggregate(
-        context,
-        {
-          $and: [
-            {
-              $text: {
-                $search: 'Ulyss',
-              },
-            },
-          ],
-        },
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        [STATES.DRAFT, STATES.PUBLIC, STATES.TRASH, STATES.DELETED],
-        true
-      ).toArray()
-
-      t.strictSame(data, [{ _id: expectedDocs[0]._id, score: 1 }])
     })
   })
 }).then()

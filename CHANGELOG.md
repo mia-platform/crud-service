@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed 
 
+- fixed `GET /export` with `csv` format: `csv` files contain all the requested fields as columns without omissions
+- fixed `GET /export` with `excel` format: `excel` files contain all the requested fields as columns instead of containing always all the collection fields
 - allow running raw queries with `_q` over fields containing a digit in their name
 
 ## 7.0.1 - 2024-04-08
