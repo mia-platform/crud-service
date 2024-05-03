@@ -31,6 +31,7 @@ const {
   getMongoDatabaseName,
   getMongoURL,
   BOOKS_COLLECTION_NAME,
+  getProjectionFromObject,
 } = require('./utils')
 
 const {
@@ -63,7 +64,7 @@ tap.test('patchById', async t => {
   // eslint-disable-next-line prefer-destructuring
   const chosenDoc = fixtures[1]
   const chosenDocId = chosenDoc._id
-  const chosenDocProjection = Object.keys(chosenDoc).reduce((acc, key) => { return { ...acc, [key]: 1 } }, {})
+  const chosenDocProjection = getProjectionFromObject(chosenDoc)
   const updateCommand = () => ({ $set: { price: 44.0 } })
   const updatedDoc = {
     ...fixtures[1],
@@ -284,7 +285,7 @@ tap.test('patchById', async t => {
   const arrayQuery = { 'attachments.name': 'note' }
   const [doc] = fixtures
   const docId = doc._id
-  const docProjection = Object.keys(doc).reduce((acc, key) => { return { ...acc, [key]: 1 } }, {})
+  const docProjection = getProjectionFromObject(doc)
 
   t.test('update nested object in array', async t => {
     t.plan(2)

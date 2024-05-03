@@ -32,6 +32,7 @@ const {
   getMongoDatabaseName,
   getMongoURL,
   BOOKS_COLLECTION_NAME,
+  getProjectionFromObject,
 } = require('./utils')
 
 const {
@@ -73,7 +74,7 @@ tap.test('upsertOne', async t => {
     [UPDATERID]: context.userId,
   }
 
-  const updatedDocProjection = Object.keys(updatedDoc).reduce((acc, key) => { return { ...acc, [key]: 1 } }, {})
+  const updatedDocProjection = getProjectionFromObject(updatedDoc)
   t.test('one matching doc', async t => {
     t.plan(3)
 

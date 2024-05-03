@@ -25,12 +25,13 @@ const { sortByPrice, sortByName, sortByDate, sortByAttachmentsName } = require('
 const {
   publicFixtures,
   draftFixture,
+  getProjectionFromObject,
 } = require('./utils')
 const { setUpTest } = require('./httpInterface.utils')
 
 const EMPTY_QUERY = {}
 const DEFAULT_PROJECTION = { _id: 1 }
-const ALL_FIELDS = Object.keys(publicFixtures[0]).reduce((acc, key) => { return { ...acc, [key]: 1 } }, {})
+const ALL_FIELDS = getProjectionFromObject(publicFixtures[0])
 
 const context = {
   log: abstractLogger,

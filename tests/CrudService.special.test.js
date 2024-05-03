@@ -30,9 +30,10 @@ const {
   BOOKS_COLLECTION_NAME,
   defaultSorting,
   fixtures,
+  getProjectionFromObject,
 } = require('./utils')
 
-const ALL_FIELDS = Object.keys(publicFixtures[0]).reduce((acc, key) => { return { ...acc, [key]: 1 } }, {})
+const ALL_FIELDS = getProjectionFromObject(publicFixtures[0])
 
 const [firstPublicFixture] = publicFixtures
 const OBJECT_ID = firstPublicFixture._id
