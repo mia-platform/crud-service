@@ -1,6 +1,6 @@
 {
   "name": "@mia-platform/crud-service",
-  "version": "7.0.2-rc.0",
+  "version": "7.0.2",
   "description": "HTTP interface to perform CRUD operations on MongoDB collections defined in the API Console",
   "homepage": "https://www.mia-platform.eu/",
   "bugs": {
