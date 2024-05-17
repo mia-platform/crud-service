@@ -7,9 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-## 7.0.2 - 2024-05-06
+### Fixed
 
-## 7.0.2-rc.0 - 2024-04-24
+- fixed projection example in json schema generator
+
+## 7.0.2 - 2024-05-06
 
 ### Added
 
