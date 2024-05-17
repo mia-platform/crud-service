@@ -116,9 +116,7 @@ module.exports = {
       '_p': {
         'type': 'string',
         'description': 'Return only the properties specified in a comma separated list',
-        'examples': [
-          'field1,field2,field3.nestedField',
-        ],
+        'example': 'field1,field2,field3.nestedField',
       },
       '_st': {
         'type': 'string',
