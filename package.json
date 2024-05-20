@@ -63,7 +63,7 @@
     "fastbench": "^1.0.1",
     "form-data": "^4.0.0",
     "mock-require": "^3.0.3",
-    "mongodb": "^6.6.1",
+    "mongodb": "^6.6.2",
     "node-xlsx": "^0.24.0",
     "pre-commit": "^1.2.2",
     "tap": "^18.8.0",
