@@ -20,6 +20,8 @@ const fp = require('fastify-plugin')
 const fastifyEnv = require('@fastify/env')
 const fastifyMultipart = require('@fastify/multipart')
 const ajvFormats = require('ajv-formats')
+
+const { hrtime } = require('node:process')
 const { unset: lunset } = require('lodash')
 const { readdirSync } = require('fs')
 const { join } = require('path')
@@ -243,6 +245,12 @@ async function setupCruds(fastify) {
 /* =============================================================================== */
 
 module.exports = async function plugin(fastify, opts) {
+  const start = hrtime.bigint()
+
+  fastify.addHook('onReady', async() => {
+    fastify.log.trace({ elapsedTime: Number(hrtime.bigint() - start) / 1000000 }, 'startup time')
+  })
+
   await fastify
     .register(fastifyEnv, { schema: fastifyEnvSchema, data: opts })
   fastify.register(fastifyMultipart, {
