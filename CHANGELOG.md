@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+
+- added `await` keyword when registering Fastify plugins
+
 ### Fixed
 
 - fixed projection example in json schema generator
