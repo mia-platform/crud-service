@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 /*
  * Copyright 2023 Mia s.r.l.
  *
@@ -25,6 +26,7 @@ const { readdirSync } = require('fs')
 const { join } = require('path')
 const { ObjectId } = require('mongodb')
 const { JSONPath } = require('jsonpath-plus')
+const { hrtime } = require('node:process')
 
 const myPackage = require('./package')
 const fastifyEnvSchema = require('./envSchema')
@@ -62,7 +64,7 @@ async function registerCrud(fastify, { modelName, isView }) {
   fastify.decorate('jsonSchemaGenerator', model.jsonSchemaGenerator)
   fastify.decorate('jsonSchemaGeneratorWithNested', model.jsonSchemaGeneratorWithNested)
   fastify.decorate('modelName', modelName)
-  fastify.register(httpInterface, { prefix, registerGetters: true, registerSetters: !isView })
+  await fastify.register(httpInterface, { prefix, registerGetters: true, registerSetters: !isView })
 }
 
 async function registerViewCrud(fastify, { modelName, lookups }) {
@@ -126,7 +128,7 @@ async function registerViewCrud(fastify, { modelName, lookups }) {
     return payload
   })
 
-  fastify.register(httpInterface, { prefix, registerGetters: false, registerSetters: true })
+  await fastify.register(httpInterface, { prefix, registerGetters: false, registerSetters: true })
 }
 
 function mapLookupToObjectId(reference) {
@@ -163,7 +165,7 @@ async function registerViewCrudLookup(fastify, { modelName, lookupModel }) {
   fastify.decorate('jsonSchemaGeneratorWithNested', lookupModel.jsonSchemaGenerator)
   fastify.decorate('modelName', modelName)
   fastify.decorate('lookupProjection', lookupModel.parsedLookupProjection)
-  fastify.register(httpInterface, {
+  await fastify.register(httpInterface, {
     prefix: lookupPrefix,
     registerGetters: false,
     registerSetters: false,
@@ -182,20 +184,20 @@ async function iterateOverCollectionDefinitionAndRegisterCruds(fastify) {
     const { isView, viewLookupsEnabled, viewDependencies } = model
     if (viewLookupsEnabled) {
       const lookups = viewDependencies.lookupsModels.map(({ lookup }) => lookup)
-      fastify.register(registerViewCrud, {
+      await fastify.register(registerViewCrud, {
         modelName,
         lookups,
       })
 
       for (const lookupModel of viewDependencies.lookupsModels) {
-        fastify.register(registerViewCrudLookup, {
+        await fastify.register(registerViewCrudLookup, {
           modelName,
           lookupModel,
         })
       }
     }
 
-    fastify.register(registerCrud, {
+    await fastify.register(registerCrud, {
       modelName,
       isView,
     })
@@ -223,20 +225,27 @@ async function setupCruds(fastify) {
   }
 
   if (collections.length > 0) {
-    fastify
-      .register(registerDatabase)
-      .register(fp(loadModels))
-      .register(iterateOverCollectionDefinitionAndRegisterCruds)
-      .register(joinPlugin, { prefix: '/join' })
+    await fastify.register(registerDatabase)
+    await fastify.register(fp(loadModels))
+    await fastify.register(iterateOverCollectionDefinitionAndRegisterCruds)
+    await fastify.register(joinPlugin, { prefix: '/join' })
   }
 }
 
 /* =============================================================================== */
 
 module.exports = async function plugin(fastify, opts) {
-  await fastify
-    .register(fastifyEnv, { schema: fastifyEnvSchema, data: opts })
-  fastify.register(fastifyMultipart, {
+  const start = hrtime.bigint()
+
+  fastify.addHook('onReady', () => {
+    fastify.log.info({ elapsedMs: Number(hrtime.bigint() - start) / 1_000_000 }, 'ready event reached')
+  })
+  fastify.addHook('onListen', () => {
+    fastify.log.info({ elapsedMs: Number(hrtime.bigint() - start) / 1_000_000 }, 'listen event reached')
+  })
+
+  await fastify.register(fastifyEnv, { schema: fastifyEnvSchema, data: opts })
+  await fastify.register(fastifyMultipart, {
     limits: {
       fields: 5,
       // Conversion Byte to Mb
@@ -244,7 +253,7 @@ module.exports = async function plugin(fastify, opts) {
       files: 1,
     },
   })
-    .register(fp(setupCruds, { decorators: { fastify: ['config'] } }))
+  await fastify.register(fp(setupCruds, { decorators: { fastify: ['config'] } }))
 }
 
 module.exports.options = {
