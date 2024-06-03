@@ -39,7 +39,7 @@ jobs:
         run: sudo apt-get install -f ./mongocryptd.deb ./libmongocrypt0.deb ./libmongocrypt-dev.deb -y
 
       - name: start MongoDB instance
-        uses: supercharge/mongodb-github-action@v1.10.0
+        uses: supercharge/mongodb-github-action@1.11.0
         with:
           mongodb-version: ${{ matrix.mongodb-version }}
 
@@ -88,7 +88,7 @@ jobs:
         run: sudo apt-get install -f ./mongocryptd.deb ./libmongocrypt0.deb ./libmongocrypt-dev.deb -y
 
       - name: start MongoDB instance
-        uses: supercharge/mongodb-github-action@v1.10.0
+        uses: supercharge/mongodb-github-action@1.11.0
         with:
           mongodb-version: "7.0"
 
