@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## 6.10.2 - 2024-06-06
+
 ### Changed
 
 - upgrade NodeJS version in Docker image to v20.14.0
