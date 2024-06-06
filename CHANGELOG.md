@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+
+- upgrade NodeJS version in Docker image to v20.14.0
+
 ## 6.10.1 - 2024-05-17
 
 - fixed projection example in json schema generator
