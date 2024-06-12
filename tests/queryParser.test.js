@@ -901,7 +901,7 @@ function generateTestForAllOperators(type, key, value) {
 }
 
 function generateTestForArrayOperators(type, key, value) {
-  const operators = ['$in', '$nin']
+  const operators = ['$in', '$nin', '$eq']
   return operators.map(op => {
     return {
       name: `should not cast ${type} / ${op}`,
