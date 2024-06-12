@@ -124,9 +124,9 @@ Object {
       ],
       "nullable": true,
       "type": Array [
-        "null",
         "array",
         "object",
+        "null",
       ],
     },
     "author": Object {
@@ -186,9 +186,9 @@ Object {
       ],
       "nullable": true,
       "type": Array [
-        "null",
         "array",
         "object",
+        "null",
       ],
     },
     "isbn": Object {
