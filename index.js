@@ -46,6 +46,9 @@ const {
   PULLCMD,
   UNSETCMD,
   ADDTOSETCMD,
+  QUERY,
+  RAW_PROJECTION,
+  INVALID_USERID,
 } = require('./lib/consts')
 const { registerMongoInstances } = require('./lib/mongo/mongo-plugin')
 const { getAjvResponseValidationFunction, ajvSerializer } = require('./lib/validatorGetters')
@@ -71,13 +74,13 @@ async function registerCrud(fastify, { modelName, isView }) {
   await fastify.register(httpInterface, { prefix, registerGetters: true, registerSetters: !isView })
 }
 
-async function registerViewCrud(fastify, { modelName, lookups }) {
+async function registerViewCrud(fastify, { modelName }) {
   if (!fastify.mongo) { throw new Error('`fastify.mongo` is undefined!') }
   if (!modelName) { throw new Error('`modelName` is undefined!') }
 
   fastify.log.trace({ modelName }, 'Registering View CRUD')
 
-  const { definition, viewDependencies, crudService } = fastify.models[modelName]
+  const { definition, viewDependencies } = fastify.models[modelName]
   const prefix = definition.endpointBasePath
 
   fastify.decorate('crudService', viewDependencies.crudService)
@@ -86,49 +89,6 @@ async function registerViewCrud(fastify, { modelName, lookups }) {
   fastify.decorate('jsonSchemaGenerator', viewDependencies.jsonSchemaGenerator)
   fastify.decorate('jsonSchemaGeneratorWithNested', viewDependencies.jsonSchemaGenerator)
   fastify.decorate('modelName', modelName)
-
-  // To allow writing views without having to rewrite all the logic of the HttpInterface,
-  // it was decided to adapt the fields of the calls towards the view by converting them
-  // to the fields of the underlying collection, thus hiding the complexity on the client
-  // side while maintaining consistent interfaces.
-  // This assumes that the key of the value is in the field "value" and should be made configurable.
-  fastify.addHook('preHandler', (request, _reply, done) => {
-    for (const { as, localField } of lookups) {
-      if (request?.body?.[as]) {
-        const lookupReference = request.body[as]
-        delete request.body[as]
-
-        request.body[localField] = mapLookupToObjectId(lookupReference)
-      }
-
-      for (const command of [SETCMD, UNSETCMD, PUSHCMD, PULLCMD, ADDTOSETCMD]) {
-        if (request?.body?.[command]?.[as]) {
-          const lookupReference = request.body[command][as]
-          delete request.body[command][as]
-
-          request.body[command][localField] = mapLookupToObjectId(lookupReference)
-        }
-      }
-    }
-
-    done()
-  })
-
-  // To obtain the updated object with a consistent interface after a patch,
-  // it is necessary to retrieve the view object again before returning it to the client.
-  fastify.addHook('preSerialization', async function preSerializer(request, _reply, payload) {
-    const { _id } = payload
-    if (request.method === 'PATCH' && _id) {
-      const docId = this.castCollectionId(_id)
-      // eslint-disable-next-line no-underscore-dangle
-      const doc = await crudService._mongoCollection.findOne({ _id: docId })
-
-      const validatePatch = getAjvResponseValidationFunction(request.routeSchema.response['200'])
-      validatePatch(doc)
-      return doc
-    }
-    return payload
-  })
 
   await fastify.register(httpInterface, { prefix, registerGetters: false, registerSetters: true })
 }
@@ -184,10 +144,8 @@ async function iterateOverCollectionDefinitionAndRegisterCruds(fastify) {
   for (const [modelName, model] of Object.entries(fastify.models)) {
     const { isView, viewLookupsEnabled, viewDependencies } = model
     if (viewLookupsEnabled) {
-      const lookups = viewDependencies.lookupsModels.map(({ lookup }) => lookup)
       await fastify.register(registerViewCrud, {
         modelName,
-        lookups,
       })
 
       for (const lookupModel of viewDependencies.lookupsModels) {
@@ -228,6 +186,7 @@ async function notFoundHandler(_, reply) {
     })
 }
 
+// eslint-disable-next-line max-statements
 async function setupCruds(fastify) {
   const {
     COLLECTION_DEFINITION_FOLDER,
@@ -237,6 +196,7 @@ async function setupCruds(fastify) {
   } = fastify.config
 
   const additionalCaster = new AdditionalCaster()
+
   fastify.decorate('castResultsAsStream', additionalCaster.castResultsAsStream)
   fastify.decorate('castItem', additionalCaster.castItem)
   fastify.decorate('validateOutput', ENABLE_STRICT_OUTPUT_VALIDATION)
@@ -283,6 +243,59 @@ async function setupCruds(fastify) {
     await fastify.register(joinPlugin, { prefix: '/join' })
     await fastify.register(registerHelperRoutes, { prefix: HELPERS_PREFIX })
   }
+
+  /** --------------------------  HOOKS ----------------------------------- */
+
+  // To allow writing views without having to rewrite all the logic of the HttpInterface,
+  // it was decided to adapt the fields of the calls towards the view by converting them
+  // to the fields of the underlying collection, thus hiding the complexity on the client
+  // side while maintaining consistent interfaces.
+  // This assumes that the key of the value is in the field "value" and should be made configurable.
+  const lookups = Object.values(fastify.models).reduce((accumulator, { viewDependencies }) => {
+    const viewLookups = viewDependencies.lookupModels?.map(({ lookup }) => lookup)
+    if (viewLookups?.length > 0) {
+      accumulator.push(viewLookups)
+    }
+    return accumulator
+  }, [])
+  fastify.addHook('preHandler', (request, _reply, done) => {
+    for (const { as, localField } of lookups) {
+      if (request?.body?.[as]) {
+        const lookupReference = request.body[as]
+        delete request.body[as]
+
+        request.body[localField] = mapLookupToObjectId(lookupReference)
+      }
+
+      for (const command of [SETCMD, UNSETCMD, PUSHCMD, PULLCMD, ADDTOSETCMD]) {
+        if (request?.body?.[command]?.[as]) {
+          const lookupReference = request.body[command][as]
+          delete request.body[command][as]
+
+          request.body[command][localField] = mapLookupToObjectId(lookupReference)
+        }
+      }
+    }
+
+    done()
+  })
+
+  // To obtain the updated object with a consistent interface after a patch,
+  // it is necessary to retrieve the view object again before returning it to the client.
+  fastify.addHook('preSerialization', async function preSerializer(request, _reply, payload) {
+    const { _id } = payload
+    const [, modelName] = request.url.split('/')
+    const { crudService, isView } = fastify.models[modelName]
+    if (isView && request.method === 'PATCH' && _id) {
+      const docId = this.castCollectionId(_id)
+      // eslint-disable-next-line no-underscore-dangle
+      const doc = await crudService._mongoCollection.findOne({ _id: docId })
+      const validatePatch = getAjvResponseValidationFunction(request.routeSchema.response['200'])
+      validatePatch(doc)
+      return doc
+    }
+    return payload
+  })
 }
 
 /* =============================================================================== */
@@ -297,6 +310,14 @@ module.exports = async function plugin(fastify, opts) {
     fastify.log.info({ elapsedMs: Number(hrtime.bigint() - start) / 1_000_000 }, 'listen event reached')
   })
 
+  fastify.addHook('onRequest', async(request) => {
+    if (request.headers.acl_rows) {
+      request.headers.acl_rows = JSON.parse(request.headers.acl_rows)
+    }
+  })
+
+  fastify.addHook('preHandler', injectContextInRequest)
+  fastify.addHook('preHandler', request => parseEncodedJsonQueryParams(fastify.log, request))
 
   await fastify.register(fastifyEnv, { schema: fastifyEnvSchema, data: opts })
   await fastify.register(fastifyMultipart, {
@@ -419,6 +440,44 @@ async function readinessHandler(fastify) {
   const statusOK = await isMongoUp(fastify)
 
   return { statusOK }
+}
+
+async function parseEncodedJsonQueryParams(logger, request) {
+  if (request.headers.json_query_params_encoding) {
+    logger.warn('You\'re using the json_query_params_encoding header but it\'s deprecated and its support is going to be dropped in the next major release. Use json-query-params-encoding instead.')
+  }
+
+  // TODO remove request.headers.json_query_params_encoding fallback in v7.0.0
+  const jsonQueryParamsEncoding = request.headers['json-query-params-encoding'] || request.headers.json_query_params_encoding
+  switch (jsonQueryParamsEncoding) {
+  case 'base64': {
+    const queryJsonFields = [QUERY, RAW_PROJECTION]
+    for (const field of queryJsonFields) {
+      if (request.query[field]) {
+        request.query[field] = Buffer.from(request.query[field], jsonQueryParamsEncoding).toString()
+      }
+    }
+    break
+  }
+  default: break
+  }
+}
+
+async function injectContextInRequest(request) {
+  const userIdHeader = request.headers[this.userIdHeaderKey]
+  const isUserHeaderInvalid = INVALID_USERID.includes(userIdHeader)
+
+  let userId = 'public'
+
+  if (userIdHeader && !isUserHeaderInvalid) {
+    userId = userIdHeader
+  }
+
+  request.crudContext = {
+    log: request.log,
+    userId,
+    now: new Date(),
+  }
 }
 
 module.exports.readinessHandler = readinessHandler
