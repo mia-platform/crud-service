@@ -48,7 +48,7 @@ const {
   ADDTOSETCMD,
 } = require('./lib/consts')
 const { registerMongoInstances } = require('./lib/mongo/mongo-plugin')
-const { getAjvResponseValidationFunction, shouldValidateItem, ajvSerializer } = require('./lib/validatorGetters')
+const { getAjvResponseValidationFunction, ajvSerializer } = require('./lib/validatorGetters')
 const { pointerSeparator } = require('./lib/JSONPath.utils')
 const { registerHelperRoutes } = require('./lib/helpersRoutes')
 
@@ -127,7 +127,7 @@ async function registerViewCrud(fastify, { modelName, lookups }) {
       const doc = await crudService._mongoCollection.findOne({ _id: docId })
 
       const validatePatch = getAjvResponseValidationFunction(request.routeSchema.response['200'])
-      validatePatch(response)
+      validatePatch(doc)
       return doc
     }
     return payload
@@ -223,7 +223,7 @@ async function customErrorHandler(error, request, reply) {
   throw error
 }
 
-async function notFoundHandler(request, reply) {
+async function notFoundHandler(_, reply) {
   reply
     .code(404)
     .send({
@@ -261,10 +261,11 @@ async function setupCruds(fastify) {
 
   if (collections.length > 0) {
     fastify.setSerializerCompiler(({ schema, url, method }) => {
-      if(url.includes('/bulk') && method !== 'GET') {
+      if (url.includes('/bulk') && method !== 'GET') {
         return data => JSON.stringify(data)
       }
-      const validateFunction = schema?.operationId && ENABLE_STRICT_OUTPUT_VALIDATION ? ajvSerializer.compile(schema) : null
+      const validateFunction = schema?.operationId && ENABLE_STRICT_OUTPUT_VALIDATION
+        ? ajvSerializer.compile(schema) : null
       const stringify = fastJson(schema)
       return data => {
         const stringifiedValue = JSON.stringify(data, (_, value) => {
@@ -278,13 +279,12 @@ async function setupCruds(fastify) {
           return value
         })
 
-        if(validateFunction) {
+        if (validateFunction) {
           const validate = ajvSerializer.compile(schema)
           const updatedData = JSON.parse(stringifiedValue)
-          
+
           validate(updatedData)
           return stringify(updatedData)
-
         }
         return stringify(JSON.parse(stringifiedValue))
       }
