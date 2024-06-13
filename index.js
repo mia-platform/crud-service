@@ -51,6 +51,7 @@ const { registerMongoInstances } = require('./lib/mongo/mongo-plugin')
 const { getAjvResponseValidationFunction, ajvSerializer } = require('./lib/validatorGetters')
 const { pointerSeparator } = require('./lib/JSONPath.utils')
 const { registerHelperRoutes } = require('./lib/helpersRoutes')
+const AdditionalCaster = require('./lib/AdditionalCaster')
 
 async function registerCrud(fastify, { modelName, isView }) {
   if (!fastify.mongo) { throw new Error('`fastify.mongo` is undefined!') }
@@ -63,8 +64,6 @@ async function registerCrud(fastify, { modelName, isView }) {
 
   fastify.decorate('crudService', model.crudService)
   fastify.decorate('queryParser', model.queryParser)
-  fastify.decorate('castResultsAsStream', model.castResultsAsStream)
-  fastify.decorate('castItem', model.castItem)
   fastify.decorate('allFieldNames', model.allFieldNames)
   fastify.decorate('jsonSchemaGenerator', model.jsonSchemaGenerator)
   fastify.decorate('jsonSchemaGeneratorWithNested', model.jsonSchemaGeneratorWithNested)
@@ -83,8 +82,6 @@ async function registerViewCrud(fastify, { modelName, lookups }) {
 
   fastify.decorate('crudService', viewDependencies.crudService)
   fastify.decorate('queryParser', viewDependencies.queryParser)
-  fastify.decorate('castResultsAsStream', viewDependencies.castResultsAsStream)
-  fastify.decorate('castItem', viewDependencies.castItem)
   fastify.decorate('allFieldNames', viewDependencies.allFieldNames)
   fastify.decorate('jsonSchemaGenerator', viewDependencies.jsonSchemaGenerator)
   fastify.decorate('jsonSchemaGeneratorWithNested', viewDependencies.jsonSchemaGenerator)
@@ -239,6 +236,9 @@ async function setupCruds(fastify) {
     ENABLE_STRICT_OUTPUT_VALIDATION,
   } = fastify.config
 
+  const additionalCaster = new AdditionalCaster()
+  fastify.decorate('castResultsAsStream', additionalCaster.castResultsAsStream)
+  fastify.decorate('castItem', additionalCaster.castItem)
   fastify.decorate('validateOutput', ENABLE_STRICT_OUTPUT_VALIDATION)
   fastify.setNotFoundHandler(notFoundHandler)
   fastify.setErrorHandler(customErrorHandler)
@@ -269,27 +269,14 @@ async function setupCruds(fastify) {
         ? ajvSerializer.compile(schema) : null
 
       return data => {
-        const stringifiedValue = JSON.stringify(data, (_, value) => {
-          if (typeof value === 'object' && value !== null && value.type === 'Point' && Array.isArray(value.coordinates)) {
-            return value.coordinates
-          } else if (value instanceof ObjectId) {
-            return value.toString()
-          } else if (value instanceof Date) {
-            return value.toISOString()
-          }
-          return value
-        })
-
+        const castedItem = fastify.castItem(data)
         if (validateFunction) {
-          const validate = ajvSerializer.compile(schema)
-          const updatedData = JSON.parse(stringifiedValue)
-
-          validate(updatedData)
-          return stringify(updatedData)
+          validateFunction(castedItem)
         }
-        return stringify(JSON.parse(stringifiedValue))
+        return stringify(castedItem)
       }
     })
+
     await fastify.register(registerDatabase)
     await fastify.register(fp(loadModels))
     await fastify.register(iterateOverCollectionDefinitionAndRegisterCruds)
