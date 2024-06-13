@@ -238,11 +238,14 @@ async function setupCruds(fastify) {
     const { ENABLE_STRICT_OUTPUT_VALIDATION } = fastify.config
 
     
-    fastify.setSerializerCompiler(({ schema }) => {
-     
+    fastify.setSerializerCompiler(({ schema, url, method }) => {
+      if(url.includes('/bulk') && method !== 'GET') {
+        return data => JSON.stringify(data)
+      }
+      const validateFunction = schema?.operationId && ENABLE_STRICT_OUTPUT_VALIDATION ? ajvSerializer.compile(schema) : null
       return data => {
         const stringifiedValue = JSON.stringify(data, (_, value) => {
-          if (typeof value === 'object' && value.type === 'Point' && Array.isArray(value.coordinates)) {
+          if (typeof value === 'object' && value !== null && value.type === 'Point' && Array.isArray(value.coordinates)) {
             return value.coordinates
           } else if (value instanceof ObjectId) {
             return value.toString()
@@ -251,7 +254,7 @@ async function setupCruds(fastify) {
           }
           return value
         })
-        if(ENABLE_STRICT_OUTPUT_VALIDATION) {
+        if(validateFunction) {
           const validate = ajvSerializer.compile(schema)
           const updatedData = JSON.parse(stringifiedValue)
           validate(updatedData)
