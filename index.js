@@ -261,12 +261,13 @@ async function setupCruds(fastify) {
 
   if (collections.length > 0) {
     fastify.setSerializerCompiler(({ schema, url, method }) => {
+      const stringify = fastJson(schema)
       if (url.includes('/bulk') && method !== 'GET') {
-        return data => JSON.stringify(data)
+        return data => stringify(data)
       }
       const validateFunction = schema?.operationId && ENABLE_STRICT_OUTPUT_VALIDATION
         ? ajvSerializer.compile(schema) : null
-      const stringify = fastJson(schema)
+
       return data => {
         const stringifiedValue = JSON.stringify(data, (_, value) => {
           if (typeof value === 'object' && value !== null && value.type === 'Point' && Array.isArray(value.coordinates)) {
@@ -419,7 +420,7 @@ module.exports.getMetrics = function getMetrics(prometheusClient) {
 // Note: when operating on a cluster with limited resources, due to fastify delay in registering,
 // plugins we may miss the connectionCreated and connectionReady events thus we preferred using
 // the isUp function that simply checks connection status is up and usable.
-const isMongoUp = async (fastify) => fastify.collections.length === 0 || fastify.mongoDBCheckIsUp()
+const isMongoUp = async(fastify) => fastify.collections.length === 0 || fastify.mongoDBCheckIsUp()
 
 async function statusHandler(fastify) {
   const statusOK = await isMongoUp(fastify)
