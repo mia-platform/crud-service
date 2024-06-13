@@ -20,6 +20,7 @@
 const fp = require('fastify-plugin')
 const fastifyEnv = require('@fastify/env')
 const fastifyMultipart = require('@fastify/multipart')
+const fastJson = require('fast-json-stringify')
 
 const ajvFormats = require('ajv-formats')
 
@@ -47,7 +48,7 @@ const {
   ADDTOSETCMD,
 } = require('./lib/consts')
 const { registerMongoInstances } = require('./lib/mongo/mongo-plugin')
-const { getAjvResponseValidationFunction } = require('./lib/validatorGetters')
+const { getAjvResponseValidationFunction, shouldValidateItem, ajvSerializer } = require('./lib/validatorGetters')
 const { pointerSeparator } = require('./lib/JSONPath.utils')
 const { registerHelperRoutes } = require('./lib/helpersRoutes')
 
@@ -124,10 +125,10 @@ async function registerViewCrud(fastify, { modelName, lookups }) {
       const docId = this.castCollectionId(_id)
       // eslint-disable-next-line no-underscore-dangle
       const doc = await crudService._mongoCollection.findOne({ _id: docId })
-      const response = this.castItem(doc)
+      //const response = this.castItem(doc)
       const validatePatch = getAjvResponseValidationFunction(request.routeSchema.response['200'])
-      validatePatch(response)
-      return response
+      //validatePatch(response)
+      return doc
     }
     return payload
   })
@@ -182,7 +183,6 @@ const registerDatabase = fp(registerMongoInstances, { decorators: { fastify: ['c
 async function iterateOverCollectionDefinitionAndRegisterCruds(fastify) {
   fastify.decorate('castCollectionId', castCollectionId(fastify))
   fastify.decorate('userIdHeaderKey', fastify.config.USER_ID_HEADER_KEY.toLowerCase())
-  fastify.decorate('validateOutput', fastify.config.ENABLE_STRICT_OUTPUT_VALIDATION)
 
   for (const [modelName, model] of Object.entries(fastify.models)) {
     const { isView, viewLookupsEnabled, viewDependencies } = model
@@ -235,6 +235,31 @@ async function setupCruds(fastify) {
   }
 
   if (collections.length > 0) {
+    const { ENABLE_STRICT_OUTPUT_VALIDATION } = fastify.config
+
+    
+    fastify.setSerializerCompiler(({ schema }) => {
+     
+      return data => {
+        const stringifiedValue = JSON.stringify(data, (_, value) => {
+          if (typeof value === 'object' && value.type === 'Point' && Array.isArray(value.coordinates)) {
+            return value.coordinates
+          } else if (value instanceof ObjectId) {
+            return value.toString()
+          } else if (value instanceof Date) {
+            return value.toISOString()
+          }
+          return value
+        })
+        if(ENABLE_STRICT_OUTPUT_VALIDATION) {
+          const validate = ajvSerializer.compile(schema)
+          const updatedData = JSON.parse(stringifiedValue)
+          validate(updatedData)
+          return JSON.stringify(updatedData)
+        }
+        return stringifiedValue
+      }
+    })
     await fastify.register(registerDatabase)
     await fastify.register(fp(loadModels))
     await fastify.register(iterateOverCollectionDefinitionAndRegisterCruds)
@@ -365,7 +390,7 @@ module.exports.getMetrics = function getMetrics(prometheusClient) {
 // Note: when operating on a cluster with limited resources, due to fastify delay in registering,
 // plugins we may miss the connectionCreated and connectionReady events thus we preferred using
 // the isUp function that simply checks connection status is up and usable.
-const isMongoUp = async(fastify) => fastify.collections.length === 0 || fastify.mongoDBCheckIsUp()
+const isMongoUp = async (fastify) => fastify.collections.length === 0 || fastify.mongoDBCheckIsUp()
 
 async function statusHandler(fastify) {
   const statusOK = await isMongoUp(fastify)
