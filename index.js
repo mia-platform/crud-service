@@ -51,10 +51,12 @@ const {
   INVALID_USERID,
 } = require('./lib/consts')
 const { registerMongoInstances } = require('./lib/mongo/mongo-plugin')
-const { getAjvResponseValidationFunction, ajvSerializer } = require('./lib/validatorGetters')
+const { getAjvResponseValidationFunction, ajvSerializer, ajvValidator } = require('./lib/validatorGetters')
 const { pointerSeparator } = require('./lib/JSONPath.utils')
 const { registerHelperRoutes } = require('./lib/helpersRoutes')
 const AdditionalCaster = require('./lib/AdditionalCaster')
+const { SCHEMAS_ID } = require('./lib/schemaGetters')
+const { get: lget } = require('lodash')
 
 async function registerCrud(fastify, { modelName, isView }) {
   if (!fastify.mongo) { throw new Error('`fastify.mongo` is undefined!') }
@@ -127,6 +129,7 @@ async function registerViewCrudLookup(fastify, { modelName, lookupModel }) {
   fastify.decorate('jsonSchemaGeneratorWithNested', lookupModel.jsonSchemaGenerator)
   fastify.decorate('modelName', modelName)
   fastify.decorate('lookupProjection', lookupModel.parsedLookupProjection)
+
   await fastify.register(httpInterface, {
     prefix: lookupPrefix,
     registerGetters: false,
@@ -239,10 +242,67 @@ async function setupCruds(fastify) {
 
     await fastify.register(registerDatabase)
     await fastify.register(fp(loadModels))
+
+    const NESTED_SCHEMAS_BY_ID = {
+      [SCHEMAS_ID.GET_LIST]: (model) =>
+        fastify.models[model].jsonSchemaGeneratorWithNested?.generateGetListJSONSchema(),
+      [SCHEMAS_ID.GET_LIST_LOOKUP]: (model) =>
+        fastify.models[model].jsonSchemaGeneratorWithNested?.generateGetListLookupJSONSchema(),
+      [SCHEMAS_ID.GET_ITEM]: (model) =>
+        fastify.models[model].jsonSchemaGeneratorWithNested?.generateGetItemJSONSchema(),
+      [SCHEMAS_ID.EXPORT]: (model) => fastify.models[model].jsonSchemaGeneratorWithNested?.generateExportJSONSchema(),
+      [SCHEMAS_ID.POST_ITEM]: (model) => fastify.models[model].jsonSchemaGeneratorWithNested?.generatePostJSONSchema(),
+      [SCHEMAS_ID.POST_BULK]: (model) => fastify.models[model].jsonSchemaGeneratorWithNested?.generateBulkJSONSchema(),
+      // it is not possible to validate a stream
+      [SCHEMAS_ID.POST_FILE]: () => ({ body: {} }),
+      [SCHEMAS_ID.PATCH_FILE]: () => ({ body: {} }),
+      [SCHEMAS_ID.DELETE_ITEM]: (model) =>
+        fastify.models[model].jsonSchemaGeneratorWithNested?.generateDeleteJSONSchema(),
+      [SCHEMAS_ID.DELETE_LIST]: (model) =>
+        fastify.models[model].jsonSchemaGeneratorWithNested?.generateDeleteListJSONSchema(),
+      [SCHEMAS_ID.PATCH_ITEM]: (model) =>
+        fastify.models[model].jsonSchemaGeneratorWithNested?.generatePatchJSONSchema(),
+      [SCHEMAS_ID.PATCH_MANY]: (model) =>
+        fastify.models[model].jsonSchemaGeneratorWithNested?.generatePatchManyJSONSchema(),
+      [SCHEMAS_ID.PATCH_BULK]: (model) =>
+        fastify.models[model].jsonSchemaGeneratorWithNested?.generatePatchBulkJSONSchema(),
+      [SCHEMAS_ID.UPSERT_ONE]: (model) =>
+        fastify.models[model].jsonSchemaGeneratorWithNested?.generateUpsertOneJSONSchema(),
+      [SCHEMAS_ID.COUNT]: (model) =>
+        fastify.models[model].jsonSchemaGeneratorWithNested?.generateCountJSONSchema(),
+      [SCHEMAS_ID.VALIDATE]: (model) =>
+        fastify.models[model].jsonSchemaGeneratorWithNested?.generateValidateJSONSchema(),
+      [SCHEMAS_ID.CHANGE_STATE]: (model) =>
+        fastify.models[model].jsonSchemaGeneratorWithNested?.generateChangeStateJSONSchema(),
+      [SCHEMAS_ID.CHANGE_STATE_MANY]: (model) =>
+        fastify.models[model].jsonSchemaGeneratorWithNested?.generateChangeStateManyJSONSchema(),
+    }
+
+    fastify.setValidatorCompiler(({ schema, url }) => {
+      if (url !== '/-/schemas') {
+        const uniqueId = schema[SCHEMA_CUSTOM_KEYWORDS.UNIQUE_OPERATION_ID]
+        const [collectionName, schemaId, subSchemaPath] = uniqueId?.split('__MIA__')
+
+        if (collectionName) {
+          const modelName = findModelNameByCollectionName(fastify.models, collectionName)
+
+          const nestedSchema = NESTED_SCHEMAS_BY_ID[schemaId](modelName)
+          const subSchema = lget(nestedSchema, subSchemaPath)
+          fastify.log.trace({ collectionName, schemaPath: subSchemaPath, schemaId }, 'collection schema info')
+
+          // this is made to prevent to shows on swagger all properties with dot notation of RawObject with schema.
+          return ajvValidator.compile(subSchema)
+        }
+        throw new Error(`Invalid collection ${collectionName} provided.`)
+      }
+      ajvValidator.compile(schema)
+    })
+
     await fastify.register(iterateOverCollectionDefinitionAndRegisterCruds)
     await fastify.register(joinPlugin, { prefix: '/join' })
     await fastify.register(registerHelperRoutes, { prefix: HELPERS_PREFIX })
   }
+
 
   /** --------------------------  HOOKS ----------------------------------- */
 
@@ -383,6 +443,13 @@ module.exports.transformSchemaForSwagger = ({ schema, url } = {}) => {
   }
 
   return { schema: transformed, url }
+}
+
+function findModelNameByCollectionName(models, collectionName) {
+  return Object.entries(models)
+    .filter(([, model]) => model.definition.name === collectionName)
+    .map(([name]) => name)
+    .shift()
 }
 
 function getTransformedSchema(httpPartSchema) {
