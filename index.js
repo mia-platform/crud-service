@@ -125,9 +125,9 @@ async function registerViewCrud(fastify, { modelName, lookups }) {
       const docId = this.castCollectionId(_id)
       // eslint-disable-next-line no-underscore-dangle
       const doc = await crudService._mongoCollection.findOne({ _id: docId })
-      //const response = this.castItem(doc)
+
       const validatePatch = getAjvResponseValidationFunction(request.routeSchema.response['200'])
-      //validatePatch(response)
+      validatePatch(response)
       return doc
     }
     return payload
@@ -210,13 +210,38 @@ async function iterateOverCollectionDefinitionAndRegisterCruds(fastify) {
 
 const validCrudFolder = path => !['.', '..'].includes(path) && /\.js(on)?$/.test(path)
 
+async function customErrorHandler(error, request, reply) {
+  if (error.statusCode === 404) {
+    return notFoundHandler(request, reply)
+  }
+
+  if (error.validation?.[0]?.message === 'must NOT have additional properties') {
+    reply.code(error.statusCode)
+    throw new Error(`${error.message}. Property "${error.validation[0].params.additionalProperty}" is not defined in validation schema`)
+  }
+
+  throw error
+}
+
+async function notFoundHandler(request, reply) {
+  reply
+    .code(404)
+    .send({
+      error: 'not found',
+    })
+}
+
 async function setupCruds(fastify) {
   const {
     COLLECTION_DEFINITION_FOLDER,
     VIEWS_DEFINITION_FOLDER,
     HELPERS_PREFIX,
+    ENABLE_STRICT_OUTPUT_VALIDATION,
   } = fastify.config
 
+  fastify.decorate('validateOutput', ENABLE_STRICT_OUTPUT_VALIDATION)
+  fastify.setNotFoundHandler(notFoundHandler)
+  fastify.setErrorHandler(customErrorHandler)
   const collections = readdirSync(COLLECTION_DEFINITION_FOLDER)
     .filter(validCrudFolder)
     .map(path => join(COLLECTION_DEFINITION_FOLDER, path))
@@ -235,14 +260,12 @@ async function setupCruds(fastify) {
   }
 
   if (collections.length > 0) {
-    const { ENABLE_STRICT_OUTPUT_VALIDATION } = fastify.config
-
-    
     fastify.setSerializerCompiler(({ schema, url, method }) => {
       if(url.includes('/bulk') && method !== 'GET') {
         return data => JSON.stringify(data)
       }
       const validateFunction = schema?.operationId && ENABLE_STRICT_OUTPUT_VALIDATION ? ajvSerializer.compile(schema) : null
+      const stringify = fastJson(schema)
       return data => {
         const stringifiedValue = JSON.stringify(data, (_, value) => {
           if (typeof value === 'object' && value !== null && value.type === 'Point' && Array.isArray(value.coordinates)) {
@@ -254,13 +277,16 @@ async function setupCruds(fastify) {
           }
           return value
         })
+
         if(validateFunction) {
           const validate = ajvSerializer.compile(schema)
           const updatedData = JSON.parse(stringifiedValue)
+          
           validate(updatedData)
-          return JSON.stringify(updatedData)
+          return stringify(updatedData)
+
         }
-        return stringifiedValue
+        return stringify(JSON.parse(stringifiedValue))
       }
     })
     await fastify.register(registerDatabase)

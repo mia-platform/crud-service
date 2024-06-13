@@ -68,7 +68,7 @@ const UPDATE_REPLACE_ARRAY_ELEMENT_COMMAND = {
   },
 }
 
-tap.test('HTTP PATCH /<id> - ', async t => {
+tap.only('HTTP PATCH /<id> - ', async t => {
   const { fastify, collection, resetCollection } = await setUpTest(t)
   const [DOC_TEST] = fixtures
 
@@ -276,7 +276,7 @@ tap.test('HTTP PATCH /<id> - ', async t => {
     t.end()
   })
 
-  t.test('nested object', t => {
+  t.only('nested object', t => {
     t.test('$set', async t => {
       t.test('with dot notation in $set', async t => {
         t.test('ok', async t => {
@@ -1160,7 +1160,7 @@ tap.test('HTTP PATCH /<id> - ', async t => {
       t.end()
     })
 
-    t.test('$unset', async t => {
+    t.only('$unset', async t => {
       const DOC_TO_UNSET = {
         ...fixtures[0],
         metadata: {
@@ -1176,7 +1176,7 @@ tap.test('HTTP PATCH /<id> - ', async t => {
         },
       }
 
-      t.test('can unset a nested property', async t => {
+      t.only('can unset a nested property', async t => {
         await resetCollection([DOC_TO_UNSET])
 
         const UPDATE_COMMAND = {
@@ -1211,7 +1211,7 @@ tap.test('HTTP PATCH /<id> - ', async t => {
         t.end()
       })
 
-      t.test('there is NO validation to prevent unset of required properties', async t => {
+      t.only('there is NO validation to prevent unset of required properties', async t => {
       // Documentation purpose
         await resetCollection([DOC_TO_UNSET])
 
