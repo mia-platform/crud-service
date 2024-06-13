@@ -311,13 +311,13 @@ async function setupCruds(fastify) {
   // to the fields of the underlying collection, thus hiding the complexity on the client
   // side while maintaining consistent interfaces.
   // This assumes that the key of the value is in the field "value" and should be made configurable.
-  const lookups = Object.values(fastify.models).reduce((accumulator, { viewDependencies }) => {
+  const lookups = fastify.models ? Object.values(fastify.models).reduce((accumulator, { viewDependencies }) => {
     const viewLookups = viewDependencies.lookupModels?.map(({ lookup }) => lookup)
     if (viewLookups?.length > 0) {
       accumulator.push(viewLookups)
     }
     return accumulator
-  }, [])
+  }, []) : []
   fastify.addHook('preHandler', (request, _reply, done) => {
     for (const { as, localField } of lookups) {
       if (request?.body?.[as]) {
