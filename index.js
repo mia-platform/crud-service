@@ -56,6 +56,18 @@ const { registerHelperRoutes } = require('./lib/helpersRoutes')
 const AdditionalCaster = require('./lib/AdditionalCaster')
 const { addValidatorCompiler, addSerializerCompiler } = require('./lib/compilers')
 
+function decorateCrud(fastify, model, modelName) {
+  fastify.decorate('crudService', model.crudService)
+  fastify.decorate('queryParser', model.queryParser)
+  fastify.decorate('allFieldNames', model.allFieldNames)
+  fastify.decorate('jsonSchemaGenerator', model.jsonSchemaGenerator)
+  fastify.decorate('jsonSchemaGeneratorWithNested', model.jsonSchemaGenerator)
+  fastify.decorate('modelName', modelName)
+  fastify.addHook('onRequest', async(request) => {
+    request.modelName = modelName
+  })
+}
+
 async function registerCrud(fastify, { modelName, isView }) {
   if (!fastify.mongo) { throw new Error('`fastify.mongo` is undefined!') }
   if (!modelName) { throw new Error('`modelName` is undefined!') }
@@ -65,15 +77,8 @@ async function registerCrud(fastify, { modelName, isView }) {
   const model = fastify.models[modelName]
   const prefix = model.definition.endpointBasePath
 
-  fastify.decorate('crudService', model.crudService)
-  fastify.decorate('queryParser', model.queryParser)
-  fastify.decorate('allFieldNames', model.allFieldNames)
-  fastify.decorate('jsonSchemaGenerator', model.jsonSchemaGenerator)
-  fastify.decorate('jsonSchemaGeneratorWithNested', model.jsonSchemaGeneratorWithNested)
-  fastify.decorate('modelName', modelName)
-  fastify.addHook('onRequest', async(request) => {
-    request.modelName = modelName
-  })
+  decorateCrud(fastify, model, modelName)
+
   await fastify.register(httpInterface, { prefix, registerGetters: true, registerSetters: !isView })
 }
 
@@ -86,16 +91,7 @@ async function registerViewCrud(fastify, { modelName }) {
   const { definition, viewDependencies } = fastify.models[modelName]
   const prefix = definition.endpointBasePath
 
-  fastify.decorate('crudService', viewDependencies.crudService)
-  fastify.decorate('queryParser', viewDependencies.queryParser)
-  fastify.decorate('allFieldNames', viewDependencies.allFieldNames)
-  fastify.decorate('jsonSchemaGenerator', viewDependencies.jsonSchemaGenerator)
-  fastify.decorate('jsonSchemaGeneratorWithNested', viewDependencies.jsonSchemaGenerator)
-  fastify.decorate('modelName', modelName)
-  fastify.addHook('onRequest', async(request) => {
-    request.modelName = modelName
-  })
-
+  decorateCrud(fastify, viewDependencies, modelName)
   await fastify.register(httpInterface, { prefix, registerGetters: false, registerSetters: true })
 }
 
@@ -123,16 +119,8 @@ async function registerViewCrudLookup(fastify, { modelName, lookupModel }) {
   const prefix = definition.endpointBasePath
   const lookupPrefix = join(prefix, 'lookup', modelField)
 
+  decorateCrud(fastify, lookupModel, modelName)
 
-  fastify.decorate('crudService', lookupModel.crudService)
-  fastify.decorate('queryParser', lookupModel.queryParser)
-  fastify.decorate('allFieldNames', lookupModel.allFieldNames)
-  fastify.decorate('jsonSchemaGenerator', lookupModel.jsonSchemaGenerator)
-  fastify.decorate('jsonSchemaGeneratorWithNested', lookupModel.jsonSchemaGenerator)
-  fastify.decorate('modelName', modelName)
-  fastify.addHook('onRequest', async(request) => {
-    request.modelName = modelName
-  })
   fastify.decorate('lookupProjection', lookupModel.parsedLookupProjection)
 
   await fastify.register(httpInterface, {
