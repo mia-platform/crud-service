@@ -20,7 +20,6 @@
 const fp = require('fastify-plugin')
 const fastifyEnv = require('@fastify/env')
 const fastifyMultipart = require('@fastify/multipart')
-const fastJson = require('fast-json-stringify')
 
 const ajvFormats = require('ajv-formats')
 
@@ -55,8 +54,7 @@ const { getAjvResponseValidationFunction, ajvSerializer, ajvValidator } = requir
 const { pointerSeparator } = require('./lib/JSONPath.utils')
 const { registerHelperRoutes } = require('./lib/helpersRoutes')
 const AdditionalCaster = require('./lib/AdditionalCaster')
-const { SCHEMAS_ID } = require('./lib/schemaGetters')
-const { get: lget } = require('lodash')
+const { addValidatorCompiler, addSerializerCompiler } = require('./lib/compilers')
 
 async function registerCrud(fastify, { modelName, isView }) {
   if (!fastify.mongo) { throw new Error('`fastify.mongo` is undefined!') }
@@ -128,8 +126,6 @@ async function registerViewCrudLookup(fastify, { modelName, lookupModel }) {
 
   fastify.decorate('crudService', lookupModel.crudService)
   fastify.decorate('queryParser', lookupModel.queryParser)
-  fastify.decorate('castResultsAsStream', lookupModel.castResultsAsStream)
-  fastify.decorate('castItem', lookupModel.castItem)
   fastify.decorate('allFieldNames', lookupModel.allFieldNames)
   fastify.decorate('jsonSchemaGenerator', lookupModel.jsonSchemaGenerator)
   fastify.decorate('jsonSchemaGeneratorWithNested', lookupModel.jsonSchemaGenerator)
@@ -232,87 +228,17 @@ async function setupCruds(fastify) {
   }
 
   if (collections.length > 0) {
-    fastify.setSerializerCompiler(({ schema, url, method }) => {
-      const stringify = fastJson(schema)
-      if (url.includes('/bulk') && method !== 'GET') {
-        return data => stringify(data)
-      }
-      const validateFunction = schema?.operationId && ENABLE_STRICT_OUTPUT_VALIDATION
-        ? ajvSerializer.compile(schema) : null
-
-      return data => {
-        const castedItem = fastify.castItem(data)
-        if (validateFunction) {
-          validateFunction(castedItem)
-        }
-        return stringify(castedItem)
-      }
-    })
+    addSerializerCompiler(fastify, ajvSerializer, ENABLE_STRICT_OUTPUT_VALIDATION)
 
     await fastify.register(registerDatabase)
     await fastify.register(fp(loadModels))
 
-    const NESTED_SCHEMAS_BY_ID = {
-      [SCHEMAS_ID.GET_LIST]: (model) =>
-        fastify.models[model].jsonSchemaGeneratorWithNested?.generateGetListJSONSchema(),
-      [SCHEMAS_ID.GET_LIST_LOOKUP]: (model) =>
-        fastify.models[model].jsonSchemaGeneratorWithNested?.generateGetListLookupJSONSchema(),
-      [SCHEMAS_ID.GET_ITEM]: (model) =>
-        fastify.models[model].jsonSchemaGeneratorWithNested?.generateGetItemJSONSchema(),
-      [SCHEMAS_ID.EXPORT]: (model) => fastify.models[model].jsonSchemaGeneratorWithNested?.generateExportJSONSchema(),
-      [SCHEMAS_ID.POST_ITEM]: (model) => fastify.models[model].jsonSchemaGeneratorWithNested?.generatePostJSONSchema(),
-      [SCHEMAS_ID.POST_BULK]: (model) => fastify.models[model].jsonSchemaGeneratorWithNested?.generateBulkJSONSchema(),
-      // it is not possible to validate a stream
-      [SCHEMAS_ID.POST_FILE]: () => ({ body: {} }),
-      [SCHEMAS_ID.PATCH_FILE]: () => ({ body: {} }),
-      [SCHEMAS_ID.DELETE_ITEM]: (model) =>
-        fastify.models[model].jsonSchemaGeneratorWithNested?.generateDeleteJSONSchema(),
-      [SCHEMAS_ID.DELETE_LIST]: (model) =>
-        fastify.models[model].jsonSchemaGeneratorWithNested?.generateDeleteListJSONSchema(),
-      [SCHEMAS_ID.PATCH_ITEM]: (model) =>
-        fastify.models[model].jsonSchemaGeneratorWithNested?.generatePatchJSONSchema(),
-      [SCHEMAS_ID.PATCH_MANY]: (model) =>
-        fastify.models[model].jsonSchemaGeneratorWithNested?.generatePatchManyJSONSchema(),
-      [SCHEMAS_ID.PATCH_BULK]: (model) =>
-        fastify.models[model].jsonSchemaGeneratorWithNested?.generatePatchBulkJSONSchema(),
-      [SCHEMAS_ID.UPSERT_ONE]: (model) =>
-        fastify.models[model].jsonSchemaGeneratorWithNested?.generateUpsertOneJSONSchema(),
-      [SCHEMAS_ID.COUNT]: (model) =>
-        fastify.models[model].jsonSchemaGeneratorWithNested?.generateCountJSONSchema(),
-      [SCHEMAS_ID.VALIDATE]: (model) =>
-        fastify.models[model].jsonSchemaGeneratorWithNested?.generateValidateJSONSchema(),
-      [SCHEMAS_ID.CHANGE_STATE]: (model) =>
-        fastify.models[model].jsonSchemaGeneratorWithNested?.generateChangeStateJSONSchema(),
-      [SCHEMAS_ID.CHANGE_STATE_MANY]: (model) =>
-        fastify.models[model].jsonSchemaGeneratorWithNested?.generateChangeStateManyJSONSchema(),
-    }
-
-    const schemaPath = [HELPERS_PREFIX, 'schemas'].join('')
-    fastify.setValidatorCompiler(({ schema, url }) => {
-      if (url !== schemaPath) {
-        const uniqueId = schema[SCHEMA_CUSTOM_KEYWORDS.UNIQUE_OPERATION_ID]
-        const [collectionName, schemaId, subSchemaPath] = uniqueId?.split('__MIA__')
-
-        if (collectionName) {
-          const modelName = findModelNameByCollectionName(fastify.models, collectionName)
-
-          const nestedSchema = NESTED_SCHEMAS_BY_ID[schemaId](modelName)
-          const subSchema = lget(nestedSchema, subSchemaPath)
-          fastify.log.trace({ collectionName, schemaPath: subSchemaPath, schemaId }, 'collection schema info')
-
-          // this is made to prevent to shows on swagger all properties with dot notation of RawObject with schema.
-          return ajvValidator.compile(subSchema)
-        }
-        throw new Error(`Invalid collection ${collectionName} provided.`)
-      }
-      ajvValidator.compile(schema)
-    })
+    addValidatorCompiler(fastify, fastify.models, ajvValidator, { HELPERS_PREFIX })
 
     await fastify.register(iterateOverCollectionDefinitionAndRegisterCruds)
     await fastify.register(joinPlugin, { prefix: '/join' })
     await fastify.register(registerHelperRoutes, { prefix: HELPERS_PREFIX })
   }
-
 
   /** --------------------------  HOOKS ----------------------------------- */
 
@@ -322,9 +248,9 @@ async function setupCruds(fastify) {
   // side while maintaining consistent interfaces.
   // This assumes that the key of the value is in the field "value" and should be made configurable.
   const lookups = fastify.models ? Object.values(fastify.models).reduce((accumulator, { viewDependencies }) => {
-    const viewLookups = viewDependencies.lookupModels?.map(({ lookup }) => lookup)
+    const viewLookups = viewDependencies.lookupsModels?.map(({ lookup }) => lookup)
     if (viewLookups?.length > 0) {
-      accumulator.push(viewLookups)
+      accumulator.push(...viewLookups)
     }
     return accumulator
   }, []) : []
@@ -353,15 +279,18 @@ async function setupCruds(fastify) {
   // To obtain the updated object with a consistent interface after a patch,
   // it is necessary to retrieve the view object again before returning it to the client.
   fastify.addHook('preSerialization', async function preSerializer(request, _reply, payload) {
-    const { _id } = payload
-    const { crudService, isView } = fastify.models[request.modelName] || {}
-    if (isView && request.method === 'PATCH' && _id) {
-      const docId = this.castCollectionId(_id)
-      // eslint-disable-next-line no-underscore-dangle
-      const doc = await crudService._mongoCollection.findOne({ _id: docId })
-      const validatePatch = getAjvResponseValidationFunction(request.routeSchema.response['200'])
-      validatePatch(doc)
-      return doc
+    const { _id } = payload || {}
+
+    if (request.method === 'PATCH' && _id && fastify.models) {
+      const { crudService, isView } = fastify.models[request.modelName] || {}
+      if (isView) {
+        const docId = this.castCollectionId(_id)
+        // eslint-disable-next-line no-underscore-dangle
+        const doc = await crudService._mongoCollection.findOne({ _id: docId })
+        const validatePatch = getAjvResponseValidationFunction(request.routeSchema.response['200'])
+        validatePatch(doc)
+        return doc
+      }
     }
     return payload
   })
@@ -452,13 +381,6 @@ module.exports.transformSchemaForSwagger = ({ schema, url } = {}) => {
   }
 
   return { schema: transformed, url }
-}
-
-function findModelNameByCollectionName(models, collectionName) {
-  return Object.entries(models)
-    .filter(([, model]) => model.definition.name === collectionName)
-    .map(([name]) => name)
-    .shift()
 }
 
 function getTransformedSchema(httpPartSchema) {
