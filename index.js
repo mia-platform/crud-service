@@ -73,6 +73,9 @@ async function registerCrud(fastify, { modelName, isView }) {
   fastify.decorate('jsonSchemaGenerator', model.jsonSchemaGenerator)
   fastify.decorate('jsonSchemaGeneratorWithNested', model.jsonSchemaGeneratorWithNested)
   fastify.decorate('modelName', modelName)
+  fastify.addHook('onRequest', async(request) => {
+    request.modelName = modelName
+  })
   await fastify.register(httpInterface, { prefix, registerGetters: true, registerSetters: !isView })
 }
 
@@ -91,6 +94,9 @@ async function registerViewCrud(fastify, { modelName }) {
   fastify.decorate('jsonSchemaGenerator', viewDependencies.jsonSchemaGenerator)
   fastify.decorate('jsonSchemaGeneratorWithNested', viewDependencies.jsonSchemaGenerator)
   fastify.decorate('modelName', modelName)
+  fastify.addHook('onRequest', async(request) => {
+    request.modelName = modelName
+  })
 
   await fastify.register(httpInterface, { prefix, registerGetters: false, registerSetters: true })
 }
@@ -128,6 +134,9 @@ async function registerViewCrudLookup(fastify, { modelName, lookupModel }) {
   fastify.decorate('jsonSchemaGenerator', lookupModel.jsonSchemaGenerator)
   fastify.decorate('jsonSchemaGeneratorWithNested', lookupModel.jsonSchemaGenerator)
   fastify.decorate('modelName', modelName)
+  fastify.addHook('onRequest', async(request) => {
+    request.modelName = modelName
+  })
   fastify.decorate('lookupProjection', lookupModel.parsedLookupProjection)
 
   await fastify.register(httpInterface, {
@@ -278,8 +287,9 @@ async function setupCruds(fastify) {
         fastify.models[model].jsonSchemaGeneratorWithNested?.generateChangeStateManyJSONSchema(),
     }
 
+    const schemaPath = [HELPERS_PREFIX, 'schemas'].join('')
     fastify.setValidatorCompiler(({ schema, url }) => {
-      if (url !== '/-/schemas') {
+      if (url !== schemaPath) {
         const uniqueId = schema[SCHEMA_CUSTOM_KEYWORDS.UNIQUE_OPERATION_ID]
         const [collectionName, schemaId, subSchemaPath] = uniqueId?.split('__MIA__')
 
@@ -344,8 +354,7 @@ async function setupCruds(fastify) {
   // it is necessary to retrieve the view object again before returning it to the client.
   fastify.addHook('preSerialization', async function preSerializer(request, _reply, payload) {
     const { _id } = payload
-    const [, modelName] = request.url.split('/')
-    const { crudService, isView } = fastify.models[modelName]
+    const { crudService, isView } = fastify.models[request.modelName] || {}
     if (isView && request.method === 'PATCH' && _id) {
       const docId = this.castCollectionId(_id)
       // eslint-disable-next-line no-underscore-dangle
