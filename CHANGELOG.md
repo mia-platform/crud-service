@@ -9,12 +9,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 
+- hooks and compilers are not registered in `httpInterface.js`, but only once in `index.js`, to avoid multiple registers for collections;
+- `AdditionalCaster` class does not need to compute the fields that are either `ObjectId`, `Date`, or `Geopoint`: in the new `castItem` method, field types are inferred with the `instanceof` keyword;
+- there are only 3 Ajv instances registered.
+
+Also, the following bug due to updating dependencies has been fixed:
+
 - upgrade NodeJS version in Docker image to v20.14.0
 - added `await` keyword when registering Fastify plugins
 
 ### Fixed
 
 - fixed projection example in json schema generator
+- `serializerCompiler` has been added to use explicitly [`fastifiy-fast-json`](https://github.com/fastify/fast-json-stringify), along with `AdditionalCaster`  
 
 ## 7.0.2 - 2024-05-06
 
