@@ -2,7 +2,7 @@
 
 const tap = require('tap')
 
-const getAccept = require('../lib/acceptHeaderParser')
+const { getAccept } = require('../lib/acceptHeaderParser')
 
 tap.test('test HTTP Accept getter', t => {
   const testCases = [
