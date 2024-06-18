@@ -68,7 +68,7 @@ const UPDATE_REPLACE_ARRAY_ELEMENT_COMMAND = {
   },
 }
 
-tap.only('HTTP PATCH /<id> - ', async t => {
+tap.test('HTTP PATCH /<id> - ', async t => {
   const { fastify, collection, resetCollection } = await setUpTest(t)
   const [DOC_TEST] = fixtures
 
