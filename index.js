@@ -41,11 +41,11 @@ const {
   SCHEMA_CUSTOM_KEYWORDS,
 } = require('./lib/consts')
 const { registerMongoInstances } = require('./lib/mongo/mongo-plugin')
-const { ajvSerializer, ajvValidator } = require('./lib/validatorGetters')
+const { ajvSerializer } = require('./lib/validatorGetters')
 const { pointerSeparator } = require('./lib/JSONPath.utils')
 const { registerHelperRoutes } = require('./lib/helpersRoutes')
 const AdditionalCaster = require('./lib/AdditionalCaster')
-const { addValidatorCompiler, addSerializerCompiler } = require('./lib/compilers')
+const { addSerializerCompiler } = require('./lib/compilers')
 const { addAclHook, addHealthHooks, addPreHandlerHooks, addLookupHook, addPatchViewHook, addModelNameHook } = require('./lib/hooks')
 
 function decorateCrud(fastify, model, modelName) {
@@ -199,8 +199,6 @@ async function setupCruds(fastify) {
 
     await fastify.register(registerDatabase)
     await fastify.register(fp(loadModels))
-
-    addValidatorCompiler(fastify, fastify.models, ajvValidator, { HELPERS_PREFIX })
 
     await fastify.register(iterateOverCollectionDefinitionAndRegisterCruds)
     await fastify.register(joinPlugin, { prefix: '/join' })
