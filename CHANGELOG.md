@@ -23,6 +23,7 @@ Also, the following bug due to updating dependencies has been fixed:
 - fixed projection example in json schema generator
 - `serializerCompiler` has been added to use explicitly [`fastifiy-fast-json`](https://github.com/fastify/fast-json-stringify), along with `AdditionalCaster`  
 - `$eq` operator can now be used also for array fields
+- [#286](https://github.com/mia-platform/crud-service/issues/286): `/-/schemas` accept header defaults to `application/json`
 
 ## 7.0.2 - 2024-05-06
 
