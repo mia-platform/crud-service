@@ -342,6 +342,10 @@ Object {
       "type": "string",
     },
   },
+  "required": Array [
+    "name",
+    "isbn",
+  ],
   "type": "object",
 }
 `
