@@ -25,6 +25,7 @@ module.exports = {
     {
       'files': [
         'lib/**/*.js',
+        'index.js',
       ],
       'rules': {
         'valid-jsdoc': 'off',
