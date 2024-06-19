@@ -247,6 +247,24 @@ tap.test('getlist response validation - not valid', t => {
   t.notOk(validate(invalidResponse))
 })
 
+tap.test('getitem response validation - generateRequired flag', t => {
+  t.plan(2)
+
+  const collection = 'books'
+  const generator = getJsonSchemaGenerator(collectionDefinitions[collection])
+  const response = {
+    name: 'Ulysses',
+    publishDate: '2018-02-06T00:00:00.000Z',
+  }
+  const schemaWithoutRequired = generator.generateGetItemJSONSchema()
+  const validateWithoutRequired = ajv.compile(schemaWithoutRequired.response['200'])
+  t.ok(validateWithoutRequired(response), 'without required response is ok')
+
+  const schemaWithRequired = generator.generateGetItemJSONSchema(true)
+  const validateWithRequired = ajv.compile(schemaWithRequired.response['200'])
+  t.notOk(validateWithRequired(response), 'with required response is not ok cause isbn is missing')
+})
+
 tap.test('RawObject - valid', t => {
   t.plan(1)
 
