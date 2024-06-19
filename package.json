@@ -49,10 +49,11 @@
     "pino": "^9.1.0",
     "through2": "^4.0.2",
     "uuid": "^9.0.1",
-    "xlsx-write-stream": "^1.0.2"
+    "xlsx-write-stream": "^1.0.0"
   },
   "peerDependencies": {
-    "ajv": "^8.16.0"
+    "ajv": "^8.16.0",
+    "fast-json-stringify": "^5.16.0"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.4.1",
@@ -77,38 +78,6 @@
     "timeout": 240,
     "allow-incomplete-coverage": true,
     "allow-empty-coverage": true
-  },
-  "eslintConfig": {
-    "extends": "@mia-platform/eslint-config-mia",
-    "parserOptions": {
-      "ecmaVersion": 2022,
-      "ecmaFeatures": {
-        "jsx": true
-      }
-    },
-    "ignorePatterns": [
-      "bench"
-    ],
-    "overrides": [
-      {
-        "files": [
-          "tests/**/*.js",
-          "tests/expectedSchemas/*.js"
-        ],
-        "rules": {
-          "id-length": "off",
-          "max-lines": "off"
-        }
-      },
-      {
-        "files": [
-          "lib/**/*.js"
-        ],
-        "rules": {
-          "valid-jsdoc": "off"
-        }
-      }
-    ]
   },
   "nyc": {
     "include": [

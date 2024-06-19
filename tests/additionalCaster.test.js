@@ -17,14 +17,12 @@
 'use strict'
 
 const tap = require('tap')
-const collectionDefinition = require('./collectionDefinitions/books')
-const newCollectionDefinition = require('./newCollectionDefinitions/books')
 const AdditionalCaster = require('../lib/AdditionalCaster')
 const { ObjectId } = require('mongodb')
 
 tap.test('AdditionalCaster', test => {
   test.test('old configuration', assert => {
-    const additionalCaster = new AdditionalCaster(collectionDefinition)
+    const additionalCaster = new AdditionalCaster()
 
     const testCases = [
       {
@@ -55,6 +53,7 @@ tap.test('AdditionalCaster', test => {
           name: 'Node cookbook',
           author: 'David Mark Clements, Mathias Buss, Matteo Collina, Peter Elger',
           position: {
+            type: 'Point',
             coordinates: [45.46, 9.19],
           },
         },
@@ -79,7 +78,7 @@ tap.test('AdditionalCaster', test => {
   })
 
   test.test('new configuration', assert => {
-    const additionalCaster = new AdditionalCaster(newCollectionDefinition)
+    const additionalCaster = new AdditionalCaster()
 
     const testCases = [
       {
@@ -110,6 +109,7 @@ tap.test('AdditionalCaster', test => {
           name: 'Node cookbook',
           author: 'David Mark Clements, Mathias Buss, Matteo Collina, Peter Elger',
           position: {
+            type: 'Point',
             coordinates: [45.46, 9.19],
           },
         },
