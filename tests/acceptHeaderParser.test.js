@@ -75,38 +75,38 @@ tap.test('test HTTP Accept getter', t => {
 })
 
 tap.test('getReplyTypeCallback', t => {
-  const defaultAccept = 'application/json';
-  const callback = getReplyTypeCallback(defaultAccept);
+  const defaultAccept = 'application/json'
+  const replyTypeCallback = getReplyTypeCallback(defaultAccept)
 
   t.test('should return defaultAccept when acceptHeader is empty', t => {
-    const result = callback('');
-    t.equal(result, defaultAccept, 'Expected to return the defaultAccept');
-    t.end();
-  });
+    const result = replyTypeCallback('')
+    t.equal(result, defaultAccept, 'Expected to return the defaultAccept')
+    t.end()
+  })
 
   t.test('should return defaultAccept when acceptHeader is undefined', t => {
-    const result = callback();
-    t.equal(result, defaultAccept, 'Expected to return the defaultAccept');
-    t.end();
-  });
+    const result = replyTypeCallback()
+    t.equal(result, defaultAccept, 'Expected to return the defaultAccept')
+    t.end()
+  })
 
   t.test('should return defaultAccept when acceptHeader is */*', t => {
-    const result = callback('*/*');
-    t.equal(result, defaultAccept, 'Expected to return the defaultAccept');
-    t.end();
-  });
+    const result = replyTypeCallback('*/*')
+    t.equal(result, defaultAccept, 'Expected to return the defaultAccept')
+    t.end()
+  })
 
   t.test('should return the first part of acceptHeader when it is not */* or empty', t => {
-    const result = callback('text/html');
-    t.equal(result, 'text/html', 'Expected to return the first part of acceptHeader');
-    t.end();
-  });
+    const result = replyTypeCallback('text/html')
+    t.equal(result, 'text/html', 'Expected to return the first part of acceptHeader')
+    t.end()
+  })
 
   t.test('should return the first part of acceptHeader when it has multiple types', t => {
-    const result = callback('text/html, application/xhtml+xml, application/xml;q=0.9, */*;q=0.8');
-    t.equal(result, 'text/html', 'Expected to return the first part of acceptHeader');
-    t.end();
-  });
+    const result = replyTypeCallback('text/html, application/xhtml+xml, application/xml;q=0.9, */*;q=0.8')
+    t.equal(result, 'text/html', 'Expected to return the first part of acceptHeader')
+    t.end()
+  })
 
-  t.end();
-});
+  t.end()
+})
