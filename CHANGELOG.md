@@ -9,7 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 
-- hooks and compilers are not registered in `httpInterface.js`, but only once in `index.js`, to avoid multiple registers for collections;
+
+- hooks and serializer compiler are not registered anymore on every `httpInterface.js`, but only once in `index.js`, to avoid multiple registers for collections;
+- validator compiler is still applied to each HTTP interface to avoid OOM, but it has been moved to `compilers.js`;
 - `AdditionalCaster` class does not need to compute the fields that are either `ObjectId`, `Date`, or `Geopoint`: in the new `castItem` method, field types are inferred with the `instanceof` keyword;
 - there are only 3 Ajv instances registered.
 

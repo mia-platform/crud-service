@@ -52,7 +52,8 @@
     "xlsx-write-stream": "^1.0.0"
   },
   "peerDependencies": {
-    "ajv": "^8.16.0"
+    "ajv": "^8.16.0",
+    "fast-json-stringify": "^5.16.0"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.4.1",
