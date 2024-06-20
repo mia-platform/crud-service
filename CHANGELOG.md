@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## 7.0.3 - 2024-06-20
+
 ### Changed
 
 - hooks and serializer compiler are not registered anymore on every `httpInterface.js`, but only once in `index.js`, to avoid multiple registers for collections;
