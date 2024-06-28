@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fixed
+
+- bug that made compilers collide with collections having the same prefix.
+
 ## 7.0.3 - 2024-06-20
 
 ### Changed
