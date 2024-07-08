@@ -33,7 +33,7 @@
     "@fastify/env": "^4.3.0",
     "@fastify/mongodb": "^8.0.0",
     "@fastify/multipart": "^8.2.0",
-    "@mia-platform/lc39": "^7.1.0",
+    "@mia-platform/lc39": "^8.0.0",
     "@mia-platform/mongodb-healthchecker": "^1.0.1",
     "ajv-formats": "^3.0.1",
     "ajv-keywords": "^5.1.0",
