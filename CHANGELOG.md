@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+
+- replace `mongocryptd` libraries with Mongo `crypt_shared`
+
+### Fixed
+
+- when the service was configured to run with the (CSFLE)[https://www.mongodb.com/docs/manual/core/csfle/] feature enabled and a Mongo View was defined alongside the collections models, the service crashed at startup due to an incompatibility between Mongo Views and the auto-encryption feature.  
+This issue has been resolved and the service can now properly start, creating the Mongo Views even in such situation.
+
 ## 7.0.4 - 2024-06-28
 
 ### Fixed
