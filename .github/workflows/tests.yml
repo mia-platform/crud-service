@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         node-version: [20.x]
-        mongodb-version: ["4.4", "5.0", "6.0"]
+        mongodb-version: ["5.0", "6.0", "7.0"]
     steps:
       - uses: actions/checkout@v4
 
@@ -27,16 +27,10 @@ jobs:
         run: npm ci
 
       - name: update libraries and install curl
-        # temporary workaround for https://github.com/actions/runner-images/issues/9733
-        run: |
-          sudo rm /etc/apt/sources.list.d/microsoft-prod.list
-          sudo apt-get update && sudo apt-get install curl -y
+        run: sudo apt-get update && sudo apt-get install curl -y
 
       - name: download MongoDB encryption libraries (to support testing encryption features)
-        run: curl https://repo.mongodb.com/apt/debian/dists/bullseye/mongodb-enterprise/6.0/main/binary-amd64/mongodb-enterprise-cryptd_6.0.9_amd64.deb -o mongocryptd.deb && curl https://libmongocrypt.s3.amazonaws.com/apt/debian/dists/bullseye/libmongocrypt/1.7/main/binary-amd64/libmongocrypt-dev_1.7.4-0_amd64.deb -o libmongocrypt-dev.deb && curl https://libmongocrypt.s3.amazonaws.com/apt/debian/dists/bullseye/libmongocrypt/1.7/main/binary-amd64/libmongocrypt0_1.7.4-0_amd64.deb -o libmongocrypt0.deb
-
-      - name: install MongoDB encryption libraries
-        run: sudo apt-get install -f ./mongocryptd.deb ./libmongocrypt0.deb ./libmongocrypt-dev.deb -y
+        run: curl https://downloads.mongodb.com/linux/mongo_crypt_shared_v1-linux-x86_64-enterprise-ubuntu2204-7.0.12.tgz -o crypt_shared.tar.gz && tar -xz --one-top-level=crypt_shared -f crypt_shared.tar.gz
 
       - name: start MongoDB instance
         uses: supercharge/mongodb-github-action@1.11.0
@@ -47,6 +41,7 @@ jobs:
         run: npm run coverage -- --jobs 3 # limit the number of jobs that can be run in parallel in the CI
         env:
           MONGO_VERSION: ${{ matrix.mongodb-version }}
+          CRYPT_SHARED_LIB_PATH: ${{ github.workspace }}/crypt_shared/lib/mongo_crypt_v1.so
 
       - name: Coveralls
         uses: coverallsapp/github-action@v2.3.0
@@ -76,25 +71,20 @@ jobs:
         run: npm ci
 
       - name: update libraries and install curl
-        # temporary workaround for https://github.com/actions/runner-images/issues/9733
-        run: |
-          sudo rm /etc/apt/sources.list.d/microsoft-prod.list
-          sudo apt-get update && sudo apt-get install curl -y
+        run: sudo apt-get update && sudo apt-get install curl -y
 
       - name: download MongoDB encryption libraries (to support testing encryption features)
-        run: curl https://repo.mongodb.com/apt/debian/dists/bullseye/mongodb-enterprise/7.0/main/binary-amd64/mongodb-enterprise-cryptd_7.0.2_amd64.deb -o mongocryptd.deb && curl https://libmongocrypt.s3.amazonaws.com/apt/debian/dists/bullseye/libmongocrypt/1.8/main/binary-amd64/libmongocrypt-dev_1.8.2-0_amd64.deb -o libmongocrypt-dev.deb && curl https://libmongocrypt.s3.amazonaws.com/apt/debian/dists/bullseye/libmongocrypt/1.8/main/binary-amd64/libmongocrypt0_1.8.2-0_amd64.deb -o libmongocrypt0.deb
-
-      - name: install MongoDB encryption libraries
-        run: sudo apt-get install -f ./mongocryptd.deb ./libmongocrypt0.deb ./libmongocrypt-dev.deb -y
+        run: curl https://downloads.mongodb.com/linux/mongo_crypt_shared_v1-linux-x86_64-enterprise-ubuntu2204-8.0.0-rc16.tgz -o crypt_shared.tar.gz && tar -xz --one-top-level=crypt_shared -f crypt_shared.tar.gz
 
       - name: start MongoDB instance
         uses: supercharge/mongodb-github-action@1.11.0
         with:
-          mongodb-version: "7.0"
+          mongodb-version: "8.0"
 
       - name: Run tests
         run: npm run coverage -- --jobs 3 # limit the number of jobs that can be run in parallel in the CI
         env:
-          MONGO_VERSION: "7.0"
+          MONGO_VERSION: "8.0"
+          CRYPT_SHARED_LIB_PATH: ${{ github.workspace }}/crypt_shared/lib/mongo_crypt_v1.so
         # allow the pipeline to continue even when the coverage decreases
         continue-on-error: true

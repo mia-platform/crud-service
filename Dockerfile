@@ -1,16 +1,13 @@
-FROM node:20.14.0-bookworm-slim as base-with-encryption
+FROM node:20.16.0-bookworm-slim AS base-with-encryption
 
 WORKDIR /cryptd
 
-RUN apt-get update && \
-    apt-get install curl -y && \
-    curl https://repo.mongodb.com/apt/debian/dists/bookworm/mongodb-enterprise/7.0/main/binary-amd64/mongodb-enterprise-cryptd_7.0.11_amd64.deb -o mongocryptd.deb && \
-    curl https://libmongocrypt.s3.amazonaws.com/apt/debian/dists/bookworm/libmongocrypt/1.9/main/binary-amd64/libmongocrypt-dev_1.9.1-0_amd64.deb -o libmongocrypt-dev.deb && \
-    curl https://libmongocrypt.s3.amazonaws.com/apt/debian/dists/bookworm/libmongocrypt/1.9/main/binary-amd64/libmongocrypt0_1.9.1-0_amd64.deb -o libmongocrypt0.deb
+RUN apt-get update && apt-get install curl -y
+RUN curl https://downloads.mongodb.com/linux/mongo_crypt_shared_v1-linux-x86_64-enterprise-debian12-7.0.12.tgz | tar -xz
 
 ########################################################################################################################
 
-FROM node:20.14.0-bookworm-slim as build
+FROM node:20.16.0-bookworm-slim AS build
 
 ARG COMMIT_SHA=<not-specified>
 ENV NODE_ENV=production
@@ -30,7 +27,7 @@ RUN echo "crud-service: $COMMIT_SHA" >> ./commit.sha
 
 # create a CRUD Service image that does not support automatic CSFLE
 # and therefore it can be employed by everybody in any MongoDB product
-FROM node:20.14.0-bookworm-slim as crud-service-no-encryption
+FROM node:20.16.0-bookworm-slim AS crud-service-no-encryption
 
 # note: zlib can be removed once node image version is updated
 RUN apt-get update \
@@ -70,17 +67,10 @@ CMD ./node_modules/.bin/lc39 ./index.js --port=${HTTP_PORT} --log-level=${LOG_LE
 
 # extend previous stage to add the support to automatic MongoDB CSFLE feature,
 # which can be leveraged by users adopting a MongoDB Atlas or MongoDB enterprise products
-FROM crud-service-no-encryption as crud-service-with-encryption
-
-USER root
-
-COPY --from=base-with-encryption /cryptd /cryptd
-
-RUN apt-get update \
-    && apt-get install -f /cryptd/mongocryptd.deb /cryptd/libmongocrypt0.deb /cryptd/libmongocrypt-dev.deb -y \
-    && apt-get clean autoclean -y \
-    && apt-get autoremove -y \
-    && rm -rf /cryptd \
-    && rm -rf /var/lib/apt/lists/*
+FROM crud-service-no-encryption AS crud-service-with-encryption
 
 USER node
+
+ENV CRYPT_SHARED_LIB_PATH=/cryptd/mongo_crypt_v1.so
+
+COPY --from=base-with-encryption /cryptd/lib/mongo_crypt_v1.so /cryptd/mongo_crypt_v1.so
