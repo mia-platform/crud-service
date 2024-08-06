@@ -19,12 +19,12 @@
     "checkonly": "! grep -r '\\.only' tests/",
     "coverage": "npm run unit -- --jobs=4",
     "postcoverage": "tap report --coverage-report=lcovonly --coverage-report=text-summary",
-    "lint": "eslint . --ignore-path=.gitignore",
+    "lint": "eslint .",
     "start": "lc39 index.js",
     "start:local": "set -a && . ./local.env && lc39 index.js",
     "pretest": "node tests/generatedJSONSchemasToFiles.js && eslint --fix tests/expectedSchemas/*.js",
     "test": "npm run lint && npm run unit -- --disable-coverage && npm run checkonly",
-    "unit": "MONGO_HOST=${MONGO_HOST_CI:-127.0.0.1} MONGO_VERSION=${MONGO_VERSION:-6.0.2} tap -b --allow-incomplete-coverage 'tests/**/*.test.js'",
+    "unit": "MONGO_HOST=${MONGO_HOST_CI:-127.0.0.1} MONGO_VERSION=${MONGO_VERSION:-6.0.2} CRYPT_SHARED_LIB_PATH=${CRYPT_SHARED_LIB_PATH:-.local/lib/mongo_crypt_v1.so} tap -b --allow-incomplete-coverage 'tests/**/*.test.js'",
     "update-docker-version": "sed -i.bck \"s|version=\\\"[0-9]*\\.[0-9]*\\.[0-9]*.*\\\"|version=\\\"${npm_package_version}\\\"|\" Dockerfile",
     "update-changelog": "node ./scripts/update-changelog.js ${npm_package_version}",
     "version": "npm run update-changelog && npm run update-docker-version && rm -fr Dockerfile.bck && git add CHANGELOG.md Dockerfile"
@@ -33,7 +33,7 @@
     "@fastify/env": "^4.3.0",
     "@fastify/mongodb": "^8.0.0",
     "@fastify/multipart": "^8.2.0",
-    "@mia-platform/lc39": "^7.1.0",
+    "@mia-platform/lc39": "^8.0.1",
     "@mia-platform/mongodb-healthchecker": "^1.0.1",
     "ajv-formats": "^3.0.1",
     "ajv-keywords": "^5.1.0",
@@ -48,26 +48,28 @@
     "p-limit": "^3.1.0",
     "pino": "^9.1.0",
     "through2": "^4.0.2",
-    "uuid": "^9.0.1",
     "xlsx-write-stream": "^1.0.0"
   },
   "peerDependencies": {
     "ajv": "^8.16.0",
-    "fast-json-stringify": "^5.16.0"
+    "fast-json-stringify": "^6.0.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.8.0",
     "@faker-js/faker": "^8.4.1",
     "@mia-platform/eslint-config-mia": "^3.0.0",
     "abstract-logging": "^2.0.1",
     "commander": "^12.1.0",
-    "eslint": "^8.57.0",
+    "eslint": "^9.8.0",
+    "eslint-plugin-n": "^17.10.2",
     "fastbench": "^1.0.1",
     "form-data": "^4.0.0",
+    "globals": "^15.9.0",
     "mock-require": "^3.0.3",
     "mongodb": "^6.8.0",
     "node-xlsx": "^0.24.0",
     "pre-commit": "^1.2.2",
-    "tap": "^19.2.1",
+    "tap": "^21.0.0",
     "uuid-validate": "0.0.3"
   },
   "engines": {

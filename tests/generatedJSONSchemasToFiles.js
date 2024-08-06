@@ -19,10 +19,9 @@
 
 const logger = require('pino')({ level: 'silent' })
 
-const { mockObjectId, mockUuidV4 } = require('./utils')
+const { mockObjectId } = require('./utils')
 
 mockObjectId()
-mockUuidV4()
 
 const collectionDefinitions = {
   books: require('./collectionDefinitions/books'),

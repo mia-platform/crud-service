@@ -1,33 +1,34 @@
 'use strict'
 
 module.exports = {
-  'extends': '@mia-platform/eslint-config-mia',
-  'parserOptions': {
-    'ecmaVersion': 2022,
-    'ecmaFeatures': {
-      'jsx': true,
+  extends: '@mia-platform/eslint-config-mia',
+  parserOptions: {
+    ecmaVersion: 2022,
+    ecmaFeatures: {
+      jsx: true,
     },
   },
-  'ignorePatterns': [
+  ignorePatterns: [
     'bench',
   ],
-  'overrides': [
+  overrides: [
     {
-      'files': [
+      files: [
         'tests/**/*.js',
         'tests/expectedSchemas/*.js',
       ],
-      'rules': {
+      rules: {
         'id-length': 'off',
         'max-lines': 'off',
+
       },
     },
     {
-      'files': [
+      files: [
         'lib/**/*.js',
         'index.js',
       ],
-      'rules': {
+      rules: {
         'valid-jsdoc': 'off',
       },
     },

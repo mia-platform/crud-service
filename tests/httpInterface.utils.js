@@ -107,7 +107,7 @@ async function setUpMultipleCollectionTest(t, testFixtures, mongoDBCollectionNam
 
   for (const collectionName of mongoDBCollectionName) {
     const collection = database.collection(collectionName)
-    // eslint-disable-next-line no-await-in-loop
+
     await clearCollectionAndInsertFixtures(collection, testFixtures[collectionName])
     collections.push(collection)
   }

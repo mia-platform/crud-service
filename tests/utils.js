@@ -522,15 +522,11 @@ const CRUD_MAX_LIMIT = 200
 
 function mockObjectId() {
   mock('mongodb', {
-    // eslint-disable-next-line no-shadow
+
     ObjectId: function ObjectId() {
       this.toString = () => '000000000000000000000000'
     },
   })
-}
-
-function mockUuidV4() {
-  mock('uuid', { v4: () => '00000000-0000-4000-0000-000000000000' })
 }
 
 function getProjectionFromObject(collectionObj) {
@@ -568,6 +564,5 @@ module.exports = {
   sortByAttachmentsName,
   sortByAdditionalInfo,
   mockObjectId,
-  mockUuidV4,
   getProjectionFromObject,
 }
