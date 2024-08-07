@@ -41,6 +41,7 @@ tap.test('GCP kms provider tests', t => {
       KMS_GCP_PRIVATE_KEY_PATH: path.join(__dirname, '../oneLineKey.pem'),
       KMS_GCP_EMAIL: 'teo@gcp.com',
       KEY_VAULT_NAMESPACE: 'key.vault',
+      CRYPT_SHARED_LIB_PATH: path.join(__dirname, '../.local/lib/mongo_crypt_v1.so'),
     })
     const expectedConfiguration = {
       keyVaultNamespace: 'key.vault',
@@ -51,7 +52,7 @@ tap.test('GCP kms provider tests', t => {
         },
       },
       extraOptions: {
-        mongocryptdSpawnArgs: ['--logpath=/tmp/mongocryptd.log', '--pidfilepath=/tmp/mongocryptd.pid'],
+        cryptSharedLibPath: fastify.config.CRYPT_SHARED_LIB_PATH,
       },
     }
     t.strictSame(cryptFactory(fastify), expectedConfiguration)
@@ -64,6 +65,7 @@ tap.test('GCP kms provider tests', t => {
       KMS_GCP_PRIVATE_KEY_PATH: path.join(__dirname, '../private_key.pem'),
       KMS_GCP_EMAIL: 'teo@gcp.com',
       KEY_VAULT_NAMESPACE: 'key.vault',
+      CRYPT_SHARED_LIB_PATH: path.join(__dirname, '../.local/lib/mongo_crypt_v1.so'),
     })
     const schemaMap = {
       bsonType: 'object',
@@ -96,7 +98,7 @@ U9VQQSQzY1oZMVX8i1m5WUTLPz2yLJIBQVdXqhMCQBGoiuSoSjafUhV7i1cEGpb88h5NBYZzWXGZ
         },
       },
       extraOptions: {
-        mongocryptdSpawnArgs: ['--logpath=/tmp/mongocryptd.log', '--pidfilepath=/tmp/mongocryptd.pid'],
+        cryptSharedLibPath: fastify.config.CRYPT_SHARED_LIB_PATH,
       },
       schemaMap,
     }
@@ -113,6 +115,7 @@ tap.test('Local kms provider tests', t => {
       KMS_PROVIDER: 'local',
       LOCAL_MASTER_KEY_PATH: path.join(__dirname, '../private_key.pem'),
       KEY_VAULT_NAMESPACE: 'key.vault',
+      CRYPT_SHARED_LIB_PATH: path.join(__dirname, '../.local/lib/mongo_crypt_v1.so'),
     })
     const localCryptConfiguration = cryptFactory(fastify)
     const stringDecoder = new StringDecoder('utf-8')
@@ -151,6 +154,7 @@ tap.test('Local kms provider tests', t => {
       KMS_PROVIDER: 'local',
       LOCAL_MASTER_KEY_PATH: path.join(__dirname, '../private_key.pem'),
       KEY_VAULT_NAMESPACE: 'key.vault',
+      CRYPT_SHARED_LIB_PATH: path.join(__dirname, '../.local/lib/mongo_crypt_v1.so'),
     })
     const localCryptConfiguration = cryptFactory(fastify, schemaMap)
     const stringDecoder = new StringDecoder('utf-8')

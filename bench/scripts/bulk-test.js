@@ -14,89 +14,88 @@
  * limitations under the License.
  */
 
-import http from 'k6/http';
-import { sleep, check } from 'k6';
+import http from 'k6/http'
+import { sleep, check } from 'k6'
 import {
-    randomIntBetween,
-    randomString,
-} from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
+  randomIntBetween,
+  randomString,
+} from 'https://jslib.k6.io/k6-utils/1.4.0/index.js'
 
-// 
+//
 // This file represent a stub of a k6 test. Feel free to modify based on your needs.
-// 
+//
 
 const generateItems = (length = 10000) => {
-    
-    return Array.from(Array(length).keys()).map((counter) =>({
-        string: randomString(5),
-        number: randomIntBetween(1, 10),
-        boolean: randomIntBetween(0, 1) === 1,
-        date: new Date(randomIntBetween(0, 10)),
-        object: {
-            string: `object-${randomString(5)}`,
-            number: randomIntBetween(1, 10),
-            boolean: randomIntBetween(0, 1) === 1,
-            counter
-        },
-        array: Array.from(Array(randomIntBetween(1, 10)).keys()).map((i) => ({
-            string: `array-${i}-${randomString(5)}`,
-            number: randomIntBetween(1, 10),
-            boolean: randomIntBetween(0, 1) === 1,
-        }))
-    }))
+  return Array.from(Array(length).keys()).map((counter) => ({
+    string: randomString(5),
+    number: randomIntBetween(1, 10),
+    boolean: randomIntBetween(0, 1) === 1,
+    date: new Date(randomIntBetween(0, 10)),
+    object: {
+      string: `object-${randomString(5)}`,
+      number: randomIntBetween(1, 10),
+      boolean: randomIntBetween(0, 1) === 1,
+      counter,
+    },
+    array: Array.from(Array(randomIntBetween(1, 10)).keys()).map((i) => ({
+      string: `array-${i}-${randomString(5)}`,
+      number: randomIntBetween(1, 10),
+      boolean: randomIntBetween(0, 1) === 1,
+    })),
+  }))
 }
 
 export const options = {
-    stages: [
-        { duration: '10s', target: 5 },
-        { duration: '20s', target: 20 },
-        { duration: '80s', target: 40 },
-        { duration: '20s', target: 20 },
-        { duration: '10s', target: 5 },
-    ],
-    thresholds: {
-        checks: ['rate==1'],
-        http_req_failed: ['rate<0.01'],
-        'http_req_duration{type:bulk}': ['p(90)<4500']
-    }
+  stages: [
+    { duration: '10s', target: 5 },
+    { duration: '20s', target: 20 },
+    { duration: '80s', target: 40 },
+    { duration: '20s', target: 20 },
+    { duration: '10s', target: 5 },
+  ],
+  thresholds: {
+    checks: ['rate==1'],
+    http_req_failed: ['rate<0.01'],
+    'http_req_duration{type:bulk}': ['p(90)<4500'],
+  },
 }
 
 export function setup() {
-    // Here it goes any code we want to execute before running our tests
-    const getProbe = http.get(`http://crud-service:3000/items/`, { 
-        headers: { 'Content-Type': 'application/json', 'accept': 'application/json' },
-        tags: { type: 'get' }
-    })
-    check(getProbe, { 'GET /items returns status 200': res => res.status === 200 })
+  // Here it goes any code we want to execute before running our tests
+  const getProbe = http.get(`http://crud-service:3000/items/`, {
+    headers: { 'Content-Type': 'application/json', 'accept': 'application/json' },
+    tags: { type: 'get' },
+  })
+  check(getProbe, { 'GET /items returns status 200': res => res.status === 200 })
 }
 
-export default function () {
-    const items = generateItems()
-    
-    const postList = http.post(`http://crud-service:3000/items/bulk`, JSON.stringify(items), { 
-        headers: { 'Content-Type': 'application/json', 'accept': 'application/json' },
-        tags: { type: 'post-bulk' }
+export default function() {
+  const items = generateItems()
+
+  const postList = http.post(`http://crud-service:3000/items/bulk`, JSON.stringify(items), {
+    headers: { 'Content-Type': 'application/json', 'accept': 'application/json' },
+    tags: { type: 'post-bulk' },
+  })
+  check(postList, { 'POST /items/bulk returns status 200': res => res.status === 200 })
+  // get ids from post
+  const ids = JSON.parse(postList.body)
+  // perform patch bulk
+  const patchResult = http.patch(
+    `http://crud-service:3000/items/bulk`,
+    JSON.stringify(ids.map(({ _id }) => ({
+      filter: { _id },
+      update: { $set: { 'object.boolean': true } },
+    }))), {
+      headers: { 'Content-Type': 'application/json' },
+      tags: { type: 'patch-bulk' },
     })
-    check(postList, { 'POST /items/bulk returns status 200': res => res.status === 200 }) 
-    // get ids from post
-    const ids = JSON.parse(postList.body) 
-    // perform patch bulk
-    const patchResult = http.patch(
-        `http://crud-service:3000/items/bulk`, 
-        JSON.stringify(ids.map(({_id}) => ({
-            filter: { _id },
-            update: {$set: {'object.boolean': true}}
-        }))), { 
-        headers: { 'Content-Type': 'application/json' },
-        tags: { type: 'patch-bulk' }
-    })
-    check(patchResult, { 
-        'PATCH /items/bulk returns status 200 after updating all items': (res) => {
-            return res.status === 200 && Number(res.body) === items.length 
-        }
-    }) 
+  check(patchResult, {
+    'PATCH /items/bulk returns status 200 after updating all items': (res) => {
+      return res.status === 200 && Number(res.body) === items.length
+    },
+  })
 }
 
 export function teardown(data) {
-    // Here it goes any code we want to execute after running our tests
+  // Here it goes any code we want to execute after running our tests
 }

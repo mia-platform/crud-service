@@ -179,7 +179,6 @@ tap.test('HTTP PATCH /', async t => {
       command: { $unset: { authorAddressId: 'true' } },
       expectedUpdatedDocuments: fixtures.filter(doc => doc._id.toString() === ID)
         .map(doc => {
-          // eslint-disable-next-line no-unused-vars
           const { authorAddressId, ...rest } = doc
           return rest
         }),

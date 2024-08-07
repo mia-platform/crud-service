@@ -161,7 +161,7 @@ async function notFoundHandler(_, reply) {
     })
 }
 
-// eslint-disable-next-line max-statements
+
 async function setupCruds(fastify) {
   const {
     COLLECTION_DEFINITION_FOLDER,

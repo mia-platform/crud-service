@@ -33,9 +33,9 @@ nvm use
 
 About mongo, we suggest you to have it in a separate Docker container. You can follow this small guide or use the configuration you prefer:
 ```shell
-docker pull mongo:6.0
+docker pull mongo:7.0
 docker volume create mongo
-docker run --detach --name mongo -p 27017:27017 --mount source=mongo,target=/data/db mongo:6.0
+docker run --detach --name mongo -p 27017:27017 --mount source=mongo,target=/data/db mongo:7.0
 ```
 
 In case you want to use the MongoDB Encryption functionality, you must install in your machine the [MongoDB Enterprise Server](https://www.mongodb.com/try/download/enterprise?tck=docs_server) and run the `mongocryptd` file (its location may change based on the version you downloaded).
@@ -95,6 +95,16 @@ Please note that you can mount the `.env` file with your CRUD Service configurat
 You can access the **Swagger User Interface**, generally available at `http://localhost:3000/documentation` (it depends on which port you deployed the service). From there you can verify the list of Collections and Views defined and execute HTTP requests to effectively use the service.
 
 ## Local development
+
+### (CSFLE)[https://www.mongodb.com/docs/manual/core/csfle/] Support
+
+In order to run the service with the Client-Side Field Level Encryption feature enable it is necessary to download from (MongoDB Download Center)[https://www.mongodb.com/try/download/enterprise] the `crypt_shared` dynamic library, which provides the automatic encryption functionalities. Upon the compressed file is downloaded, please uncompress and copy the file `lib/mongo_crypt_v1.so` into the folder `.local/lib` within this repository.
+In case you would like to choose a different location for storing the `crypt_shared` library, please remember to customize the `CRYPT_SHARED_LIB_PATH` environment variable before launching the service locally or running tests.
+
+:::note
+Please remember that CSFLE is a MongoDB Atlas/Enterprise exclusive feature. Consequently, please ensure you are subscribed to one of such plans before using it.
+:::
+
 ### Run tests
 
 We use [tap](https://github.com/tapjs/node-tap) to test the **CRUD Service**. Once you have all the dependency in place, you can simply launch it with:
@@ -108,7 +118,7 @@ It will run the tests with the coverage report that you can view as an HTML page
 To run only one test:
 
 ```shell
-env MONGO_HOST=127.0.0.1 TAP_BAIL=1 node tests/createIndexes.test.js
+env MONGO_VERSION=7.0 MONGO_HOST=127.0.0.1 TAP_BAIL=1 node tests/createIndexes.test.js
 ```
 
 ## Architecture

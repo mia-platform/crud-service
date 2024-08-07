@@ -314,7 +314,6 @@ tap.test('HTTP PATCH /<id>', async t => {
         id: DOC._id,
         command: { $unset: { authorAddressId: 'true' } },
         returnDoc: { ...((() => {
-          // eslint-disable-next-line no-unused-vars
           const { authorAddressId, ...rest } = HTTP_DOC
           return rest
         })()),

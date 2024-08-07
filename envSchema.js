@@ -22,14 +22,27 @@ const gcpCryptSchema = {
   properties: {
     KMS_PROVIDER: { type: 'string', enum: ['gcp'], description: 'Master key is managed by GCP' },
   },
-  required: ['KMS_GCP_EMAIL', 'KMS_GCP_PROJECT_ID', 'KMS_GCP_LOCATION', 'KMS_GCP_KEY_RING', 'KMS_GCP_KEY_NAME', 'KMS_GCP_PRIVATE_KEY_PATH', 'KEY_VAULT_NAMESPACE'],
+  required: [
+    'KMS_GCP_EMAIL',
+    'KMS_GCP_PROJECT_ID',
+    'KMS_GCP_LOCATION',
+    'KMS_GCP_KEY_RING',
+    'KMS_GCP_KEY_NAME',
+    'KMS_GCP_PRIVATE_KEY_PATH',
+    'KEY_VAULT_NAMESPACE',
+    'CRYPT_SHARED_LIB_PATH',
+  ],
 }
 
 const localCryptSchema = {
   properties: {
     KMS_PROVIDER: { type: 'string', enum: ['local'], description: 'Master key is managed locally' },
   },
-  required: ['LOCAL_MASTER_KEY_PATH', 'KEY_VAULT_NAMESPACE'],
+  required: [
+    'LOCAL_MASTER_KEY_PATH',
+    'KEY_VAULT_NAMESPACE',
+    'CRYPT_SHARED_LIB_PATH',
+  ],
 }
 
 const noCryptSchema = {
@@ -74,6 +87,10 @@ const properties = {
   // Encryption properties
   KEY_VAULT_NAMESPACE: { type: 'string', pattern: DATABASE_DOT_COLLECTION },
   LOCAL_MASTER_KEY_PATH: { type: 'string', description: 'Path for the local Master key', minLength: 1 },
+  CRYPT_SHARED_LIB_PATH: {
+    type: 'string',
+    description: 'path to the folder containing Mongo shared library to support automatic encryption',
+  },
   // Google Cloud Platform encryption properties
   KMS_PROVIDER: { type: 'string', enum: ['gcp', 'local', 'none'], description: 'Master key manager', default: 'none' },
   KMS_GCP_EMAIL: { type: 'string', description: 'GCP email of the kms' },
