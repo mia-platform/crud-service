@@ -7,9 +7,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+- new optional environment variable `CRYPT_SHARED_LIB_PATH` that specify
+where `crypt_shared` MongoDB dynamic library is located. This variable
+is already set within the Docker image and it points to the correct location, so that it is not necessary to customize it.
+
 ### Changed
 
 - replace `mongocryptd` libraries with Mongo `crypt_shared`
+- upgrade NodeJS version in Docker image to v20.16.0
 
 ### Fixed
 
