@@ -60,7 +60,7 @@
     "@mia-platform/eslint-config-mia": "^3.0.0",
     "abstract-logging": "^2.0.1",
     "commander": "^12.1.0",
-    "eslint": "^9.8.0",
+    "eslint": "^9.9.0",
     "eslint-plugin-n": "^17.10.2",
     "fastbench": "^1.0.1",
     "form-data": "^4.0.0",
