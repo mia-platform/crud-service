@@ -69,7 +69,7 @@
     "mongodb": "^6.8.0",
     "node-xlsx": "^0.24.0",
     "pre-commit": "^1.2.2",
-    "tap": "^21.0.0",
+    "tap": "^21.0.1",
     "uuid-validate": "0.0.3"
   },
   "engines": {
