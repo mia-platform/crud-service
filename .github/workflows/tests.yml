@@ -79,7 +79,7 @@ jobs:
       - name: start MongoDB instance
         uses: supercharge/mongodb-github-action@1.11.0
         with:
-          mongodb-version: "8.0.0-rc16"
+          mongodb-version: "8.0.0-rc18"
 
       - name: Run tests
         run: npm run coverage -- --jobs 3 # limit the number of jobs that can be run in parallel in the CI

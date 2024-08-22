@@ -778,7 +778,7 @@ tap.test('HTTP GET /export', async t => {
           delimiter: conf.delimiter || ',',
           escape: '\\',
           header: true,
-          quote: false,
+          quoted_string: true,
           columns: conf.expectedColumns,
           cast: {
             object: (value) => {
@@ -1073,7 +1073,7 @@ tap.test('HTTP GET /export - $text search', async t => {
           delimiter: ',',
           escape: '\\',
           header: true,
-          quote: false,
+          quoted_string: true,
           columns: conf.expectedColumns,
           cast: {
             object: (value) => {
@@ -1213,7 +1213,7 @@ tap.test('HTTP GET /export with _id in querystring', async t => {
           delimiter: ',',
           escape: '\\',
           header: true,
-          quote: false,
+          quoted_string: true,
           columns: conf.expectedColumns,
           cast: {
             object: (value) => {
