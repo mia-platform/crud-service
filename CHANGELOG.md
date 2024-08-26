@@ -16,7 +16,7 @@ is already set within the Docker image and it points to the correct location, so
 ### Changed
 
 - replace `mongocryptd` libraries with Mongo `crypt_shared`
-- upgrade NodeJS version in Docker image to v20.16.0
+- upgrade NodeJS version in Docker image to v20.17.0
 - enforce quoting all strings in CSV export to prevent issues with delimiter character
 
 ### Fixed
