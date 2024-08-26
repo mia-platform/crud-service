@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## 7.1.0 - 2024-08-26
+
 ### Added
 
 - new optional environment variable `CRYPT_SHARED_LIB_PATH` that specify
