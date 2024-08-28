@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+
+- extend to `/bulk` endpoint the requests preprocessing performed on exposed routes of View with lookup feature enabled
+
 ## 7.1.0 - 2024-08-26
 
 ### Added

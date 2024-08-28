@@ -89,7 +89,8 @@ tap.test('Writable views (enableLookups: true)', async t => {
     try {
       await ridersCollection.drop()
       await ordersCollection.drop()
-    } catch (error) { /* NOOP - ignore errors when a resource is missing*/ }
+    } catch (error) { /* NOOP - ignore errors when a resource is missing*/
+    }
 
     await ordersCollection.insertMany(ordersFixture)
     await ridersCollection.insertMany(ridersFixture)
@@ -176,6 +177,40 @@ tap.test('Writable views (enableLookups: true)', async t => {
       t.notHas(viewDoc, 'id_rider')
 
       const orderDoc = await ordersCollection.findOne({ _id: new ObjectId(body._id) })
+      t.strictSame(orderDoc.id_rider, newRider.value)
+      t.strictSame(orderDoc.items, ['888888888888888888888888'])
+      t.notHas(orderDoc, 'rider')
+
+      t.end()
+    })
+  })
+
+  t.test('HTTP POST /orders-details-endpoint/bulk', async t => {
+    t.test('with rider object instead of rider id', async t => {
+      const response = await fastify.inject({
+        method: 'POST',
+        url: `${viewPrefix}/bulk`,
+        payload: [
+          DOC,
+        ],
+      })
+
+      t.strictSame(response.statusCode, 200)
+      t.ok(/application\/json/.test(response.headers['content-type']))
+      const body = JSON.parse(response.payload)
+      t.strictSame(body.length, 1)
+      body.forEach(el => t.ok(el._id))
+
+      const docId = body[0]._id
+      const viewDoc = await orderDetailsCollection.findOne({ _id: new ObjectId(docId) })
+      t.strictSame(viewDoc.rider, {
+        value: newRider.value,
+        label: newRider.label,
+      })
+      t.strictSame(viewDoc.items, ['888888888888888888888888'])
+      t.notHas(viewDoc, 'id_rider')
+
+      const orderDoc = await ordersCollection.findOne({ _id: new ObjectId(docId) })
       t.strictSame(orderDoc.id_rider, newRider.value)
       t.strictSame(orderDoc.items, ['888888888888888888888888'])
       t.notHas(orderDoc, 'rider')
