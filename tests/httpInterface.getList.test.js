@@ -345,13 +345,13 @@ tap.test('HTTP GET /', async t => {
     },
     {
       name: '$elemMatch array rawobject array',
-      url: `/?_p=_id&_q=${JSON.stringify({ attachments: { $elemMatch: { neastedArr: { $in: [3] } } } })}`,
+      url: `/?_p=_id&_q=${JSON.stringify({ attachments: { $elemMatch: { nestedArr: { $in: [3] } } } })}`,
       acl_rows: undefined,
       acl_read_columns: undefined,
       found: fixtures.filter(f => {
         return f.attachments
           && f.attachments.some(a => {
-            return a.neastedArr && a.neastedArr.some(fp => fp === 3)
+            return a.nestedArr && a.nestedArr.some(fp => fp === 3)
           })
       }).map(f => ({ _id: f._id.toString() })),
     },
@@ -391,7 +391,7 @@ tap.test('HTTP GET /', async t => {
         attachments: [
           {
             name: 'note',
-            neastedArr: [1, 2, 3],
+            nestedArr: [1, 2, 3],
             detail: {
               size: 9,
             },

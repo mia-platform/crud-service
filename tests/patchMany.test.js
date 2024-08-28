@@ -277,7 +277,7 @@ tap.test('patchMany', async t => {
     attachments: [
       {
         name: 'renamed',
-        neastedArr: [1, 2, 66],
+        nestedArr: [1, 2, 66],
       }],
     [UPDATEDAT]: context.now,
     [UPDATERID]: context.userId,

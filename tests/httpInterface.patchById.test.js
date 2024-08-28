@@ -39,7 +39,7 @@ const MATCHING_QUERY = { price: { $gt: MATCHING_PRICE } }
 const MATCHING_ATTACHMENT_QUERY = { 'attachments.name': 'note' }
 const MATCHING_TAGIDS_QUERY = { tagIds: 1 }
 const NON_MATCHING_QUERY = { price: { $gt: NON_MATCHING_PRICE } }
-const RENAMED_ATTACHMENTS = [{ name: 'renamed', neastedArr: [1, 2, 3], detail: { size: 9 } }, { name: 'another-note', other: 'stuff' }]
+const RENAMED_ATTACHMENTS = [{ name: 'renamed', nestedArr: [1, 2, 3], detail: { size: 9 } }, { name: 'another-note', other: 'stuff' }]
 const ATTACHMENT_MERGE = `attachments.$.${ARRAY_MERGE_ELEMENT_OPERATOR}`
 const ATTACHMENT_REPLACE_ELEMENT = `attachments.$.${ARRAY_REPLACE_ELEMENT_OPERATOR}`
 const TAGIDS_ELEMENT = `tagIds.$.${ARRAY_REPLACE_ELEMENT_OPERATOR}`
@@ -62,7 +62,7 @@ const UPDATE_ARRAY_MERGE_ELEMENT_COMMAND = {
 }
 const UPDATE_ARRAY_ELEMENT_MERGE_MULTIPLE_FIELDS_COMMAND = {
   $set: {
-    [ATTACHMENT_MERGE]: { name: 'renamed', neastedArr: [4, 5, 6, 0] },
+    [ATTACHMENT_MERGE]: { name: 'renamed', nestedArr: [4, 5, 6, 0] },
   },
 }
 const UPDATE_REPLACE_NUMBER_ARRAY_ELEMENT_COMMAND = { $set: { [TAGIDS_ELEMENT]: 2 } }
@@ -399,7 +399,7 @@ tap.test('HTTP PATCH /<id>', async t => {
         found: true,
         id: DOC._id,
         command: {
-          $pull: { attachments: { name: 'note', neastedArr: [1, 2, 3], detail: { size: 9 } } },
+          $pull: { attachments: { name: 'note', nestedArr: [1, 2, 3], detail: { size: 9 } } },
         },
         returnDoc: {
           ...HTTP_DOC,
@@ -494,7 +494,7 @@ tap.test('HTTP PATCH /<id>', async t => {
         id: DOC._id,
         command: UPDATE_ARRAY_ELEMENT_MERGE_MULTIPLE_FIELDS_COMMAND,
         returnDoc: { ...HTTP_DOC,
-          attachments: [{ name: 'renamed', neastedArr: [4, 5, 6, 0], detail: { size: 9 } }, { name: 'another-note', other: 'stuff' }],
+          attachments: [{ name: 'renamed', nestedArr: [4, 5, 6, 0], detail: { size: 9 } }, { name: 'another-note', other: 'stuff' }],
           updaterId: newUpdaterId },
       },
       {

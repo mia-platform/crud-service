@@ -128,6 +128,18 @@ module.exports = {
       required: false,
     },
     {
+      name: 'tagObjectIds',
+      type: 'Array',
+      items: {
+        type: 'string',
+        __mia_configuration: {
+          type: 'ObjectId',
+        },
+      },
+      description: 'Tag object ids',
+      required: false,
+    },
+    {
       name: 'additionalInfo',
       type: 'RawObject',
       required: false,
@@ -200,7 +212,7 @@ module.exports = {
                 size: { type: 'number' },
               },
             },
-            neastedArr: {
+            nestedArr: {
               type: 'array',
               items: { type: 'number' },
             },

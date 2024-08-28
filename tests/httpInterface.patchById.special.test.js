@@ -57,7 +57,7 @@ const UPDATED_STATION_HTTP_DOC = { ...STATION_HTTP_DOC,
 
 const MATCHING_TAGIDS_QUERY = { tagIds: 1 }
 const RENAMED_ATTACHMENTS = [
-  { name: 'renamed', neastedArr: [1, 2, 3], detail: { size: 9 } },
+  { name: 'renamed', nestedArr: [1, 2, 3], detail: { size: 9 } },
   { name: 'another-note', other: 'stuff' },
 ]
 const ATTACHMENT_REPLACE_ELEMENT = `attachments.$.${ARRAY_REPLACE_ELEMENT_OPERATOR}`
@@ -737,14 +737,14 @@ tap.test('HTTP PATCH /<id> - ', async t => {
           ...fixtures[0],
           attachments: [{
             name: 'attach-0',
-            neastedArr: [2],
+            nestedArr: [2],
           }],
         }
 
         await resetCollection([DOC_TESTING_ARRAY])
         const UPDATE_COMMAND = {
           $push: {
-            'attachments.0.neastedArr': '55',
+            'attachments.0.nestedArr': '55',
           },
         }
         const response = await fastify.inject({
@@ -758,10 +758,10 @@ tap.test('HTTP PATCH /<id> - ', async t => {
         t.equal(response.statusCode, 200)
 
         const payload = JSON.parse(response.payload)
-        t.strictSame(payload.attachments, [{ name: 'attach-0', neastedArr: [2, 55] }])
+        t.strictSame(payload.attachments, [{ name: 'attach-0', nestedArr: [2, 55] }])
 
         const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
-        t.strictSame(docOnDb.attachments, [{ name: 'attach-0', neastedArr: [2, 55] }])
+        t.strictSame(docOnDb.attachments, [{ name: 'attach-0', nestedArr: [2, 55] }])
 
         t.end()
       })
@@ -967,14 +967,14 @@ tap.test('HTTP PATCH /<id> - ', async t => {
           ...fixtures[0],
           attachments: [{
             name: 'attach-0',
-            neastedArr: [2],
+            nestedArr: [2],
           }],
         }
 
         await resetCollection([DOC_TESTING_ARRAY])
         const UPDATE_COMMAND = {
           $addToSet: {
-            'attachments.0.neastedArr': '55',
+            'attachments.0.nestedArr': '55',
           },
         }
 
@@ -989,10 +989,10 @@ tap.test('HTTP PATCH /<id> - ', async t => {
         t.equal(response.statusCode, 200)
 
         const payload = JSON.parse(response.payload)
-        t.strictSame(payload.attachments, [{ name: 'attach-0', neastedArr: [2, 55] }])
+        t.strictSame(payload.attachments, [{ name: 'attach-0', nestedArr: [2, 55] }])
 
         const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
-        t.strictSame(docOnDb.attachments, [{ name: 'attach-0', neastedArr: [2, 55] }])
+        t.strictSame(docOnDb.attachments, [{ name: 'attach-0', nestedArr: [2, 55] }])
 
         t.end()
       })

@@ -51,7 +51,7 @@ Object {
               "name": Object {
                 "type": "string",
               },
-              "neastedArr": Object {
+              "nestedArr": Object {
                 "items": Object {
                   "type": "number",
                 },
@@ -100,7 +100,7 @@ Object {
             "name": Object {
               "type": "string",
             },
-            "neastedArr": Object {
+            "nestedArr": Object {
               "items": Object {
                 "type": "number",
               },
@@ -311,6 +311,35 @@ Object {
       "type": Array [
         "array",
         "number",
+      ],
+    },
+    "tagObjectIds": Object {
+      "anyOf": Array [
+        Object {
+          "items": Object {
+            "description": "Hexadecimal identifier of the document in the collection",
+            "example": "000000000000000000000000",
+            "nullable": true,
+            "pattern": "^[a-fA-F\\\\d]{24}$",
+            "type": "string",
+          },
+          "nullable": true,
+          "type": "array",
+        },
+        Object {
+          "description": "Hexadecimal identifier of the document in the collection",
+          "example": "000000000000000000000000",
+          "nullable": true,
+          "pattern": "^[a-fA-F\\\\d]{24}$",
+          "type": "string",
+        },
+      ],
+      "description": "Tag identification numbers",
+      "nullable": true,
+      "type": Array [
+        "array",
+        "string",
+        "null",
       ],
     },
     "tags": Object {

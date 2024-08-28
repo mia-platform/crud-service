@@ -114,6 +114,30 @@ module.exports = {
         ],
         'description': 'Tag identification numbers',
       },
+      'tagObjectIds': {
+        'type': [
+          'array',
+          'string',
+        ],
+        'anyOf': [
+          {
+            'type': 'array',
+            'items': {
+              'type': 'string',
+              'description': 'Hexadecimal identifier of the document in the collection',
+              'pattern': '^[a-fA-F\\d]{24}$',
+              'example': '000000000000000000000000',
+            },
+          },
+          {
+            'type': 'string',
+            'description': 'Hexadecimal identifier of the document in the collection',
+            'pattern': '^[a-fA-F\\d]{24}$',
+            'example': '000000000000000000000000',
+          },
+        ],
+        'description': 'Tag object ids',
+      },
       'attachments': {
         'type': [
           'array',
@@ -138,7 +162,7 @@ module.exports = {
                     },
                   },
                 },
-                'neastedArr': {
+                'nestedArr': {
                   'type': 'array',
                   'items': {
                     'type': 'number',
@@ -186,7 +210,7 @@ module.exports = {
                   },
                 },
               },
-              'neastedArr': {
+              'nestedArr': {
                 'type': 'array',
                 'items': {
                   'type': 'number',
@@ -316,10 +340,10 @@ module.exports = {
       'attachments\\.\\d+\\.detail\\.size$': {
         'type': 'number',
       },
-      'attachments\\.\\d+\\.neastedArr$': {
+      'attachments\\.\\d+\\.nestedArr$': {
         'type': 'number',
       },
-      'attachments\\.\\d+\\.neastedArr\\.\\d+$': {
+      'attachments\\.\\d+\\.nestedArr\\.\\d+$': {
         'type': 'number',
       },
       'attachments\\.\\d+\\.additionalInfo\\..+$': true,
@@ -435,6 +459,30 @@ module.exports = {
             ],
             'description': 'Tag identification numbers',
           },
+          'tagObjectIds': {
+            'type': [
+              'array',
+              'string',
+            ],
+            'anyOf': [
+              {
+                'type': 'array',
+                'items': {
+                  'type': 'string',
+                  'description': 'Hexadecimal identifier of the document in the collection',
+                  'pattern': '^[a-fA-F\\d]{24}$',
+                  'example': '000000000000000000000000',
+                },
+              },
+              {
+                'type': 'string',
+                'description': 'Hexadecimal identifier of the document in the collection',
+                'pattern': '^[a-fA-F\\d]{24}$',
+                'example': '000000000000000000000000',
+              },
+            ],
+            'description': 'Tag object ids',
+          },
           'additionalInfo': {
             'type': 'object',
             'additionalProperties': true,
@@ -538,7 +586,7 @@ module.exports = {
                         },
                       },
                     },
-                    'neastedArr': {
+                    'nestedArr': {
                       'type': 'array',
                       'items': {
                         'type': 'number',
@@ -586,7 +634,7 @@ module.exports = {
                       },
                     },
                   },
-                  'neastedArr': {
+                  'nestedArr': {
                     'type': 'array',
                     'items': {
                       'type': 'number',
@@ -668,6 +716,9 @@ module.exports = {
           'tagIds.$.replace': {
             'type': 'number',
           },
+          'tagObjectIds.$.replace': {
+            'type': 'string',
+          },
           'attachments.$.replace': {
             'type': 'object',
             'additionalProperties': false,
@@ -683,7 +734,7 @@ module.exports = {
                   },
                 },
               },
-              'neastedArr': {
+              'nestedArr': {
                 'type': 'array',
                 'items': {
                   'type': 'number',
@@ -727,7 +778,7 @@ module.exports = {
                   },
                 },
               },
-              'neastedArr': {
+              'nestedArr': {
                 'type': 'array',
                 'items': {
                   'type': 'number',
@@ -944,7 +995,7 @@ module.exports = {
                   },
                 },
               },
-              'neastedArr': {
+              'nestedArr': {
                 'type': 'array',
                 'items': {
                   'type': 'number',
@@ -986,13 +1037,13 @@ module.exports = {
           'attachments\\.\\d+\\.detail\\.size$': {
             'type': 'number',
           },
-          'attachments\\.\\d+\\.neastedArr$': {
+          'attachments\\.\\d+\\.nestedArr$': {
             'type': 'array',
             'items': {
               'type': 'number',
             },
           },
-          'attachments\\.\\d+\\.neastedArr\\.\\d+$': {
+          'attachments\\.\\d+\\.nestedArr\\.\\d+$': {
             'type': 'number',
           },
           'attachments\\.\\d+\\.additionalInfo$': {
@@ -1042,7 +1093,7 @@ module.exports = {
           'metadata\\.exampleArrayOfArray\\.\\d+\\.\\$\\.replace$': {
             'type': 'string',
           },
-          'attachments\\.\\d+\\.neastedArr\\.\\$\\.replace$': {
+          'attachments\\.\\d+\\.nestedArr\\.\\$\\.replace$': {
             'type': 'number',
           },
           'attachments\\.\\d+\\.more\\.\\$\\.replace$': {
@@ -1096,6 +1147,12 @@ module.exports = {
             ],
           },
           'tagIds': {
+            'type': 'boolean',
+            'enum': [
+              true,
+            ],
+          },
+          'tagObjectIds': {
             'type': 'boolean',
             'enum': [
               true,
@@ -1189,7 +1246,7 @@ module.exports = {
           'attachments\\.\\d+\\.detail\\.size$': {
             'type': 'number',
           },
-          'attachments\\.\\d+\\.neastedArr\\.\\d+$': {
+          'attachments\\.\\d+\\.nestedArr\\.\\d+$': {
             'type': 'number',
           },
           'attachments\\.\\d+\\.size$': {
@@ -1231,7 +1288,7 @@ module.exports = {
           'attachments\\.\\d+\\.detail\\.size$': {
             'type': 'number',
           },
-          'attachments\\.\\d+\\.neastedArr\\.\\d+$': {
+          'attachments\\.\\d+\\.nestedArr\\.\\d+$': {
             'type': 'number',
           },
           'attachments\\.\\d+\\.size$': {
@@ -1266,6 +1323,9 @@ module.exports = {
           'tagIds': {
             'type': 'number',
           },
+          'tagObjectIds': {
+            'type': 'string',
+          },
           'attachments': {
             'type': 'object',
             'additionalProperties': false,
@@ -1281,7 +1341,7 @@ module.exports = {
                   },
                 },
               },
-              'neastedArr': {
+              'nestedArr': {
                 'type': 'array',
                 'items': {
                   'type': 'number',
@@ -1359,7 +1419,7 @@ module.exports = {
           'metadata\\.exampleArrayOfArray\\.\\d+$': {
             'type': 'string',
           },
-          'attachments\\.\\d+\\.neastedArr$': {
+          'attachments\\.\\d+\\.nestedArr$': {
             'type': 'number',
           },
           'attachments\\.\\d+\\.additionalInfo\\..+$': {},
@@ -1399,6 +1459,19 @@ module.exports = {
               },
             ],
           },
+          'tagObjectIds': {
+            'oneOf': [
+              {
+                'type': 'string',
+              },
+              {
+                'type': 'object',
+                'patternProperties': {
+                  '^$': {},
+                },
+              },
+            ],
+          },
           'attachments': {
             'type': 'object',
             'additionalProperties': false,
@@ -1414,7 +1487,7 @@ module.exports = {
                   },
                 },
               },
-              'neastedArr': {
+              'nestedArr': {
                 'type': 'array',
                 'items': {
                   'type': 'number',
@@ -1522,7 +1595,7 @@ module.exports = {
               },
             ],
           },
-          'attachments\\.\\d+\\.neastedArr$': {
+          'attachments\\.\\d+\\.nestedArr$': {
             'oneOf': [
               {
                 'type': 'number',
@@ -1602,6 +1675,19 @@ module.exports = {
               },
             ],
           },
+          'tagObjectIds': {
+            'oneOf': [
+              {
+                'type': 'string',
+              },
+              {
+                'type': 'object',
+                'patternProperties': {
+                  '^$': {},
+                },
+              },
+            ],
+          },
           'attachments': {
             'type': 'object',
             'additionalProperties': false,
@@ -1617,7 +1703,7 @@ module.exports = {
                   },
                 },
               },
-              'neastedArr': {
+              'nestedArr': {
                 'type': 'array',
                 'items': {
                   'type': 'number',
@@ -1725,7 +1811,7 @@ module.exports = {
               },
             ],
           },
-          'attachments\\.\\d+\\.neastedArr$': {
+          'attachments\\.\\d+\\.nestedArr$': {
             'oneOf': [
               {
                 'type': 'number',
@@ -1858,6 +1944,30 @@ module.exports = {
             ],
             'description': 'Tag identification numbers',
           },
+          'tagObjectIds': {
+            'type': [
+              'array',
+              'string',
+            ],
+            'anyOf': [
+              {
+                'type': 'array',
+                'items': {
+                  'type': 'string',
+                  'description': 'Hexadecimal identifier of the document in the collection',
+                  'pattern': '^[a-fA-F\\d]{24}$',
+                  'example': '000000000000000000000000',
+                },
+              },
+              {
+                'type': 'string',
+                'description': 'Hexadecimal identifier of the document in the collection',
+                'pattern': '^[a-fA-F\\d]{24}$',
+                'example': '000000000000000000000000',
+              },
+            ],
+            'description': 'Tag object ids',
+          },
           'additionalInfo': {
             'type': 'object',
             'additionalProperties': true,
@@ -1961,7 +2071,7 @@ module.exports = {
                         },
                       },
                     },
-                    'neastedArr': {
+                    'nestedArr': {
                       'type': 'array',
                       'items': {
                         'type': 'number',
@@ -2009,7 +2119,7 @@ module.exports = {
                       },
                     },
                   },
-                  'neastedArr': {
+                  'nestedArr': {
                     'type': 'array',
                     'items': {
                       'type': 'number',
@@ -2202,6 +2312,30 @@ module.exports = {
           ],
           'description': 'Tag identification numbers',
         },
+        'tagObjectIds': {
+          'type': [
+            'array',
+            'string',
+          ],
+          'anyOf': [
+            {
+              'type': 'array',
+              'items': {
+                'type': 'string',
+                'description': 'Hexadecimal identifier of the document in the collection',
+                'pattern': '^[a-fA-F\\d]{24}$',
+                'example': '000000000000000000000000',
+              },
+            },
+            {
+              'type': 'string',
+              'description': 'Hexadecimal identifier of the document in the collection',
+              'pattern': '^[a-fA-F\\d]{24}$',
+              'example': '000000000000000000000000',
+            },
+          ],
+          'description': 'Tag object ids',
+        },
         'additionalInfo': {
           'type': 'object',
           'additionalProperties': true,
@@ -2305,7 +2439,7 @@ module.exports = {
                       },
                     },
                   },
-                  'neastedArr': {
+                  'nestedArr': {
                     'type': 'array',
                     'items': {
                       'type': 'number',
@@ -2353,7 +2487,7 @@ module.exports = {
                     },
                   },
                 },
-                'neastedArr': {
+                'nestedArr': {
                   'type': 'array',
                   'items': {
                     'type': 'number',

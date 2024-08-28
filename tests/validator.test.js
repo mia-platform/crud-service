@@ -520,7 +520,7 @@ tap.test('validate schema', async t => {
                     size: { type: 'number' },
                   },
                 },
-                neastedArr: {
+                nestedArr: {
                   type: 'array',
                   items: { type: 'number' },
                 },
@@ -704,7 +704,7 @@ tap.test('validate schema', async t => {
                     size: { type: 'number' },
                   },
                 },
-                neastedArr: {
+                nestedArr: {
                   type: 'array',
                   items: { type: 'number' },
                 },

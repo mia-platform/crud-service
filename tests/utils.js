@@ -70,7 +70,7 @@ const fixtures = [
     attachments: [
       {
         name: 'note',
-        neastedArr: [1, 2, 3],
+        nestedArr: [1, 2, 3],
         detail: {
           size: 9,
         },
@@ -213,7 +213,7 @@ const fixtures = [
     attachments: [
       {
         name: 'my-name',
-        neastedArr: [1, 2, 66],
+        nestedArr: [1, 2, 66],
       },
     ],
     [CREATEDAT]: createdAtDate,

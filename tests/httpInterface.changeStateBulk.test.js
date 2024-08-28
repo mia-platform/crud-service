@@ -280,7 +280,7 @@ tap.test('HTTP POST /state', async t => {
             attachments: [
               {
                 name: 'unmatching',
-                neastedArr: [1, 2, 3],
+                nestedArr: [1, 2, 3],
                 detail: {
                   size: 9,
                 },
@@ -311,7 +311,7 @@ tap.test('HTTP POST /state', async t => {
             attachments: [
               {
                 name: 'note',
-                neastedArr: ['1', '2', '3'],
+                nestedArr: ['1', '2', '3'],
                 detail: {
                   size: '9',
                 },

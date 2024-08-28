@@ -120,6 +120,16 @@ module.exports = {
         },
         description: 'Tag identification numbers',
       },
+      tagObjectIds: {
+        type: 'array',
+        items: {
+          type: 'string',
+          __mia_configuration: {
+            type: 'ObjectId',
+          },
+        },
+        description: 'Tag object ids',
+      },
       additionalInfo: {
         type: 'object',
         nullable: true,
@@ -181,7 +191,7 @@ module.exports = {
                 size: { type: 'number' },
               },
             },
-            neastedArr: {
+            nestedArr: {
               type: 'array',
               items: { type: 'number' },
             },

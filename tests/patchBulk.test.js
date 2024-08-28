@@ -393,7 +393,7 @@ t.test('patchBulk', async t => {
     attachments: [
       {
         name: 'secondRename',
-        neastedArr: [1, 2, 66],
+        nestedArr: [1, 2, 66],
       }],
     [UPDATEDAT]: context.now,
     [UPDATERID]: context.userId,

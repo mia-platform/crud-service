@@ -580,12 +580,12 @@ tap.test('HTTP PATCH /bulk', async t => {
         },
         attachments: [{
           name: 'note',
-          neastedArr: [123],
+          nestedArr: [123],
         }],
       }
       const UPDATE_COMMAND = {
         $push: {
-          'attachments.0.neastedArr': VALUE_AS_STRING,
+          'attachments.0.nestedArr': VALUE_AS_STRING,
           'metadata.somethingArrayOfNumbers': VALUE_AS_STRING,
         },
       }
@@ -620,7 +620,7 @@ tap.test('HTTP PATCH /bulk', async t => {
 
         t.strictSame(docOnDb.attachments, [{
           name: 'note',
-          neastedArr: [123, VALUE_AS_NUMBER],
+          nestedArr: [123, VALUE_AS_NUMBER],
         }])
 
         t.end()
@@ -638,12 +638,12 @@ tap.test('HTTP PATCH /bulk', async t => {
         },
         attachments: [{
           name: 'note',
-          neastedArr: [123],
+          nestedArr: [123],
         }],
       }
       const UPDATE_COMMAND = {
         $push: {
-          'attachments.0.neastedArr': VALUE_AS_STRING,
+          'attachments.0.nestedArr': VALUE_AS_STRING,
           'attachments.0.additionalInfo.additionalArray': VALUE_AS_STRING,
           'metadata.somethingArrayOfNumbers': VALUE_AS_STRING,
         },
@@ -679,7 +679,7 @@ tap.test('HTTP PATCH /bulk', async t => {
 
         t.strictSame(docOnDb.attachments, [{
           name: 'note',
-          neastedArr: [123, VALUE_AS_NUMBER],
+          nestedArr: [123, VALUE_AS_NUMBER],
           additionalInfo: {
             additionalArray: [VALUE_AS_STRING],
           },
@@ -700,12 +700,12 @@ tap.test('HTTP PATCH /bulk', async t => {
         },
         attachments: [{
           name: 'note',
-          neastedArr: [123, VALUE_AS_NUMBER],
+          nestedArr: [123, VALUE_AS_NUMBER],
         }],
       }
       const UPDATE_COMMAND = {
         $addToSet: {
-          'attachments.0.neastedArr': VALUE_AS_STRING,
+          'attachments.0.nestedArr': VALUE_AS_STRING,
           'metadata.somethingArrayOfNumbers': VALUE_AS_STRING,
         },
       }
@@ -740,7 +740,7 @@ tap.test('HTTP PATCH /bulk', async t => {
 
         t.strictSame(docOnDb.attachments, [{
           name: 'note',
-          neastedArr: [123, VALUE_AS_NUMBER],
+          nestedArr: [123, VALUE_AS_NUMBER],
         }])
 
         t.end()
@@ -759,13 +759,13 @@ tap.test('HTTP PATCH /bulk', async t => {
         attachments: [
           {
             name: 'note',
-            neastedArr: [123, VALUE_AS_NUMBER],
+            nestedArr: [123, VALUE_AS_NUMBER],
           },
         ],
       }
       const UPDATE_COMMAND = {
         $addToSet: {
-          'attachments.0.neastedArr': VALUE_AS_STRING,
+          'attachments.0.nestedArr': VALUE_AS_STRING,
           'attachments.0.additionalInfo.additionalArray': VALUE_AS_STRING,
           'metadata.somethingArrayOfNumbers': VALUE_AS_STRING,
         },
@@ -801,7 +801,7 @@ tap.test('HTTP PATCH /bulk', async t => {
 
         t.strictSame(docOnDb.attachments, [{
           name: 'note',
-          neastedArr: [123, VALUE_AS_NUMBER],
+          nestedArr: [123, VALUE_AS_NUMBER],
           additionalInfo: {
             additionalArray: [VALUE_AS_STRING],
           },
@@ -823,13 +823,13 @@ tap.test('HTTP PATCH /bulk', async t => {
         },
         attachments: [{
           name: 'note',
-          neastedArr: [987, 654, 321],
+          nestedArr: [987, 654, 321],
         }],
       }
       const UPDATE_COMMAND = {
         $pull: {
           'tags': 'tag2',
-          'attachments.0.neastedArr': 321,
+          'attachments.0.nestedArr': 321,
           'metadata.somethingArrayOfNumbers': 123,
         },
       }
@@ -865,7 +865,7 @@ tap.test('HTTP PATCH /bulk', async t => {
 
         t.strictSame(docOnDb.attachments, [{
           name: 'note',
-          neastedArr: [987, 654],
+          nestedArr: [987, 654],
         }])
 
         t.end()
@@ -884,7 +884,7 @@ tap.test('HTTP PATCH /bulk', async t => {
         },
         attachments: [{
           name: 'note',
-          neastedArr: [987, 654, 321],
+          nestedArr: [987, 654, 321],
           additionalInfo: {
             additionalArray: [VALUE_AS_STRING],
           },
@@ -893,7 +893,7 @@ tap.test('HTTP PATCH /bulk', async t => {
       const UPDATE_COMMAND = {
         $pull: {
           'tags': 'tag2',
-          'attachments.0.neastedArr': 321,
+          'attachments.0.nestedArr': 321,
           'attachments.0.additionalInfo.additionalArray': VALUE_AS_STRING,
           'metadata.somethingArrayOfNumbers': 123,
         },
@@ -930,7 +930,7 @@ tap.test('HTTP PATCH /bulk', async t => {
 
         t.strictSame(docOnDb.attachments, [{
           name: 'note',
-          neastedArr: [987, 654],
+          nestedArr: [987, 654],
           additionalInfo: {
             additionalArray: [],
           },
@@ -952,13 +952,13 @@ tap.test('HTTP PATCH /bulk', async t => {
         },
         attachments: [{
           name: 'note',
-          neastedArr: [987, 654, 321],
+          nestedArr: [987, 654, 321],
         }],
       }
       const UPDATE_COMMAND = {
         $pull: {
           'tags': 'tag2',
-          'attachments.0.neastedArr': { $in: [654, 321] },
+          'attachments.0.nestedArr': { $in: [654, 321] },
           'metadata.somethingArrayOfNumbers': 123,
         },
       }
@@ -994,7 +994,7 @@ tap.test('HTTP PATCH /bulk', async t => {
 
         t.strictSame(docOnDb.attachments, [{
           name: 'note',
-          neastedArr: [987],
+          nestedArr: [987],
         }])
 
         t.end()
@@ -1021,7 +1021,7 @@ tap.test('HTTP PATCH /bulk', async t => {
         attachments: [
           {
             name: 'note-1',
-            neastedArr: [1, 2, 3],
+            nestedArr: [1, 2, 3],
             detail: {
               size: 9,
             },
@@ -1033,7 +1033,7 @@ tap.test('HTTP PATCH /bulk', async t => {
           'metadata.somethingString': true,
           'metadata.somethingObject.childNumber': true,
           'metadata.somethingArrayObject.0.anotherNumber': true,
-          'attachments.0.neastedArr': true,
+          'attachments.0.nestedArr': true,
           'attachments.0.detail': true,
         },
       }

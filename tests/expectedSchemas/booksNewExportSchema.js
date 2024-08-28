@@ -161,6 +161,30 @@ module.exports = {
         ],
         'description': 'Tag identification numbers',
       },
+      'tagObjectIds': {
+        'type': [
+          'array',
+          'string',
+        ],
+        'anyOf': [
+          {
+            'type': 'array',
+            'items': {
+              'type': 'string',
+              'description': 'Hexadecimal identifier of the document in the collection',
+              'pattern': '^[a-fA-F\\d]{24}$',
+              'example': '000000000000000000000000',
+            },
+          },
+          {
+            'type': 'string',
+            'description': 'Hexadecimal identifier of the document in the collection',
+            'pattern': '^[a-fA-F\\d]{24}$',
+            'example': '000000000000000000000000',
+          },
+        ],
+        'description': 'Tag object ids',
+      },
       'attachments': {
         'type': [
           'array',
@@ -185,7 +209,7 @@ module.exports = {
                     },
                   },
                 },
-                'neastedArr': {
+                'nestedArr': {
                   'type': 'array',
                   'items': {
                     'type': 'number',
@@ -233,7 +257,7 @@ module.exports = {
                   },
                 },
               },
-              'neastedArr': {
+              'nestedArr': {
                 'type': 'array',
                 'items': {
                   'type': 'number',
@@ -342,13 +366,13 @@ module.exports = {
         'anyOf': [
           {
             'type': 'string',
-            'pattern': '^-?(_id|updaterId|updatedAt|creatorId|createdAt|__STATE__|name|isbn|price|author|authorAddressId|isPromoted|publishDate|tags|tagIds|additionalInfo|signature|metadata|attachments|editionsDates)(\\.([^\\.,])+)*(,-?(_id|updaterId|updatedAt|creatorId|createdAt|__STATE__|name|isbn|price|author|authorAddressId|isPromoted|publishDate|tags|tagIds|additionalInfo|signature|metadata|attachments|editionsDates)(\\.([^\\.,])+)*)*$',
+            'pattern': '^-?(_id|updaterId|updatedAt|creatorId|createdAt|__STATE__|name|isbn|price|author|authorAddressId|isPromoted|publishDate|tags|tagIds|tagObjectIds|additionalInfo|signature|metadata|attachments|editionsDates)(\\.([^\\.,])+)*(,-?(_id|updaterId|updatedAt|creatorId|createdAt|__STATE__|name|isbn|price|author|authorAddressId|isPromoted|publishDate|tags|tagIds|tagObjectIds|additionalInfo|signature|metadata|attachments|editionsDates)(\\.([^\\.,])+)*)*$',
           },
           {
             'type': 'array',
             'items': {
               'type': 'string',
-              'pattern': '^-?(_id|updaterId|updatedAt|creatorId|createdAt|__STATE__|name|isbn|price|author|authorAddressId|isPromoted|publishDate|tags|tagIds|additionalInfo|signature|metadata|attachments|editionsDates)(\\.([^\\.,])+)*(,-?(_id|updaterId|updatedAt|creatorId|createdAt|__STATE__|name|isbn|price|author|authorAddressId|isPromoted|publishDate|tags|tagIds|additionalInfo|signature|metadata|attachments|editionsDates)(\\.([^\\.,])+)*)*$',
+              'pattern': '^-?(_id|updaterId|updatedAt|creatorId|createdAt|__STATE__|name|isbn|price|author|authorAddressId|isPromoted|publishDate|tags|tagIds|tagObjectIds|additionalInfo|signature|metadata|attachments|editionsDates)(\\.([^\\.,])+)*(,-?(_id|updaterId|updatedAt|creatorId|createdAt|__STATE__|name|isbn|price|author|authorAddressId|isPromoted|publishDate|tags|tagIds|tagObjectIds|additionalInfo|signature|metadata|attachments|editionsDates)(\\.([^\\.,])+)*)*$',
             },
           },
         ],
@@ -397,10 +421,10 @@ module.exports = {
       'attachments\\.\\d+\\.detail\\.size$': {
         'type': 'number',
       },
-      'attachments\\.\\d+\\.neastedArr$': {
+      'attachments\\.\\d+\\.nestedArr$': {
         'type': 'number',
       },
-      'attachments\\.\\d+\\.neastedArr\\.\\d+$': {
+      'attachments\\.\\d+\\.nestedArr\\.\\d+$': {
         'type': 'number',
       },
       'attachments\\.\\d+\\.additionalInfo\\..+$': true,
@@ -543,6 +567,30 @@ module.exports = {
             ],
             'description': 'Tag identification numbers',
           },
+          'tagObjectIds': {
+            'type': [
+              'array',
+              'string',
+            ],
+            'anyOf': [
+              {
+                'type': 'array',
+                'items': {
+                  'type': 'string',
+                  'description': 'Hexadecimal identifier of the document in the collection',
+                  'pattern': '^[a-fA-F\\d]{24}$',
+                  'example': '000000000000000000000000',
+                },
+              },
+              {
+                'type': 'string',
+                'description': 'Hexadecimal identifier of the document in the collection',
+                'pattern': '^[a-fA-F\\d]{24}$',
+                'example': '000000000000000000000000',
+              },
+            ],
+            'description': 'Tag object ids',
+          },
           'additionalInfo': {
             'type': 'object',
             'additionalProperties': true,
@@ -646,7 +694,7 @@ module.exports = {
                         },
                       },
                     },
-                    'neastedArr': {
+                    'nestedArr': {
                       'type': 'array',
                       'items': {
                         'type': 'number',
@@ -694,7 +742,7 @@ module.exports = {
                       },
                     },
                   },
-                  'neastedArr': {
+                  'nestedArr': {
                     'type': 'array',
                     'items': {
                       'type': 'number',

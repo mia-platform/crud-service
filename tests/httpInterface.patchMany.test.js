@@ -156,7 +156,7 @@ tap.test('HTTP PATCH /', async t => {
         attachments: [
           {
             name: 'renamed',
-            neastedArr: [1, 2, 3],
+            nestedArr: [1, 2, 3],
             detail: { size: 9 },
           },
           {
@@ -168,7 +168,7 @@ tap.test('HTTP PATCH /', async t => {
         attachments: [
           {
             name: 'renamed',
-            neastedArr: [1, 2, 66],
+            nestedArr: [1, 2, 66],
           }],
       }],
     },
@@ -217,7 +217,7 @@ tap.test('HTTP PATCH /', async t => {
         .map(doc => ({
           ...doc,
           metadata: { ...doc.metadata, somethingArrayObject: [] },
-          attachments: [{ name: 'note', neastedArr: [1, 2, 3], detail: { size: 9 } }],
+          attachments: [{ name: 'note', nestedArr: [1, 2, 3], detail: { size: 9 } }],
         })),
     },
   ]
@@ -331,7 +331,7 @@ tap.test('HTTP PATCH /', async t => {
       },
       attachments: [{
         name: 'note-a',
-        neastedArr: [111],
+        nestedArr: [111],
       }],
     }
     const DOC_TEST2 = {
@@ -347,7 +347,7 @@ tap.test('HTTP PATCH /', async t => {
       },
       attachments: [{
         name: 'note-b',
-        neastedArr: [222, 333],
+        nestedArr: [222, 333],
       }],
     }
     const DOC_TEST3 = {
@@ -363,7 +363,7 @@ tap.test('HTTP PATCH /', async t => {
       },
       attachments: [{
         name: 'note-c',
-        neastedArr: [444],
+        nestedArr: [444],
       }],
     }
 
@@ -505,7 +505,7 @@ tap.test('HTTP PATCH /', async t => {
       t.test('ok with casting of array in array', async t => {
         const UPDATE_COMMAND = {
           $push: {
-            'attachments.0.neastedArr': VALUE_AS_STRING,
+            'attachments.0.nestedArr': VALUE_AS_STRING,
           },
         }
 
@@ -531,7 +531,7 @@ tap.test('HTTP PATCH /', async t => {
           const originalDoc = EXPECTED_DOCUMENTS_TO_UPDATE.find(doc => doc._id.toString() === itemOnDb._id.toString())
           t.strictSame(itemOnDb.attachments, [{
             ...originalDoc.attachments[0],
-            neastedArr: originalDoc.attachments[0].neastedArr.concat(VALUE_AS_NUMBER),
+            nestedArr: originalDoc.attachments[0].nestedArr.concat(VALUE_AS_NUMBER),
           }])
         }
 
@@ -602,7 +602,7 @@ tap.test('HTTP PATCH /', async t => {
       t.test('ok with casting of array in array', async t => {
         const UPDATE_COMMAND = {
           $addToSet: {
-            'attachments.0.neastedArr': VALUE_AS_STRING,
+            'attachments.0.nestedArr': VALUE_AS_STRING,
           },
         }
 
@@ -628,7 +628,7 @@ tap.test('HTTP PATCH /', async t => {
           const originalDoc = EXPECTED_DOCUMENTS_TO_UPDATE.find(doc => doc._id.toString() === itemOnDb._id.toString())
           t.strictSame(itemOnDb.attachments, [{
             ...originalDoc.attachments[0],
-            neastedArr: originalDoc.attachments[0].neastedArr.concat(VALUE_AS_NUMBER),
+            nestedArr: originalDoc.attachments[0].nestedArr.concat(VALUE_AS_NUMBER),
           }])
         }
 

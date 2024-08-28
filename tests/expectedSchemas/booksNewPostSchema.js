@@ -119,6 +119,30 @@ module.exports = {
         ],
         'description': 'Tag identification numbers',
       },
+      'tagObjectIds': {
+        'type': [
+          'array',
+          'string',
+        ],
+        'anyOf': [
+          {
+            'type': 'array',
+            'items': {
+              'type': 'string',
+              'description': 'Hexadecimal identifier of the document in the collection',
+              'pattern': '^[a-fA-F\\d]{24}$',
+              'example': '000000000000000000000000',
+            },
+          },
+          {
+            'type': 'string',
+            'description': 'Hexadecimal identifier of the document in the collection',
+            'pattern': '^[a-fA-F\\d]{24}$',
+            'example': '000000000000000000000000',
+          },
+        ],
+        'description': 'Tag object ids',
+      },
       'additionalInfo': {
         'type': 'object',
         'additionalProperties': true,
@@ -222,7 +246,7 @@ module.exports = {
                     },
                   },
                 },
-                'neastedArr': {
+                'nestedArr': {
                   'type': 'array',
                   'items': {
                     'type': 'number',
@@ -270,7 +294,7 @@ module.exports = {
                   },
                 },
               },
-              'neastedArr': {
+              'nestedArr': {
                 'type': 'array',
                 'items': {
                   'type': 'number',

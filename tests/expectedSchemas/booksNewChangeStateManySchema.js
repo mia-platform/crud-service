@@ -219,7 +219,7 @@ module.exports = {
                           },
                         },
                       },
-                      'neastedArr': {
+                      'nestedArr': {
                         'type': 'array',
                         'items': {
                           'type': 'number',
@@ -267,7 +267,7 @@ module.exports = {
                         },
                       },
                     },
-                    'neastedArr': {
+                    'nestedArr': {
                       'type': 'array',
                       'items': {
                         'type': 'number',
@@ -458,7 +458,7 @@ module.exports = {
                     },
                   },
                 },
-                'neastedArr': {
+                'nestedArr': {
                   'type': 'array',
                   'items': {
                     'type': 'number',
@@ -500,13 +500,13 @@ module.exports = {
             'attachments\\.\\d+\\.detail\\.size$': {
               'type': 'number',
             },
-            'attachments\\.\\d+\\.neastedArr$': {
+            'attachments\\.\\d+\\.nestedArr$': {
               'type': 'array',
               'items': {
                 'type': 'number',
               },
             },
-            'attachments\\.\\d+\\.neastedArr\\.\\d+$': {
+            'attachments\\.\\d+\\.nestedArr\\.\\d+$': {
               'type': 'number',
             },
             'attachments\\.\\d+\\.additionalInfo$': {

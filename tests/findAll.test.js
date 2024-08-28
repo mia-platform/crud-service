@@ -333,7 +333,7 @@ tap.test('findAll', async t => {
         {
           attachments: {
             $elemMatch: {
-              neastedArr: { $in: [3] },
+              nestedArr: { $in: [3] },
             },
           },
         },
@@ -347,7 +347,7 @@ tap.test('findAll', async t => {
       const mf = f => {
         return f.attachments
           && f.attachments.some(a => {
-            return a.neastedArr && a.neastedArr.some(fp => fp === 3)
+            return a.nestedArr && a.nestedArr.some(fp => fp === 3)
           })
       }
       t.strictSame(data, fixtures.filter(mf).map(mapOnlyId))
