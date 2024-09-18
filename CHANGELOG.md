@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fixed
+
+- fixed conversion of boolean fields in stringify in export of csv files
+
 ## 7.1.1 - 2024-08-29
 
 ### Changed
