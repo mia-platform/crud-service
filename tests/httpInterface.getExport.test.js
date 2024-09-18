@@ -788,6 +788,9 @@ tap.test('HTTP GET /export', async t => {
                 return value
               }
             },
+            boolean: (value) => {
+              return value ? 'true' : 'false'
+            },
           },
         })
         t.strictSame(response.payload, foundCsv)
@@ -1083,6 +1086,9 @@ tap.test('HTTP GET /export - $text search', async t => {
                 return value
               }
             },
+            boolean: (value) => {
+              return value ? 'true' : 'false'
+            },
           },
         })
         t.strictSame(response.payload, foundCsv)
@@ -1222,6 +1228,9 @@ tap.test('HTTP GET /export with _id in querystring', async t => {
               } catch (errs) {
                 return value
               }
+            },
+            boolean: (value) => {
+              return value ? 'true' : 'false'
             },
           },
         })
