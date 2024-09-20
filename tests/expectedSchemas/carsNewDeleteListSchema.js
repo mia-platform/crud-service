@@ -14,79 +14,78 @@
  * limitations under the License.
  */
 
-      'use strict'
-      
-      module.exports = {
-  "summary": "Delete multiple items from the cars collection.",
-  "tags": [
-    "cars endpoint"
+'use strict'
+
+module.exports = {
+  'summary': 'Delete multiple items from the cars collection.',
+  'tags': [
+    'cars endpoint',
   ],
-  "querystring": {
-    "operationId": "cars__MIA__deleteList__MIA__querystring",
-    "type": "object",
-    "properties": {
-      "creatorId": {
-        "type": "string",
-        "description": "User id that has created this object"
+  'querystring': {
+    'operationId': 'cars__MIA__deleteList__MIA__querystring',
+    'type': 'object',
+    'properties': {
+      'creatorId': {
+        'type': 'string',
+        'description': 'User id that has created this object',
       },
-      "createdAt": {
-        "type": "string",
-        "example": "1997-04-24T07:00:00.000Z",
-        "anyOf": [
+      'createdAt': {
+        'type': 'string',
+        'example': '1997-04-24T07:00:00.000Z',
+        'anyOf': [
           {
-            "format": "date-time"
+            'format': 'date-time',
           },
           {
-            "format": "date"
+            'format': 'date',
           },
           {
-            "format": "time"
-          }
-        ]
+            'format': 'time',
+          },
+        ],
       },
-      "updaterId": {
-        "type": "string",
-        "description": "User id that has requested the last change successfully"
+      'updaterId': {
+        'type': 'string',
+        'description': 'User id that has requested the last change successfully',
       },
-      "updatedAt": {
-        "type": "string",
-        "example": "1997-04-24T07:00:00.000Z",
-        "anyOf": [
+      'updatedAt': {
+        'type': 'string',
+        'example': '1997-04-24T07:00:00.000Z',
+        'anyOf': [
           {
-            "format": "date-time"
+            'format': 'date-time',
           },
           {
-            "format": "date"
+            'format': 'date',
           },
           {
-            "format": "time"
-          }
-        ]
+            'format': 'time',
+          },
+        ],
       },
-      "name": {
-        "type": "string",
-        "description": "The car's name"
+      'name': {
+        'type': 'string',
+        'description': "The car's name",
       },
-      "price": {
-        "type": "number",
-        "description": "The car's price"
+      'price': {
+        'type': 'number',
+        'description': "The car's price",
       },
-      "_q": {
-        "type": "string",
-        "description": "Additional query part to forward to MongoDB"
+      '_q': {
+        'type': 'string',
+        'description': 'Additional query part to forward to MongoDB',
       },
-      "_st": {
-        "type": "string",
-        "pattern": "(PUBLIC|DRAFT|TRASH|DELETED)(,(PUBLIC|DRAFT|TRASH|DELETED))*",
-        "default": "PUBLIC",
-        "description": "Filter by \\_\\_STATE__, multiple states can be specified in OR by providing a comma separated list"
+      '_st': {
+        'type': 'string',
+        'pattern': '(PUBLIC|DRAFT|TRASH|DELETED)(,(PUBLIC|DRAFT|TRASH|DELETED))*',
+        'default': 'PUBLIC',
+        'description': 'Filter by \\_\\_STATE__, multiple states can be specified in OR by providing a comma separated list',
       },
-      "_rawp": {
-        "type": "string",
-        "description": "Additional raw stringified projection for MongoDB"
-      }
+      '_rawp': {
+        'type': 'string',
+        'description': 'Additional raw stringified projection for MongoDB',
+      },
     },
-    "additionalProperties": false
-  }
+    'additionalProperties': false,
+  },
 }
-        

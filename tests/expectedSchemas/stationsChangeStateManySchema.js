@@ -14,95 +14,94 @@
  * limitations under the License.
  */
 
-      'use strict'
-      
-      module.exports = {
-  "summary": "Change state of multiple items of stations.",
-  "tags": [
-    "stations endpoint"
+'use strict'
+
+module.exports = {
+  'summary': 'Change state of multiple items of stations.',
+  'tags': [
+    'stations endpoint',
   ],
-  "body": {
-    "operationId": "stations__MIA__changeStateMany__MIA__body",
-    "type": "array",
-    "items": {
-      "type": "object",
-      "properties": {
-        "filter": {
-          "type": "object",
-          "properties": {
-            "_id": {
-              "type": "string",
-              "pattern": "^(?!\\s*$).+",
-              "description": "String identifier of the document in the collection",
-              "example": "00000000-0000-4000-0000-000000000000"
+  'body': {
+    'operationId': 'stations__MIA__changeStateMany__MIA__body',
+    'type': 'array',
+    'items': {
+      'type': 'object',
+      'properties': {
+        'filter': {
+          'type': 'object',
+          'properties': {
+            '_id': {
+              'type': 'string',
+              'pattern': '^(?!\\s*$).+',
+              'description': 'String identifier of the document in the collection',
+              'example': '00000000-0000-4000-0000-000000000000',
             },
-            "creatorId": {
-              "type": "string",
-              "description": "User id that has created this object"
+            'creatorId': {
+              'type': 'string',
+              'description': 'User id that has created this object',
             },
-            "createdAt": {
-              "type": "string",
-              "example": "1997-04-24T07:00:00.000Z",
-              "pattern": "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$"
+            'createdAt': {
+              'type': 'string',
+              'example': '1997-04-24T07:00:00.000Z',
+              'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
             },
-            "updaterId": {
-              "type": "string",
-              "description": "User id that has requested the last change successfully"
+            'updaterId': {
+              'type': 'string',
+              'description': 'User id that has requested the last change successfully',
             },
-            "updatedAt": {
-              "type": "string",
-              "example": "1997-04-24T07:00:00.000Z",
-              "pattern": "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$"
+            'updatedAt': {
+              'type': 'string',
+              'example': '1997-04-24T07:00:00.000Z',
+              'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
             },
-            "Cap": {
-              "type": "number"
+            'Cap': {
+              'type': 'number',
             },
-            "CodiceMIR": {
-              "type": "string"
+            'CodiceMIR': {
+              'type': 'string',
             },
-            "Comune": {
-              "type": "string"
+            'Comune': {
+              'type': 'string',
             },
-            "Indirizzo": {
-              "type": "string"
+            'Indirizzo': {
+              'type': 'string',
             },
-            "country": {
-              "type": "string"
+            'country': {
+              'type': 'string',
             },
-            "nonNullableDate": {
-              "type": "string",
-              "example": "1997-04-24T07:00:00.000Z",
-              "pattern": "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$",
-              "description": "\"date-time\" according with https://tools.ietf.org/html/rfc3339#section-5.6",
-              "nullable": false
-            }
-          }
+            'nonNullableDate': {
+              'type': 'string',
+              'example': '1997-04-24T07:00:00.000Z',
+              'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
+              'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
+              'nullable': false,
+            },
+          },
         },
-        "stateTo": {
-          "type": "string",
-          "enum": [
-            "PUBLIC",
-            "DRAFT",
-            "TRASH",
-            "DELETED"
-          ]
-        }
+        'stateTo': {
+          'type': 'string',
+          'enum': [
+            'PUBLIC',
+            'DRAFT',
+            'TRASH',
+            'DELETED',
+          ],
+        },
       },
-      "required": [
-        "filter",
-        "stateTo"
+      'required': [
+        'filter',
+        'stateTo',
       ],
-      "additionalProperties": false
+      'additionalProperties': false,
     },
-    "minItems": 1
+    'minItems': 1,
   },
-  "response": {
-    "200": {
-      "operationId": "stations__MIA__changeStateMany__MIA__response.200",
-      "type": "integer",
-      "minimum": 0,
-      "description": "Number of updated stations"
-    }
-  }
+  'response': {
+    '200': {
+      'operationId': 'stations__MIA__changeStateMany__MIA__response.200',
+      'type': 'integer',
+      'minimum': 0,
+      'description': 'Number of updated stations',
+    },
+  },
 }
-        

@@ -14,237 +14,236 @@
  * limitations under the License.
  */
 
-      'use strict'
-      
-      module.exports = {
-  "summary": "Export the stations collection",
-  "description": "The exported documents are sent as newline separated JSON objects to facilitate large dataset streaming and parsing",
-  "tags": [
-    "stations endpoint"
+'use strict'
+
+module.exports = {
+  'summary': 'Export the stations collection',
+  'description': 'The exported documents are sent as newline separated JSON objects to facilitate large dataset streaming and parsing',
+  'tags': [
+    'stations endpoint',
   ],
-  "headers": {
-    "operationId": "stations__MIA__export__MIA__headers",
-    "type": "object",
-    "properties": {
-      "accept": {
-        "type": "string",
-        "default": "application/x-ndjson"
-      }
-    }
-  },
-  "querystring": {
-    "operationId": "stations__MIA__export__MIA__querystring",
-    "type": "object",
-    "properties": {
-      "_id": {
-        "type": "string",
-        "pattern": "^(?!\\s*$).+",
-        "description": "String identifier of the document in the collection",
-        "example": "00000000-0000-4000-0000-000000000000"
+  'headers': {
+    'operationId': 'stations__MIA__export__MIA__headers',
+    'type': 'object',
+    'properties': {
+      'accept': {
+        'type': 'string',
+        'default': 'application/x-ndjson',
       },
-      "creatorId": {
-        "type": "string",
-        "description": "User id that has created this object"
-      },
-      "createdAt": {
-        "type": "string",
-        "example": "1997-04-24T07:00:00.000Z",
-        "pattern": "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$"
-      },
-      "updaterId": {
-        "type": "string",
-        "description": "User id that has requested the last change successfully"
-      },
-      "updatedAt": {
-        "type": "string",
-        "example": "1997-04-24T07:00:00.000Z",
-        "pattern": "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$"
-      },
-      "Cap": {
-        "type": "number",
-        "nullable": true
-      },
-      "CodiceMIR": {
-        "type": "string",
-        "nullable": true
-      },
-      "Comune": {
-        "type": "string",
-        "nullable": true
-      },
-      "Direttrici": {
-        "type": [
-          "array",
-          "string",
-          "null"
-        ],
-        "anyOf": [
-          {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "nullable": true
-            },
-            "nullable": true
-          },
-          {
-            "type": "string",
-            "nullable": true
-          }
-        ],
-        "nullable": true
-      },
-      "Indirizzo": {
-        "type": "string",
-        "nullable": true
-      },
-      "country": {
-        "type": "string",
-        "nullable": true
-      },
-      "nonNullableDate": {
-        "type": "string",
-        "example": "1997-04-24T07:00:00.000Z",
-        "pattern": "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$",
-        "description": "\"date-time\" according with https://tools.ietf.org/html/rfc3339#section-5.6",
-        "nullable": false
-      },
-      "_q": {
-        "type": "string",
-        "description": "Additional query part to forward to MongoDB"
-      },
-      "_p": {
-        "type": "string",
-        "description": "Return only the properties specified in a comma separated list",
-        "example": "field1,field2,field3.nestedField"
-      },
-      "_st": {
-        "type": "string",
-        "pattern": "(PUBLIC|DRAFT|TRASH|DELETED)(,(PUBLIC|DRAFT|TRASH|DELETED))*",
-        "default": "PUBLIC",
-        "description": "Filter by \\_\\_STATE__, multiple states can be specified in OR by providing a comma separated list"
-      },
-      "_rawp": {
-        "type": "string",
-        "description": "Additional raw stringified projection for MongoDB"
-      },
-      "_l": {
-        "type": "integer",
-        "minimum": 1,
-        "description": "Limits the number of documents"
-      },
-      "_sk": {
-        "type": "integer",
-        "minimum": 0,
-        "description": "Skip the specified number of documents"
-      },
-      "_s": {
-        "anyOf": [
-          {
-            "type": "string",
-            "pattern": "^-?(_id|updaterId|updatedAt|creatorId|createdAt|__STATE__|Cap|CodiceMIR|Comune|Direttrici|Indirizzo|country|nonNullableDate)(\\.([^\\.,])+)*(,-?(_id|updaterId|updatedAt|creatorId|createdAt|__STATE__|Cap|CodiceMIR|Comune|Direttrici|Indirizzo|country|nonNullableDate)(\\.([^\\.,])+)*)*$"
-          },
-          {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "pattern": "^-?(_id|updaterId|updatedAt|creatorId|createdAt|__STATE__|Cap|CodiceMIR|Comune|Direttrici|Indirizzo|country|nonNullableDate)(\\.([^\\.,])+)*(,-?(_id|updaterId|updatedAt|creatorId|createdAt|__STATE__|Cap|CodiceMIR|Comune|Direttrici|Indirizzo|country|nonNullableDate)(\\.([^\\.,])+)*)*$"
-            }
-          }
-        ],
-        "description": "Sort by the specified property/properties (Start with a \"-\" to invert the sort order)"
-      },
-      "_exportOpts": {
-        "type": "string"
-      }
     },
-    "additionalProperties": false
   },
-  "response": {
-    "200": {
-      "operationId": "stations__MIA__export__MIA__response.200",
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "_id": {
-            "type": "string",
-            "description": "_id"
+  'querystring': {
+    'operationId': 'stations__MIA__export__MIA__querystring',
+    'type': 'object',
+    'properties': {
+      '_id': {
+        'type': 'string',
+        'pattern': '^(?!\\s*$).+',
+        'description': 'String identifier of the document in the collection',
+        'example': '00000000-0000-4000-0000-000000000000',
+      },
+      'creatorId': {
+        'type': 'string',
+        'description': 'User id that has created this object',
+      },
+      'createdAt': {
+        'type': 'string',
+        'example': '1997-04-24T07:00:00.000Z',
+        'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
+      },
+      'updaterId': {
+        'type': 'string',
+        'description': 'User id that has requested the last change successfully',
+      },
+      'updatedAt': {
+        'type': 'string',
+        'example': '1997-04-24T07:00:00.000Z',
+        'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
+      },
+      'Cap': {
+        'type': 'number',
+        'nullable': true,
+      },
+      'CodiceMIR': {
+        'type': 'string',
+        'nullable': true,
+      },
+      'Comune': {
+        'type': 'string',
+        'nullable': true,
+      },
+      'Direttrici': {
+        'type': [
+          'array',
+          'string',
+          'null',
+        ],
+        'anyOf': [
+          {
+            'type': 'array',
+            'items': {
+              'type': 'string',
+              'nullable': true,
+            },
+            'nullable': true,
           },
-          "updaterId": {
-            "type": "string",
-            "description": "User id that has requested the last change successfully"
+          {
+            'type': 'string',
+            'nullable': true,
           },
-          "updatedAt": {
-            "type": "string",
-            "example": "1997-04-24T07:00:00.000Z",
-            "nullable": false,
-            "description": "Date of the request that has performed the last change"
+        ],
+        'nullable': true,
+      },
+      'Indirizzo': {
+        'type': 'string',
+        'nullable': true,
+      },
+      'country': {
+        'type': 'string',
+        'nullable': true,
+      },
+      'nonNullableDate': {
+        'type': 'string',
+        'example': '1997-04-24T07:00:00.000Z',
+        'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
+        'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
+        'nullable': false,
+      },
+      '_q': {
+        'type': 'string',
+        'description': 'Additional query part to forward to MongoDB',
+      },
+      '_p': {
+        'type': 'string',
+        'description': 'Return only the properties specified in a comma separated list',
+        'example': 'field1,field2,field3.nestedField',
+      },
+      '_st': {
+        'type': 'string',
+        'pattern': '(PUBLIC|DRAFT|TRASH|DELETED)(,(PUBLIC|DRAFT|TRASH|DELETED))*',
+        'default': 'PUBLIC',
+        'description': 'Filter by \\_\\_STATE__, multiple states can be specified in OR by providing a comma separated list',
+      },
+      '_rawp': {
+        'type': 'string',
+        'description': 'Additional raw stringified projection for MongoDB',
+      },
+      '_l': {
+        'type': 'integer',
+        'minimum': 1,
+        'description': 'Limits the number of documents',
+      },
+      '_sk': {
+        'type': 'integer',
+        'minimum': 0,
+        'description': 'Skip the specified number of documents',
+      },
+      '_s': {
+        'anyOf': [
+          {
+            'type': 'string',
+            'pattern': '^-?(_id|updaterId|updatedAt|creatorId|createdAt|__STATE__|Cap|CodiceMIR|Comune|Direttrici|Indirizzo|country|nonNullableDate)(\\.([^\\.,])+)*(,-?(_id|updaterId|updatedAt|creatorId|createdAt|__STATE__|Cap|CodiceMIR|Comune|Direttrici|Indirizzo|country|nonNullableDate)(\\.([^\\.,])+)*)*$',
           },
-          "creatorId": {
-            "type": "string",
-            "description": "User id that has created this object"
+          {
+            'type': 'array',
+            'items': {
+              'type': 'string',
+              'pattern': '^-?(_id|updaterId|updatedAt|creatorId|createdAt|__STATE__|Cap|CodiceMIR|Comune|Direttrici|Indirizzo|country|nonNullableDate)(\\.([^\\.,])+)*(,-?(_id|updaterId|updatedAt|creatorId|createdAt|__STATE__|Cap|CodiceMIR|Comune|Direttrici|Indirizzo|country|nonNullableDate)(\\.([^\\.,])+)*)*$',
+            },
           },
-          "createdAt": {
-            "type": "string",
-            "example": "1997-04-24T07:00:00.000Z",
-            "nullable": false,
-            "description": "Date of the request that has performed the object creation"
+        ],
+        'description': 'Sort by the specified property/properties (Start with a "-" to invert the sort order)',
+      },
+      '_exportOpts': {
+        'type': 'string',
+      },
+    },
+    'additionalProperties': false,
+  },
+  'response': {
+    '200': {
+      'operationId': 'stations__MIA__export__MIA__response.200',
+      'type': 'array',
+      'items': {
+        'type': 'object',
+        'properties': {
+          '_id': {
+            'type': 'string',
+            'description': '_id',
           },
-          "__STATE__": {
-            "type": "string",
-            "description": "The state of the document"
+          'updaterId': {
+            'type': 'string',
+            'description': 'User id that has requested the last change successfully',
           },
-          "Cap": {
-            "type": "number",
-            "nullable": true
+          'updatedAt': {
+            'type': 'string',
+            'example': '1997-04-24T07:00:00.000Z',
+            'nullable': false,
+            'description': 'Date of the request that has performed the last change',
           },
-          "CodiceMIR": {
-            "type": "string",
-            "nullable": true
+          'creatorId': {
+            'type': 'string',
+            'description': 'User id that has created this object',
           },
-          "Comune": {
-            "type": "string",
-            "nullable": true
+          'createdAt': {
+            'type': 'string',
+            'example': '1997-04-24T07:00:00.000Z',
+            'nullable': false,
+            'description': 'Date of the request that has performed the object creation',
           },
-          "Direttrici": {
-            "type": [
-              "array",
-              "string",
-              "null"
+          '__STATE__': {
+            'type': 'string',
+            'description': 'The state of the document',
+          },
+          'Cap': {
+            'type': 'number',
+            'nullable': true,
+          },
+          'CodiceMIR': {
+            'type': 'string',
+            'nullable': true,
+          },
+          'Comune': {
+            'type': 'string',
+            'nullable': true,
+          },
+          'Direttrici': {
+            'type': [
+              'array',
+              'string',
+              'null',
             ],
-            "anyOf": [
+            'anyOf': [
               {
-                "type": "array",
-                "items": {
-                  "type": "string",
-                  "nullable": true
+                'type': 'array',
+                'items': {
+                  'type': 'string',
+                  'nullable': true,
                 },
-                "nullable": true
+                'nullable': true,
               },
               {
-                "type": "string",
-                "nullable": true
-              }
+                'type': 'string',
+                'nullable': true,
+              },
             ],
-            "nullable": true
+            'nullable': true,
           },
-          "Indirizzo": {
-            "type": "string",
-            "nullable": true
+          'Indirizzo': {
+            'type': 'string',
+            'nullable': true,
           },
-          "country": {
-            "type": "string",
-            "nullable": true
+          'country': {
+            'type': 'string',
+            'nullable': true,
           },
-          "nonNullableDate": {
-            "type": "string",
-            "example": "1997-04-24T07:00:00.000Z",
-            "nullable": false
-          }
-        }
-      }
-    }
-  }
+          'nonNullableDate': {
+            'type': 'string',
+            'example': '1997-04-24T07:00:00.000Z',
+            'nullable': false,
+          },
+        },
+      },
+    },
+  },
 }
-        

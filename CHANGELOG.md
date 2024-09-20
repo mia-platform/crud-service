@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+- introduce support for Array of ObjectIds at document root level
+- introduce support for `$size` operator in `_q` for fields of type `array`
+
 ### Fixed
 
 - enable bom stripping when importing CSV files

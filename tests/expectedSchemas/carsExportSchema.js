@@ -14,170 +14,169 @@
  * limitations under the License.
  */
 
-      'use strict'
-      
-      module.exports = {
-  "summary": "Export the cars collection",
-  "description": "The exported documents are sent as newline separated JSON objects to facilitate large dataset streaming and parsing",
-  "tags": [
-    "cars endpoint"
+'use strict'
+
+module.exports = {
+  'summary': 'Export the cars collection',
+  'description': 'The exported documents are sent as newline separated JSON objects to facilitate large dataset streaming and parsing',
+  'tags': [
+    'cars endpoint',
   ],
-  "headers": {
-    "operationId": "cars__MIA__export__MIA__headers",
-    "type": "object",
-    "properties": {
-      "accept": {
-        "type": "string",
-        "default": "application/x-ndjson"
-      }
-    }
-  },
-  "querystring": {
-    "operationId": "cars__MIA__export__MIA__querystring",
-    "type": "object",
-    "properties": {
-      "_id": {
-        "type": "string",
-        "description": "Hexadecimal identifier of the document in the collection",
-        "pattern": "^[a-fA-F\\d]{24}$",
-        "example": "000000000000000000000000"
+  'headers': {
+    'operationId': 'cars__MIA__export__MIA__headers',
+    'type': 'object',
+    'properties': {
+      'accept': {
+        'type': 'string',
+        'default': 'application/x-ndjson',
       },
-      "creatorId": {
-        "type": "string",
-        "description": "User id that has created this object"
-      },
-      "createdAt": {
-        "type": "string",
-        "example": "1997-04-24T07:00:00.000Z",
-        "pattern": "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$"
-      },
-      "updaterId": {
-        "type": "string",
-        "description": "User id that has requested the last change successfully"
-      },
-      "updatedAt": {
-        "type": "string",
-        "example": "1997-04-24T07:00:00.000Z",
-        "pattern": "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$"
-      },
-      "name": {
-        "type": "string",
-        "description": "The car's name"
-      },
-      "price": {
-        "type": "number",
-        "description": "The car's price"
-      },
-      "_q": {
-        "type": "string",
-        "description": "Additional query part to forward to MongoDB"
-      },
-      "_p": {
-        "type": "string",
-        "description": "Return only the properties specified in a comma separated list",
-        "example": "field1,field2,field3.nestedField"
-      },
-      "_st": {
-        "type": "string",
-        "pattern": "(PUBLIC|DRAFT|TRASH|DELETED)(,(PUBLIC|DRAFT|TRASH|DELETED))*",
-        "default": "PUBLIC",
-        "description": "Filter by \\_\\_STATE__, multiple states can be specified in OR by providing a comma separated list"
-      },
-      "_rawp": {
-        "type": "string",
-        "description": "Additional raw stringified projection for MongoDB"
-      },
-      "_l": {
-        "type": "integer",
-        "minimum": 1,
-        "description": "Limits the number of documents"
-      },
-      "_sk": {
-        "type": "integer",
-        "minimum": 0,
-        "description": "Skip the specified number of documents"
-      },
-      "_s": {
-        "anyOf": [
-          {
-            "type": "string",
-            "pattern": "^-?(_id|updaterId|updatedAt|creatorId|createdAt|__STATE__|name|price|additionalInfo)(\\.([^\\.,])+)*(,-?(_id|updaterId|updatedAt|creatorId|createdAt|__STATE__|name|price|additionalInfo)(\\.([^\\.,])+)*)*$"
-          },
-          {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "pattern": "^-?(_id|updaterId|updatedAt|creatorId|createdAt|__STATE__|name|price|additionalInfo)(\\.([^\\.,])+)*(,-?(_id|updaterId|updatedAt|creatorId|createdAt|__STATE__|name|price|additionalInfo)(\\.([^\\.,])+)*)*$"
-            }
-          }
-        ],
-        "description": "Sort by the specified property/properties (Start with a \"-\" to invert the sort order)"
-      },
-      "_exportOpts": {
-        "type": "string"
-      }
     },
-    "additionalProperties": false
   },
-  "response": {
-    "200": {
-      "operationId": "cars__MIA__export__MIA__response.200",
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "_id": {
-            "type": "string",
-            "description": "Hexadecimal identifier of the document in the collection",
-            "pattern": "^[a-fA-F\\d]{24}$",
-            "example": "000000000000000000000000"
+  'querystring': {
+    'operationId': 'cars__MIA__export__MIA__querystring',
+    'type': 'object',
+    'properties': {
+      '_id': {
+        'type': 'string',
+        'description': 'Hexadecimal identifier of the document in the collection',
+        'pattern': '^[a-fA-F\\d]{24}$',
+        'example': '000000000000000000000000',
+      },
+      'creatorId': {
+        'type': 'string',
+        'description': 'User id that has created this object',
+      },
+      'createdAt': {
+        'type': 'string',
+        'example': '1997-04-24T07:00:00.000Z',
+        'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
+      },
+      'updaterId': {
+        'type': 'string',
+        'description': 'User id that has requested the last change successfully',
+      },
+      'updatedAt': {
+        'type': 'string',
+        'example': '1997-04-24T07:00:00.000Z',
+        'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
+      },
+      'name': {
+        'type': 'string',
+        'description': "The car's name",
+      },
+      'price': {
+        'type': 'number',
+        'description': "The car's price",
+      },
+      '_q': {
+        'type': 'string',
+        'description': 'Additional query part to forward to MongoDB',
+      },
+      '_p': {
+        'type': 'string',
+        'description': 'Return only the properties specified in a comma separated list',
+        'example': 'field1,field2,field3.nestedField',
+      },
+      '_st': {
+        'type': 'string',
+        'pattern': '(PUBLIC|DRAFT|TRASH|DELETED)(,(PUBLIC|DRAFT|TRASH|DELETED))*',
+        'default': 'PUBLIC',
+        'description': 'Filter by \\_\\_STATE__, multiple states can be specified in OR by providing a comma separated list',
+      },
+      '_rawp': {
+        'type': 'string',
+        'description': 'Additional raw stringified projection for MongoDB',
+      },
+      '_l': {
+        'type': 'integer',
+        'minimum': 1,
+        'description': 'Limits the number of documents',
+      },
+      '_sk': {
+        'type': 'integer',
+        'minimum': 0,
+        'description': 'Skip the specified number of documents',
+      },
+      '_s': {
+        'anyOf': [
+          {
+            'type': 'string',
+            'pattern': '^-?(_id|updaterId|updatedAt|creatorId|createdAt|__STATE__|name|price|additionalInfo)(\\.([^\\.,])+)*(,-?(_id|updaterId|updatedAt|creatorId|createdAt|__STATE__|name|price|additionalInfo)(\\.([^\\.,])+)*)*$',
           },
-          "name": {
-            "type": "string",
-            "description": "The car's name"
-          },
-          "price": {
-            "type": "number",
-            "description": "The car's price"
-          },
-          "position": {
-            "type": "array",
-            "items": {
-              "type": "number"
+          {
+            'type': 'array',
+            'items': {
+              'type': 'string',
+              'pattern': '^-?(_id|updaterId|updatedAt|creatorId|createdAt|__STATE__|name|price|additionalInfo)(\\.([^\\.,])+)*(,-?(_id|updaterId|updatedAt|creatorId|createdAt|__STATE__|name|price|additionalInfo)(\\.([^\\.,])+)*)*$',
             },
-            "description": "The car's position"
           },
-          "additionalInfo": {
-            "type": "object",
-            "additionalProperties": true
+        ],
+        'description': 'Sort by the specified property/properties (Start with a "-" to invert the sort order)',
+      },
+      '_exportOpts': {
+        'type': 'string',
+      },
+    },
+    'additionalProperties': false,
+  },
+  'response': {
+    '200': {
+      'operationId': 'cars__MIA__export__MIA__response.200',
+      'type': 'array',
+      'items': {
+        'type': 'object',
+        'properties': {
+          '_id': {
+            'type': 'string',
+            'description': 'Hexadecimal identifier of the document in the collection',
+            'pattern': '^[a-fA-F\\d]{24}$',
+            'example': '000000000000000000000000',
           },
-          "updaterId": {
-            "type": "string",
-            "description": "User id that has requested the last change successfully"
+          'name': {
+            'type': 'string',
+            'description': "The car's name",
           },
-          "updatedAt": {
-            "type": "string",
-            "example": "1997-04-24T07:00:00.000Z",
-            "nullable": false,
-            "description": "Date of the request that has performed the last change"
+          'price': {
+            'type': 'number',
+            'description': "The car's price",
           },
-          "creatorId": {
-            "type": "string",
-            "description": "User id that has created this object"
+          'position': {
+            'type': 'array',
+            'items': {
+              'type': 'number',
+            },
+            'description': "The car's position",
           },
-          "createdAt": {
-            "type": "string",
-            "example": "1997-04-24T07:00:00.000Z",
-            "nullable": false,
-            "description": "Date of the request that has performed the object creation"
+          'additionalInfo': {
+            'type': 'object',
+            'additionalProperties': true,
           },
-          "__STATE__": {
-            "type": "string",
-            "description": "The state of the document"
-          }
-        }
-      }
-    }
-  }
+          'updaterId': {
+            'type': 'string',
+            'description': 'User id that has requested the last change successfully',
+          },
+          'updatedAt': {
+            'type': 'string',
+            'example': '1997-04-24T07:00:00.000Z',
+            'nullable': false,
+            'description': 'Date of the request that has performed the last change',
+          },
+          'creatorId': {
+            'type': 'string',
+            'description': 'User id that has created this object',
+          },
+          'createdAt': {
+            'type': 'string',
+            'example': '1997-04-24T07:00:00.000Z',
+            'nullable': false,
+            'description': 'Date of the request that has performed the object creation',
+          },
+          '__STATE__': {
+            'type': 'string',
+            'description': 'The state of the document',
+          },
+        },
+      },
+    },
+  },
 }
-        

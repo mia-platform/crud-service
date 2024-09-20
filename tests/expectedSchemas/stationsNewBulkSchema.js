@@ -14,109 +14,108 @@
  * limitations under the License.
  */
 
-      'use strict'
-      
-      module.exports = {
-  "summary": "Insert new items in the stations collection.",
-  "tags": [
-    "stations endpoint"
+'use strict'
+
+module.exports = {
+  'summary': 'Insert new items in the stations collection.',
+  'tags': [
+    'stations endpoint',
   ],
-  "body": {
-    "operationId": "stations__MIA__postBulk__MIA__body",
-    "type": "array",
-    "items": {
-      "type": "object",
-      "properties": {
-        "Cap": {
-          "type": "number",
-          "nullable": true
+  'body': {
+    'operationId': 'stations__MIA__postBulk__MIA__body',
+    'type': 'array',
+    'items': {
+      'type': 'object',
+      'properties': {
+        'Cap': {
+          'type': 'number',
+          'nullable': true,
         },
-        "CodiceMIR": {
-          "type": "string",
-          "nullable": true
+        'CodiceMIR': {
+          'type': 'string',
+          'nullable': true,
         },
-        "Comune": {
-          "type": "string",
-          "nullable": true
+        'Comune': {
+          'type': 'string',
+          'nullable': true,
         },
-        "Direttrici": {
-          "type": [
-            "array",
-            "string",
-            "null"
+        'Direttrici': {
+          'type': [
+            'array',
+            'string',
+            'null',
           ],
-          "anyOf": [
+          'anyOf': [
             {
-              "type": "array",
-              "items": {
-                "type": "string",
-                "nullable": true
+              'type': 'array',
+              'items': {
+                'type': 'string',
+                'nullable': true,
               },
-              "nullable": true
+              'nullable': true,
             },
             {
-              "type": "string",
-              "nullable": true
-            }
+              'type': 'string',
+              'nullable': true,
+            },
           ],
-          "nullable": true
+          'nullable': true,
         },
-        "Indirizzo": {
-          "type": "string",
-          "nullable": true
+        'Indirizzo': {
+          'type': 'string',
+          'nullable': true,
         },
-        "country": {
-          "type": "string",
-          "nullable": true
+        'country': {
+          'type': 'string',
+          'nullable': true,
         },
-        "nonNullableDate": {
-          "example": "1997-04-24T07:00:00.000Z",
-          "type": "string",
-          "nullable": false,
-          "anyOf": [
+        'nonNullableDate': {
+          'example': '1997-04-24T07:00:00.000Z',
+          'type': 'string',
+          'nullable': false,
+          'anyOf': [
             {
-              "format": "date-time"
+              'format': 'date-time',
             },
             {
-              "format": "date"
+              'format': 'date',
             },
             {
-              "format": "time"
-            }
+              'format': 'time',
+            },
           ],
-          "description": "\"date-time\" according with https://tools.ietf.org/html/rfc3339#section-5.6"
+          'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
         },
-        "__STATE__": {
-          "type": "string",
-          "enum": [
-            "PUBLIC",
-            "DRAFT",
-            "TRASH",
-            "DELETED"
+        '__STATE__': {
+          'type': 'string',
+          'enum': [
+            'PUBLIC',
+            'DRAFT',
+            'TRASH',
+            'DELETED',
           ],
-          "description": "The state of the document",
-          "default": "DRAFT"
-        }
+          'description': 'The state of the document',
+          'default': 'DRAFT',
+        },
       },
-      "additionalProperties": false
-    }
+      'additionalProperties': false,
+    },
   },
-  "response": {
-    "200": {
-      "operationId": "stations__MIA__postBulk__MIA__response.200",
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "_id": {
-            "type": "string",
-            "pattern": "^(?!\\s*$).+",
-            "description": "String identifier of the document in the collection",
-            "example": "00000000-0000-4000-0000-000000000000"
-          }
-        }
-      }
-    }
-  }
+  'response': {
+    '200': {
+      'operationId': 'stations__MIA__postBulk__MIA__response.200',
+      'type': 'array',
+      'items': {
+        'type': 'object',
+        'properties': {
+          '_id': {
+            'type': 'string',
+            'pattern': '^(?!\\s*$).+',
+            'description': 'String identifier of the document in the collection',
+            'example': '00000000-0000-4000-0000-000000000000',
+          },
+        },
+      },
+    },
+  },
 }
-        
