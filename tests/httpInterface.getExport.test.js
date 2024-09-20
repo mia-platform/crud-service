@@ -80,7 +80,7 @@ const EXPECTED_PUBLIC_DOCS_FOR_INCLUSIVE_RAW_PROJECTION = publicFixtures.map((do
     }
 })
 
-const DEFAULT_EXPECTED_COLUMNS = ['_id', '__STATE__', 'creatorId', 'createdAt', 'updaterId', 'updatedAt', 'name', 'isbn', 'price', 'author', 'authorAddressId', 'isPromoted', 'publishDate', 'position', 'tags', 'tagIds', 'additionalInfo', 'signature', 'metadata', 'attachments', 'editionsDates']
+const DEFAULT_EXPECTED_COLUMNS = ['_id', '__STATE__', 'creatorId', 'createdAt', 'updaterId', 'updatedAt', 'name', 'isbn', 'price', 'author', 'authorAddressId', 'isPromoted', 'publishDate', 'position', 'tags', 'tagIds', 'tagObjectIds', 'additionalInfo', 'signature', 'metadata', 'attachments', 'editionsDates']
 
 tap.test('HTTP GET /export', async t => {
   const tests = [
@@ -390,13 +390,13 @@ tap.test('HTTP GET /export', async t => {
     },
     {
       name: '$elemMatch array rawobject array',
-      url: `/export?_p=_id&_q=${JSON.stringify({ attachments: { $elemMatch: { neastedArr: { $in: [3] } } } })}`,
+      url: `/export?_p=_id&_q=${JSON.stringify({ attachments: { $elemMatch: { nestedArr: { $in: [3] } } } })}`,
       acl_rows: undefined,
       acl_read_columns: undefined,
       found: fixtures.filter(f => {
         return f.attachments
           && f.attachments.some(a => {
-            return a.neastedArr && a.neastedArr.some(fp => fp === 3)
+            return a.nestedArr && a.nestedArr.some(fp => fp === 3)
           })
       }).map(f => ({ _id: f._id.toString() })),
       expectedColumns: ['_id'],
@@ -438,7 +438,7 @@ tap.test('HTTP GET /export', async t => {
         attachments: [
           {
             name: 'note',
-            neastedArr: [1, 2, 3],
+            nestedArr: [1, 2, 3],
             detail: {
               size: 9,
             },

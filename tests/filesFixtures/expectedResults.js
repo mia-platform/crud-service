@@ -47,6 +47,7 @@ const expectedBooks = [
         2,
         6,
       ],
+    'tagObjectIds': [],
     'additionalInfo':
     {
       'footnotePages':
@@ -83,7 +84,7 @@ const expectedBooks = [
       [
         {
           'name': 'attachment-2',
-          'neastedArr':
+          'nestedArr':
             [
               4,
               5,
@@ -141,6 +142,7 @@ const expectedBooks = [
         3,
         7,
       ],
+    'tagObjectIds': [],
     'additionalInfo':
     {
       'footnotePages':
@@ -177,7 +179,7 @@ const expectedBooks = [
       [
         {
           'name': 'attachment-3',
-          'neastedArr':
+          'nestedArr':
             [
               5,
               6,
@@ -235,6 +237,7 @@ const expectedBooks = [
         4,
         8,
       ],
+    'tagObjectIds': [],
     'additionalInfo':
     {
       'footnotePages':
@@ -271,7 +274,7 @@ const expectedBooks = [
       [
         {
           'name': 'attachment-4',
-          'neastedArr':
+          'nestedArr':
             [
               6,
               7,
@@ -327,6 +330,7 @@ const bookToUpdate = {
     2,
     6,
   ],
+  'tagObjectIds': [],
   'additionalInfo': {
     'footnotePages': [
       10,
@@ -356,7 +360,7 @@ const bookToUpdate = {
   'attachments': [
     {
       'name': 'attachment-2',
-      'neastedArr': [
+      'nestedArr': [
         4,
         5,
         6,

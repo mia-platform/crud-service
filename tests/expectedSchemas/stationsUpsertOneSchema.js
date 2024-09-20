@@ -257,7 +257,77 @@ module.exports = {
         'type': 'object',
         'properties': {
           'Direttrici': {
-            'type': 'string',
+            'oneOf': [
+              {
+                'type': 'string',
+              },
+              {
+                'type': 'object',
+                'properties': {
+                  '$': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$each': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$position': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$slice': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$sort': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$in': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                },
+                'additionalProperties': false,
+              },
+            ],
           },
         },
         'additionalProperties': false,
@@ -272,9 +342,69 @@ module.exports = {
               },
               {
                 'type': 'object',
-                'patternProperties': {
-                  '^$': {},
+                'properties': {
+                  '$': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$each': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$position': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$slice': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$sort': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$in': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
                 },
+                'additionalProperties': false,
               },
             ],
           },
@@ -291,9 +421,69 @@ module.exports = {
               },
               {
                 'type': 'object',
-                'patternProperties': {
-                  '^$': {},
+                'properties': {
+                  '$': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$each': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$position': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$slice': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$sort': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$in': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
                 },
+                'additionalProperties': false,
               },
             ],
           },

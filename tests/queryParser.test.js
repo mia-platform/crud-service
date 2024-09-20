@@ -39,7 +39,7 @@ tap.test('queryParser', t => {
     const tests = []
       .concat([
         {
-          name: 'shoud keep the empty query as is',
+          name: 'should keep the empty query as is',
           query: {},
           expected: {},
         },
@@ -182,7 +182,15 @@ tap.test('queryParser', t => {
         {
           name: 'should cast on $nearSphere with minDistance and maxDistance',
           query: { position: { $nearSphere: { from: [0, 0], minDistance: 200, maxDistance: 20000 } } },
-          expected: { position: { $nearSphere: { $geometry: { type: 'Point', coordinates: [0, 0] }, $minDistance: 200, $maxDistance: 20000 } } },
+          expected: {
+            position: {
+              $nearSphere: {
+                $geometry: { type: 'Point', coordinates: [0, 0] },
+                $minDistance: 200,
+                $maxDistance: 20000,
+              },
+            },
+          },
         },
         {
           name: 'should cast on $nearSphere with altitude',
@@ -192,17 +200,39 @@ tap.test('queryParser', t => {
         {
           name: 'should cast on $nearSphere with minDistance with altitude',
           query: { position: { $nearSphere: { from: [0, 0, -20], minDistance: 200 } } },
-          expected: { position: { $nearSphere: { $geometry: { type: 'Point', coordinates: [0, 0, -20] }, $minDistance: 200 } } },
+          expected: {
+            position: {
+              $nearSphere: {
+                $geometry: { type: 'Point', coordinates: [0, 0, -20] },
+                $minDistance: 200,
+              },
+            },
+          },
         },
         {
           name: 'should cast on $nearSphere with maxDistance',
           query: { position: { $nearSphere: { from: [0, 0, 4], maxDistance: 20000 } } },
-          expected: { position: { $nearSphere: { $geometry: { type: 'Point', coordinates: [0, 0, 4] }, $maxDistance: 20000 } } },
+          expected: {
+            position: {
+              $nearSphere: {
+                $geometry: { type: 'Point', coordinates: [0, 0, 4] },
+                $maxDistance: 20000,
+              },
+            },
+          },
         },
         {
           name: 'should cast on $nearSphere with minDistance and maxDistance',
           query: { position: { $nearSphere: { from: [0, 0, 5], minDistance: 200, maxDistance: 20000 } } },
-          expected: { position: { $nearSphere: { $geometry: { type: 'Point', coordinates: [0, 0, 5] }, $minDistance: 200, $maxDistance: 20000 } } },
+          expected: {
+            position: {
+              $nearSphere: {
+                $geometry: { type: 'Point', coordinates: [0, 0, 5] },
+                $minDistance: 200,
+                $maxDistance: 20000,
+              },
+            },
+          },
         },
       ])
       .concat([
@@ -274,6 +304,33 @@ tap.test('queryParser', t => {
           name: '$elemMatch - Object Array RawObject',
           query: { attachments: { $elemMatch: { innerField: { $in: ['0', '0', '666'] } } } },
           expected: { attachments: { $elemMatch: { innerField: { $in: ['0', '0', '666'] } } } },
+        },
+      ])
+      .concat([
+        {
+          name: '$size - Array string',
+          query: { tags: { $size: 1 } },
+          expected: { tags: { $size: 1 } },
+        },
+        {
+          name: '$size - Array number',
+          query: { tagIds: { $size: 3 } },
+          expected: { tagIds: { $size: 3 } },
+        },
+        {
+          name: '$size - Array ObjectId',
+          query: { tagObjectIds: { $size: 7 } },
+          expected: { tagObjectIds: { $size: 7 } },
+        },
+        {
+          name: '$size - Array RawObject',
+          query: { attachments: { $size: 2 } },
+          expected: { attachments: { $size: 2 } },
+        },
+        {
+          name: '$size - Array RawObject',
+          query: { attachments: { $size: 2 } },
+          expected: { attachments: { $size: 2 } },
         },
       ])
       .concat([
@@ -576,9 +633,21 @@ tap.test('queryParser', t => {
         editableFields: ALL_FIELDS,
       },
       {
+        name: '$push - Array ObjectId',
+        commands: { $push: { tagObjectIds: '66cc45df4e7a7561637b8e8a' } },
+        expected: { $push: { tagObjectIds: new ObjectId('66cc45df4e7a7561637b8e8a') } },
+        editableFields: ALL_FIELDS,
+      },
+      {
         name: '$pull - Array integer',
         commands: { $pull: { tagIds: 33 } },
         expected: { $pull: { tagIds: 33 } },
+        editableFields: ALL_FIELDS,
+      },
+      {
+        name: '$pull - Array ObjectId',
+        commands: { $push: { tagObjectIds: '66cc45df4e7a7561637b8e8a' } },
+        expected: { $push: { tagObjectIds: new ObjectId('66cc45df4e7a7561637b8e8a') } },
         editableFields: ALL_FIELDS,
       },
       {
@@ -606,22 +675,22 @@ tap.test('queryParser', t => {
           commands: { $set: { 'attachments.$.merge': { name: 'rename' } } },
           expected: {
             $set:
-            {
-              'attachments.$.name': 'rename',
-            },
+              {
+                'attachments.$.name': 'rename',
+              },
           },
           editableFields: ALL_FIELDS,
         },
         {
           name: '$set - Array of objects merge multiple fields',
-          commands: { $set: { 'attachments.$.merge': { name: 'rename', other: 'stuff', neastedArr: [1, 2] } } },
+          commands: { $set: { 'attachments.$.merge': { name: 'rename', other: 'stuff', nestedArr: [1, 2] } } },
           expected: {
             $set:
-            {
-              'attachments.$.name': 'rename',
-              'attachments.$.other': 'stuff',
-              'attachments.$.neastedArr': [1, 2],
-            },
+              {
+                'attachments.$.name': 'rename',
+                'attachments.$.other': 'stuff',
+                'attachments.$.nestedArr': [1, 2],
+              },
           },
           editableFields: ALL_FIELDS,
         },
@@ -673,18 +742,18 @@ tap.test('queryParser', t => {
       .concat([
         {
           name: '$push - raw schema - on nested fields is allowed',
-          commands: { $push: { 'attachments.0.neastedArr': 55 } },
-          expected: { $push: { 'attachments.0.neastedArr': 55 } },
+          commands: { $push: { 'attachments.0.nestedArr': 55 } },
+          expected: { $push: { 'attachments.0.nestedArr': 55 } },
         },
         {
           name: '$pull - raw schema - on nested fields is allowed',
-          commands: { $pull: { 'attachments.0.neastedArr': 55 } },
-          expected: { $pull: { 'attachments.0.neastedArr': 55 } },
+          commands: { $pull: { 'attachments.0.nestedArr': 55 } },
+          expected: { $pull: { 'attachments.0.nestedArr': 55 } },
         },
         {
           name: '$addToSet - raw schema - on nested fields is allowed',
-          commands: { $addToSet: { 'attachments.0.neastedArr': 55 } },
-          expected: { $addToSet: { 'attachments.0.neastedArr': 55 } },
+          commands: { $addToSet: { 'attachments.0.nestedArr': 55 } },
+          expected: { $addToSet: { 'attachments.0.nestedArr': 55 } },
         },
       ])
       .concat([
@@ -695,13 +764,13 @@ tap.test('queryParser', t => {
         },
         {
           name: '$push - raw schema - array inside another array',
-          commands: { $push: { 'attachments.0.neastedArr': 55 } },
-          expected: { $push: { 'attachments.0.neastedArr': 55 } },
+          commands: { $push: { 'attachments.0.nestedArr': 55 } },
+          expected: { $push: { 'attachments.0.nestedArr': 55 } },
         },
         {
           name: '$pull - raw schema - array inside another array',
-          commands: { $pull: { 'attachments.0.neastedArr': 55 } },
-          expected: { $pull: { 'attachments.0.neastedArr': 55 } },
+          commands: { $pull: { 'attachments.0.nestedArr': 55 } },
+          expected: { $pull: { 'attachments.0.nestedArr': 55 } },
         },
         {
           name: '$addToSet - raw schema - on nested object',
@@ -710,8 +779,8 @@ tap.test('queryParser', t => {
         },
         {
           name: '$addToSet - raw schema - array inside another array',
-          commands: { $addToSet: { 'attachments.0.neastedArr': 55 } },
-          expected: { $addToSet: { 'attachments.0.neastedArr': 55 } },
+          commands: { $addToSet: { 'attachments.0.nestedArr': 55 } },
+          expected: { $addToSet: { 'attachments.0.nestedArr': 55 } },
         },
         {
           name: '$.replace simple array',
@@ -859,8 +928,7 @@ tap.test('queryParser $in filter', t => {
         type: 'Date',
       },
     ],
-    indexes: [
-    ],
+    indexes: [],
   })
   t.test('test different cases of a ObjectId', t => {
     t.plan(2)

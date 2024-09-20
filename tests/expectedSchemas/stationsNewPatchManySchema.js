@@ -112,9 +112,8 @@ module.exports = {
         'nullable': true,
       },
       'nonNullableDate': {
-        'type': 'string',
         'example': '1997-04-24T07:00:00.000Z',
-        'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
+        'type': 'string',
         'nullable': false,
         'anyOf': [
           {
@@ -127,6 +126,7 @@ module.exports = {
             'format': 'time',
           },
         ],
+        'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
       },
       '_q': {
         'type': 'string',
@@ -195,9 +195,8 @@ module.exports = {
             'nullable': true,
           },
           'nonNullableDate': {
-            'type': 'string',
             'example': '1997-04-24T07:00:00.000Z',
-            'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
+            'type': 'string',
             'nullable': false,
             'anyOf': [
               {
@@ -210,6 +209,7 @@ module.exports = {
                 'format': 'time',
               },
             ],
+            'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
           },
           'Direttrici.$.replace': {
             'type': 'string',
@@ -303,7 +303,77 @@ module.exports = {
         'type': 'object',
         'properties': {
           'Direttrici': {
-            'type': 'string',
+            'oneOf': [
+              {
+                'type': 'string',
+              },
+              {
+                'type': 'object',
+                'properties': {
+                  '$': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$each': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$position': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$slice': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$sort': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$in': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                },
+                'additionalProperties': false,
+              },
+            ],
           },
         },
         'additionalProperties': false,
@@ -318,9 +388,69 @@ module.exports = {
               },
               {
                 'type': 'object',
-                'patternProperties': {
-                  '^$': {},
+                'properties': {
+                  '$': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$each': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$position': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$slice': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$sort': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$in': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
                 },
+                'additionalProperties': false,
               },
             ],
           },
@@ -337,9 +467,69 @@ module.exports = {
               },
               {
                 'type': 'object',
-                'patternProperties': {
-                  '^$': {},
+                'properties': {
+                  '$': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$each': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$position': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$slice': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$sort': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$in': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
                 },
+                'additionalProperties': false,
               },
             ],
           },

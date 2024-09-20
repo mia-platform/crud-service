@@ -1,18 +1,18 @@
 /*
- * Copyright 2023 Mia s.r.l.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+* Copyright 2023 Mia s.r.l.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
 
 'use strict'
 
@@ -48,7 +48,11 @@ tap.test('queryParser utils', t => {
         publishDate: 'Date',
         position: 'GeoPoint',
         tags: 'Array',
+        'tags.__items': 'string',
         tagIds: 'Array',
+        'tagIds.__items': 'number',
+        'tagObjectIds': 'Array',
+        'tagObjectIds.__items': 'ObjectId',
         additionalInfo: 'RawObject',
         signature: 'RawObject',
         metadata: 'RawObject',
@@ -64,16 +68,19 @@ tap.test('queryParser utils', t => {
         'metadata.somethingObject': 'RawObject',
         'metadata.somethingObject.childNumber': 'number',
         'metadata.somethingArrayOfNumbers': 'Array',
+        'metadata.somethingArrayOfNumbers.__items': 'number',
         'metadata.exampleArrayOfArray': 'Array',
         'attachments.name': 'string',
         'attachments.detail': 'RawObject',
         'attachments.detail.size': 'number',
-        'attachments.neastedArr': 'Array',
+        'attachments.nestedArr': 'Array',
+        'attachments.nestedArr.__items': 'number',
         'attachments.additionalInfo': 'RawObject',
         'attachments.other': 'string',
         'attachments.size': 'number',
         'attachments.stuff': 'number',
         'attachments.more': 'Array',
+        'attachments.more.__items': 'string',
         'editionsDates.edition': 'number',
         'editionsDates.date': 'Date',
         [UPDATERID]: 'string',
@@ -112,7 +119,9 @@ tap.test('queryParser utils', t => {
         publishDate: 'Date',
         position: 'GeoPoint',
         tags: 'Array',
+        'tags.__items': 'string',
         tagIds: 'Array',
+        'tagIds.__items': 'number',
         additionalInfo: 'RawObject',
         metadata: 'RawObject',
         attachments: 'Array',
@@ -126,16 +135,19 @@ tap.test('queryParser utils', t => {
         'metadata.somethingObject': 'RawObject',
         'metadata.somethingObject.childNumber': 'number',
         'metadata.somethingArrayOfNumbers': 'Array',
+        'metadata.somethingArrayOfNumbers.__items': 'number',
         'metadata.exampleArrayOfArray': 'Array',
         'attachments.name': 'string',
         'attachments.detail': 'RawObject',
         'attachments.detail.size': 'number',
-        'attachments.neastedArr': 'Array',
+        'attachments.nestedArr': 'Array',
+        'attachments.nestedArr.__items': 'number',
         'attachments.additionalInfo': 'RawObject',
         'attachments.other': 'string',
         'attachments.size': 'number',
         'attachments.stuff': 'number',
         'attachments.more': 'Array',
+        'attachments.more.__items': 'string',
         [UPDATERID]: 'string',
         [UPDATEDAT]: 'Date',
         [CREATORID]: 'string',

@@ -46,7 +46,14 @@ const { pointerSeparator } = require('./lib/JSONPath.utils')
 const { registerHelperRoutes } = require('./lib/helpersRoutes')
 const AdditionalCaster = require('./lib/AdditionalCaster')
 const { addSerializerCompiler } = require('./lib/compilers')
-const { addAclHook, addHealthHooks, addPreHandlerHooks, addLookupHook, addPatchViewHook, addModelNameHook } = require('./lib/hooks')
+const {
+  addAclHook,
+  addHealthHooks,
+  addPreHandlerHooks,
+  addLookupHook,
+  addPatchViewHook,
+  addModelNameHook,
+} = require('./lib/hooks')
 
 function decorateCrud(fastify, model, modelName) {
   fastify.decorate('crudService', model.crudService)
@@ -59,8 +66,12 @@ function decorateCrud(fastify, model, modelName) {
 }
 
 async function registerCrud(fastify, { modelName, isView }) {
-  if (!fastify.mongo) { throw new Error('`fastify.mongo` is undefined!') }
-  if (!modelName) { throw new Error('`modelName` is undefined!') }
+  if (!fastify.mongo) {
+    throw new Error('`fastify.mongo` is undefined!')
+  }
+  if (!modelName) {
+    throw new Error('`modelName` is undefined!')
+  }
 
   fastify.log.trace({ modelName }, 'Registering CRUD')
 
@@ -73,8 +84,12 @@ async function registerCrud(fastify, { modelName, isView }) {
 }
 
 async function registerViewCrud(fastify, { modelName }) {
-  if (!fastify.mongo) { throw new Error('`fastify.mongo` is undefined!') }
-  if (!modelName) { throw new Error('`modelName` is undefined!') }
+  if (!fastify.mongo) {
+    throw new Error('`fastify.mongo` is undefined!')
+  }
+  if (!modelName) {
+    throw new Error('`modelName` is undefined!')
+  }
 
   fastify.log.trace({ modelName }, 'Registering View CRUD')
 
@@ -86,7 +101,9 @@ async function registerViewCrud(fastify, { modelName }) {
 }
 
 async function registerViewCrudLookup(fastify, { modelName, lookupModel }) {
-  if (!fastify.mongo) { throw new Error('`fastify.mongo` is undefined!') }
+  if (!fastify.mongo) {
+    throw new Error('`fastify.mongo` is undefined!')
+  }
 
   fastify.log.trace({ modelName }, 'Registering ViewLookup CRUD')
 
@@ -144,6 +161,8 @@ async function customErrorHandler(error, request, reply) {
   if (error.statusCode === 404) {
     return notFoundHandler(request, reply)
   }
+
+  request.log.error({ cause: error?.validation ?? error }, 'invalid request received')
 
   if (error.validation?.[0]?.message === 'must NOT have additional properties') {
     reply.code(error.statusCode)
@@ -270,9 +289,15 @@ module.exports.transformSchemaForSwagger = ({ schema, url } = {}) => {
   } = schema
   const transformed = { ...others }
 
-  if (params) { transformed.params = getTransformedSchema(params) }
-  if (body) { transformed.body = getTransformedSchema(body) }
-  if (querystring) { transformed.querystring = getTransformedSchema(querystring) }
+  if (params) {
+    transformed.params = getTransformedSchema(params)
+  }
+  if (body) {
+    transformed.body = getTransformedSchema(body)
+  }
+  if (querystring) {
+    transformed.querystring = getTransformedSchema(querystring)
+  }
   if (response) {
     transformed.response = {
       ...response,
@@ -284,7 +309,9 @@ module.exports.transformSchemaForSwagger = ({ schema, url } = {}) => {
 }
 
 function getTransformedSchema(httpPartSchema) {
-  if (!httpPartSchema) { return }
+  if (!httpPartSchema) {
+    return
+  }
   const KEYS_TO_UNSET = [
     SCHEMA_CUSTOM_KEYWORDS.UNIQUE_OPERATION_ID,
     ...JSONPath({

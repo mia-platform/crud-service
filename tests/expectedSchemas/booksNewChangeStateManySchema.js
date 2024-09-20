@@ -102,9 +102,8 @@ module.exports = {
               'description': "If it's in promotion",
             },
             'publishDate': {
-              'type': 'string',
               'example': '1997-04-24T07:00:00.000Z',
-              'description': 'The date it was published',
+              'type': 'string',
               'nullable': true,
               'anyOf': [
                 {
@@ -117,6 +116,7 @@ module.exports = {
                   'format': 'time',
                 },
               ],
+              'description': 'The date it was published',
             },
             'additionalInfo': {
               'type': 'object',
@@ -219,7 +219,7 @@ module.exports = {
                           },
                         },
                       },
-                      'neastedArr': {
+                      'nestedArr': {
                         'type': 'array',
                         'items': {
                           'type': 'number',
@@ -267,7 +267,7 @@ module.exports = {
                         },
                       },
                     },
-                    'neastedArr': {
+                    'nestedArr': {
                       'type': 'array',
                       'items': {
                         'type': 'number',
@@ -458,7 +458,7 @@ module.exports = {
                     },
                   },
                 },
-                'neastedArr': {
+                'nestedArr': {
                   'type': 'array',
                   'items': {
                     'type': 'number',
@@ -500,13 +500,13 @@ module.exports = {
             'attachments\\.\\d+\\.detail\\.size$': {
               'type': 'number',
             },
-            'attachments\\.\\d+\\.neastedArr$': {
+            'attachments\\.\\d+\\.nestedArr$': {
               'type': 'array',
               'items': {
                 'type': 'number',
               },
             },
-            'attachments\\.\\d+\\.neastedArr\\.\\d+$': {
+            'attachments\\.\\d+\\.nestedArr\\.\\d+$': {
               'type': 'number',
             },
             'attachments\\.\\d+\\.additionalInfo$': {
