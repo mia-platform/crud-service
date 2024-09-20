@@ -14,403 +14,404 @@
  * limitations under the License.
  */
 
-'use strict'
-
-module.exports = {
-  'summary': 'Delete an item with specific ID from the books collection.',
-  'tags': [
-    'books endpoint',
-    'Library',
+      'use strict'
+      
+      module.exports = {
+  "summary": "Delete an item with specific ID from the books collection.",
+  "tags": [
+    "books endpoint",
+    "Library"
   ],
-  'params': {
-    'type': 'object',
-    'properties': {
-      'id': {
-        'type': 'string',
-        'description': 'The ID of the item to delete',
-      },
+  "params": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "description": "The ID of the item to delete"
+      }
     },
-    'operationId': 'books__MIA__deleteItem__MIA__params',
+    "operationId": "books__MIA__deleteItem__MIA__params"
   },
-  'querystring': {
-    'operationId': 'books__MIA__deleteItem__MIA__querystring',
-    'type': 'object',
-    'properties': {
-      'creatorId': {
-        'type': 'string',
-        'description': 'User id that has created this object',
+  "querystring": {
+    "operationId": "books__MIA__deleteItem__MIA__querystring",
+    "type": "object",
+    "properties": {
+      "creatorId": {
+        "type": "string",
+        "description": "User id that has created this object"
       },
-      'createdAt': {
-        'type': 'string',
-        'example': '1997-04-24T07:00:00.000Z',
-        'anyOf': [
+      "createdAt": {
+        "type": "string",
+        "example": "1997-04-24T07:00:00.000Z",
+        "anyOf": [
           {
-            'format': 'date-time',
+            "format": "date-time"
           },
           {
-            'format': 'date',
+            "format": "date"
           },
           {
-            'format': 'time',
+            "format": "time"
+          }
+        ]
+      },
+      "updaterId": {
+        "type": "string",
+        "description": "User id that has requested the last change successfully"
+      },
+      "updatedAt": {
+        "type": "string",
+        "example": "1997-04-24T07:00:00.000Z",
+        "anyOf": [
+          {
+            "format": "date-time"
           },
+          {
+            "format": "date"
+          },
+          {
+            "format": "time"
+          }
+        ]
+      },
+      "name": {
+        "type": "string",
+        "description": "The name of the book",
+        "nullable": true
+      },
+      "isbn": {
+        "type": "string",
+        "description": "The isbn code"
+      },
+      "price": {
+        "type": "number",
+        "description": "The price of the book"
+      },
+      "author": {
+        "type": "string",
+        "description": "The author of the book"
+      },
+      "authorAddressId": {
+        "type": "string",
+        "description": "The address of the author",
+        "pattern": "^[a-fA-F\\d]{24}$",
+        "example": "000000000000000000000000"
+      },
+      "isPromoted": {
+        "type": "boolean",
+        "description": "If it's in promotion"
+      },
+      "publishDate": {
+        "example": "1997-04-24T07:00:00.000Z",
+        "type": "string",
+        "nullable": true,
+        "anyOf": [
+          {
+            "format": "date-time"
+          },
+          {
+            "format": "date"
+          },
+          {
+            "format": "time"
+          }
         ],
+        "description": "The date it was published"
       },
-      'updaterId': {
-        'type': 'string',
-        'description': 'User id that has requested the last change successfully',
-      },
-      'updatedAt': {
-        'type': 'string',
-        'example': '1997-04-24T07:00:00.000Z',
-        'anyOf': [
-          {
-            'format': 'date-time',
-          },
-          {
-            'format': 'date',
-          },
-          {
-            'format': 'time',
-          },
+      "tags": {
+        "type": [
+          "array",
+          "string"
         ],
-      },
-      'name': {
-        'type': 'string',
-        'description': 'The name of the book',
-        'nullable': true,
-      },
-      'isbn': {
-        'type': 'string',
-        'description': 'The isbn code',
-      },
-      'price': {
-        'type': 'number',
-        'description': 'The price of the book',
-      },
-      'author': {
-        'type': 'string',
-        'description': 'The author of the book',
-      },
-      'authorAddressId': {
-        'type': 'string',
-        'description': 'The address of the author',
-        'pattern': '^[a-fA-F\\d]{24}$',
-        'example': '000000000000000000000000',
-      },
-      'isPromoted': {
-        'type': 'boolean',
-        'description': "If it's in promotion",
-      },
-      'publishDate': {
-        'type': 'string',
-        'example': '1997-04-24T07:00:00.000Z',
-        'description': 'The date it was published',
-        'nullable': true,
-        'anyOf': [
+        "anyOf": [
           {
-            'format': 'date-time',
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           },
           {
-            'format': 'date',
-          },
-          {
-            'format': 'time',
-          },
+            "type": "string"
+          }
         ],
+        "description": "Tags"
       },
-      'tags': {
-        'type': [
-          'array',
-          'string',
+      "tagIds": {
+        "type": [
+          "array",
+          "number"
         ],
-        'anyOf': [
+        "anyOf": [
           {
-            'type': 'array',
-            'items': {
-              'type': 'string',
-            },
+            "type": "array",
+            "items": {
+              "type": "number"
+            }
           },
           {
-            'type': 'string',
-          },
+            "type": "number"
+          }
         ],
-        'description': 'Tags',
+        "description": "Tag identification numbers"
       },
-      'tagIds': {
-        'type': [
-          'array',
-          'number',
+      "tagObjectIds": {
+        "type": [
+          "array",
+          "string"
         ],
-        'anyOf': [
+        "anyOf": [
           {
-            'type': 'array',
-            'items': {
-              'type': 'number',
-            },
+            "type": "array",
+            "items": {
+              "type": "string",
+              "description": "Hexadecimal identifier of the document in the collection",
+              "pattern": "^[a-fA-F\\d]{24}$",
+              "example": "000000000000000000000000"
+            }
           },
           {
-            'type': 'number',
-          },
+            "type": "string",
+            "description": "Hexadecimal identifier of the document in the collection",
+            "pattern": "^[a-fA-F\\d]{24}$",
+            "example": "000000000000000000000000"
+          }
         ],
-        'description': 'Tag identification numbers',
+        "description": "Tag object ids"
       },
-      'tagObjectIds': {
-        'type': [
-          'array',
-          'string',
+      "attachments": {
+        "type": [
+          "array",
+          "object",
+          "null"
         ],
-        'anyOf': [
+        "anyOf": [
           {
-            'type': 'array',
-            'items': {
-              'type': 'string',
-              'description': 'Hexadecimal identifier of the document in the collection',
-              'pattern': '^[a-fA-F\\d]{24}$',
-              'example': '000000000000000000000000',
-            },
-          },
-          {
-            'type': 'string',
-            'description': 'Hexadecimal identifier of the document in the collection',
-            'pattern': '^[a-fA-F\\d]{24}$',
-            'example': '000000000000000000000000',
-          },
-        ],
-        'description': 'Tag object ids',
-      },
-      'attachments': {
-        'type': [
-          'array',
-          'object',
-          'null',
-        ],
-        'anyOf': [
-          {
-            'type': 'array',
-            'items': {
-              'type': 'object',
-              'additionalProperties': false,
-              'properties': {
-                'name': {
-                  'type': 'string',
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "name": {
+                  "type": "string"
                 },
-                'detail': {
-                  'type': 'object',
-                  'properties': {
-                    'size': {
-                      'type': 'number',
-                    },
-                  },
+                "detail": {
+                  "type": "object",
+                  "properties": {
+                    "size": {
+                      "type": "number"
+                    }
+                  }
                 },
-                'nestedArr': {
-                  'type': 'array',
-                  'items': {
-                    'type': 'number',
-                  },
+                "nestedArr": {
+                  "type": "array",
+                  "items": {
+                    "type": "number"
+                  }
                 },
-                'additionalInfo': {
-                  'type': 'object',
-                  'additionalProperties': true,
+                "additionalInfo": {
+                  "type": "object",
+                  "additionalProperties": true
                 },
-                'other': {
-                  'type': 'string',
+                "other": {
+                  "type": "string"
                 },
-                'size': {
-                  'type': 'number',
+                "size": {
+                  "type": "number"
                 },
-                'stuff': {
-                  'type': 'number',
+                "stuff": {
+                  "type": "number"
                 },
-                'more': {
-                  'type': 'array',
-                  'items': {
-                    'type': 'string',
-                  },
-                },
+                "more": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
               },
-              'required': [
-                'name',
+              "required": [
+                "name"
               ],
-              'nullable': true,
+              "nullable": true
             },
-            'nullable': true,
+            "nullable": true
           },
           {
-            'type': 'object',
-            'additionalProperties': false,
-            'properties': {
-              'name': {
-                'type': 'string',
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string"
               },
-              'detail': {
-                'type': 'object',
-                'properties': {
-                  'size': {
-                    'type': 'number',
-                  },
-                },
+              "detail": {
+                "type": "object",
+                "properties": {
+                  "size": {
+                    "type": "number"
+                  }
+                }
               },
-              'nestedArr': {
-                'type': 'array',
-                'items': {
-                  'type': 'number',
-                },
+              "nestedArr": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
               },
-              'additionalInfo': {
-                'type': 'object',
-                'additionalProperties': true,
+              "additionalInfo": {
+                "type": "object",
+                "additionalProperties": true
               },
-              'other': {
-                'type': 'string',
+              "other": {
+                "type": "string"
               },
-              'size': {
-                'type': 'number',
+              "size": {
+                "type": "number"
               },
-              'stuff': {
-                'type': 'number',
+              "stuff": {
+                "type": "number"
               },
-              'more': {
-                'type': 'array',
-                'items': {
-                  'type': 'string',
-                },
-              },
+              "more": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
             },
-            'required': [
-              'name',
+            "required": [
+              "name"
             ],
-            'nullable': true,
-          },
+            "nullable": true
+          }
         ],
-        'nullable': true,
+        "nullable": true
       },
-      'editionsDates': {
-        'type': [
-          'array',
-          'object',
-          'null',
+      "editionsDates": {
+        "type": [
+          "array",
+          "object",
+          "null"
         ],
-        'anyOf': [
+        "anyOf": [
           {
-            'type': 'array',
-            'items': {
-              'type': 'object',
-              'additionalProperties': true,
-              'properties': {
-                'edition': {
-                  'type': 'number',
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": true,
+              "properties": {
+                "edition": {
+                  "type": "number"
                 },
-                'date': {
-                  'type': 'string',
-                  'format': 'date-time',
-                },
+                "date": {
+                  "type": "string",
+                  "format": "date-time"
+                }
               },
-              'nullable': true,
+              "nullable": true
             },
-            'nullable': true,
+            "nullable": true
           },
           {
-            'type': 'object',
-            'additionalProperties': true,
-            'properties': {
-              'edition': {
-                'type': 'number',
+            "type": "object",
+            "additionalProperties": true,
+            "properties": {
+              "edition": {
+                "type": "number"
               },
-              'date': {
-                'type': 'string',
-                'format': 'date-time',
-              },
+              "date": {
+                "type": "string",
+                "format": "date-time"
+              }
             },
-            'nullable': true,
-          },
+            "nullable": true
+          }
         ],
-        'nullable': true,
+        "nullable": true
       },
-      '_q': {
-        'type': 'string',
-        'description': 'Additional query part to forward to MongoDB',
+      "_q": {
+        "type": "string",
+        "description": "Additional query part to forward to MongoDB"
       },
-      '_st': {
-        'type': 'string',
-        'pattern': '(PUBLIC|DRAFT|TRASH|DELETED)(,(PUBLIC|DRAFT|TRASH|DELETED))*',
-        'default': 'PUBLIC',
-        'description': 'Filter by \\_\\_STATE__, multiple states can be specified in OR by providing a comma separated list',
+      "_st": {
+        "type": "string",
+        "pattern": "(PUBLIC|DRAFT|TRASH|DELETED)(,(PUBLIC|DRAFT|TRASH|DELETED))*",
+        "default": "PUBLIC",
+        "description": "Filter by \\_\\_STATE__, multiple states can be specified in OR by providing a comma separated list"
       },
-      '_rawp': {
-        'type': 'string',
-        'description': 'Additional raw stringified projection for MongoDB',
+      "_rawp": {
+        "type": "string",
+        "description": "Additional raw stringified projection for MongoDB"
       },
-      'signature.name': {
-        'type': 'string',
+      "signature.name": {
+        "type": "string"
       },
-      'metadata.somethingString': {
-        'type': 'string',
+      "metadata.somethingString": {
+        "type": "string"
       },
-      'metadata.somethingNumber': {
-        'type': 'number',
+      "metadata.somethingNumber": {
+        "type": "number"
       },
-      'metadata.somethingObject.childNumber': {
-        'type': 'number',
+      "metadata.somethingObject.childNumber": {
+        "type": "number"
       },
-      'metadata.somethingArrayOfNumbers': {
-        'type': 'number',
-      },
+      "metadata.somethingArrayOfNumbers": {
+        "type": "number"
+      }
     },
-    'patternProperties': {
-      'metadata\\.somethingArrayObject\\.\\d+\\..+$': true,
-      'metadata\\.somethingArrayObject\\.\\d+\\.arrayItemObjectChildNumber$': {
-        'type': 'number',
+    "patternProperties": {
+      "metadata\\.somethingArrayObject\\.\\d+\\..+$": true,
+      "metadata\\.somethingArrayObject\\.\\d+\\.arrayItemObjectChildNumber$": {
+        "type": "number"
       },
-      'metadata\\.somethingArrayObject\\.\\d+\\.anotherNumber$': {
-        'type': 'number',
+      "metadata\\.somethingArrayObject\\.\\d+\\.anotherNumber$": {
+        "type": "number"
       },
-      'metadata\\.somethingObject\\..+$': true,
-      'metadata\\.somethingArrayOfNumbers\\.\\d+$': {
-        'type': 'number',
+      "metadata\\.somethingObject\\..+$": true,
+      "metadata\\.somethingArrayOfNumbers\\.\\d+$": {
+        "type": "number"
       },
-      'metadata\\.exampleArrayOfArray\\.\\d+$': {
-        'type': 'string',
+      "metadata\\.exampleArrayOfArray\\.\\d+$": {
+        "type": "string"
       },
-      'metadata\\.exampleArrayOfArray\\.\\d+\\.\\d+$': {
-        'type': 'string',
+      "metadata\\.exampleArrayOfArray\\.\\d+\\.\\d+$": {
+        "type": "string"
       },
-      'attachments\\.\\d+\\.name$': {
-        'type': 'string',
+      "attachments\\.\\d+\\.name$": {
+        "type": "string"
       },
-      'attachments\\.\\d+\\.detail\\.size$': {
-        'type': 'number',
+      "attachments\\.\\d+\\.detail\\.size$": {
+        "type": "number"
       },
-      'attachments\\.\\d+\\.nestedArr$': {
-        'type': 'number',
+      "attachments\\.\\d+\\.nestedArr$": {
+        "type": "number"
       },
-      'attachments\\.\\d+\\.nestedArr\\.\\d+$': {
-        'type': 'number',
+      "attachments\\.\\d+\\.nestedArr\\.\\d+$": {
+        "type": "number"
       },
-      'attachments\\.\\d+\\.additionalInfo\\..+$': true,
-      'attachments\\.\\d+\\.other$': {
-        'type': 'string',
+      "attachments\\.\\d+\\.additionalInfo\\..+$": true,
+      "attachments\\.\\d+\\.other$": {
+        "type": "string"
       },
-      'attachments\\.\\d+\\.size$': {
-        'type': 'number',
+      "attachments\\.\\d+\\.size$": {
+        "type": "number"
       },
-      'attachments\\.\\d+\\.stuff$': {
-        'type': 'number',
+      "attachments\\.\\d+\\.stuff$": {
+        "type": "number"
       },
-      'attachments\\.\\d+\\.more$': {
-        'type': 'string',
+      "attachments\\.\\d+\\.more$": {
+        "type": "string"
       },
-      'attachments\\.\\d+\\.more\\.\\d+$': {
-        'type': 'string',
+      "attachments\\.\\d+\\.more\\.\\d+$": {
+        "type": "string"
       },
-      'editionsDates\\.\\d+\\..+$': true,
-      'editionsDates\\.\\d+\\.edition$': {
-        'type': 'number',
+      "editionsDates\\.\\d+\\..+$": true,
+      "editionsDates\\.\\d+\\.edition$": {
+        "type": "number"
       },
-      'editionsDates\\.\\d+\\.date$': {
-        'type': 'string',
-        'format': 'date-time',
-      },
+      "editionsDates\\.\\d+\\.date$": {
+        "type": "string",
+        "format": "date-time"
+      }
     },
-    'additionalProperties': false,
-  },
+    "additionalProperties": false
+  }
 }
+        

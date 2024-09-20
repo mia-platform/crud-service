@@ -14,121 +14,122 @@
  * limitations under the License.
  */
 
-'use strict'
-
-module.exports = {
-  'summary': 'Change state of an item of stations collection.',
-  'tags': [
-    'stations endpoint',
+      'use strict'
+      
+      module.exports = {
+  "summary": "Change state of an item of stations collection.",
+  "tags": [
+    "stations endpoint"
   ],
-  'params': {
-    'operationId': 'stations__MIA__changeState__MIA__params',
-    'properties': {
-      'id': {
-        'type': 'string',
-        'description': 'the ID of the item to have the property __STATE__ updated',
-      },
+  "params": {
+    "operationId": "stations__MIA__changeState__MIA__params",
+    "properties": {
+      "id": {
+        "type": "string",
+        "description": "the ID of the item to have the property __STATE__ updated"
+      }
     },
-    'type': 'object',
+    "type": "object"
   },
-  'querystring': {
-    'operationId': 'stations__MIA__changeState__MIA__querystring',
-    'type': 'object',
-    'properties': {
-      'creatorId': {
-        'type': 'string',
-        'description': 'User id that has created this object',
+  "querystring": {
+    "operationId": "stations__MIA__changeState__MIA__querystring",
+    "type": "object",
+    "properties": {
+      "creatorId": {
+        "type": "string",
+        "description": "User id that has created this object"
       },
-      'createdAt': {
-        'type': 'string',
-        'example': '1997-04-24T07:00:00.000Z',
-        'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
+      "createdAt": {
+        "type": "string",
+        "example": "1997-04-24T07:00:00.000Z",
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$"
       },
-      'updaterId': {
-        'type': 'string',
-        'description': 'User id that has requested the last change successfully',
+      "updaterId": {
+        "type": "string",
+        "description": "User id that has requested the last change successfully"
       },
-      'updatedAt': {
-        'type': 'string',
-        'example': '1997-04-24T07:00:00.000Z',
-        'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
+      "updatedAt": {
+        "type": "string",
+        "example": "1997-04-24T07:00:00.000Z",
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$"
       },
-      'Cap': {
-        'type': 'number',
-        'nullable': true,
+      "Cap": {
+        "type": "number",
+        "nullable": true
       },
-      'CodiceMIR': {
-        'type': 'string',
-        'nullable': true,
+      "CodiceMIR": {
+        "type": "string",
+        "nullable": true
       },
-      'Comune': {
-        'type': 'string',
-        'nullable': true,
+      "Comune": {
+        "type": "string",
+        "nullable": true
       },
-      'Direttrici': {
-        'type': [
-          'array',
-          'string',
-          'null',
+      "Direttrici": {
+        "type": [
+          "array",
+          "string",
+          "null"
         ],
-        'anyOf': [
+        "anyOf": [
           {
-            'type': 'array',
-            'items': {
-              'type': 'string',
-              'nullable': true,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "nullable": true
             },
-            'nullable': true,
+            "nullable": true
           },
           {
-            'type': 'string',
-            'nullable': true,
-          },
+            "type": "string",
+            "nullable": true
+          }
         ],
-        'nullable': true,
+        "nullable": true
       },
-      'Indirizzo': {
-        'type': 'string',
-        'nullable': true,
+      "Indirizzo": {
+        "type": "string",
+        "nullable": true
       },
-      'country': {
-        'type': 'string',
-        'nullable': true,
+      "country": {
+        "type": "string",
+        "nullable": true
       },
-      'nonNullableDate': {
-        'type': 'string',
-        'example': '1997-04-24T07:00:00.000Z',
-        'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
-        'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
-        'nullable': false,
+      "nonNullableDate": {
+        "type": "string",
+        "example": "1997-04-24T07:00:00.000Z",
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$",
+        "description": "\"date-time\" according with https://tools.ietf.org/html/rfc3339#section-5.6",
+        "nullable": false
       },
-      '_q': {
-        'type': 'string',
-        'description': 'Additional query part to forward to MongoDB',
+      "_q": {
+        "type": "string",
+        "description": "Additional query part to forward to MongoDB"
       },
-      '_rawp': {
-        'type': 'string',
-        'description': 'Additional raw stringified projection for MongoDB',
-      },
+      "_rawp": {
+        "type": "string",
+        "description": "Additional raw stringified projection for MongoDB"
+      }
     },
-    'additionalProperties': false,
+    "additionalProperties": false
   },
-  'body': {
-    'operationId': 'stations__MIA__changeState__MIA__body',
-    'type': 'object',
-    'required': [
-      'stateTo',
+  "body": {
+    "operationId": "stations__MIA__changeState__MIA__body",
+    "type": "object",
+    "required": [
+      "stateTo"
     ],
-    'properties': {
-      'stateTo': {
-        'type': 'string',
-        'enum': [
-          'PUBLIC',
-          'TRASH',
-          'DRAFT',
-          'DELETED',
-        ],
-      },
-    },
-  },
+    "properties": {
+      "stateTo": {
+        "type": "string",
+        "enum": [
+          "PUBLIC",
+          "TRASH",
+          "DRAFT",
+          "DELETED"
+        ]
+      }
+    }
+  }
 }
+        

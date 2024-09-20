@@ -14,104 +14,105 @@
  * limitations under the License.
  */
 
-'use strict'
-
-module.exports = {
-  'summary': 'Change state of multiple items of cars.',
-  'tags': [
-    'cars endpoint',
+      'use strict'
+      
+      module.exports = {
+  "summary": "Change state of multiple items of cars.",
+  "tags": [
+    "cars endpoint"
   ],
-  'body': {
-    'operationId': 'cars__MIA__changeStateMany__MIA__body',
-    'type': 'array',
-    'items': {
-      'type': 'object',
-      'properties': {
-        'filter': {
-          'type': 'object',
-          'properties': {
-            '_id': {
-              'type': 'string',
-              'description': 'Hexadecimal identifier of the document in the collection',
-              'pattern': '^[a-fA-F\\d]{24}$',
-              'example': '000000000000000000000000',
+  "body": {
+    "operationId": "cars__MIA__changeStateMany__MIA__body",
+    "type": "array",
+    "items": {
+      "type": "object",
+      "properties": {
+        "filter": {
+          "type": "object",
+          "properties": {
+            "_id": {
+              "type": "string",
+              "description": "Hexadecimal identifier of the document in the collection",
+              "pattern": "^[a-fA-F\\d]{24}$",
+              "example": "000000000000000000000000"
             },
-            'creatorId': {
-              'type': 'string',
-              'description': 'User id that has created this object',
+            "creatorId": {
+              "type": "string",
+              "description": "User id that has created this object"
             },
-            'createdAt': {
-              'type': 'string',
-              'example': '1997-04-24T07:00:00.000Z',
-              'anyOf': [
+            "createdAt": {
+              "type": "string",
+              "example": "1997-04-24T07:00:00.000Z",
+              "anyOf": [
                 {
-                  'format': 'date-time',
+                  "format": "date-time"
                 },
                 {
-                  'format': 'date',
+                  "format": "date"
                 },
                 {
-                  'format': 'time',
-                },
-              ],
+                  "format": "time"
+                }
+              ]
             },
-            'updaterId': {
-              'type': 'string',
-              'description': 'User id that has requested the last change successfully',
+            "updaterId": {
+              "type": "string",
+              "description": "User id that has requested the last change successfully"
             },
-            'updatedAt': {
-              'type': 'string',
-              'example': '1997-04-24T07:00:00.000Z',
-              'anyOf': [
+            "updatedAt": {
+              "type": "string",
+              "example": "1997-04-24T07:00:00.000Z",
+              "anyOf": [
                 {
-                  'format': 'date-time',
-                },
-                {
-                  'format': 'date',
+                  "format": "date-time"
                 },
                 {
-                  'format': 'time',
+                  "format": "date"
                 },
-              ],
+                {
+                  "format": "time"
+                }
+              ]
             },
-            'name': {
-              'type': 'string',
-              'description': "The car's name",
+            "name": {
+              "type": "string",
+              "description": "The car's name"
             },
-            'price': {
-              'type': 'number',
-              'description': "The car's price",
+            "price": {
+              "type": "number",
+              "description": "The car's price"
             },
-            'additionalInfo': {
-              'type': 'object',
-              'additionalProperties': true,
-            },
-          },
+            "additionalInfo": {
+              "type": "object",
+              "additionalProperties": true
+            }
+          }
         },
-        'stateTo': {
-          'type': 'string',
-          'enum': [
-            'PUBLIC',
-            'DRAFT',
-            'TRASH',
-            'DELETED',
-          ],
-        },
+        "stateTo": {
+          "type": "string",
+          "enum": [
+            "PUBLIC",
+            "DRAFT",
+            "TRASH",
+            "DELETED"
+          ]
+        }
       },
-      'required': [
-        'filter',
-        'stateTo',
+      "required": [
+        "filter",
+        "stateTo"
       ],
-      'additionalProperties': false,
+      "additionalProperties": false
     },
-    'minItems': 1,
+    "minItems": 1
   },
-  'response': {
-    '200': {
-      'operationId': 'cars__MIA__changeStateMany__MIA__response.200',
-      'type': 'integer',
-      'minimum': 0,
-      'description': 'Number of updated cars',
-    },
-  },
+  "response": {
+    "200": {
+      "operationId": "cars__MIA__changeStateMany__MIA__response.200",
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of updated cars"
+    }
+  }
 }
+        

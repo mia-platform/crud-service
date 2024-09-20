@@ -14,431 +14,622 @@
  * limitations under the License.
  */
 
-'use strict'
-
-module.exports = {
-  'summary': 'Update an item in the stations collection. If the item is not in the collection, it will be inserted.',
-  'tags': [
-    'stations endpoint',
+      'use strict'
+      
+      module.exports = {
+  "summary": "Update an item in the stations collection. If the item is not in the collection, it will be inserted.",
+  "tags": [
+    "stations endpoint"
   ],
-  'querystring': {
-    'operationId': 'stations__MIA__upsertOne__MIA__querystring',
-    'type': 'object',
-    'properties': {
-      'creatorId': {
-        'type': 'string',
-        'description': 'User id that has created this object',
+  "querystring": {
+    "operationId": "stations__MIA__upsertOne__MIA__querystring",
+    "type": "object",
+    "properties": {
+      "creatorId": {
+        "type": "string",
+        "description": "User id that has created this object"
       },
-      'createdAt': {
-        'type': 'string',
-        'example': '1997-04-24T07:00:00.000Z',
-        'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
+      "createdAt": {
+        "type": "string",
+        "example": "1997-04-24T07:00:00.000Z",
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$"
       },
-      'updaterId': {
-        'type': 'string',
-        'description': 'User id that has requested the last change successfully',
+      "updaterId": {
+        "type": "string",
+        "description": "User id that has requested the last change successfully"
       },
-      'updatedAt': {
-        'type': 'string',
-        'example': '1997-04-24T07:00:00.000Z',
-        'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
+      "updatedAt": {
+        "type": "string",
+        "example": "1997-04-24T07:00:00.000Z",
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$"
       },
-      'Cap': {
-        'type': 'number',
-        'nullable': true,
+      "Cap": {
+        "type": "number",
+        "nullable": true
       },
-      'CodiceMIR': {
-        'type': 'string',
-        'nullable': true,
+      "CodiceMIR": {
+        "type": "string",
+        "nullable": true
       },
-      'Comune': {
-        'type': 'string',
-        'nullable': true,
+      "Comune": {
+        "type": "string",
+        "nullable": true
       },
-      'Direttrici': {
-        'type': [
-          'array',
-          'string',
-          'null',
+      "Direttrici": {
+        "type": [
+          "array",
+          "string",
+          "null"
         ],
-        'anyOf': [
+        "anyOf": [
           {
-            'type': 'array',
-            'items': {
-              'type': 'string',
-              'nullable': true,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "nullable": true
             },
-            'nullable': true,
+            "nullable": true
           },
           {
-            'type': 'string',
-            'nullable': true,
-          },
+            "type": "string",
+            "nullable": true
+          }
         ],
-        'nullable': true,
+        "nullable": true
       },
-      'Indirizzo': {
-        'type': 'string',
-        'nullable': true,
+      "Indirizzo": {
+        "type": "string",
+        "nullable": true
       },
-      'country': {
-        'type': 'string',
-        'nullable': true,
+      "country": {
+        "type": "string",
+        "nullable": true
       },
-      'nonNullableDate': {
-        'type': 'string',
-        'example': '1997-04-24T07:00:00.000Z',
-        'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
-        'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
-        'nullable': false,
+      "nonNullableDate": {
+        "type": "string",
+        "example": "1997-04-24T07:00:00.000Z",
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$",
+        "description": "\"date-time\" according with https://tools.ietf.org/html/rfc3339#section-5.6",
+        "nullable": false
       },
-      '_q': {
-        'type': 'string',
-        'description': 'Additional query part to forward to MongoDB',
+      "_q": {
+        "type": "string",
+        "description": "Additional query part to forward to MongoDB"
       },
-      '_st': {
-        'type': 'string',
-        'pattern': '(PUBLIC|DRAFT|TRASH|DELETED)(,(PUBLIC|DRAFT|TRASH|DELETED))*',
-        'default': 'PUBLIC',
-        'description': 'Filter by \\_\\_STATE__, multiple states can be specified in OR by providing a comma separated list',
+      "_st": {
+        "type": "string",
+        "pattern": "(PUBLIC|DRAFT|TRASH|DELETED)(,(PUBLIC|DRAFT|TRASH|DELETED))*",
+        "default": "PUBLIC",
+        "description": "Filter by \\_\\_STATE__, multiple states can be specified in OR by providing a comma separated list"
       },
-      '_rawp': {
-        'type': 'string',
-        'description': 'Additional raw stringified projection for MongoDB',
-      },
+      "_rawp": {
+        "type": "string",
+        "description": "Additional raw stringified projection for MongoDB"
+      }
     },
-    'additionalProperties': false,
+    "additionalProperties": false
   },
-  'body': {
-    'operationId': 'stations__MIA__upsertOne__MIA__body',
-    'type': 'object',
-    'properties': {
-      '$set': {
-        'type': 'object',
-        'properties': {
-          'Cap': {
-            'type': 'number',
-            'nullable': true,
+  "body": {
+    "operationId": "stations__MIA__upsertOne__MIA__body",
+    "type": "object",
+    "properties": {
+      "$set": {
+        "type": "object",
+        "properties": {
+          "Cap": {
+            "type": "number",
+            "nullable": true
           },
-          'CodiceMIR': {
-            'type': 'string',
-            'nullable': true,
+          "CodiceMIR": {
+            "type": "string",
+            "nullable": true
           },
-          'Comune': {
-            'type': 'string',
-            'nullable': true,
+          "Comune": {
+            "type": "string",
+            "nullable": true
           },
-          'Direttrici': {
-            'type': [
-              'array',
-              'string',
-              'null',
+          "Direttrici": {
+            "type": [
+              "array",
+              "string",
+              "null"
             ],
-            'anyOf': [
+            "anyOf": [
               {
-                'type': 'array',
-                'items': {
-                  'type': 'string',
-                  'nullable': true,
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "nullable": true
                 },
-                'nullable': true,
+                "nullable": true
               },
               {
-                'type': 'string',
-                'nullable': true,
-              },
+                "type": "string",
+                "nullable": true
+              }
             ],
-            'nullable': true,
+            "nullable": true
           },
-          'Indirizzo': {
-            'type': 'string',
-            'nullable': true,
+          "Indirizzo": {
+            "type": "string",
+            "nullable": true
           },
-          'country': {
-            'type': 'string',
-            'nullable': true,
+          "country": {
+            "type": "string",
+            "nullable": true
           },
-          'nonNullableDate': {
-            'type': 'string',
-            'example': '1997-04-24T07:00:00.000Z',
-            'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
-            'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
-            'nullable': false,
+          "nonNullableDate": {
+            "type": "string",
+            "example": "1997-04-24T07:00:00.000Z",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$",
+            "description": "\"date-time\" according with https://tools.ietf.org/html/rfc3339#section-5.6",
+            "nullable": false
           },
-          'Direttrici.$.replace': {
-            'type': 'string',
-          },
+          "Direttrici.$.replace": {
+            "type": "string"
+          }
         },
-        'additionalProperties': false,
-        'patternProperties': {},
+        "additionalProperties": false,
+        "patternProperties": {}
       },
-      '$unset': {
-        'type': 'object',
-        'properties': {
-          'Cap': {
-            'type': 'boolean',
-            'enum': [
-              true,
-            ],
+      "$unset": {
+        "type": "object",
+        "properties": {
+          "Cap": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
           },
-          'CodiceMIR': {
-            'type': 'boolean',
-            'enum': [
-              true,
-            ],
+          "CodiceMIR": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
           },
-          'Comune': {
-            'type': 'boolean',
-            'enum': [
-              true,
-            ],
+          "Comune": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
           },
-          'Direttrici': {
-            'type': 'boolean',
-            'enum': [
-              true,
-            ],
+          "Direttrici": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
           },
-          'Indirizzo': {
-            'type': 'boolean',
-            'enum': [
-              true,
-            ],
+          "Indirizzo": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
           },
-          'country': {
-            'type': 'boolean',
-            'enum': [
-              true,
-            ],
+          "country": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
           },
-          'nonNullableDate': {
-            'type': 'boolean',
-            'enum': [
-              true,
-            ],
-          },
+          "nonNullableDate": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          }
         },
-        'additionalProperties': false,
-        'patternProperties': {},
+        "additionalProperties": false,
+        "patternProperties": {}
       },
-      '$inc': {
-        'type': 'object',
-        'properties': {
-          'Cap': {
-            'type': 'number',
-          },
+      "$inc": {
+        "type": "object",
+        "properties": {
+          "Cap": {
+            "type": "number"
+          }
         },
-        'additionalProperties': false,
-        'patternProperties': {},
+        "additionalProperties": false,
+        "patternProperties": {}
       },
-      '$mul': {
-        'type': 'object',
-        'properties': {
-          'Cap': {
-            'type': 'number',
-          },
+      "$mul": {
+        "type": "object",
+        "properties": {
+          "Cap": {
+            "type": "number"
+          }
         },
-        'additionalProperties': false,
-        'patternProperties': {},
+        "additionalProperties": false,
+        "patternProperties": {}
       },
-      '$currentDate': {
-        'type': 'object',
-        'properties': {
-          'nonNullableDate': {
-            'type': 'boolean',
-            'enum': [
-              true,
-            ],
-          },
+      "$currentDate": {
+        "type": "object",
+        "properties": {
+          "nonNullableDate": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          }
         },
-        'additionalProperties': false,
+        "additionalProperties": false
       },
-      '$push': {
-        'type': 'object',
-        'properties': {
-          'Direttrici': {
-            'type': 'string',
-          },
-        },
-        'additionalProperties': false,
-      },
-      '$pull': {
-        'type': 'object',
-        'properties': {
-          'Direttrici': {
-            'oneOf': [
+      "$push": {
+        "type": "object",
+        "properties": {
+          "Direttrici": {
+            "oneOf": [
               {
-                'type': 'string',
+                "type": "string"
               },
               {
-                'type': 'object',
-                'patternProperties': {
-                  '^$': {},
+                "type": "object",
+                "properties": {
+                  "$": {
+                    "oneOf": [
+                      {
+                        "type": "object"
+                      },
+                      {
+                        "type": "array"
+                      }
+                    ]
+                  },
+                  "$each": {
+                    "oneOf": [
+                      {
+                        "type": "object"
+                      },
+                      {
+                        "type": "array"
+                      }
+                    ]
+                  },
+                  "$position": {
+                    "oneOf": [
+                      {
+                        "type": "object"
+                      },
+                      {
+                        "type": "array"
+                      }
+                    ]
+                  },
+                  "$slice": {
+                    "oneOf": [
+                      {
+                        "type": "object"
+                      },
+                      {
+                        "type": "array"
+                      }
+                    ]
+                  },
+                  "$sort": {
+                    "oneOf": [
+                      {
+                        "type": "object"
+                      },
+                      {
+                        "type": "array"
+                      }
+                    ]
+                  },
+                  "$in": {
+                    "oneOf": [
+                      {
+                        "type": "object"
+                      },
+                      {
+                        "type": "array"
+                      }
+                    ]
+                  }
                 },
-              },
-            ],
-          },
+                "additionalProperties": false
+              }
+            ]
+          }
         },
-        'additionalProperties': false,
+        "additionalProperties": false
       },
-      '$addToSet': {
-        'type': 'object',
-        'properties': {
-          'Direttrici': {
-            'oneOf': [
+      "$pull": {
+        "type": "object",
+        "properties": {
+          "Direttrici": {
+            "oneOf": [
               {
-                'type': 'string',
+                "type": "string"
               },
               {
-                'type': 'object',
-                'patternProperties': {
-                  '^$': {},
+                "type": "object",
+                "properties": {
+                  "$": {
+                    "oneOf": [
+                      {
+                        "type": "object"
+                      },
+                      {
+                        "type": "array"
+                      }
+                    ]
+                  },
+                  "$each": {
+                    "oneOf": [
+                      {
+                        "type": "object"
+                      },
+                      {
+                        "type": "array"
+                      }
+                    ]
+                  },
+                  "$position": {
+                    "oneOf": [
+                      {
+                        "type": "object"
+                      },
+                      {
+                        "type": "array"
+                      }
+                    ]
+                  },
+                  "$slice": {
+                    "oneOf": [
+                      {
+                        "type": "object"
+                      },
+                      {
+                        "type": "array"
+                      }
+                    ]
+                  },
+                  "$sort": {
+                    "oneOf": [
+                      {
+                        "type": "object"
+                      },
+                      {
+                        "type": "array"
+                      }
+                    ]
+                  },
+                  "$in": {
+                    "oneOf": [
+                      {
+                        "type": "object"
+                      },
+                      {
+                        "type": "array"
+                      }
+                    ]
+                  }
                 },
-              },
-            ],
-          },
+                "additionalProperties": false
+              }
+            ]
+          }
         },
-        'additionalProperties': false,
+        "additionalProperties": false
       },
-      '$setOnInsert': {
-        'type': 'object',
-        'properties': {
-          'Cap': {
-            'type': 'number',
-            'nullable': true,
-          },
-          'CodiceMIR': {
-            'type': 'string',
-            'nullable': true,
-          },
-          'Comune': {
-            'type': 'string',
-            'nullable': true,
-          },
-          'Direttrici': {
-            'type': [
-              'array',
-              'string',
-              'null',
-            ],
-            'anyOf': [
+      "$addToSet": {
+        "type": "object",
+        "properties": {
+          "Direttrici": {
+            "oneOf": [
               {
-                'type': 'array',
-                'items': {
-                  'type': 'string',
-                  'nullable': true,
+                "type": "string"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "$": {
+                    "oneOf": [
+                      {
+                        "type": "object"
+                      },
+                      {
+                        "type": "array"
+                      }
+                    ]
+                  },
+                  "$each": {
+                    "oneOf": [
+                      {
+                        "type": "object"
+                      },
+                      {
+                        "type": "array"
+                      }
+                    ]
+                  },
+                  "$position": {
+                    "oneOf": [
+                      {
+                        "type": "object"
+                      },
+                      {
+                        "type": "array"
+                      }
+                    ]
+                  },
+                  "$slice": {
+                    "oneOf": [
+                      {
+                        "type": "object"
+                      },
+                      {
+                        "type": "array"
+                      }
+                    ]
+                  },
+                  "$sort": {
+                    "oneOf": [
+                      {
+                        "type": "object"
+                      },
+                      {
+                        "type": "array"
+                      }
+                    ]
+                  },
+                  "$in": {
+                    "oneOf": [
+                      {
+                        "type": "object"
+                      },
+                      {
+                        "type": "array"
+                      }
+                    ]
+                  }
                 },
-                'nullable': true,
+                "additionalProperties": false
+              }
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "$setOnInsert": {
+        "type": "object",
+        "properties": {
+          "Cap": {
+            "type": "number",
+            "nullable": true
+          },
+          "CodiceMIR": {
+            "type": "string",
+            "nullable": true
+          },
+          "Comune": {
+            "type": "string",
+            "nullable": true
+          },
+          "Direttrici": {
+            "type": [
+              "array",
+              "string",
+              "null"
+            ],
+            "anyOf": [
+              {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "nullable": true
               },
               {
-                'type': 'string',
-                'nullable': true,
-              },
+                "type": "string",
+                "nullable": true
+              }
             ],
-            'nullable': true,
+            "nullable": true
           },
-          'Indirizzo': {
-            'type': 'string',
-            'nullable': true,
+          "Indirizzo": {
+            "type": "string",
+            "nullable": true
           },
-          'country': {
-            'type': 'string',
-            'nullable': true,
+          "country": {
+            "type": "string",
+            "nullable": true
           },
-          'nonNullableDate': {
-            'type': 'string',
-            'example': '1997-04-24T07:00:00.000Z',
-            'pattern': '^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$',
-            'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
-            'nullable': false,
-          },
+          "nonNullableDate": {
+            "type": "string",
+            "example": "1997-04-24T07:00:00.000Z",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$",
+            "description": "\"date-time\" according with https://tools.ietf.org/html/rfc3339#section-5.6",
+            "nullable": false
+          }
         },
-        'additionalProperties': false,
-      },
+        "additionalProperties": false
+      }
     },
-    'additionalProperties': false,
+    "additionalProperties": false
   },
-  'response': {
-    '200': {
-      'operationId': 'stations__MIA__upsertOne__MIA__response.200',
-      'type': 'object',
-      'properties': {
-        '_id': {
-          'type': 'string',
-          'description': '_id',
+  "response": {
+    "200": {
+      "operationId": "stations__MIA__upsertOne__MIA__response.200",
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string",
+          "description": "_id"
         },
-        'updaterId': {
-          'type': 'string',
-          'description': 'User id that has requested the last change successfully',
+        "updaterId": {
+          "type": "string",
+          "description": "User id that has requested the last change successfully"
         },
-        'updatedAt': {
-          'type': 'string',
-          'example': '1997-04-24T07:00:00.000Z',
-          'nullable': false,
-          'description': 'Date of the request that has performed the last change',
+        "updatedAt": {
+          "type": "string",
+          "example": "1997-04-24T07:00:00.000Z",
+          "nullable": false,
+          "description": "Date of the request that has performed the last change"
         },
-        'creatorId': {
-          'type': 'string',
-          'description': 'User id that has created this object',
+        "creatorId": {
+          "type": "string",
+          "description": "User id that has created this object"
         },
-        'createdAt': {
-          'type': 'string',
-          'example': '1997-04-24T07:00:00.000Z',
-          'nullable': false,
-          'description': 'Date of the request that has performed the object creation',
+        "createdAt": {
+          "type": "string",
+          "example": "1997-04-24T07:00:00.000Z",
+          "nullable": false,
+          "description": "Date of the request that has performed the object creation"
         },
-        '__STATE__': {
-          'type': 'string',
-          'description': 'The state of the document',
+        "__STATE__": {
+          "type": "string",
+          "description": "The state of the document"
         },
-        'Cap': {
-          'type': 'number',
-          'nullable': true,
+        "Cap": {
+          "type": "number",
+          "nullable": true
         },
-        'CodiceMIR': {
-          'type': 'string',
-          'nullable': true,
+        "CodiceMIR": {
+          "type": "string",
+          "nullable": true
         },
-        'Comune': {
-          'type': 'string',
-          'nullable': true,
+        "Comune": {
+          "type": "string",
+          "nullable": true
         },
-        'Direttrici': {
-          'type': [
-            'array',
-            'string',
-            'null',
+        "Direttrici": {
+          "type": [
+            "array",
+            "string",
+            "null"
           ],
-          'anyOf': [
+          "anyOf": [
             {
-              'type': 'array',
-              'items': {
-                'type': 'string',
-                'nullable': true,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "nullable": true
               },
-              'nullable': true,
+              "nullable": true
             },
             {
-              'type': 'string',
-              'nullable': true,
-            },
+              "type": "string",
+              "nullable": true
+            }
           ],
-          'nullable': true,
+          "nullable": true
         },
-        'Indirizzo': {
-          'type': 'string',
-          'nullable': true,
+        "Indirizzo": {
+          "type": "string",
+          "nullable": true
         },
-        'country': {
-          'type': 'string',
-          'nullable': true,
+        "country": {
+          "type": "string",
+          "nullable": true
         },
-        'nonNullableDate': {
-          'type': 'string',
-          'example': '1997-04-24T07:00:00.000Z',
-          'nullable': false,
-        },
-      },
-    },
-  },
+        "nonNullableDate": {
+          "type": "string",
+          "example": "1997-04-24T07:00:00.000Z",
+          "nullable": false
+        }
+      }
+    }
+  }
 }
+        

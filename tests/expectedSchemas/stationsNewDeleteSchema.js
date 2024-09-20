@@ -14,139 +14,140 @@
  * limitations under the License.
  */
 
-'use strict'
-
-module.exports = {
-  'summary': 'Delete an item with specific ID from the stations collection.',
-  'tags': [
-    'stations endpoint',
+      'use strict'
+      
+      module.exports = {
+  "summary": "Delete an item with specific ID from the stations collection.",
+  "tags": [
+    "stations endpoint"
   ],
-  'params': {
-    'type': 'object',
-    'properties': {
-      'id': {
-        'type': 'string',
-        'description': 'The ID of the item to delete',
-      },
+  "params": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "description": "The ID of the item to delete"
+      }
     },
-    'operationId': 'stations__MIA__deleteItem__MIA__params',
+    "operationId": "stations__MIA__deleteItem__MIA__params"
   },
-  'querystring': {
-    'operationId': 'stations__MIA__deleteItem__MIA__querystring',
-    'type': 'object',
-    'properties': {
-      'creatorId': {
-        'type': 'string',
-        'description': 'User id that has created this object',
+  "querystring": {
+    "operationId": "stations__MIA__deleteItem__MIA__querystring",
+    "type": "object",
+    "properties": {
+      "creatorId": {
+        "type": "string",
+        "description": "User id that has created this object"
       },
-      'createdAt': {
-        'type': 'string',
-        'example': '1997-04-24T07:00:00.000Z',
-        'anyOf': [
+      "createdAt": {
+        "type": "string",
+        "example": "1997-04-24T07:00:00.000Z",
+        "anyOf": [
           {
-            'format': 'date-time',
+            "format": "date-time"
           },
           {
-            'format': 'date',
+            "format": "date"
           },
           {
-            'format': 'time',
+            "format": "time"
+          }
+        ]
+      },
+      "updaterId": {
+        "type": "string",
+        "description": "User id that has requested the last change successfully"
+      },
+      "updatedAt": {
+        "type": "string",
+        "example": "1997-04-24T07:00:00.000Z",
+        "anyOf": [
+          {
+            "format": "date-time"
           },
+          {
+            "format": "date"
+          },
+          {
+            "format": "time"
+          }
+        ]
+      },
+      "Cap": {
+        "type": "number",
+        "nullable": true
+      },
+      "CodiceMIR": {
+        "type": "string",
+        "nullable": true
+      },
+      "Comune": {
+        "type": "string",
+        "nullable": true
+      },
+      "Direttrici": {
+        "type": [
+          "array",
+          "string",
+          "null"
         ],
-      },
-      'updaterId': {
-        'type': 'string',
-        'description': 'User id that has requested the last change successfully',
-      },
-      'updatedAt': {
-        'type': 'string',
-        'example': '1997-04-24T07:00:00.000Z',
-        'anyOf': [
+        "anyOf": [
           {
-            'format': 'date-time',
-          },
-          {
-            'format': 'date',
-          },
-          {
-            'format': 'time',
-          },
-        ],
-      },
-      'Cap': {
-        'type': 'number',
-        'nullable': true,
-      },
-      'CodiceMIR': {
-        'type': 'string',
-        'nullable': true,
-      },
-      'Comune': {
-        'type': 'string',
-        'nullable': true,
-      },
-      'Direttrici': {
-        'type': [
-          'array',
-          'string',
-          'null',
-        ],
-        'anyOf': [
-          {
-            'type': 'array',
-            'items': {
-              'type': 'string',
-              'nullable': true,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "nullable": true
             },
-            'nullable': true,
+            "nullable": true
           },
           {
-            'type': 'string',
-            'nullable': true,
-          },
+            "type": "string",
+            "nullable": true
+          }
         ],
-        'nullable': true,
+        "nullable": true
       },
-      'Indirizzo': {
-        'type': 'string',
-        'nullable': true,
+      "Indirizzo": {
+        "type": "string",
+        "nullable": true
       },
-      'country': {
-        'type': 'string',
-        'nullable': true,
+      "country": {
+        "type": "string",
+        "nullable": true
       },
-      'nonNullableDate': {
-        'type': 'string',
-        'example': '1997-04-24T07:00:00.000Z',
-        'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
-        'nullable': false,
-        'anyOf': [
+      "nonNullableDate": {
+        "example": "1997-04-24T07:00:00.000Z",
+        "type": "string",
+        "nullable": false,
+        "anyOf": [
           {
-            'format': 'date-time',
+            "format": "date-time"
           },
           {
-            'format': 'date',
+            "format": "date"
           },
           {
-            'format': 'time',
-          },
+            "format": "time"
+          }
         ],
+        "description": "\"date-time\" according with https://tools.ietf.org/html/rfc3339#section-5.6"
       },
-      '_q': {
-        'type': 'string',
-        'description': 'Additional query part to forward to MongoDB',
+      "_q": {
+        "type": "string",
+        "description": "Additional query part to forward to MongoDB"
       },
-      '_st': {
-        'type': 'string',
-        'pattern': '(PUBLIC|DRAFT|TRASH|DELETED)(,(PUBLIC|DRAFT|TRASH|DELETED))*',
-        'default': 'PUBLIC',
-        'description': 'Filter by \\_\\_STATE__, multiple states can be specified in OR by providing a comma separated list',
+      "_st": {
+        "type": "string",
+        "pattern": "(PUBLIC|DRAFT|TRASH|DELETED)(,(PUBLIC|DRAFT|TRASH|DELETED))*",
+        "default": "PUBLIC",
+        "description": "Filter by \\_\\_STATE__, multiple states can be specified in OR by providing a comma separated list"
       },
-      '_rawp': {
-        'type': 'string',
-        'description': 'Additional raw stringified projection for MongoDB',
-      },
+      "_rawp": {
+        "type": "string",
+        "description": "Additional raw stringified projection for MongoDB"
+      }
     },
-    'additionalProperties': false,
-  },
+    "additionalProperties": false
+  }
 }
+        

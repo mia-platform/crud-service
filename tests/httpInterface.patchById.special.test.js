@@ -51,9 +51,11 @@ const MATCHING_MIR_CODE = STATION_DOC.CodiceMIR
 const MATCHING_STATION_QUERY = { CodiceMIR: MATCHING_MIR_CODE }
 const NEW_COMUNE = 'Milano'
 const STATION_UPDATE_COMMAND = { $set: { Comune: NEW_COMUNE } }
-const UPDATED_STATION_HTTP_DOC = { ...STATION_HTTP_DOC,
+const UPDATED_STATION_HTTP_DOC = {
+  ...STATION_HTTP_DOC,
   Comune: NEW_COMUNE,
-  updaterId: newUpdaterId }
+  updaterId: newUpdaterId,
+}
 
 const MATCHING_TAGIDS_QUERY = { tagIds: 1 }
 const RENAMED_ATTACHMENTS = [
@@ -868,7 +870,7 @@ tap.test('HTTP PATCH /<id> - ', async t => {
         t.strictSame(JSON.parse(response.payload), {
           statusCode: 400,
           error: 'Bad Request',
-          message: "body/$push/attachments must have required property 'name'",
+          message: "body/$push/attachments must have required property 'name', body/$push/attachments must NOT have additional properties, body/$push/attachments must match exactly one schema in oneOf",
           code: 'FST_ERR_VALIDATION',
         })
 
@@ -900,7 +902,7 @@ tap.test('HTTP PATCH /<id> - ', async t => {
         t.strictSame(JSON.parse(response.payload), {
           statusCode: 400,
           error: 'Bad Request',
-          message: 'body/$push/attachments must NOT have additional properties. Property "unknownField" is not defined in validation schema',
+          message: 'body/$push/attachments must NOT have additional properties, body/$push/attachments must NOT have additional properties, body/$push/attachments must match exactly one schema in oneOf. Property "unknownField" is not defined in validation schema',
         })
 
         t.end()
@@ -1098,7 +1100,7 @@ tap.test('HTTP PATCH /<id> - ', async t => {
         t.strictSame(JSON.parse(response.payload), {
           statusCode: 400,
           error: 'Bad Request',
-          message: "body/$addToSet/attachments must have required property 'name'",
+          message: "body/$addToSet/attachments must have required property 'name', body/$addToSet/attachments must NOT have additional properties, body/$addToSet/attachments must match exactly one schema in oneOf",
           code: 'FST_ERR_VALIDATION',
         })
         t.end()
@@ -1128,7 +1130,7 @@ tap.test('HTTP PATCH /<id> - ', async t => {
         t.strictSame(JSON.parse(response.payload), {
           statusCode: 400,
           error: 'Bad Request',
-          message: 'body/$addToSet/attachments must NOT have additional properties. Property "unknownField" is not defined in validation schema',
+          message: 'body/$addToSet/attachments must NOT have additional properties, body/$addToSet/attachments must NOT have additional properties, body/$addToSet/attachments must match exactly one schema in oneOf. Property "unknownField" is not defined in validation schema',
         })
         t.end()
       })
@@ -1212,7 +1214,7 @@ tap.test('HTTP PATCH /<id> - ', async t => {
       })
 
       t.test('there is NO validation to prevent unset of required properties', async t => {
-      // Documentation purpose
+        // Documentation purpose
         await resetCollection([DOC_TO_UNSET])
 
         const UPDATE_COMMAND = {
