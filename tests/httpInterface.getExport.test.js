@@ -294,7 +294,15 @@ tap.test('HTTP GET /export', async t => {
     },
     {
       name: 'with filter with geo search with min and max',
-      url: `/export?_q=${JSON.stringify({ position: { $nearSphere: { from: [0, 0], minDistance: 0, maxDistance: 10 } } })}&_p=_id`,
+      url: `/export?_q=${JSON.stringify({
+        position: {
+          $nearSphere: {
+            from: [0, 0],
+            minDistance: 0,
+            maxDistance: 10,
+          },
+        },
+      })}&_p=_id`,
       acl_rows: undefined,
       found: [
         { _id: '111111111111111111111111' },
@@ -776,7 +784,7 @@ tap.test('HTTP GET /export', async t => {
         const foundCsv = csvStringify.stringify(found, {
           encoding: 'utf8',
           delimiter: conf.delimiter || ',',
-          escape: '\\',
+          escape: '"',
           header: true,
           quoted_string: true,
           columns: conf.expectedColumns,
@@ -918,7 +926,14 @@ tap.test('HTTP GET /export - $text search', async t => {
     },
     {
       name: 'with filter with $text search with $or clause and indexed fields',
-      url: `/export?_q=${JSON.stringify({ $or: [{ $text: { $search: 'Ulyss', $caseSensitive: true } }, { isbn: 'fake isbn 2' }] })}`,
+      url: `/export?_q=${JSON.stringify({
+        $or: [{
+          $text: {
+            $search: 'Ulyss',
+            $caseSensitive: true,
+          },
+        }, { isbn: 'fake isbn 2' }],
+      })}`,
       acl_rows: undefined,
       found: HTTP_PUBLIC_FIXTURES.filter(f => f.name === 'Ulysses' || f.isbn === 'fake isbn 2'),
       expectedColumns: DEFAULT_COLUMNS_WITH_SCORE,
@@ -927,7 +942,14 @@ tap.test('HTTP GET /export - $text search', async t => {
     },
     {
       name: 'with filter with $text search with all options',
-      url: `/export?_q=${JSON.stringify({ $text: { $search: 'Ulyss', $caseSensitive: true, $language: 'en', $diacriticSensitive: false } })}`,
+      url: `/export?_q=${JSON.stringify({
+        $text: {
+          $search: 'Ulyss',
+          $caseSensitive: true,
+          $language: 'en',
+          $diacriticSensitive: false,
+        },
+      })}`,
       acl_rows: undefined,
       found: HTTP_PUBLIC_FIXTURES.filter(f => f.name === 'Ulysses'),
       expectedColumns: DEFAULT_COLUMNS_WITH_SCORE,
@@ -950,7 +972,7 @@ tap.test('HTTP GET /export - $text search', async t => {
       found: HTTP_PUBLIC_FIXTURES.filter(f => f.price > 50 && f.name === 'Ulysses'),
       expectedColumns: DEFAULT_COLUMNS_WITH_SCORE,
       textIndex: true,
-      scores: { },
+      scores: {},
     },
     {
       name: 'with acl_read_columns and $text search filter',
@@ -1071,7 +1093,7 @@ tap.test('HTTP GET /export - $text search', async t => {
         const foundCsv = csvStringify.stringify(foundWithScores, {
           encoding: 'utf8',
           delimiter: ',',
-          escape: '\\',
+          escape: '"',
           header: true,
           quoted_string: true,
           columns: conf.expectedColumns,
@@ -1211,7 +1233,7 @@ tap.test('HTTP GET /export with _id in querystring', async t => {
         const foundCsv = csvStringify.stringify(found, {
           encoding: 'utf8',
           delimiter: ',',
-          escape: '\\',
+          escape: '"',
           header: true,
           quoted_string: true,
           columns: conf.expectedColumns,

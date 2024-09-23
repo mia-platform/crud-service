@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 
 - enable bom stripping when importing CSV files
+- change CSV _escape_ character to align it with CSV field _quote_ character, as recommended by [RFC 4180](https://datatracker.ietf.org/doc/html/rfc4180)
 
 ## 7.1.1 - 2024-08-29
 
