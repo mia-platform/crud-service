@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## 7.2.0 - 2024-09-23
+
 ### Added
 
 - introduce support for Array of ObjectIds at document root level
