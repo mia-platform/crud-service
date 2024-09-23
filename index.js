@@ -222,6 +222,8 @@ async function setupCruds(fastify) {
     await fastify.register(iterateOverCollectionDefinitionAndRegisterCruds)
     await fastify.register(joinPlugin, { prefix: '/join' })
     await fastify.register(registerHelperRoutes, { prefix: HELPERS_PREFIX })
+  } else {
+    fastify.log.warn('no collection definition provided')
   }
 
   /** ===============================  HOOKS  ===============================  */
@@ -245,7 +247,12 @@ module.exports = async function plugin(fastify, opts) {
       files: 1,
     },
   })
-  await fastify.register(fp(setupCruds, { decorators: { fastify: ['config'] } }))
+
+  try {
+    await fastify.register(fp(setupCruds, { decorators: { fastify: ['config'] } }))
+  } catch (error) {
+    fastify.log.fatal({ cause: error }, 'failed to setup CRUD Service components')
+  }
 }
 
 module.exports.options = {
