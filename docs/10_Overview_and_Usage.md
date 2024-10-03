@@ -215,7 +215,7 @@ When a new property is added to a collection, it is possible to specify the foll
 - Array of Numbers
 - Array of Objects
 
-For the Objects and array of Objects, you could add a JSON Schema describing the expected properties.
+For the Objects and array of Objects, it is <u>recommended</u> adding a JSON Schema describing the expected properties. This additional schema helps in disambiguating between valid or invalid requests payloads, especially when using update modifiers in the update commands within `PATCH` body.
 
 ### Collection document properties
 
