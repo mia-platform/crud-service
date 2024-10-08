@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fixed
+
+- improve how query parser discriminates update _operator modifiers_ (e.g. `$each`) from actual record value
+- introduce support for `$eq` operator also for integer fields (the ones defined in nested array and objects)
+
 ## 7.2.0 - 2024-09-23
 
 ### Added
