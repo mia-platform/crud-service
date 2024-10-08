@@ -64,6 +64,7 @@ tap.test('queryParser utils', t => {
         'metadata.somethingArrayObject': 'Array',
         'metadata.somethingArrayObject.arrayItemObjectChildNumber': 'number',
         'metadata.somethingArrayObject.anotherNumber': 'number',
+        'metadata.somethingArrayObject.integerNum': 'integer',
         'metadata.somethingArrayObject.anotherObject': 'RawObject',
         'metadata.somethingObject': 'RawObject',
         'metadata.somethingObject.childNumber': 'number',

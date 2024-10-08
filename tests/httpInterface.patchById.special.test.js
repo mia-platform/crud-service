@@ -870,7 +870,7 @@ tap.test('HTTP PATCH /<id> - ', async t => {
         t.strictSame(JSON.parse(response.payload), {
           statusCode: 400,
           error: 'Bad Request',
-          message: "body/$push/attachments must have required property 'name', body/$push/attachments must NOT have additional properties, body/$push/attachments must match exactly one schema in oneOf",
+          message: "body/$push/attachments must have required property 'name', body/$push/attachments must have required property '$', body/$push/attachments must have required property '$each', body/$push/attachments must have required property '$sort', body/$push/attachments must have required property '$in', body/$push/attachments must have required property '$position', body/$push/attachments must have required property '$each', body/$push/attachments must match a schema in anyOf, body/$push/attachments must match a schema in anyOf",
           code: 'FST_ERR_VALIDATION',
         })
 
@@ -902,7 +902,7 @@ tap.test('HTTP PATCH /<id> - ', async t => {
         t.strictSame(JSON.parse(response.payload), {
           statusCode: 400,
           error: 'Bad Request',
-          message: 'body/$push/attachments must NOT have additional properties, body/$push/attachments must NOT have additional properties, body/$push/attachments must match exactly one schema in oneOf. Property "unknownField" is not defined in validation schema',
+          message: 'body/$push/attachments must NOT have additional properties, body/$push/attachments must have required property \'$\', body/$push/attachments must have required property \'$each\', body/$push/attachments must have required property \'$sort\', body/$push/attachments must have required property \'$in\', body/$push/attachments must have required property \'$position\', body/$push/attachments must have required property \'$each\', body/$push/attachments must match a schema in anyOf, body/$push/attachments must match a schema in anyOf. Property "unknownField" is not defined in validation schema',
         })
 
         t.end()
@@ -1100,7 +1100,7 @@ tap.test('HTTP PATCH /<id> - ', async t => {
         t.strictSame(JSON.parse(response.payload), {
           statusCode: 400,
           error: 'Bad Request',
-          message: "body/$addToSet/attachments must have required property 'name', body/$addToSet/attachments must NOT have additional properties, body/$addToSet/attachments must match exactly one schema in oneOf",
+          message: "body/$addToSet/attachments must have required property 'name', body/$addToSet/attachments must have required property '$', body/$addToSet/attachments must have required property '$each', body/$addToSet/attachments must have required property '$sort', body/$addToSet/attachments must have required property '$in', body/$addToSet/attachments must have required property '$position', body/$addToSet/attachments must have required property '$each', body/$addToSet/attachments must match a schema in anyOf, body/$addToSet/attachments must match a schema in anyOf",
           code: 'FST_ERR_VALIDATION',
         })
         t.end()
@@ -1130,7 +1130,7 @@ tap.test('HTTP PATCH /<id> - ', async t => {
         t.strictSame(JSON.parse(response.payload), {
           statusCode: 400,
           error: 'Bad Request',
-          message: 'body/$addToSet/attachments must NOT have additional properties, body/$addToSet/attachments must NOT have additional properties, body/$addToSet/attachments must match exactly one schema in oneOf. Property "unknownField" is not defined in validation schema',
+          message: 'body/$addToSet/attachments must NOT have additional properties, body/$addToSet/attachments must have required property \'$\', body/$addToSet/attachments must have required property \'$each\', body/$addToSet/attachments must have required property \'$sort\', body/$addToSet/attachments must have required property \'$in\', body/$addToSet/attachments must have required property \'$position\', body/$addToSet/attachments must have required property \'$each\', body/$addToSet/attachments must match a schema in anyOf, body/$addToSet/attachments must match a schema in anyOf. Property "unknownField" is not defined in validation schema',
         })
         t.end()
       })

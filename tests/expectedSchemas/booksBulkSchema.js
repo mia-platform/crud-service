@@ -174,6 +174,9 @@ module.exports = {
                   'anotherNumber': {
                     'type': 'number',
                   },
+                  'integerNum': {
+                    'type': 'integer',
+                  },
                   'anotherObject': {
                     'type': 'object',
                     'nullable': true,

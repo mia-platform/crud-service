@@ -394,6 +394,9 @@ module.exports = {
       'metadata\\.somethingArrayObject\\.\\d+\\.anotherNumber$': {
         'type': 'number',
       },
+      'metadata\\.somethingArrayObject\\.\\d+\\.integerNum$': {
+        'type': 'integer',
+      },
       'metadata\\.somethingObject\\..+$': true,
       'metadata\\.somethingArrayOfNumbers\\.\\d+$': {
         'type': 'number',
@@ -618,6 +621,9 @@ module.exports = {
                     },
                     'anotherNumber': {
                       'type': 'number',
+                    },
+                    'integerNum': {
+                      'type': 'integer',
                     },
                     'anotherObject': {
                       'type': 'object',

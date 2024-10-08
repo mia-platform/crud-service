@@ -360,6 +360,9 @@ module.exports = {
       'metadata\\.somethingArrayObject\\.\\d+\\.anotherNumber$': {
         'type': 'number',
       },
+      'metadata\\.somethingArrayObject\\.\\d+\\.integerNum$': {
+        'type': 'integer',
+      },
       'metadata\\.somethingObject\\..+$': true,
       'metadata\\.somethingArrayOfNumbers\\.\\d+$': {
         'type': 'number',
@@ -567,6 +570,9 @@ module.exports = {
                     },
                     'anotherNumber': {
                       'type': 'number',
+                    },
+                    'integerNum': {
+                      'type': 'integer',
                     },
                     'anotherObject': {
                       'type': 'object',
@@ -901,6 +907,9 @@ module.exports = {
                 'anotherNumber': {
                   'type': 'number',
                 },
+                'integerNum': {
+                  'type': 'integer',
+                },
                 'anotherObject': {
                   'type': 'object',
                   'nullable': true,
@@ -948,6 +957,9 @@ module.exports = {
               'anotherNumber': {
                 'type': 'number',
               },
+              'integerNum': {
+                'type': 'integer',
+              },
               'anotherObject': {
                 'type': 'object',
                 'nullable': true,
@@ -966,6 +978,9 @@ module.exports = {
               },
               'anotherNumber': {
                 'type': 'number',
+              },
+              'integerNum': {
+                'type': 'integer',
               },
               'anotherObject': {
                 'type': 'object',
@@ -996,6 +1011,9 @@ module.exports = {
               'anotherNumber': {
                 'type': 'number',
               },
+              'integerNum': {
+                'type': 'integer',
+              },
               'anotherObject': {
                 'type': 'object',
                 'nullable': true,
@@ -1012,6 +1030,9 @@ module.exports = {
           },
           'metadata\\.somethingArrayObject\\.\\d+\\.anotherNumber$': {
             'type': 'number',
+          },
+          'metadata\\.somethingArrayObject\\.\\d+\\.integerNum$': {
+            'type': 'integer',
           },
           'metadata\\.somethingArrayObject\\.\\d+\\.anotherObject$': {
             'type': 'object',
@@ -1367,7 +1388,7 @@ module.exports = {
         'type': 'object',
         'properties': {
           'tags': {
-            'oneOf': [
+            'anyOf': [
               {
                 'type': 'string',
               },
@@ -1382,6 +1403,15 @@ module.exports = {
                       {
                         'type': 'array',
                       },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
                     ],
                   },
                   '$each': {
@@ -1395,24 +1425,10 @@ module.exports = {
                     ],
                   },
                   '$position': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$slice': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$sort': {
                     'oneOf': [
@@ -1420,7 +1436,7 @@ module.exports = {
                         'type': 'object',
                       },
                       {
-                        'type': 'array',
+                        'type': 'number',
                       },
                     ],
                   },
@@ -1435,12 +1451,44 @@ module.exports = {
                     ],
                   },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
                 'additionalProperties': false,
               },
             ],
           },
           'tagIds': {
-            'oneOf': [
+            'anyOf': [
               {
                 'type': 'number',
               },
@@ -1455,6 +1503,15 @@ module.exports = {
                       {
                         'type': 'array',
                       },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
                     ],
                   },
                   '$each': {
@@ -1468,24 +1525,10 @@ module.exports = {
                     ],
                   },
                   '$position': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$slice': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$sort': {
                     'oneOf': [
@@ -1493,7 +1536,7 @@ module.exports = {
                         'type': 'object',
                       },
                       {
-                        'type': 'array',
+                        'type': 'number',
                       },
                     ],
                   },
@@ -1508,12 +1551,44 @@ module.exports = {
                     ],
                   },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
                 'additionalProperties': false,
               },
             ],
           },
           'tagObjectIds': {
-            'oneOf': [
+            'anyOf': [
               {
                 'type': 'string',
                 'description': 'Hexadecimal identifier of the document in the collection',
@@ -1531,6 +1606,15 @@ module.exports = {
                       {
                         'type': 'array',
                       },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
                     ],
                   },
                   '$each': {
@@ -1544,24 +1628,10 @@ module.exports = {
                     ],
                   },
                   '$position': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$slice': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$sort': {
                     'oneOf': [
@@ -1569,7 +1639,7 @@ module.exports = {
                         'type': 'object',
                       },
                       {
-                        'type': 'array',
+                        'type': 'number',
                       },
                     ],
                   },
@@ -1584,12 +1654,44 @@ module.exports = {
                     ],
                   },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
                 'additionalProperties': false,
               },
             ],
           },
           'attachments': {
-            'oneOf': [
+            'anyOf': [
               {
                 'type': 'object',
                 'additionalProperties': false,
@@ -1646,6 +1748,15 @@ module.exports = {
                       {
                         'type': 'array',
                       },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
                     ],
                   },
                   '$each': {
@@ -1659,24 +1770,10 @@ module.exports = {
                     ],
                   },
                   '$position': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$slice': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$sort': {
                     'oneOf': [
@@ -1684,7 +1781,7 @@ module.exports = {
                         'type': 'object',
                       },
                       {
-                        'type': 'array',
+                        'type': 'number',
                       },
                     ],
                   },
@@ -1699,12 +1796,44 @@ module.exports = {
                     ],
                   },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
                 'additionalProperties': false,
               },
             ],
           },
           'editionsDates': {
-            'oneOf': [
+            'anyOf': [
               {
                 'type': 'object',
                 'additionalProperties': true,
@@ -1729,6 +1858,15 @@ module.exports = {
                       {
                         'type': 'array',
                       },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
                     ],
                   },
                   '$each': {
@@ -1742,24 +1880,10 @@ module.exports = {
                     ],
                   },
                   '$position': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$slice': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$sort': {
                     'oneOf': [
@@ -1767,7 +1891,7 @@ module.exports = {
                         'type': 'object',
                       },
                       {
-                        'type': 'array',
+                        'type': 'number',
                       },
                     ],
                   },
@@ -1782,6 +1906,38 @@ module.exports = {
                     ],
                   },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
                 'additionalProperties': false,
               },
             ],
@@ -1794,6 +1950,9 @@ module.exports = {
               },
               'anotherNumber': {
                 'type': 'number',
+              },
+              'integerNum': {
+                'type': 'integer',
               },
               'anotherObject': {
                 'type': 'object',
@@ -1836,7 +1995,7 @@ module.exports = {
         'type': 'object',
         'properties': {
           'tags': {
-            'oneOf': [
+            'anyOf': [
               {
                 'type': 'string',
               },
@@ -1851,6 +2010,15 @@ module.exports = {
                       {
                         'type': 'array',
                       },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
                     ],
                   },
                   '$each': {
@@ -1864,24 +2032,10 @@ module.exports = {
                     ],
                   },
                   '$position': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$slice': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$sort': {
                     'oneOf': [
@@ -1889,7 +2043,7 @@ module.exports = {
                         'type': 'object',
                       },
                       {
-                        'type': 'array',
+                        'type': 'number',
                       },
                     ],
                   },
@@ -1904,12 +2058,44 @@ module.exports = {
                     ],
                   },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
                 'additionalProperties': false,
               },
             ],
           },
           'tagIds': {
-            'oneOf': [
+            'anyOf': [
               {
                 'type': 'number',
               },
@@ -1924,6 +2110,15 @@ module.exports = {
                       {
                         'type': 'array',
                       },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
                     ],
                   },
                   '$each': {
@@ -1937,24 +2132,10 @@ module.exports = {
                     ],
                   },
                   '$position': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$slice': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$sort': {
                     'oneOf': [
@@ -1962,7 +2143,7 @@ module.exports = {
                         'type': 'object',
                       },
                       {
-                        'type': 'array',
+                        'type': 'number',
                       },
                     ],
                   },
@@ -1977,12 +2158,44 @@ module.exports = {
                     ],
                   },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
                 'additionalProperties': false,
               },
             ],
           },
           'tagObjectIds': {
-            'oneOf': [
+            'anyOf': [
               {
                 'type': 'string',
                 'description': 'Hexadecimal identifier of the document in the collection',
@@ -2000,6 +2213,15 @@ module.exports = {
                       {
                         'type': 'array',
                       },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
                     ],
                   },
                   '$each': {
@@ -2013,24 +2235,10 @@ module.exports = {
                     ],
                   },
                   '$position': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$slice': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$sort': {
                     'oneOf': [
@@ -2038,7 +2246,7 @@ module.exports = {
                         'type': 'object',
                       },
                       {
-                        'type': 'array',
+                        'type': 'number',
                       },
                     ],
                   },
@@ -2053,12 +2261,44 @@ module.exports = {
                     ],
                   },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
                 'additionalProperties': false,
               },
             ],
           },
           'attachments': {
-            'oneOf': [
+            'anyOf': [
               {
                 'type': 'object',
                 'additionalProperties': false,
@@ -2115,6 +2355,15 @@ module.exports = {
                       {
                         'type': 'array',
                       },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
                     ],
                   },
                   '$each': {
@@ -2128,24 +2377,10 @@ module.exports = {
                     ],
                   },
                   '$position': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$slice': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$sort': {
                     'oneOf': [
@@ -2153,7 +2388,7 @@ module.exports = {
                         'type': 'object',
                       },
                       {
-                        'type': 'array',
+                        'type': 'number',
                       },
                     ],
                   },
@@ -2168,12 +2403,44 @@ module.exports = {
                     ],
                   },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
                 'additionalProperties': false,
               },
             ],
           },
           'editionsDates': {
-            'oneOf': [
+            'anyOf': [
               {
                 'type': 'object',
                 'additionalProperties': true,
@@ -2198,6 +2465,15 @@ module.exports = {
                       {
                         'type': 'array',
                       },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
                     ],
                   },
                   '$each': {
@@ -2211,24 +2487,10 @@ module.exports = {
                     ],
                   },
                   '$position': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$slice': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$sort': {
                     'oneOf': [
@@ -2236,7 +2498,7 @@ module.exports = {
                         'type': 'object',
                       },
                       {
-                        'type': 'array',
+                        'type': 'number',
                       },
                     ],
                   },
@@ -2251,6 +2513,38 @@ module.exports = {
                     ],
                   },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
                 'additionalProperties': false,
               },
             ],
@@ -2263,6 +2557,9 @@ module.exports = {
               },
               'anotherNumber': {
                 'type': 'number',
+              },
+              'integerNum': {
+                'type': 'integer',
               },
               'anotherObject': {
                 'type': 'object',
@@ -2299,6 +2596,15 @@ module.exports = {
                       {
                         'type': 'array',
                       },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
                     ],
                   },
                   '$each': {
@@ -2312,24 +2618,10 @@ module.exports = {
                     ],
                   },
                   '$position': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$slice': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$sort': {
                     'oneOf': [
@@ -2337,7 +2629,7 @@ module.exports = {
                         'type': 'object',
                       },
                       {
-                        'type': 'array',
+                        'type': 'number',
                       },
                     ],
                   },
@@ -2352,6 +2644,38 @@ module.exports = {
                     ],
                   },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
                 'additionalProperties': false,
               },
             ],
@@ -2370,6 +2694,15 @@ module.exports = {
                       {
                         'type': 'array',
                       },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
                     ],
                   },
                   '$each': {
@@ -2383,24 +2716,10 @@ module.exports = {
                     ],
                   },
                   '$position': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$slice': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$sort': {
                     'oneOf': [
@@ -2408,7 +2727,7 @@ module.exports = {
                         'type': 'object',
                       },
                       {
-                        'type': 'array',
+                        'type': 'number',
                       },
                     ],
                   },
@@ -2423,6 +2742,38 @@ module.exports = {
                     ],
                   },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
                 'additionalProperties': false,
               },
             ],
@@ -2443,6 +2794,15 @@ module.exports = {
                       {
                         'type': 'array',
                       },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
                     ],
                   },
                   '$each': {
@@ -2456,24 +2816,10 @@ module.exports = {
                     ],
                   },
                   '$position': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$slice': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$sort': {
                     'oneOf': [
@@ -2481,7 +2827,7 @@ module.exports = {
                         'type': 'object',
                       },
                       {
-                        'type': 'array',
+                        'type': 'number',
                       },
                     ],
                   },
@@ -2496,6 +2842,38 @@ module.exports = {
                     ],
                   },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
                 'additionalProperties': false,
               },
             ],
@@ -2516,6 +2894,15 @@ module.exports = {
                       {
                         'type': 'array',
                       },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
                     ],
                   },
                   '$each': {
@@ -2529,24 +2916,10 @@ module.exports = {
                     ],
                   },
                   '$position': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$slice': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$sort': {
                     'oneOf': [
@@ -2554,7 +2927,7 @@ module.exports = {
                         'type': 'object',
                       },
                       {
-                        'type': 'array',
+                        'type': 'number',
                       },
                     ],
                   },
@@ -2569,6 +2942,38 @@ module.exports = {
                     ],
                   },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
                 'additionalProperties': false,
               },
             ],
@@ -2587,6 +2992,15 @@ module.exports = {
                       {
                         'type': 'array',
                       },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
                     ],
                   },
                   '$each': {
@@ -2600,24 +3014,10 @@ module.exports = {
                     ],
                   },
                   '$position': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$slice': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$sort': {
                     'oneOf': [
@@ -2625,7 +3025,7 @@ module.exports = {
                         'type': 'object',
                       },
                       {
-                        'type': 'array',
+                        'type': 'number',
                       },
                     ],
                   },
@@ -2640,6 +3040,38 @@ module.exports = {
                     ],
                   },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
                 'additionalProperties': false,
               },
             ],
@@ -2660,6 +3092,15 @@ module.exports = {
                       {
                         'type': 'array',
                       },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
                     ],
                   },
                   '$each': {
@@ -2673,24 +3114,10 @@ module.exports = {
                     ],
                   },
                   '$position': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$slice': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$sort': {
                     'oneOf': [
@@ -2698,7 +3125,7 @@ module.exports = {
                         'type': 'object',
                       },
                       {
-                        'type': 'array',
+                        'type': 'number',
                       },
                     ],
                   },
@@ -2713,6 +3140,38 @@ module.exports = {
                     ],
                   },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
                 'additionalProperties': false,
               },
             ],
@@ -2731,6 +3190,15 @@ module.exports = {
                       {
                         'type': 'array',
                       },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
                     ],
                   },
                   '$each': {
@@ -2744,24 +3212,10 @@ module.exports = {
                     ],
                   },
                   '$position': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$slice': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$sort': {
                     'oneOf': [
@@ -2769,7 +3223,7 @@ module.exports = {
                         'type': 'object',
                       },
                       {
-                        'type': 'array',
+                        'type': 'number',
                       },
                     ],
                   },
@@ -2784,6 +3238,38 @@ module.exports = {
                     ],
                   },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
                 'additionalProperties': false,
               },
             ],
@@ -2795,7 +3281,7 @@ module.exports = {
         'type': 'object',
         'properties': {
           'tags': {
-            'oneOf': [
+            'anyOf': [
               {
                 'type': 'string',
               },
@@ -2810,6 +3296,15 @@ module.exports = {
                       {
                         'type': 'array',
                       },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
                     ],
                   },
                   '$each': {
@@ -2823,24 +3318,10 @@ module.exports = {
                     ],
                   },
                   '$position': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$slice': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$sort': {
                     'oneOf': [
@@ -2848,7 +3329,7 @@ module.exports = {
                         'type': 'object',
                       },
                       {
-                        'type': 'array',
+                        'type': 'number',
                       },
                     ],
                   },
@@ -2863,12 +3344,44 @@ module.exports = {
                     ],
                   },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
                 'additionalProperties': false,
               },
             ],
           },
           'tagIds': {
-            'oneOf': [
+            'anyOf': [
               {
                 'type': 'number',
               },
@@ -2883,6 +3396,15 @@ module.exports = {
                       {
                         'type': 'array',
                       },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
                     ],
                   },
                   '$each': {
@@ -2896,24 +3418,10 @@ module.exports = {
                     ],
                   },
                   '$position': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$slice': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$sort': {
                     'oneOf': [
@@ -2921,7 +3429,7 @@ module.exports = {
                         'type': 'object',
                       },
                       {
-                        'type': 'array',
+                        'type': 'number',
                       },
                     ],
                   },
@@ -2936,12 +3444,44 @@ module.exports = {
                     ],
                   },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
                 'additionalProperties': false,
               },
             ],
           },
           'tagObjectIds': {
-            'oneOf': [
+            'anyOf': [
               {
                 'type': 'string',
                 'description': 'Hexadecimal identifier of the document in the collection',
@@ -2959,6 +3499,15 @@ module.exports = {
                       {
                         'type': 'array',
                       },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
                     ],
                   },
                   '$each': {
@@ -2972,24 +3521,10 @@ module.exports = {
                     ],
                   },
                   '$position': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$slice': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$sort': {
                     'oneOf': [
@@ -2997,7 +3532,7 @@ module.exports = {
                         'type': 'object',
                       },
                       {
-                        'type': 'array',
+                        'type': 'number',
                       },
                     ],
                   },
@@ -3012,12 +3547,44 @@ module.exports = {
                     ],
                   },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
                 'additionalProperties': false,
               },
             ],
           },
           'attachments': {
-            'oneOf': [
+            'anyOf': [
               {
                 'type': 'object',
                 'additionalProperties': false,
@@ -3074,6 +3641,15 @@ module.exports = {
                       {
                         'type': 'array',
                       },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
                     ],
                   },
                   '$each': {
@@ -3087,24 +3663,10 @@ module.exports = {
                     ],
                   },
                   '$position': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$slice': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$sort': {
                     'oneOf': [
@@ -3112,7 +3674,7 @@ module.exports = {
                         'type': 'object',
                       },
                       {
-                        'type': 'array',
+                        'type': 'number',
                       },
                     ],
                   },
@@ -3127,12 +3689,44 @@ module.exports = {
                     ],
                   },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
                 'additionalProperties': false,
               },
             ],
           },
           'editionsDates': {
-            'oneOf': [
+            'anyOf': [
               {
                 'type': 'object',
                 'additionalProperties': true,
@@ -3157,6 +3751,15 @@ module.exports = {
                       {
                         'type': 'array',
                       },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
                     ],
                   },
                   '$each': {
@@ -3170,24 +3773,10 @@ module.exports = {
                     ],
                   },
                   '$position': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$slice': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$sort': {
                     'oneOf': [
@@ -3195,7 +3784,7 @@ module.exports = {
                         'type': 'object',
                       },
                       {
-                        'type': 'array',
+                        'type': 'number',
                       },
                     ],
                   },
@@ -3210,6 +3799,38 @@ module.exports = {
                     ],
                   },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
                 'additionalProperties': false,
               },
             ],
@@ -3222,6 +3843,9 @@ module.exports = {
               },
               'anotherNumber': {
                 'type': 'number',
+              },
+              'integerNum': {
+                'type': 'integer',
               },
               'anotherObject': {
                 'type': 'object',
@@ -3258,6 +3882,15 @@ module.exports = {
                       {
                         'type': 'array',
                       },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
                     ],
                   },
                   '$each': {
@@ -3271,24 +3904,10 @@ module.exports = {
                     ],
                   },
                   '$position': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$slice': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$sort': {
                     'oneOf': [
@@ -3296,7 +3915,7 @@ module.exports = {
                         'type': 'object',
                       },
                       {
-                        'type': 'array',
+                        'type': 'number',
                       },
                     ],
                   },
@@ -3311,6 +3930,38 @@ module.exports = {
                     ],
                   },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
                 'additionalProperties': false,
               },
             ],
@@ -3329,6 +3980,15 @@ module.exports = {
                       {
                         'type': 'array',
                       },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
                     ],
                   },
                   '$each': {
@@ -3342,24 +4002,10 @@ module.exports = {
                     ],
                   },
                   '$position': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$slice': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$sort': {
                     'oneOf': [
@@ -3367,7 +4013,7 @@ module.exports = {
                         'type': 'object',
                       },
                       {
-                        'type': 'array',
+                        'type': 'number',
                       },
                     ],
                   },
@@ -3382,6 +4028,38 @@ module.exports = {
                     ],
                   },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
                 'additionalProperties': false,
               },
             ],
@@ -3402,6 +4080,15 @@ module.exports = {
                       {
                         'type': 'array',
                       },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
                     ],
                   },
                   '$each': {
@@ -3415,24 +4102,10 @@ module.exports = {
                     ],
                   },
                   '$position': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$slice': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$sort': {
                     'oneOf': [
@@ -3440,7 +4113,7 @@ module.exports = {
                         'type': 'object',
                       },
                       {
-                        'type': 'array',
+                        'type': 'number',
                       },
                     ],
                   },
@@ -3455,6 +4128,38 @@ module.exports = {
                     ],
                   },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
                 'additionalProperties': false,
               },
             ],
@@ -3475,6 +4180,15 @@ module.exports = {
                       {
                         'type': 'array',
                       },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
                     ],
                   },
                   '$each': {
@@ -3488,24 +4202,10 @@ module.exports = {
                     ],
                   },
                   '$position': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$slice': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$sort': {
                     'oneOf': [
@@ -3513,7 +4213,7 @@ module.exports = {
                         'type': 'object',
                       },
                       {
-                        'type': 'array',
+                        'type': 'number',
                       },
                     ],
                   },
@@ -3528,6 +4228,38 @@ module.exports = {
                     ],
                   },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
                 'additionalProperties': false,
               },
             ],
@@ -3546,6 +4278,15 @@ module.exports = {
                       {
                         'type': 'array',
                       },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
                     ],
                   },
                   '$each': {
@@ -3559,24 +4300,10 @@ module.exports = {
                     ],
                   },
                   '$position': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$slice': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$sort': {
                     'oneOf': [
@@ -3584,7 +4311,7 @@ module.exports = {
                         'type': 'object',
                       },
                       {
-                        'type': 'array',
+                        'type': 'number',
                       },
                     ],
                   },
@@ -3599,6 +4326,38 @@ module.exports = {
                     ],
                   },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
                 'additionalProperties': false,
               },
             ],
@@ -3619,6 +4378,15 @@ module.exports = {
                       {
                         'type': 'array',
                       },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
                     ],
                   },
                   '$each': {
@@ -3632,24 +4400,10 @@ module.exports = {
                     ],
                   },
                   '$position': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$slice': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$sort': {
                     'oneOf': [
@@ -3657,7 +4411,7 @@ module.exports = {
                         'type': 'object',
                       },
                       {
-                        'type': 'array',
+                        'type': 'number',
                       },
                     ],
                   },
@@ -3672,6 +4426,38 @@ module.exports = {
                     ],
                   },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
                 'additionalProperties': false,
               },
             ],
@@ -3690,6 +4476,15 @@ module.exports = {
                       {
                         'type': 'array',
                       },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
                     ],
                   },
                   '$each': {
@@ -3703,24 +4498,10 @@ module.exports = {
                     ],
                   },
                   '$position': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$slice': {
-                    'oneOf': [
-                      {
-                        'type': 'object',
-                      },
-                      {
-                        'type': 'array',
-                      },
-                    ],
+                    'type': 'number',
                   },
                   '$sort': {
                     'oneOf': [
@@ -3728,7 +4509,7 @@ module.exports = {
                         'type': 'object',
                       },
                       {
-                        'type': 'array',
+                        'type': 'number',
                       },
                     ],
                   },
@@ -3743,6 +4524,38 @@ module.exports = {
                     ],
                   },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
                 'additionalProperties': false,
               },
             ],
