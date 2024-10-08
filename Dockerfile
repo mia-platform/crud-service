@@ -1,4 +1,4 @@
-FROM node:20.17.0-bookworm-slim AS base-with-encryption
+FROM node:20.18.0-bookworm-slim AS base-with-encryption
 
 WORKDIR /cryptd
 
@@ -7,7 +7,7 @@ RUN curl https://downloads.mongodb.com/linux/mongo_crypt_shared_v1-linux-x86_64-
 
 ########################################################################################################################
 
-FROM node:20.17.0-bookworm-slim AS build
+FROM node:20.18.0-bookworm-slim AS build
 
 ARG COMMIT_SHA=<not-specified>
 ENV NODE_ENV=production
@@ -27,7 +27,7 @@ RUN echo "crud-service: $COMMIT_SHA" >> ./commit.sha
 
 # create a CRUD Service image that does not support automatic CSFLE
 # and therefore it can be employed by everybody in any MongoDB product
-FROM node:20.17.0-bookworm-slim AS crud-service-no-encryption
+FROM node:20.18.0-bookworm-slim AS crud-service-no-encryption
 
 # note: zlib can be removed once node image version is updated
 RUN apt-get update \
