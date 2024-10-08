@@ -154,6 +154,7 @@ module.exports = {
               properties: {
                 arrayItemObjectChildNumber: { type: 'number' },
                 anotherNumber: { type: 'number' },
+                integerNum: { type: 'integer' },
                 anotherObject: { type: 'object', nullable: true },
               },
               additionalProperties: true,

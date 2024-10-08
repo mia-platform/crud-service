@@ -334,6 +334,9 @@ module.exports = {
       'metadata\\.somethingArrayObject\\.\\d+\\.anotherNumber$': {
         'type': 'number',
       },
+      'metadata\\.somethingArrayObject\\.\\d+\\.integerNum$': {
+        'type': 'integer',
+      },
       'metadata\\.somethingObject\\..+$': true,
       'metadata\\.somethingArrayOfNumbers\\.\\d+$': {
         'type': 'number',
@@ -531,6 +534,9 @@ module.exports = {
                     },
                     'anotherNumber': {
                       'type': 'number',
+                    },
+                    'integerNum': {
+                      'type': 'integer',
                     },
                     'anotherObject': {
                       'type': 'object',
@@ -862,6 +868,9 @@ module.exports = {
                 'anotherNumber': {
                   'type': 'number',
                 },
+                'integerNum': {
+                  'type': 'integer',
+                },
                 'anotherObject': {
                   'type': 'object',
                   'nullable': true,
@@ -909,6 +918,9 @@ module.exports = {
               'anotherNumber': {
                 'type': 'number',
               },
+              'integerNum': {
+                'type': 'integer',
+              },
               'anotherObject': {
                 'type': 'object',
                 'nullable': true,
@@ -927,6 +939,9 @@ module.exports = {
               },
               'anotherNumber': {
                 'type': 'number',
+              },
+              'integerNum': {
+                'type': 'integer',
               },
               'anotherObject': {
                 'type': 'object',
@@ -957,6 +972,9 @@ module.exports = {
               'anotherNumber': {
                 'type': 'number',
               },
+              'integerNum': {
+                'type': 'integer',
+              },
               'anotherObject': {
                 'type': 'object',
                 'nullable': true,
@@ -973,6 +991,9 @@ module.exports = {
           },
           'metadata\\.somethingArrayObject\\.\\d+\\.anotherNumber$': {
             'type': 'number',
+          },
+          'metadata\\.somethingArrayObject\\.\\d+\\.integerNum$': {
+            'type': 'integer',
           },
           'metadata\\.somethingArrayObject\\.\\d+\\.anotherObject$': {
             'type': 'object',
@@ -1888,6 +1909,9 @@ module.exports = {
               'anotherNumber': {
                 'type': 'number',
               },
+              'integerNum': {
+                'type': 'integer',
+              },
               'anotherObject': {
                 'type': 'object',
                 'nullable': true,
@@ -2488,6 +2512,9 @@ module.exports = {
               },
               'anotherNumber': {
                 'type': 'number',
+              },
+              'integerNum': {
+                'type': 'integer',
               },
               'anotherObject': {
                 'type': 'object',
@@ -3769,6 +3796,9 @@ module.exports = {
               'anotherNumber': {
                 'type': 'number',
               },
+              'integerNum': {
+                'type': 'integer',
+              },
               'anotherObject': {
                 'type': 'object',
                 'nullable': true,
@@ -4661,6 +4691,9 @@ module.exports = {
                   },
                   'anotherNumber': {
                     'type': 'number',
+                  },
+                  'integerNum': {
+                    'type': 'integer',
                   },
                   'anotherObject': {
                     'type': 'object',

@@ -254,6 +254,13 @@ tap.test('queryParser', t => {
       ])
       .concat([
         {
+          name: 'equality on integer',
+          query: { 'metadata.somethingArrayObject.integerNum': { $eq: 7 } },
+          expected: { 'metadata.somethingArrayObject.integerNum': { $eq: 7 } },
+        },
+      ])
+      .concat([
+        {
           name: '$exists - string',
           query: { name: { $exists: true } },
           expected: { name: { $exists: true } },

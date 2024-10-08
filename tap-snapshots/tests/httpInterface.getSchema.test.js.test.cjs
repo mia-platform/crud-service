@@ -225,6 +225,9 @@ Object {
               "arrayItemObjectChildNumber": Object {
                 "type": "number",
               },
+              "integerNum": Object {
+                "type": "integer",
+              },
             },
             "required": Array [
               "arrayItemObjectChildNumber",
