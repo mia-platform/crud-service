@@ -44,7 +44,7 @@ jobs:
           CRYPT_SHARED_LIB_PATH: ${{ github.workspace }}/crypt_shared/lib/mongo_crypt_v1.so
 
       - name: Coveralls
-        uses: coverallsapp/github-action@v2.3.0
+        uses: coverallsapp/github-action@v2.3.1
         with:
           github-token: ${{ secrets.token }}
           file: .tap/report/lcov.info
