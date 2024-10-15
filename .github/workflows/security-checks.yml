@@ -12,7 +12,7 @@ on:
     secrets:
       security_checks_token:
         required: true
-        
+
 jobs:
   security-checks:
     name: Triggers security checks
