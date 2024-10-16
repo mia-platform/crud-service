@@ -3,7 +3,26 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
+      timezone: "Europe/Rome"
+    groups:
+      minor-actions-dependencies:
+        update-types:
+        - "minor"
+        - "patch"
+    commit-message:
+      include: "scope"
+      prefix: "ci"
+
+  - package-ecosystem: "devcontainers"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+      timezone: "Europe/Rome"
+    commit-message:
+      include: "scope"
+      prefix: "build"
+
 
   - package-ecosystem: "npm"
     directory: "/"
