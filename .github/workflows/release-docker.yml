@@ -2,11 +2,6 @@ name: Docker container release
 
 on:
   workflow_call:
-    inputs:
-      push:
-        default: false
-        required: false
-        type: boolean
     secrets:
       docker_username:
         required: true
@@ -14,78 +9,121 @@ on:
         required: true
       github_cr_token:
         required: true
-      security_checks_token:
-        required: true
       nexus_username:
         required: true
       nexus_token:
         required: true
+      kms_gcp_poject:
+        required: false
+      gcp_wif:
+        required: false
+      cosign_key:
+        required: false
 
 jobs:
   release-docker:
-    name: Build docker image
+    name: Build Docker Images
     runs-on: ubuntu-latest
-
+    permissions:
+      actions: read
+      contents: write
+      packages: write
+      id-token: write
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Configure docker metadata
-        id: meta
-        uses: docker/metadata-action@v4
-        with:
-          images: |
-            ghcr.io/mia-platform/crud-service
-            docker.io/miaplatform/crud-service
-            nexus.mia-platform.eu/core/crud-service
-          tags: |
-            type=ref,event=branch
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{major}}
-          labels: |
-            org.opencontainers.image.documentation=https://github.com/mia-platform/crud-service
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Docker Login to ghcr.io
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.github_cr_token }}
-
-      - name: Login to DockerHub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.docker_username }}
-          password: ${{ secrets.docker_token }}
-
-      - name: Login to Mia registry
-        uses: docker/login-action@v2
-        with:
-          registry: nexus.mia-platform.eu
-          username: ${{ secrets.nexus_username }}
-          password: ${{ secrets.nexus_token }}
-
-      - name: Prepare build cache
-        uses: actions/cache@v3
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
-      - name: Build and push
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          push: ${{ inputs.push }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache
-          build-args: |
-            BUILDTIME=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.created'] }}
-            VERSION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
+    - name: Checkout code
+      uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # v4.2.0
+      with:
+        show-progress: false
+    - name: Docker Login to GitHub Repository
+      uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3.3.0
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.github_cr_token }}
+    - name: Docker Login to DockerHub
+      uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3.3.0
+      with:
+        username: ${{ secrets.docker_username }}
+        password: ${{ secrets.docker_token }}
+    - name: Login to Mia registry
+      uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3.3.0
+      with:
+        registry: nexus.mia-platform.eu
+        username: ${{ secrets.nexus_username }}
+        password: ${{ secrets.nexus_token }}
+    - name: Install Cosign
+      uses: sigstore/cosign-installer@dc72c7d5c4d10cd6bcb8cf6e3fd625a9e5e537da # v3.7.0
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@49b3bc8e6bdd4a60e6116a5414239cba5943d3cf # v3.2.0
+      with:
+        platforms: amd64,arm64
+    - name: Configure docker metadata
+      id: meta
+      uses: docker/metadata-action@8e5442c4ef9f78752691e2d8f8d19755c6f78e81 # v5.5.1
+      env:
+        DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest # add 'index' when we will support a multiarch image
+      with:
+        images: |
+          ghcr.io/mia-platform/crud-service
+          docker.io/miaplatform/crud-service
+          nexus.mia-platform.eu/core/crud-service
+        tags: |
+          type=ref,event=branch
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=semver,pattern={{major}}
+        labels: |
+          org.opencontainers.image.authors=Mia Platform Core Team<core@mia-platform.eu>
+          org.opencontainers.image.documentation=https://docs.mia-platform.eu/docs/marketplace/handbooks/crud-oss-usage
+          org.opencontainers.image.vendor=Mia s.r.l.
+        annotations: |
+          org.opencontainers.image.authors=Mia Platform Core Team<core@mia-platform.eu>
+          org.opencontainers.image.documentation=https://docs.mia-platform.eu/docs/marketplace/handbooks/crud-oss-usage
+          org.opencontainers.image.vendor=Mia s.r.l.
+    - name: Setup Buildx Context
+      uses: docker/setup-buildx-action@988b5a0280414f521da01fcc63a27aeeb4b104db # v3.6.1
+      id: buildx
+      with:
+        platforms: linux/amd64,linux/arm64
+    - name: Build and push
+      id: docker-build
+      uses: docker/build-push-action@4f58ea79222b3b9dc2c8bbdd6debcef730109a75 # v6.9.0
+      with:
+        context: .
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        annotations: ${{ steps.meta.output.annotations }}
+        platforms: linux/amd64 # ${{ steps.buildx.outputs.platforms }} use this for multiarch images
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+    - name: Generate SBOM
+      uses: anchore/sbom-action@f5e124a5e5e1d497a692818ae907d3c45829d033 # v0.17.3
+      if: github.ref_type == 'tag'
+      with:
+        artifact-name: crud-service-sbom.spdx.json
+        output-file: ./crud-service-sbom.spdx.json
+        image: nexus.mia-platform.eu/core/crud-service:${{ steps.meta.output.version.main }}
+        upload-release-assets: true
+    - name: GCP Auth
+      uses: google-github-actions/auth@8254fb75a33b976a221574d287e93919e6a36f70 # v2.1.6
+      if: github.ref_type == 'tag'
+      with:
+        project_id: ${{ secrets.kms_gcp_poject }}
+        workload_identity_provider: ${{ secrets.gcp_wif }}
+        create_credentials_file: true
+    - name: Sign image with a key
+      if: github.ref_type == 'tag'
+      run: |
+        for tag in ${TAGS}; do
+          image="${tag}@${DIGEST}"
+          cosign sign --recursive --yes --key "${COSIGN_PRIVATE_KEY}" "${image}"
+          cosign attest --recursive --yes --key "${COSIGN_PRIVATE_KEY} --predicate "crud-service-sbom.spdx.json" --type="spdxjson" "${image}"
+        done
+      env:
+        TAGS: |
+          ghcr.io/mia-platform/crud-service:${{ steps.meta.output.version.main }}
+          docker.io/miaplatform/crud-service:${{ steps.meta.output.version.main }}
+          nexus.mia-platform.eu/core/crud-service:${{ steps.meta.output.version.main }}
+        DIGEST: ${{ steps.docker-build.outputs.digest }}
+        COSIGN_PRIVATE_KEY: ${{ secrets.cosign_key }}

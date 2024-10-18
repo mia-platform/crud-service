@@ -1,18 +1,30 @@
-FROM node:20.14.0-bullseye-slim as base-with-encryption
+# syntax=docker/dockerfile:1
+FROM docker.io/curlimages/curl:8.10.1@sha256:d9b4541e214bcd85196d6e92e2753ac6d0ea699f0af5741f8c6cccbfcf00ef4b AS crypt-lib
+
+ARG TARGETARCH
 
 WORKDIR /cryptd
 
-RUN apt-get update && \
-    apt-get install curl -y && \
-    curl https://repo.mongodb.com/apt/debian/dists/bullseye/mongodb-enterprise/6.0/main/binary-amd64/mongodb-enterprise-cryptd_6.0.15_amd64.deb -o mongocryptd.deb && \
-    curl https://libmongocrypt.s3.amazonaws.com/apt/debian/dists/bullseye/libmongocrypt/1.8/main/binary-amd64/libmongocrypt-dev_1.8.2-0_amd64.deb -o libmongocrypt-dev.deb && \
-    curl https://libmongocrypt.s3.amazonaws.com/apt/debian/dists/bullseye/libmongocrypt/1.8/main/binary-amd64/libmongocrypt0_1.8.2-0_amd64.deb -o libmongocrypt0.deb
+ARG CRYPTD_VERSION=7.0.14
+ARG CRYPTD_OS=debian12
+
+# debian doesn't suppport arm architecture for now, if we switch to ubuntu we can uncomment the arm bit
+RUN case "${TARGETARCH}" in \
+    'amd64') \
+      cryptd_arch="x86_64"; \
+    ;; \
+    # 'arm64') \
+    #   cryptd_arch="aarch64"; \
+    # ;; \
+    *) echo >&2 "error: unsupported architecture ($TARGETARCH)"; exit 1; ;; \
+    esac; \
+    curl -fsSL "https://downloads.mongodb.com/linux/mongo_crypt_shared_v1-linux-${cryptd_arch}-enterprise-${CRYPTD_OS}-${CRYPTD_VERSION}.tgz" -o "/tmp/mongo_crypt_shared.tgz" \
+    && tar -xvf "/tmp/mongo_crypt_shared.tgz" --no-same-permissions --no-same-owner -C "/cryptd"
 
 ########################################################################################################################
 
-FROM node:20.14.0-bullseye-slim as build
+FROM docker.io/library/node:20.18.0-bookworm-slim@sha256:967bab29ecde5d59a6dd781054bf9021eee8116068e1f5cb139750b6bc6a75e9 AS build
 
-ARG COMMIT_SHA=<not-specified>
 ENV NODE_ENV=production
 
 WORKDIR /build-dir
@@ -24,26 +36,19 @@ RUN npm ci
 
 COPY . .
 
-RUN echo "crud-service: $COMMIT_SHA" >> ./commit.sha
-
 ########################################################################################################################
 
 # create a CRUD Service image that does not support automatic CSFLE
 # and therefore it can be employed by everybody in any MongoDB product
-FROM node:20.14.0-bullseye-slim as crud-service-no-encryption
+FROM docker.io/library/node:20.18.0-bookworm-slim@sha256:967bab29ecde5d59a6dd781054bf9021eee8116068e1f5cb139750b6bc6a75e9 AS crud-service-no-encryption
 
-# note: zlib can be removed once node image version is updated
-RUN apt-get update \
-    && apt-get install -f tini zlib1g -y \
-    && apt-get clean autoclean -y \
-    && apt-get autoremove -y \
+ARG COMMIT_SHA
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install --assume-yes --no-install-recommends \
+    tini \
+    && apt-get autoremove --assume-yes \
     && rm -rf /var/lib/apt/lists/*
-
-LABEL maintainer="Mia Platform Core Team<core@mia-platform.eu>" \
-    name="CRUD Service" \
-    description="HTTP interface to perform CRUD operations on configured MongoDB collections" \
-    eu.mia-platform.url="https://www.mia-platform.eu" \
-    eu.mia-platform.version="6.10.3"
 
 ENV NODE_ENV=production
 ENV LOG_LEVEL=info
@@ -64,23 +69,14 @@ USER node
 
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
-CMD ./node_modules/.bin/lc39 ./index.js --port=${HTTP_PORT} --log-level=${LOG_LEVEL} --prefix=${SERVICE_PREFIX} --expose-metrics ${EXPOSE_METRICS} --enable-tracing=${ENABLE_TRACING}
+CMD ./node_modules/.bin/lc39 ./index.js --port=${HTTP_PORT} --log-level=${LOG_LEVEL} --prefix=${SERVICE_PREFIX} --expose-metrics=${EXPOSE_METRICS} --enable-tracing=${ENABLE_TRACING}
 
 ########################################################################################################################
 
 # extend previous stage to add the support to automatic MongoDB CSFLE feature,
 # which can be leveraged by users adopting a MongoDB Atlas or MongoDB enterprise products
-FROM crud-service-no-encryption as crud-service-with-encryption
+FROM crud-service-no-encryption AS crud-service-with-encryption
 
-USER root
+ENV CRYPT_SHARED_LIB_PATH=/cryptd/mongo_crypt_v1.so
 
-COPY --from=base-with-encryption /cryptd /cryptd
-
-RUN apt-get update \
-    && apt-get install -f /cryptd/mongocryptd.deb /cryptd/libmongocrypt0.deb /cryptd/libmongocrypt-dev.deb -y \
-    && apt-get clean autoclean -y \
-    && apt-get autoremove -y \
-    && rm -rf /cryptd \
-    && rm -rf /var/lib/apt/lists/*
-
-USER node
+COPY --from=crypt-lib /cryptd/lib/mongo_crypt_v1.so /cryptd/mongo_crypt_v1.so

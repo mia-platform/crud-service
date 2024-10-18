@@ -324,7 +324,7 @@ See the documentation to see which parameters are available.
 
 ### How do I change the Mongocryptd version on Debian
 
-To change the cryptd version, you can download the binary file from the [MongoDB Repositories](cryptd), then navigate to the following subpath: `{version_wanted}/main/binary_amd64/mongodb-enterprise-cryptd_{version_wanted}_amd64.deb`.
+To change the cryptd version, you can download the binary file from the [MongoDB Repositories][cryptd], then navigate to the following subpath: `{version_wanted}/main/binary_amd64/mongodb-enterprise-cryptd_{version_wanted}_amd64.deb`.
 
 For example, for version 5.0.14, the final url of the `.deb` will be: https://repo.mongodb.com/apt/debian/dists/bullseye/mongodb-enterprise/5.0/main/binary-amd64/mongodb-enterprise-cryptd_5.0.14_amd64.deb
 

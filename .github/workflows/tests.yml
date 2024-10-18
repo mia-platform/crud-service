@@ -12,42 +12,43 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [18.x]
-        mongodb-version: ["4.2", "4.4", "5.0", "6.0"]
+        mongodb-version: ["4.4", "5.0", "6.0"]
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+      - uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # v4.2.0
         with:
-          node-version: ${{ matrix.node-version }}
+          show-progress: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@0a44ba7841725637a19e28fa30b79a866c81b0a6 # v4.0.4
+        with:
+          node-version-file: .nvmrc
+          check-latest: true
           cache: npm
 
       - name: Install
         run: npm ci
 
-      - name: update libraries and install curl
-        run: sudo apt-get update && sudo apt-get install curl -y
-
       - name: download MongoDB encryption libraries (to support testing encryption features)
-        run: curl https://repo.mongodb.com/apt/debian/dists/bullseye/mongodb-enterprise/5.0/main/binary-amd64/mongodb-enterprise-cryptd_5.0.14_amd64.deb -o mongocryptd.deb && curl https://libmongocrypt.s3.amazonaws.com/apt/debian/dists/buster/libmongocrypt/1.6/main/binary-amd64/libmongocrypt-dev_1.6.2-0_amd64.deb -o libmongocrypt-dev.deb && curl https://libmongocrypt.s3.amazonaws.com/apt/debian/dists/buster/libmongocrypt/1.6/main/binary-amd64/libmongocrypt0_1.6.2-0_amd64.deb -o libmongocrypt0.deb
-
-      - name: install MongoDB encryption libraries
-        run: sudo apt-get install -f ./mongocryptd.deb ./libmongocrypt0.deb ./libmongocrypt-dev.deb -y
+        run: |
+          curl -fsSL https://downloads.mongodb.com/linux/mongo_crypt_shared_v1-linux-x86_64-enterprise-ubuntu2204-7.0.14.tgz -o crypt_shared.tar.gz
+          tar -xz --one-top-level=crypt_shared -f crypt_shared.tar.gz
 
       - name: start MongoDB instance
-        uses: supercharge/mongodb-github-action@v1.10.0
+        uses: supercharge/mongodb-github-action@5a87bd81f88e2a8b195f8b7b656f5cda1350815a # v1.11.0
         with:
           mongodb-version: ${{ matrix.mongodb-version }}
 
       - name: Run tests
-        run: npm run coverage
+        run: npm run coverage -- --jobs 3 # limit the number of jobs that can be run in parallel in the CI
         env:
           MONGO_VERSION: ${{ matrix.mongodb-version }}
+          CRYPT_SHARED_LIB_PATH: ${{ github.workspace }}/crypt_shared/lib/mongo_crypt_v1.so
 
       - name: Coveralls
-        uses: coverallsapp/github-action@master
+        uses: coverallsapp/github-action@643bc377ffa44ace6394b2b5d0d3950076de9f63 # v2.3.0
         with:
           github-token: ${{ secrets.token }}
+          file: .tap/report/lcov.info
+          format: lcov
         # allow the pipeline to continue even when the coverage decreases
         continue-on-error: true

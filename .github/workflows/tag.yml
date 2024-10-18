@@ -16,15 +16,15 @@ jobs:
       - tests
     if: ${{ startsWith(github.ref, 'refs/tags/v') }}
     uses: ./.github/workflows/release-docker.yml
-    with:
-      push: true
     secrets:
       docker_username: ${{ secrets.BOT_DOCKER_USERNAME }}
       docker_token: ${{ secrets.BOT_DOCKER_TOKEN }}
       github_cr_token: ${{ secrets.GITHUB_TOKEN }}
-      security_checks_token: ${{ secrets.CRUD_SERVICE_SYSDIG_CHECK_TRIGGER }}
       nexus_username: ${{ secrets.NEXUS_USER }}
       nexus_token: ${{ secrets.NEXUS_TOKEN }}
+      kms_gcp_project: ${{ secrets.MIA_PLATFORM_KMS_GCP_PROJECT }}
+      gcp_wif: ${{ secrets.MIA_PLATFORM_WIF }}
+      cosign_key: ${{ secrets.MIA_PLATFORM_KEY_KMS }}
 
   release:
     runs-on: ubuntu-latest
@@ -32,10 +32,12 @@ jobs:
       - release-docker
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # v4.2.0
+        with:
+          show-progress: false
 
       - name: Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@c062e08bd532815e2082a85e87e3ef29c3e6d191 # v2.0.8
         with:
           generate_release_notes: true
           prerelease: ${{ startsWith(github.ref, 'refs/tags/') && contains(github.ref, '-rc.') }}

@@ -6,7 +6,7 @@
   "bugs": {
     "url": "https://github.com/mia-platform/crud-service/issues"
   },
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "Apache-2.0",
   "author": "Mia Platform Fast Data Team",
   "main": "index.js",
   "repository": {
@@ -24,7 +24,6 @@
     "pretest": "node tests/generatedJSONSchemasToFiles.js && eslint --fix tests/expectedSchemas/*.js",
     "test": "npm run lint && npm run unit -- --disable-coverage && npm run checkonly",
     "unit": "MONGO_HOST=${MONGO_HOST_CI:-127.0.0.1} MONGO_VERSION=${MONGO_VERSION:-6.0.2} tap -b --allow-incomplete-coverage 'tests/**/*.test.js'",
-    "update-docker-version": "sed -i.bck \"s|version=\\\"[0-9]*\\.[0-9]*\\.[0-9]*.*\\\"|version=\\\"${npm_package_version}\\\"|\" Dockerfile",
     "update-changelog": "node ./scripts/update-changelog.js ${npm_package_version}",
     "version": "npm run update-changelog && npm run update-docker-version && rm -fr Dockerfile.bck && git add CHANGELOG.md Dockerfile"
   },
