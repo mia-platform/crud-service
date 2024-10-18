@@ -69,7 +69,7 @@ USER node
 
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
-CMD ["./node_modules/.bin/lc39", "./index.js", "--port", "${HTTP_PORT}", "--log-level", "${LOG_LEVEL}", "--prefix=${SERVICE_PREFIX}", "--expose-metrics", "${EXPOSE_METRICS}", "--enable-tracing=${ENABLE_TRACING}"]
+CMD ["./node_modules/.bin/lc39", "./index.js", "--port=${HTTP_PORT} --log-level=${LOG_LEVEL} --prefix=${SERVICE_PREFIX} --expose-metrics=${EXPOSE_METRICS} --enable-tracing=${ENABLE_TRACING}"]
 
 ########################################################################################################################
 
