@@ -55,7 +55,7 @@
     "fastify": "^4.28.1"
   },
   "devDependencies": {
-    "@eslint/js": "^9.12.0",
+    "@eslint/js": "^9.16.0",
     "@faker-js/faker": "^9.0.3",
     "@mia-platform/eslint-config-mia": "^3.0.0",
     "abstract-logging": "^2.0.1",
