@@ -25,6 +25,7 @@ jobs:
       kms_gcp_project: ${{ secrets.MIA_PLATFORM_KMS_GCP_PROJECT }}
       gcp_wif: ${{ secrets.MIA_PLATFORM_WIF }}
       cosign_key: ${{ secrets.MIA_PLATFORM_KEY_KMS }}
+      sysdig_token: ${{ secrets.SYSDIG_SECURE_TOKEN }}
 
   release:
     runs-on: ubuntu-latest
