@@ -100,7 +100,6 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
     - name: Scan image
-      if: ${{ inputs.push }}
       uses: sysdiglabs/scan-action@0065d3b93bd4115371b55720251adb1d228fe188 # v5.1.1
       with:
         image-tag: nexus.mia-platform.eu/core/crud-service:${{ steps.meta.output.version.main }}
