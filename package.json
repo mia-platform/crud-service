@@ -25,7 +25,7 @@
     "test": "npm run lint && npm run unit -- --disable-coverage && npm run checkonly",
     "unit": "MONGO_HOST=${MONGO_HOST_CI:-127.0.0.1} MONGO_VERSION=${MONGO_VERSION:-6.0.2} tap -b --allow-incomplete-coverage 'tests/**/*.test.js'",
     "update-changelog": "node ./scripts/update-changelog.js ${npm_package_version}",
-    "version": "npm run update-changelog && npm run update-docker-version && rm -fr Dockerfile.bck && git add CHANGELOG.md Dockerfile"
+    "version": "npm run update-changelog && git add CHANGELOG.md"
   },
   "dependencies": {
     "@fastify/env": "^4.3.0",
@@ -61,7 +61,6 @@
     "mock-require": "^3.0.3",
     "mongodb": "^4.17.2",
     "node-xlsx": "^0.23.0",
-    "pre-commit": "^1.2.2",
     "swagger-parser": "^10.0.3",
     "tap": "^18.6.1",
     "uuid-validate": "0.0.3"
