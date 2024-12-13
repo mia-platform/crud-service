@@ -9,15 +9,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## 6.10.4-rc.5 - 2024-12-13
 
-## 6.10.4-rc.4 - 2024-12-13
+### Changed
 
-## 6.10.4-rc.3 - 2024-12-13
+- updated service dependencies
+- upgrade NodeJS version in Docker image to v22.12.0
 
-## 6.10.4-rc.2 - 2024-12-13
+### CI
 
-## 6.10.4-rc.1 - 2024-12-13
-
-## 6.10.4-rc.0 - 2024-12-13
+- added step for generating SBOM
+- added step for scanning the built image
 
 ## 6.10.3 - 2024-06-06
 
