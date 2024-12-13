@@ -13,7 +13,7 @@ on:
         required: true
       nexus_token:
         required: true
-      kms_gcp_poject:
+      kms_gcp_project:
         required: false
       gcp_wif:
         required: false
