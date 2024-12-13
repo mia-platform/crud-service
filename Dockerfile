@@ -23,7 +23,7 @@ RUN case "${TARGETARCH}" in \
 
 ########################################################################################################################
 
-FROM docker.io/library/node:22.12.0-bookworm-slim@sha256:a4b757cd491c7f0b57f57951f35f4e85b7e1ad54dbffca4cf9af0725e1650cd8 AS build
+FROM docker.io/library/node:23.4.0-bookworm-slim@sha256:dd44ec6132f29fbfd39151265bd3702a77caad72aa4cab9b00e40edf60d28ab6 AS build
 
 ENV NODE_ENV=production
 
@@ -40,7 +40,7 @@ COPY . .
 
 # create a CRUD Service image that does not support automatic CSFLE
 # and therefore it can be employed by everybody in any MongoDB product
-FROM docker.io/library/node:22.12.0-bookworm-slim@sha256:a4b757cd491c7f0b57f57951f35f4e85b7e1ad54dbffca4cf9af0725e1650cd8 AS crud-service-no-encryption
+FROM docker.io/library/node:23.4.0-bookworm-slim@sha256:dd44ec6132f29fbfd39151265bd3702a77caad72aa4cab9b00e40edf60d28ab6 AS crud-service-no-encryption
 
 ARG COMMIT_SHA
 ARG DEBIAN_FRONTEND=noninteractive
