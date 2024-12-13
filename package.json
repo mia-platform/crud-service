@@ -28,15 +28,15 @@
     "version": "npm run update-changelog && git add CHANGELOG.md"
   },
   "dependencies": {
-    "@fastify/env": "^4.3.0",
+    "@fastify/env": "4.4",
     "@fastify/mongodb": "^6.2.0",
     "@fastify/multipart": "^7.7.3",
-    "@mia-platform/lc39": "^7.0.3",
+    "@mia-platform/lc39": "^8.0.2",
     "@mia-platform/mongodb-healthchecker": "^1.0.1",
     "ajv-formats": "^2.1.1",
     "ajv-keywords": "^5.1.0",
-    "csv-parse": "^5.5.3",
-    "csv-stringify": "^6.4.5",
+    "csv-parse": "^5.6.0",
+    "csv-stringify": "^6.5.2",
     "fastify-plugin": "^4.5.1",
     "jsonpath-plus": "^9.0.0",
     "JSONStream": "^1.3.5",
@@ -44,25 +44,25 @@
     "mongodb-client-encryption": "^2.9.0",
     "ndjson": "^2.0.0",
     "p-limit": "^3.1.0",
-    "pino": "^8.17.2",
+    "pino": "^9.5.0",
     "through2": "^4.0.2",
-    "uuid": "^9.0.1",
-    "xlsx-write-stream": "^1.0.0"
+    "uuid": "^11.0.3",
+    "xlsx-write-stream": "^1.0.3"
   },
   "peerDependencies": {
-    "ajv": "^8.12.0"
+    "ajv": "^8.17.1"
   },
   "devDependencies": {
     "@mia-platform/eslint-config-mia": "^3.0.0",
     "abstract-logging": "^2.0.1",
-    "eslint": "^8.56.0",
+    "eslint": "^8.57.1",
     "fastbench": "^1.0.1",
-    "form-data": "^4.0.0",
+    "form-data": "^4.0.1",
     "mock-require": "^3.0.3",
     "mongodb": "^4.17.2",
-    "node-xlsx": "^0.23.0",
+    "node-xlsx": "^0.24.0",
     "swagger-parser": "^10.0.3",
-    "tap": "^18.6.1",
+    "tap": "^18.8.0",
     "uuid-validate": "0.0.3"
   },
   "engines": {
