@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+
+- updated service dependencies
+- upgrade NodeJS version in Docker image to v22.12.0
+
+### CI
+
+- added step for generating SBOM (Software Bill of Materials)
+- added step for scanning the built image
+
 ## 7.2.1 - 2024-10-08
 
 ### Fixed

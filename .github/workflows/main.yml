@@ -49,6 +49,7 @@ jobs:
       github_cr_token: ${{ secrets.GITHUB_TOKEN }}
       nexus_username: ${{ secrets.NEXUS_USER }}
       nexus_token: ${{ secrets.NEXUS_TOKEN }}
+      sysdig_token: ${{ secrets.SYSDIG_SECURE_TOKEN }}
 
   security-checks:
     needs:
