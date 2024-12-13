@@ -32,10 +32,11 @@ jobs:
         run: |
           curl -fsSL https://downloads.mongodb.com/linux/mongo_crypt_shared_v1-linux-x86_64-enterprise-ubuntu2204-7.0.14.tgz -o crypt_shared.tar.gz
           tar -xz --one-top-level=crypt_shared -f crypt_shared.tar.gz
-          curl https://repo.mongodb.com/apt/ubuntu/dists/jammy/mongodb-enterprise/6.0/multiverse/binary-amd64/mongodb-enterprise-cryptd_6.0.19_amd64.deb -o mongocryptd.deb && curl https://launchpad.net/ubuntu/+archive/primary/+files/libmongocrypt-dev_1.8.4-1build3_amd64.deb -o libmongocrypt-dev.deb && curl https://launchpad.net/ubuntu/+archive/primary/+files/libmongocrypt0_1.8.4-1build3_amd64.deb -o libmongocrypt0.deb
 
       - name: install MongoDB encryption libraries
-        run: sudo apt-get install -f ./mongocryptd.deb ./libmongocrypt0.deb ./libmongocrypt-dev.deb -y
+        run: |
+          curl https://repo.mongodb.com/apt/ubuntu/dists/jammy/mongodb-enterprise/6.0/multiverse/binary-amd64/mongodb-enterprise-cryptd_6.0.19_amd64.deb -o mongocryptd.deb && curl https://launchpad.net/ubuntu/+archive/primary/+files/libmongocrypt-dev_1.8.4-1build3_amd64.deb -o libmongocrypt-dev.deb && curl https://launchpad.net/ubuntu/+archive/primary/+files/libmongocrypt0_1.8.4-1build3_amd64.deb -o libmongocrypt0.deb;
+          sudo apt-get install -f ./mongocryptd.deb ./libmongocrypt0.deb ./libmongocrypt-dev.deb -y
 
       - name: start MongoDB instance
         uses: supercharge/mongodb-github-action@5a87bd81f88e2a8b195f8b7b656f5cda1350815a # v1.11.0

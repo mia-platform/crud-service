@@ -18,7 +18,7 @@ on:
   push:
     branches:
       - main
-      - v6.x
+      - ci/pipelines-v6-3
     paths:
       - ".github/workflows/**"
       - "lib/**"
