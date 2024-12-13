@@ -35,7 +35,7 @@ jobs:
 
       - name: install MongoDB encryption libraries
         run: |
-          curl https://repo.mongodb.com/apt/ubuntu/dists/jammy/mongodb-enterprise/6.0/multiverse/binary-amd64/mongodb-enterprise-cryptd_6.0.19_amd64.deb -o mongocryptd.deb && curl https://launchpad.net/ubuntu/+archive/primary/+files/libmongocrypt-dev_1.8.4-1build3_amd64.deb -o libmongocrypt-dev.deb && curl https://launchpad.net/ubuntu/+archive/primary/+files/libmongocrypt0_1.8.4-1build3_amd64.deb -o libmongocrypt0.deb;
+          curl https://repo.mongodb.com/apt/debian/dists/bullseye/mongodb-enterprise/5.0/main/binary-amd64/mongodb-enterprise-cryptd_5.0.14_amd64.deb -o mongocryptd.deb && curl https://libmongocrypt.s3.amazonaws.com/apt/debian/dists/buster/libmongocrypt/1.6/main/binary-amd64/libmongocrypt-dev_1.6.2-0_amd64.deb -o libmongocrypt-dev.deb && curl https://libmongocrypt.s3.amazonaws.com/apt/debian/dists/buster/libmongocrypt/1.6/main/binary-amd64/libmongocrypt0_1.6.2-0_amd64.deb -o libmongocrypt0.deb;
           sudo apt-get install -f ./mongocryptd.deb ./libmongocrypt0.deb ./libmongocrypt-dev.deb -y
 
       - name: start MongoDB instance
