@@ -55,6 +55,13 @@ updates:
         update-types:
         - "minor"
         - "patch"
+      eslint:
+        patterns:
+        - "eslint"
+        - "@eslint"
+        update-types:
+        - "minor"
+        - "patch"
 
   - package-ecosystem: "docker"
     directory: "/"
