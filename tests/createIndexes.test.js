@@ -1050,6 +1050,138 @@ tap.test('createIndexes', async t => {
       ],
       expectedIndexCreatedCount: 1,
     },
+    {
+      name: 'partial index with already present one (but not partial)',
+      alreadyPresentIndexes: [
+        {
+          spec: {
+            name: 1,
+          },
+          options: {
+            name: nameIndex1,
+            unique: true,
+          },
+        },
+      ],
+      indexes: [
+        {
+          name: nameIndex1,
+          type: NORMAL_INDEX,
+          unique: true,
+          fields: [
+            { name: 'name',
+              order: 1,
+            },
+          ],
+          usePartialFilter: true,
+          partialFilterExpression: '{ "name": { "$eq": "test" } }',
+        },
+      ],
+      expectedIndexes: [
+        {
+          v: 2,
+          key: {
+            name: 1,
+          },
+          name: nameIndex1,
+          background: true,
+          unique: true,
+          partialFilterExpression: { name: { $eq: 'test' } },
+        },
+      ],
+      expectedIndexCreatedCount: 1,
+    },
+    {
+      name: 'complex partial index not replaced',
+      alreadyPresentIndexes: [
+        {
+          spec: { b: 1, d: 1 },
+          options: {
+            name: nameIndex1,
+            unique: true,
+            partialFilterExpression: { $or: [{ b: 'c' }, { d: 'e' }] },
+          },
+        },
+      ],
+      indexes: [
+        {
+          name: nameIndex1,
+          type: NORMAL_INDEX,
+          unique: true,
+          fields: [
+            {
+              name: 'b',
+              order: 1,
+            },
+            {
+              name: 'd',
+              order: 1,
+            },
+          ],
+          usePartialFilter: true,
+          partialFilterExpression: '{"$or":[{"b":"c"},{"d":"e"}]}',
+        },
+      ],
+      expectedIndexes: [
+        {
+          v: 2,
+          key: {
+            b: 1,
+            d: 1,
+          },
+          name: nameIndex1,
+          unique: true,
+          partialFilterExpression: { $or: [{ b: 'c' }, { d: 'e' }] },
+        },
+      ],
+      expectedIndexCreatedCount: 0,
+    },
+    {
+      name: 'complex partial replaced',
+      alreadyPresentIndexes: [
+        {
+          spec: { b: 1, d: 1 },
+          options: {
+            name: nameIndex1,
+            unique: true,
+            partialFilterExpression: { $or: [{ b: 'c' }, { d: 'e' }] },
+          },
+        },
+      ],
+      indexes: [
+        {
+          name: nameIndex1,
+          type: NORMAL_INDEX,
+          unique: true,
+          fields: [
+            {
+              name: 'b',
+              order: 1,
+            },
+            {
+              name: 'd',
+              order: 1,
+            },
+          ],
+          usePartialFilter: true,
+          partialFilterExpression: '{"$or":[{"b":"c"},{"d":"g"}]}',
+        },
+      ],
+      expectedIndexes: [
+        {
+          v: 2,
+          key: {
+            b: 1,
+            d: 1,
+          },
+          background: true,
+          name: nameIndex1,
+          unique: true,
+          partialFilterExpression: { $or: [{ b: 'c' }, { d: 'g' }] },
+        },
+      ],
+      expectedIndexCreatedCount: 1,
+    },
   ]
 
   t.plan(testConfigs.length)
