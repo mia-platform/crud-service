@@ -1093,6 +1093,8 @@ tap.test('createIndexes', async t => {
     },
     {
       name: 'complex partial index not replaced',
+      // nested operators in partial indexes are not supported on mongodb:5.0
+      minMongoDbVersion: '6.0',
       alreadyPresentIndexes: [
         {
           spec: { b: 1, d: 1 },
@@ -1138,6 +1140,8 @@ tap.test('createIndexes', async t => {
     },
     {
       name: 'complex partial replaced',
+      // nested operators in partial indexes are not supported on mongodb:5.0
+      minMongoDbVersion: '6.0',
       alreadyPresentIndexes: [
         {
           spec: { b: 1, d: 1 },
@@ -1184,38 +1188,50 @@ tap.test('createIndexes', async t => {
     },
   ]
 
-  t.plan(testConfigs.length)
+  const MIN_MONGODB_VERSION = '5.0'
+  const MONGODB_VERSION = process.env.MONGO_VERSION || MIN_MONGODB_VERSION
+  // RUN TESTS ACCORDING TO MONGO_VERSION env var, since
+  // nested operators in partial indexes are not supported on mongodb:5.0
+  t.plan(
+    testConfigs
+      .filter(({ minMongoDbVersion = MIN_MONGODB_VERSION }) => MONGODB_VERSION >= minMongoDbVersion)
+      .length
+  )
   testConfigs.forEach(({
     name,
+    minMongoDbVersion = MIN_MONGODB_VERSION,
     alreadyPresentIndexes,
     indexes,
     expectedIndexes,
     expectedIndexCreatedCount,
   }) => {
-    t.test(name, async t => {
-      t.plan(2 + expectedIndexes.length)
-      await collection.drop()
-      await database.createCollection(BOOKS_COLLECTION_NAME)
-      await Promise.all(alreadyPresentIndexes
-        .map(({ spec, options }) => collection.createIndex(spec, options)))
-      const createdIndexNames = await createIndexes(collection, indexes, 'preserve_')
-      const retIndexes = await collection.indexes()
+    if (MONGODB_VERSION >= minMongoDbVersion) {
+      t.test(name, async t => {
+        t.plan(2 + expectedIndexes.length)
+        await collection.drop()
+        await database.createCollection(BOOKS_COLLECTION_NAME)
 
-      /* Starting in MongoDB 4.4 the `ns` field is no more included in index objects.
-       * Since we are not using `ns` field in this service we remove it in the below line.
-       * In this way we guarantee compatibility with MongoDB 4.4 and the previous MongoDB versions.
-       * https://docs.mongodb.com/manual/reference/method/db.collection.getIndexes/
-       */
-      retIndexes.forEach(index => delete index.ns)
-      // sort by name because the return order is not deterministic with background indexes
-      // skip the first returned index as it is always the _id one
-      t.strictSame(retIndexes.slice(1).sort(by('name')), expectedIndexes.sort(by('name')))
-      retIndexes.slice(1).forEach(retIndex => {
-        const index = expectedIndexes.find(expectedIndex => expectedIndex.name === retIndex.name)
-        t.ok(JSON.stringify(index.key) === JSON.stringify(retIndex.key))
+        await Promise.all(alreadyPresentIndexes
+          .map(({ spec, options }) => collection.createIndex(spec, options)))
+        const createdIndexNames = await createIndexes(collection, indexes, 'preserve_')
+        const retIndexes = await collection.indexes()
+
+        /* Starting in MongoDB 4.4 the `ns` field is no more included in index objects.
+         * Since we are not using `ns` field in this service we remove it in the below line.
+         * In this way we guarantee compatibility with MongoDB 4.4 and the previous MongoDB versions.
+         * https://docs.mongodb.com/manual/reference/method/db.collection.getIndexes/
+         */
+        retIndexes.forEach(index => delete index.ns)
+        // sort by name because the return order is not deterministic with background indexes
+        // skip the first returned index as it is always the _id one
+        t.strictSame(retIndexes.slice(1).sort(by('name')), expectedIndexes.sort(by('name')))
+        retIndexes.slice(1).forEach(retIndex => {
+          const index = expectedIndexes.find(expectedIndex => expectedIndex.name === retIndex.name)
+          t.ok(JSON.stringify(index.key) === JSON.stringify(retIndex.key))
+        })
+        t.equal(createdIndexNames.length, expectedIndexCreatedCount)
       })
-      t.equal(createdIndexNames.length, expectedIndexCreatedCount)
-    })
+    }
   })
 })
 
