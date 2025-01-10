@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+
+- overhauled Mongo view update logic to avoid requesting [`dropCollection`](https://www.mongodb.com/docs/manual/reference/privilege-actions/#mongodb-authaction-dropCollection) privilege action
+
 ## 7.2.2 - 2024-12-13
 
 ### Changed
