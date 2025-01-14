@@ -29,7 +29,7 @@
     "version": "npm run update-changelog && git add CHANGELOG.md"
   },
   "dependencies": {
-    "@fastify/env": "^4.4.0",
+    "@fastify/env": "^5.0.2",
     "@fastify/mongodb": "^8.0.0",
     "@fastify/multipart": "^8.3.0",
     "@mia-platform/lc39": "^8.0.2",
