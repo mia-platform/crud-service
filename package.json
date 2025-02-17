@@ -42,7 +42,7 @@
     "jsonpath-plus": "^9.0.0",
     "JSONStream": "^1.3.5",
     "lodash": "^4.17.21",
-    "mongodb-client-encryption": "^6.1.1",
+    "mongodb-client-encryption": "^6.2.0",
     "ndjson": "^2.0.0",
     "p-limit": "^6.2.0",
     "pino": "^9.6.0",
