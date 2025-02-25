@@ -104,6 +104,11 @@ const properties = {
     description: 'prefix string to assign to the helpers plugin, which exposes additional routes, such as /schemas',
     default: '/-/',
   },
+  DISABLE_INDEX_MANAGEMENT: {
+    type: 'boolean',
+    description: 'When this option is activated, the service does manage the indexes of defined collections',
+    default: false,
+  },
 }
 
 const fastifyEnvSchema = {
