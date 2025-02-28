@@ -17,13 +17,11 @@
 'use strict'
 
 const tap = require('tap')
-const AdditionalCaster = require('../lib/AdditionalCaster')
+const { castItem, castCollectionId } = require('../lib/AdditionalCaster')
 const { ObjectId } = require('mongodb')
 
 tap.test('AdditionalCaster', test => {
-  test.test('old configuration', assert => {
-    const additionalCaster = new AdditionalCaster()
-
+  test.test('old configuration', async assert => {
     const testCases = [
       {
         name: 'should return document as it is',
@@ -67,9 +65,8 @@ tap.test('AdditionalCaster', test => {
     ]
 
     for (const { name, document, expectedResult } of testCases) {
-      assert.test(name, test => {
-        test.plan(1)
-        const result = additionalCaster.castItem(document)
+      assert.test(name, async test => {
+        const result = castItem(document)
         test.strictSame(result, expectedResult)
         test.end()
       })
@@ -77,9 +74,7 @@ tap.test('AdditionalCaster', test => {
     assert.end()
   })
 
-  test.test('new configuration', assert => {
-    const additionalCaster = new AdditionalCaster()
-
+  test.test('new configuration', async assert => {
     const testCases = [
       {
         name: 'should return document as it is',
@@ -124,8 +119,7 @@ tap.test('AdditionalCaster', test => {
 
     for (const { name, document, expectedResult } of testCases) {
       assert.test(name, test => {
-        test.plan(1)
-        const result = additionalCaster.castItem(document)
+        const result = castItem(document)
         test.strictSame(result, expectedResult)
         test.end()
       })
@@ -134,4 +128,22 @@ tap.test('AdditionalCaster', test => {
   })
 
   test.end()
+})
+
+tap.test('castCollectionId', async t => {
+  const objectId = '111111111111111111111111'
+  const stringId = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+
+  t.test('works for both types of input', assert => {
+    const castedObjectId = castCollectionId(objectId)
+    const castedStringId = castCollectionId(stringId)
+
+    assert.ok(castedObjectId)
+    assert.equal(typeof castedObjectId, 'object')
+
+    assert.ok(castedStringId)
+    assert.equal(typeof castedStringId, 'string')
+
+    assert.end()
+  })
 })
