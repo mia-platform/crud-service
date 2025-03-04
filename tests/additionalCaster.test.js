@@ -62,6 +62,54 @@ tap.test('AdditionalCaster', test => {
           position: [45.46, 9.19],
         },
       },
+      {
+        name: 'should work on nested documents',
+        document: {
+          _id: new ObjectId('111111111111111111111111'),
+          name: 'Cracking the code interview',
+          author: 'Gayle Laakmann',
+          price: 29.99,
+          isPromoted: false,
+          tags: ['Programming', 'Computer Science', 'New'],
+          publishDate: new Date('2015-01-01T00:00:00.000Z'),
+          positions: [
+            {
+              type: 'Point',
+              coordinates: [45.46, 9.19],
+            },
+            {
+              type: 'Point',
+              coordinates: [45.00, 9.19],
+            },
+          ],
+          library: {
+            name: 'TheBookLibrary',
+            coordinates: {
+              type: 'Point',
+              coordinates: [35.46, 9.19],
+            },
+            openingDate: new Date('1997-01-01T00:00:00.000Z'),
+          },
+        },
+        expectedResult: {
+          _id: '111111111111111111111111',
+          name: 'Cracking the code interview',
+          author: 'Gayle Laakmann',
+          price: 29.99,
+          isPromoted: false,
+          tags: ['Programming', 'Computer Science', 'New'],
+          publishDate: '2015-01-01T00:00:00.000Z',
+          positions: [
+            [45.46, 9.19],
+            [45.00, 9.19],
+          ],
+          library: {
+            name: 'TheBookLibrary',
+            coordinates: [35.46, 9.19],
+            openingDate: '1997-01-01T00:00:00.000Z',
+          },
+        },
+      },
     ]
 
     for (const { name, document, expectedResult } of testCases) {
