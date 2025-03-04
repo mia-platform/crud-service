@@ -7,14 +7,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-## 7.2.3-rc.2 - 2025-03-03
-
-## 7.2.3-rc.1 - 2025-02-17
-
 ### Changed
 
 - overhauled Mongo view update logic to avoid requesting [`dropCollection`](https://www.mongodb.com/docs/manual/reference/privilege-actions/#mongodb-authaction-dropCollection) privilege action
 - introduce abort controller to NodeJS stream pipeline to ensure the pipeline object is cleaned up when the response stream is destroyed
+
+### Fixed
+
+- prevent a memory leak the service was experiencing when it was not able to fulfill incoming requests
+- corrected a typo in option `maxIdleTimeMS` within Mongo client configuration, which prevented the environment variable `MONGODB_MAX_IDLE_TIME_MS` to take effect
 
 ## 7.2.2 - 2024-12-13
 
