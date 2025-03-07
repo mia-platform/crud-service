@@ -1050,40 +1050,188 @@ tap.test('createIndexes', async t => {
       ],
       expectedIndexCreatedCount: 1,
     },
+    {
+      name: 'partial index with already present one (but not partial)',
+      alreadyPresentIndexes: [
+        {
+          spec: {
+            name: 1,
+          },
+          options: {
+            name: nameIndex1,
+            unique: true,
+          },
+        },
+      ],
+      indexes: [
+        {
+          name: nameIndex1,
+          type: NORMAL_INDEX,
+          unique: true,
+          fields: [
+            { name: 'name',
+              order: 1,
+            },
+          ],
+          usePartialFilter: true,
+          partialFilterExpression: '{ "name": { "$eq": "test" } }',
+        },
+      ],
+      expectedIndexes: [
+        {
+          v: 2,
+          key: {
+            name: 1,
+          },
+          name: nameIndex1,
+          background: true,
+          unique: true,
+          partialFilterExpression: { name: { $eq: 'test' } },
+        },
+      ],
+      expectedIndexCreatedCount: 1,
+    },
+    {
+      name: 'complex partial index not replaced',
+      // nested operators in partial indexes are not supported on mongodb:5.0
+      minMongoDbVersion: '6.0',
+      alreadyPresentIndexes: [
+        {
+          spec: { b: 1, d: 1 },
+          options: {
+            name: nameIndex1,
+            unique: true,
+            partialFilterExpression: { $or: [{ b: 'c' }, { d: 'e' }] },
+          },
+        },
+      ],
+      indexes: [
+        {
+          name: nameIndex1,
+          type: NORMAL_INDEX,
+          unique: true,
+          fields: [
+            {
+              name: 'b',
+              order: 1,
+            },
+            {
+              name: 'd',
+              order: 1,
+            },
+          ],
+          usePartialFilter: true,
+          partialFilterExpression: '{"$or":[{"b":"c"},{"d":"e"}]}',
+        },
+      ],
+      expectedIndexes: [
+        {
+          v: 2,
+          key: {
+            b: 1,
+            d: 1,
+          },
+          name: nameIndex1,
+          unique: true,
+          partialFilterExpression: { $or: [{ b: 'c' }, { d: 'e' }] },
+        },
+      ],
+      expectedIndexCreatedCount: 0,
+    },
+    {
+      name: 'complex partial replaced',
+      // nested operators in partial indexes are not supported on mongodb:5.0
+      minMongoDbVersion: '6.0',
+      alreadyPresentIndexes: [
+        {
+          spec: { b: 1, d: 1 },
+          options: {
+            name: nameIndex1,
+            unique: true,
+            partialFilterExpression: { $or: [{ b: 'c' }, { d: 'e' }] },
+          },
+        },
+      ],
+      indexes: [
+        {
+          name: nameIndex1,
+          type: NORMAL_INDEX,
+          unique: true,
+          fields: [
+            {
+              name: 'b',
+              order: 1,
+            },
+            {
+              name: 'd',
+              order: 1,
+            },
+          ],
+          usePartialFilter: true,
+          partialFilterExpression: '{"$or":[{"b":"c"},{"d":"g"}]}',
+        },
+      ],
+      expectedIndexes: [
+        {
+          v: 2,
+          key: {
+            b: 1,
+            d: 1,
+          },
+          background: true,
+          name: nameIndex1,
+          unique: true,
+          partialFilterExpression: { $or: [{ b: 'c' }, { d: 'g' }] },
+        },
+      ],
+      expectedIndexCreatedCount: 1,
+    },
   ]
 
-  t.plan(testConfigs.length)
+  const MIN_MONGODB_VERSION = '5.0'
+  const MONGODB_VERSION = process.env.MONGO_VERSION || MIN_MONGODB_VERSION
+  // RUN TESTS ACCORDING TO MONGO_VERSION env var, since
+  // nested operators in partial indexes are not supported on mongodb:5.0
+  t.plan(
+    testConfigs
+      .filter(({ minMongoDbVersion = MIN_MONGODB_VERSION }) => MONGODB_VERSION >= minMongoDbVersion)
+      .length
+  )
   testConfigs.forEach(({
     name,
+    minMongoDbVersion = MIN_MONGODB_VERSION,
     alreadyPresentIndexes,
     indexes,
     expectedIndexes,
     expectedIndexCreatedCount,
   }) => {
-    t.test(name, async t => {
-      t.plan(2 + expectedIndexes.length)
-      await collection.drop()
-      await database.createCollection(BOOKS_COLLECTION_NAME)
-      await Promise.all(alreadyPresentIndexes
-        .map(({ spec, options }) => collection.createIndex(spec, options)))
-      const createdIndexNames = await createIndexes(collection, indexes, 'preserve_')
-      const retIndexes = await collection.indexes()
+    if (MONGODB_VERSION >= minMongoDbVersion) {
+      t.test(name, async t => {
+        t.plan(2 + expectedIndexes.length)
+        await collection.drop()
+        await database.createCollection(BOOKS_COLLECTION_NAME)
 
-      /* Starting in MongoDB 4.4 the `ns` field is no more included in index objects.
-       * Since we are not using `ns` field in this service we remove it in the below line.
-       * In this way we guarantee compatibility with MongoDB 4.4 and the previous MongoDB versions.
-       * https://docs.mongodb.com/manual/reference/method/db.collection.getIndexes/
-       */
-      retIndexes.forEach(index => delete index.ns)
-      // sort by name because the return order is not deterministic with background indexes
-      // skip the first returned index as it is always the _id one
-      t.strictSame(retIndexes.slice(1).sort(by('name')), expectedIndexes.sort(by('name')))
-      retIndexes.slice(1).forEach(retIndex => {
-        const index = expectedIndexes.find(expectedIndex => expectedIndex.name === retIndex.name)
-        t.ok(JSON.stringify(index.key) === JSON.stringify(retIndex.key))
+        await Promise.all(alreadyPresentIndexes
+          .map(({ spec, options }) => collection.createIndex(spec, options)))
+        const createdIndexNames = await createIndexes(collection, indexes, 'preserve_')
+        const retIndexes = await collection.indexes()
+
+        /* Starting in MongoDB 4.4 the `ns` field is no more included in index objects.
+         * Since we are not using `ns` field in this service we remove it in the below line.
+         * In this way we guarantee compatibility with MongoDB 4.4 and the previous MongoDB versions.
+         * https://docs.mongodb.com/manual/reference/method/db.collection.getIndexes/
+         */
+        retIndexes.forEach(index => delete index.ns)
+        // sort by name because the return order is not deterministic with background indexes
+        // skip the first returned index as it is always the _id one
+        t.strictSame(retIndexes.slice(1).sort(by('name')), expectedIndexes.sort(by('name')))
+        retIndexes.slice(1).forEach(retIndex => {
+          const index = expectedIndexes.find(expectedIndex => expectedIndex.name === retIndex.name)
+          t.ok(JSON.stringify(index.key) === JSON.stringify(retIndex.key))
+        })
+        t.equal(createdIndexNames.length, expectedIndexCreatedCount)
       })
-      t.equal(createdIndexNames.length, expectedIndexCreatedCount)
-    })
+    }
   })
 })
 
