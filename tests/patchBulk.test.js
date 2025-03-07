@@ -59,8 +59,6 @@ t.test('patchBulk', async t => {
     parseAndCastTextSearchQuery: () => {},
   }
 
-  const castCollectionId = (_id) => new ObjectId(_id)
-
   t.teardown(async() => {
     await database.dropDatabase()
     await client.close()
@@ -90,10 +88,7 @@ t.test('patchBulk', async t => {
       },
       update: updateCommand(),
     }]
-    const ret = await crudService.patchBulk(
-      context, filterUpdateCommands,
-      mockQueryParser, castCollectionId
-    )
+    const ret = await crudService.patchBulk(context, filterUpdateCommands, mockQueryParser)
 
     t.test('should return ok and one modification', t => {
       t.plan(1)
@@ -142,9 +137,7 @@ t.test('patchBulk', async t => {
         update: updateCommand(),
       },
     ]
-    const ret = await crudService.patchBulk(
-      context, filterUpdateCommands, mockQueryParser, castCollectionId
-    )
+    const ret = await crudService.patchBulk(context, filterUpdateCommands, mockQueryParser)
 
     t.test('should return ok and two modifications', t => {
       t.plan(1)
@@ -181,9 +174,7 @@ t.test('patchBulk', async t => {
       },
       update: updateCommand(),
     }]
-    const ret = await crudService.patchBulk(
-      context, filterUpdateCommands, mockQueryParser, castCollectionId
-    )
+    const ret = await crudService.patchBulk(context, filterUpdateCommands, mockQueryParser)
 
     t.test('should return ok and one modification', t => {
       t.plan(1)
@@ -217,9 +208,7 @@ t.test('patchBulk', async t => {
       },
       update: updateCommand(),
     }]
-    const ret = await crudService.patchBulk(
-      context, filterUpdateCommands, mockQueryParser, castCollectionId
-    )
+    const ret = await crudService.patchBulk(context, filterUpdateCommands, mockQueryParser)
 
     t.test('should return ok and no modifications', t => {
       t.plan(1)
@@ -256,9 +245,7 @@ t.test('patchBulk', async t => {
         update: updateCommand(),
       },
     ]
-    const ret = await crudService.patchBulk(
-      context, filterUpdateCommands, mockQueryParser, castCollectionId
-    )
+    const ret = await crudService.patchBulk(context, filterUpdateCommands, mockQueryParser)
 
     t.test('should return ok and one modifications', t => {
       t.plan(1)
@@ -299,9 +286,7 @@ t.test('patchBulk', async t => {
         },
       },
     ]
-    const ret = await crudService.patchBulk(
-      context, filterUpdateCommands, mockQueryParser, castCollectionId
-    )
+    const ret = await crudService.patchBulk(context, filterUpdateCommands, mockQueryParser)
 
     t.test('should return ok and one modifications', t => {
       t.plan(1)
@@ -358,10 +343,13 @@ t.test('patchBulk', async t => {
     veryBadCommands.forEach((testConf) => {
       t.test(JSON.stringify(testConf.cmd), async t => {
         try {
-          await crudService.patchBulk(context, [
-            { filter: { _id: fixtures[firstDocIndex]._id, _st: STATES.PUBLIC }, update: testConf.cmd },
-            { filter: { _id: fixtures[secondDocIndex]._id, _st: STATES.PUBLIC }, update: testConf.cmd },
-          ], mockQueryParser, castCollectionId)
+          await crudService.patchBulk(
+            context, [
+              { filter: { _id: fixtures[firstDocIndex]._id, _st: STATES.PUBLIC }, update: testConf.cmd },
+              { filter: { _id: fixtures[secondDocIndex]._id, _st: STATES.PUBLIC }, update: testConf.cmd },
+            ],
+            mockQueryParser
+          )
           t.fail()
         } catch (error) {
           t.ok(testConf.regex.test(error.message), error.message)
@@ -417,7 +405,7 @@ t.test('patchBulk', async t => {
       },
       update: updateSecondArrayNestedObject(),
     }]
-    const ret = await crudService.patchBulk(context, filterUpdateCommands, mockQueryParser, castCollectionId)
+    const ret = await crudService.patchBulk(context, filterUpdateCommands, mockQueryParser)
 
     t.test('should return ok and one modification', t => {
       t.plan(1)
@@ -439,6 +427,11 @@ t.test('patchBulk', async t => {
     checkDocumentsInDatabase(
       t,
       collection,
-      [fixtures[0]._id, fixtures[7]._id], fixtures.filter(d => d._id !== fixtures[0]._id && d._id !== fixtures[7]._id))
+      [
+        fixtures[0]._id,
+        fixtures[7]._id,
+      ],
+      fixtures.filter(d => d._id !== fixtures[0]._id && d._id !== fixtures[7]._id)
+    )
   })
 })
