@@ -36,7 +36,6 @@ const httpInterface = require('./lib/httpInterface')
 const loadModels = require('./lib/loadModels')
 const joinPlugin = require('./lib/joinPlugin')
 
-const { castCollectionId } = require('./lib/pkFactories')
 const {
   SCHEMA_CUSTOM_KEYWORDS,
 } = require('./lib/consts')
@@ -44,7 +43,6 @@ const { registerMongoInstances } = require('./lib/mongo/mongo-plugin')
 const { ajvSerializer } = require('./lib/validatorGetters')
 const { pointerSeparator } = require('./lib/JSONPath.utils')
 const { registerHelperRoutes } = require('./lib/helpersRoutes')
-const AdditionalCaster = require('./lib/AdditionalCaster')
 const { addSerializerCompiler } = require('./lib/compilers')
 const {
   addAclHook,
@@ -130,7 +128,6 @@ async function registerViewCrudLookup(fastify, { modelName, lookupModel }) {
 const registerDatabase = fp(registerMongoInstances, { decorators: { fastify: ['config'] } })
 
 async function iterateOverCollectionDefinitionAndRegisterCruds(fastify) {
-  fastify.decorate('castCollectionId', castCollectionId(fastify))
   fastify.decorate('userIdHeaderKey', fastify.config.USER_ID_HEADER_KEY.toLowerCase())
 
   for (const [modelName, model] of Object.entries(fastify.models)) {
@@ -189,10 +186,6 @@ async function setupCruds(fastify) {
     ENABLE_STRICT_OUTPUT_VALIDATION,
   } = fastify.config
 
-  const additionalCaster = new AdditionalCaster()
-
-  fastify.decorate('castResultsAsStream', additionalCaster.castResultsAsStream)
-  fastify.decorate('castItem', additionalCaster.castItem)
   fastify.decorate('validateOutput', ENABLE_STRICT_OUTPUT_VALIDATION)
   fastify.setNotFoundHandler(notFoundHandler)
   fastify.setErrorHandler(customErrorHandler)

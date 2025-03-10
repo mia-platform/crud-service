@@ -304,3 +304,4 @@ fabric.properties
 !.idea/runConfigurations
 
 # End of https://www.toptal.com/developers/gitignore/api/node,linux,macos,visualstudiocode,webstorm+all
+/.clinic/
