@@ -57,7 +57,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
-    "@faker-js/faker": "^9.5.1",
+    "@faker-js/faker": "^9.6.0",
     "@mia-platform/eslint-config-mia": "^3.0.0",
     "abstract-logging": "^2.0.1",
     "commander": "^12.1.0",
