@@ -60,7 +60,7 @@
     "@faker-js/faker": "^9.5.1",
     "@mia-platform/eslint-config-mia": "^3.0.0",
     "abstract-logging": "^2.0.1",
-    "commander": "^12.1.0",
+    "commander": "^14.0.0",
     "eslint": "^9.21.0",
     "eslint-plugin-n": "^17.16.2",
     "fastbench": "^1.0.1",
