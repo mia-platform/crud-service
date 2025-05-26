@@ -20,6 +20,8 @@ tests
 CODE_OF_CONDUCT.md
 CONTRIBUTING.md
 *.env
+.env*
 Dockerfile
 eslint.config.mjs
 README.md
+.clinic
