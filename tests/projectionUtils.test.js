@@ -91,13 +91,13 @@ tap.test('Projection Utils tests', async t => {
             zipCode: false,
           },
         },
-        // {
-        //   clientProjection: undefined,
-        //   rawProjection: JSON.stringify({ 'street': '$street' }),
-        //   expected: {
-        //     street: '$street',
-        //   },
-        // },
+        {
+          clientProjection: undefined,
+          rawProjection: JSON.stringify({'street': '$street'}),
+          expected: {
+            street: '$street',
+          },
+        },
       ]
 
       for (const [idx, {clientProjection, rawProjection, expected}] of cases.entries()) {

@@ -121,7 +121,7 @@ function resolveRawProjection(clientRawProjectionString) {
 }
 
 // to match camelCase operators, snake mongo_systems variables and field variables
-const fieldVarOrOperatorsRegex = /\${1,2}[a-zA-Z_]+/g
+const fieldVarOrOperatorsRegex = /\${1,2}[a-zA-Z_0-9\-]+/g
 
 function checkAllowedOperators(rawProjection, projectionDictionary, additionalFields, log) {
   if (!rawProjection) {
