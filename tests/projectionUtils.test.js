@@ -1,15 +1,23 @@
 'use strict'
 
 const tap = require('tap')
-const {resolveProjection} = require('../docs/projectionUtils')
+const { resolveProjection } = require('../lib/projectionUtils')
 const BadRequestError = require('../lib/BadRequestError')
 
 const loggerMock = {
+  trace: () => {
+
+    /* NOOP */
+  },
   debug: () => {
 
     /* NOOP */
   },
   info: () => {
+
+    /* NOOP */
+  },
+  warn: () => {
 
     /* NOOP */
   },
@@ -53,7 +61,7 @@ tap.test('Projection Utils tests', async t => {
         loggerMock
       )
 
-      assert.strictSame(parsedProjection, {_id: 1})
+      assert.strictSame(parsedProjection, { _id: 1 })
     })
 
     await t.test(`OK - simple without ACL`, async t => {
@@ -75,12 +83,12 @@ tap.test('Projection Utils tests', async t => {
         {
           clientProjection: 'street,number,zipCode',
           rawProjection: undefined,
-          expected: {street: 1, number: 1, zipCode: 1},
+          expected: { street: 1, number: 1, zipCode: 1 },
         },
         {
           clientProjection: undefined,
           rawProjection: RAW_PROJECTION_PLAIN_INCLUSIVE,
-          expected: {street: 1, number: 1, zipCode: true},
+          expected: { street: 1, number: 1, zipCode: true },
         },
         {
           clientProjection: undefined,
@@ -93,14 +101,14 @@ tap.test('Projection Utils tests', async t => {
         },
         {
           clientProjection: undefined,
-          rawProjection: JSON.stringify({'street': '$street'}),
+          rawProjection: JSON.stringify({ 'street': '$street' }),
           expected: {
             street: '$street',
           },
         },
       ]
 
-      for (const [idx, {clientProjection, rawProjection, expected}] of cases.entries()) {
+      for (const [idx, { clientProjection, rawProjection, expected }] of cases.entries()) {
         await t.test(`${idx}`, async assert => {
           const parsedProjection = resolveProjection(
             clientProjection,
@@ -131,23 +139,23 @@ tap.test('Projection Utils tests', async t => {
         {
           clientProjection: 'street,number,zipCode',
           rawProjection: undefined,
-          expected: {street: 1, zipCode: 1},
+          expected: { street: 1, zipCode: 1 },
         },
         {
           clientProjection: undefined,
           rawProjection: RAW_PROJECTION_PLAIN_INCLUSIVE,
-          expected: {street: 1, zipCode: true},
+          expected: { street: 1, zipCode: true },
         },
         {
           clientProjection: undefined,
-          rawProjection: JSON.stringify({'street': '$street'}),
+          rawProjection: JSON.stringify({ 'street': '$street' }),
           expected: {
             street: '$street',
           },
         },
       ]
 
-      for (const [idx, {clientProjection, rawProjection, expected}] of cases.entries()) {
+      for (const [idx, { clientProjection, rawProjection, expected }] of cases.entries()) {
         await t.test(`${idx}`, async assert => {
           const parsedProjection = resolveProjection(
             clientProjection,
@@ -197,10 +205,10 @@ tap.test('Projection Utils tests', async t => {
         },
         {
           rawProjection: JSON.stringify({
-            city: {$first: '$city'},
+            city: { $first: '$city' },
           }),
           expected: {
-            city: {$first: '$city'},
+            city: { $first: '$city' },
           },
         },
         {
@@ -227,7 +235,7 @@ tap.test('Projection Utils tests', async t => {
         },
       ]
 
-      for (const [idx, {clientProjection, rawProjection, expected}] of cases.entries()) {
+      for (const [idx, { clientProjection, rawProjection, expected }] of cases.entries()) {
         await t.test(`${idx}`, async assert => {
           const parsedProjection = resolveProjection(
             clientProjection,
@@ -249,7 +257,7 @@ tap.test('Projection Utils tests', async t => {
       const cases = [
         {
           clientProjection: undefined,
-          rawProjection: JSON.stringify({'city': '$city'}),
+          rawProjection: JSON.stringify({ 'city': '$city' }),
           expectedError: new BadRequestError('Operator $city is not allowed in raw projection'),
         },
         {
@@ -259,7 +267,7 @@ tap.test('Projection Utils tests', async t => {
         },
       ]
 
-      for (const [idx, {clientProjection, rawProjection, expectedError}] of cases.entries()) {
+      for (const [idx, { clientProjection, rawProjection, expectedError }] of cases.entries()) {
         await t.test(`${idx}`, async assert => {
           try {
             resolveProjection(
@@ -281,13 +289,13 @@ tap.test('Projection Utils tests', async t => {
       const cases = [
         {
           rawProjection: {
-            city: {$first: '$$ROOT'},
+            city: { $first: '$$ROOT' },
           },
           unwantedOperator: '$$ROOT',
         },
         {
           rawProjection: {
-            city: {$first: ['$$ROOT']},
+            city: { $first: ['$$ROOT'] },
           },
           unwantedOperator: '$$ROOT',
         },
@@ -305,13 +313,13 @@ tap.test('Projection Utils tests', async t => {
         },
         {
           rawProjection: {
-            city: [{branch: 'node'}, {leaves: '$$PRUNE'}],
+            city: [{ branch: 'node' }, { leaves: '$$PRUNE' }],
           },
           unwantedOperator: '$$PRUNE',
         },
         {
           rawProjection: {
-            $cond: {if: {val: '$$CURRENT'}, then: '$$ROOT', else: null},
+            $cond: { if: { val: '$$CURRENT' }, then: '$$ROOT', else: null },
           },
           unwantedOperator: '$$CURRENT',
         },
@@ -347,7 +355,7 @@ tap.test('Projection Utils tests', async t => {
         },
         {
           rawProjection: {
-            doc: {$concatArrays: [['$city'], ['$$ROOT']]},
+            doc: { $concatArrays: [['$city'], ['$$ROOT']] },
           },
           unwantedOperator: '$$ROOT',
         },
@@ -358,7 +366,7 @@ tap.test('Projection Utils tests', async t => {
                 rawProjection: '$city',
                 initialValue: '$$ROOT',
                 in: {
-                  count: {$sum: 1},
+                  count: { $sum: 1 },
                 },
               },
             },
@@ -376,7 +384,7 @@ tap.test('Projection Utils tests', async t => {
       ]
 
 
-      for (const [idx, {rawProjection, unwantedOperator}] of cases.entries()) {
+      for (const [idx, { rawProjection, unwantedOperator }] of cases.entries()) {
         await t.test(`${idx}`, async assert => {
           try {
             resolveProjection(
