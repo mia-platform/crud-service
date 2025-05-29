@@ -36,6 +36,7 @@ const DOCUMENT_FIELDS = [
   'state',
   'isResidence',
   'createdAt',
+  'fieldWithNumber_1',
 ]
 
 const RAW_PROJECTION_PLAIN_INCLUSIVE = JSON.stringify({
@@ -78,6 +79,7 @@ tap.test('Projection Utils tests', async t => {
             state: 1,
             isResidence: 1,
             createdAt: 1,
+            fieldWithNumber_1: 1,
           },
         },
         {
@@ -104,6 +106,13 @@ tap.test('Projection Utils tests', async t => {
           rawProjection: JSON.stringify({ 'street': '$street' }),
           expected: {
             street: '$street',
+          },
+        },
+        {
+          clientProjection: undefined,
+          rawProjection: JSON.stringify({ 'fieldWithNumber_1': '$fieldWithNumber_1' }),
+          expected: {
+            fieldWithNumber_1: '$fieldWithNumber_1',
           },
         },
       ]
@@ -171,6 +180,21 @@ tap.test('Projection Utils tests', async t => {
           )
         })
       }
+    })
+
+    await t.test(`OK - simple with ACL containing spaces`, async assert => {
+      const parsedProjection = resolveProjection(
+        'street, , number,zipCode',
+        'street, ,zipCode ',
+        DOCUMENT_FIELDS,
+        undefined,
+        loggerMock
+      )
+
+      assert.strictSame(
+        parsedProjection,
+        { street: 1, zipCode: 1 }
+      )
     })
 
     await t.test(`OK - aggregation without ACL`, async t => {
