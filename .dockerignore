@@ -25,3 +25,4 @@ Dockerfile
 eslint.config.mjs
 README.md
 .clinic
+*.log
