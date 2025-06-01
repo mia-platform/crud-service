@@ -89,7 +89,7 @@ jobs:
         platforms: linux/amd64,linux/arm64
     - name: Build and push
       id: docker-build
-      uses: docker/build-push-action@14487ce63c7a62a4a324b0bfb37086795e31c6c1 # v6.16.0
+      uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
       with:
         context: .
         push: true
@@ -109,7 +109,7 @@ jobs:
         registry-password: ${{ secrets.nexus_token }}
         stop-on-processing-error: true
     - name: Generate SBOM
-      uses: anchore/sbom-action@9f7302141466aa6482940f15371237e9d9f4c34a # v0.19.0
+      uses: anchore/sbom-action@e11c554f704a0b820cbf8c51673f6945e0731532 # v0.20.0
       if: github.ref_type == 'tag'
       with:
         artifact-name: crud-service-sbom.spdx.json
