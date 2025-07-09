@@ -95,14 +95,14 @@ jobs:
         push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
-        annotations: ${{ steps.meta.output.annotations }}
+        annotations: ${{ steps.meta.outputs.annotations }}
         platforms: linux/amd64 # ${{ steps.buildx.outputs.platforms }} use this for multiarch images
         cache-from: type=gha
         cache-to: type=gha,mode=max
     - name: Scan image
       uses: sysdiglabs/scan-action@0065d3b93bd4115371b55720251adb1d228fe188 # v5.1.1
       with:
-        image-tag: nexus.mia-platform.eu/core/crud-service:${{ steps.meta.output.version.main }}
+        image-tag: nexus.mia-platform.eu/core/crud-service:${{ steps.meta.outputs.version }}
         sysdig-secure-url: "https://eu1.app.sysdig.com"
         sysdig-secure-token: ${{ secrets.sysdig_token }}
         registry-user: ${{ secrets.nexus_username }}
@@ -114,7 +114,7 @@ jobs:
       with:
         artifact-name: crud-service-sbom.spdx.json
         output-file: ./crud-service-sbom.spdx.json
-        image: nexus.mia-platform.eu/core/crud-service:${{ steps.meta.output.version.main }}
+        image: nexus.mia-platform.eu/core/crud-service:${{ steps.meta.outputs.version }}
         upload-release-assets: true
     - name: GCP Auth
       uses: google-github-actions/auth@ba79af03959ebeac9769e648f473a284504d9193 # v2.1.10
@@ -133,8 +133,8 @@ jobs:
         done
       env:
         TAGS: |
-          ghcr.io/mia-platform/crud-service:${{ steps.meta.output.version.main }}
-          docker.io/miaplatform/crud-service:${{ steps.meta.output.version.main }}
-          nexus.mia-platform.eu/core/crud-service:${{ steps.meta.output.version.main }}
+          ghcr.io/mia-platform/crud-service:${{ steps.meta.outputs.version }}
+          docker.io/miaplatform/crud-service:${{ steps.meta.outputs.version }}
+          nexus.mia-platform.eu/core/crud-service:${{ steps.meta.outputs.version }}
         DIGEST: ${{ steps.docker-build.outputs.digest }}
         COSIGN_PRIVATE_KEY: ${{ secrets.cosign_key }}
