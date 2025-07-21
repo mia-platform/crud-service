@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM docker.io/curlimages/curl:8.14.1@sha256:9a1ed35addb45476afa911696297f8e115993df459278ed036182dd2cd22b67b AS crypt-lib
+FROM docker.io/curlimages/curl:8.15.0@sha256:4026b29997dc7c823b51c164b71e2b51e0fd95cce4601f78202c513d97da2922 AS crypt-lib
 
 ARG TARGETARCH
 
