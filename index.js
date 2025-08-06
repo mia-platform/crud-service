@@ -318,6 +318,9 @@ function getTransformedSchema(httpPartSchema) {
       json: httpPartSchema,
       resultType: 'pointer',
       path: '$..[?(@ && @.type && Array.isArray(@.type))]',
+      sandbox: {
+        Array,
+      },
     })
       .map(pointer => [
         `${pointer
