@@ -65,7 +65,7 @@
     "eslint-plugin-n": "^17.18.0",
     "fastbench": "^1.0.1",
     "form-data": "^4.0.4",
-    "globals": "^16.2.0",
+    "globals": "^16.3.0",
     "mock-require": "^3.0.3",
     "node-xlsx": "^0.24.0",
     "tap": "^21.1.0",
