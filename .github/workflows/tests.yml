@@ -30,7 +30,7 @@ jobs:
 
       - name: download MongoDB encryption libraries (to support testing encryption features)
         run: |
-          curl -fsSL https://downloads.mongodb.com/linux/mongo_crypt_shared_v1-linux-x86_64-enterprise-ubuntu2204-7.0.14.tgz -o crypt_shared.tar.gz
+          curl -fsSL https://downloads.mongodb.com/linux/mongo_crypt_shared_v1-linux-x86_64-enterprise-ubuntu2204-7.0.15.tgz -o crypt_shared.tar.gz
           tar -xz --one-top-level=crypt_shared -f crypt_shared.tar.gz
 
       - name: start MongoDB instance
@@ -73,7 +73,7 @@ jobs:
 
       - name: download MongoDB encryption libraries (to support testing encryption features)
         run: |
-          curl -fsSL https://downloads.mongodb.com/linux/mongo_crypt_shared_v1-linux-x86_64-enterprise-ubuntu2404-8.0.1.tgz -o crypt_shared.tar.gz
+          curl -fsSL https://downloads.mongodb.com/linux/mongo_crypt_shared_v1-linux-x86_64-enterprise-ubuntu2404-8.0.12.tgz -o crypt_shared.tar.gz
           tar -xz --one-top-level=crypt_shared -f crypt_shared.tar.gz
 
       - name: start MongoDB instance

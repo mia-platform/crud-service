@@ -1,11 +1,11 @@
 # syntax=docker/dockerfile:1
-FROM docker.io/curlimages/curl:8.14.1@sha256:9a1ed35addb45476afa911696297f8e115993df459278ed036182dd2cd22b67b AS crypt-lib
+FROM docker.io/curlimages/curl:8.15.0@sha256:4026b29997dc7c823b51c164b71e2b51e0fd95cce4601f78202c513d97da2922 AS crypt-lib
 
 ARG TARGETARCH
 
 WORKDIR /cryptd
 
-ARG CRYPTD_VERSION=7.0.15
+ARG CRYPTD_VERSION=8.0.12
 ARG CRYPTD_OS=debian12
 
 # debian doesn't suppport arm architecture for now, if we switch to ubuntu we can uncomment the arm bit
@@ -23,7 +23,7 @@ RUN case "${TARGETARCH}" in \
 
 ########################################################################################################################
 
-FROM docker.io/library/node:22.16.0-bookworm-slim@sha256:2f3571619daafc6b53232ebf2fcc0817c1e64795e92de317c1684a915d13f1a5 AS build
+FROM docker.io/library/node:22.18.0-bookworm-slim@sha256:88f44fbb06cc98e1451e4e015c122f84030ec55c603f753ed97b889db0bb8d4d AS build
 
 ENV NODE_ENV=production
 
@@ -40,7 +40,7 @@ COPY . .
 
 # create a CRUD Service image that does not support automatic CSFLE
 # and therefore it can be employed by everybody in any MongoDB product
-FROM docker.io/library/node:22.16.0-bookworm-slim@sha256:2f3571619daafc6b53232ebf2fcc0817c1e64795e92de317c1684a915d13f1a5 AS crud-service-no-encryption
+FROM docker.io/library/node:22.18.0-bookworm-slim@sha256:88f44fbb06cc98e1451e4e015c122f84030ec55c603f753ed97b889db0bb8d4d AS crud-service-no-encryption
 
 ARG COMMIT_SHA
 ARG DEBIAN_FRONTEND=noninteractive
