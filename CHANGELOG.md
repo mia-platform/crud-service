@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - bug that prevented partial index to be updated at startup
 - improved `_rawp` filtering logic to extend support for variable fields containing numbers
+- update `jsonpath-plus` to `v10.3.0` to fix a vulnerability
+- update `form-data` to `v4.0.4` to fix a vulnerability
+
+### Changed
+
+- updated `node` and `curl` image version
 
 ## 7.2.3 - 2025-03-10
 
