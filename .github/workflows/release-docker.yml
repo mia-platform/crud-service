@@ -37,18 +37,18 @@ jobs:
       with:
         show-progress: false
     - name: Docker Login to GitHub Repository
-      uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3.4.0
+      uses: docker/login-action@184bdaa0721073962dff0199f1fb9940f07167d1 # v3.5.0
       with:
         registry: ghcr.io
         username: ${{ github.actor }}
         password: ${{ secrets.github_cr_token }}
     - name: Docker Login to DockerHub
-      uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3.4.0
+      uses: docker/login-action@184bdaa0721073962dff0199f1fb9940f07167d1 # v3.5.0
       with:
         username: ${{ secrets.docker_username }}
         password: ${{ secrets.docker_token }}
     - name: Login to Mia registry
-      uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3.4.0
+      uses: docker/login-action@184bdaa0721073962dff0199f1fb9940f07167d1 # v3.5.0
       with:
         registry: nexus.mia-platform.eu
         username: ${{ secrets.nexus_username }}
@@ -61,7 +61,7 @@ jobs:
         platforms: amd64,arm64
     - name: Configure docker metadata
       id: meta
-      uses: docker/metadata-action@902fa8ec7d6ecbf8d84d538b9b233a880e428804 # v5.7.0
+      uses: docker/metadata-action@c1e51972afc2121e065aed6d45c65596fe445f3f # v5.8.0
       env:
         DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest # add 'index' when we will support a multiarch image
       with:
@@ -109,7 +109,7 @@ jobs:
         registry-password: ${{ secrets.nexus_token }}
         stop-on-processing-error: true
     - name: Generate SBOM
-      uses: anchore/sbom-action@7b36ad622f042cab6f59a75c2ac24ccb256e9b45 # v0.20.4
+      uses: anchore/sbom-action@da167eac915b4e86f08b264dbdbc867b61be6f0c # v0.20.5
       if: github.ref_type == 'tag'
       with:
         artifact-name: crud-service-sbom.spdx.json
