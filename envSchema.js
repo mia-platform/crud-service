@@ -118,7 +118,7 @@ const properties = {
     description: 'When this option is activated, the service does manage the indexes of defined collections',
     default: false,
   },
-  FASTITY_PLUGIN_TIMEOUT_MS: {
+  FASTIFY_PLUGIN_TIMEOUT_MS: {
     type: 'number',
     description: 'customize how many milliseconds are allowed to elapse to load a fastify plugin',
     default: 20000,

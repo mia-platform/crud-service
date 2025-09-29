@@ -258,7 +258,7 @@ module.exports.options = {
     },
     plugins: [ajvFormats],
   },
-  pluginTimeout: process.env.FASTITY_PLUGIN_TIMEOUT_MS ?? 20000,
+  pluginTimeout: process.env.FASTIFY_PLUGIN_TIMEOUT_MS ?? 20000,
 }
 
 module.exports.swaggerDefinition = {
