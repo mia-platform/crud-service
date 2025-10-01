@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## 7.2.5 - 2025-10-01
+
 ### Fixed
 
 - introduce environment variable `FASTIFY_PLUGIN_TIMEOUT_MS` to allow users customizing
