@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fixed
+
+- introduce environment variable `FASTIFY_PLUGIN_TIMEOUT_MS` to allow users customizing
+  the startup timeout of a fastify plugin
+
+### Dependencies 
+
+- updated NodeJS version in Docker image to v20.20.0
+
 ## 7.2.4 - 2025-08-06
 
 ### Fixed

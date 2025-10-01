@@ -1,6 +1,6 @@
 {
   "name": "@mia-platform/crud-service",
-  "version": "7.2.4",
+  "version": "7.2.5-rc.1",
   "description": "HTTP interface to perform CRUD operations on MongoDB collections defined in the API Console",
   "homepage": "https://www.mia-platform.eu/",
   "bugs": {
@@ -45,27 +45,27 @@
     "mongodb-client-encryption": "^6.5.0",
     "ndjson": "^2.0.0",
     "p-limit": "^7.1.1",
-    "pino": "^9.9.1",
+    "pino": "^9.12.0",
     "through2": "^4.0.2",
     "xlsx-write-stream": "^1.0.3"
   },
   "peerDependencies": {
     "ajv": "^8.17.1",
-    "fast-json-stringify": "^6.0.1",
+    "fast-json-stringify": "^6.1.1",
     "fastify": "^4.29.0",
-    "mongodb": "^6.18.0"
+    "mongodb": "^6.20.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
     "@faker-js/faker": "^9.9.0",
     "@mia-platform/eslint-config-mia": "^3.0.0",
     "abstract-logging": "^2.0.1",
-    "commander": "^14.0.0",
-    "eslint": "^9.32.0",
-    "eslint-plugin-n": "^17.21.3",
+    "commander": "^14.0.1",
+    "eslint": "^9.36.0",
+    "eslint-plugin-n": "^17.23.1",
     "fastbench": "^1.0.1",
     "form-data": "^4.0.4",
-    "globals": "^16.3.0",
+    "globals": "^16.4.0",
     "mock-require": "^3.0.3",
     "node-xlsx": "^0.24.0",
     "tap": "^21.1.0",
