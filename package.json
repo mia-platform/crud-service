@@ -68,7 +68,7 @@
     "globals": "^16.4.0",
     "mock-require": "^3.0.3",
     "node-xlsx": "^0.24.0",
-    "tap": "^21.1.0",
+    "tap": "^21.1.1",
     "uuid-validate": "0.0.3"
   },
   "engines": {
