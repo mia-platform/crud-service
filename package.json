@@ -44,7 +44,7 @@
     "lodash": "^4.17.21",
     "mongodb-client-encryption": "^6.5.0",
     "ndjson": "^2.0.0",
-    "p-limit": "^7.1.1",
+    "p-limit": "^7.2.0",
     "pino": "^9.12.0",
     "through2": "^4.0.2",
     "xlsx-write-stream": "^1.0.3"
