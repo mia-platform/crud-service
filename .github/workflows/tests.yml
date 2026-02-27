@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        mongodb-version: ["5.0", "6.0", "7.0"]
+        mongodb-version: ["5.0", "6.0", "7.0", "8.0"]
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
@@ -84,7 +84,7 @@ jobs:
       - name: Run tests
         run: npm run coverage -- --jobs 3 # limit the number of jobs that can be run in parallel in the CI
         env:
-          MONGO_VERSION: ${{ matrix.mongodb-version }}
+          MONGO_VERSION: "8.0"
           CRYPT_SHARED_LIB_PATH: ${{ github.workspace }}/crypt_shared/lib/mongo_crypt_v1.so
         # allow the pipeline to continue even when the coverage decreases
         continue-on-error: true
