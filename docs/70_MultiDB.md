@@ -46,7 +46,8 @@ When `x-scope` is **not provided**, all operations (read, write, delete, patch) 
 | `MULTIDB_SCOPES` | `string` | Yes* | — | List of scopes, comma-separated or as JSON array. E.g.: `"rome,milan,naples"` or `'["rome","milan","naples"]'` |
 | `MULTIDB_URL_TEMPLATE` | `string` | Yes* | — | MongoDB connection string template with `{{scope}}` placeholder. E.g.: `mongodb+srv://user:pwd@cluster/myapp-prod-{{scope}}?retryWrites=true&w=majority` |
 | `MULTIDB_MAX_IDLE_TIME_MS` | `number` | No | `0` | `maxIdleTimeMS` for scope MongoDB connections |
-| `DEFAULT_SCOPE` | `string` | **Yes*** | — | **Required** when `MULTIDB_ENABLED=true`. The default scope used when `x-scope` header is not provided. All operations (read, write, delete, patch) target only this scope by default. Must be one of `MULTIDB_SCOPES`. Its database is also used for infrastructure purposes (cursor cache collection `_multidb_cursors`). Exposed as `fastify.multidb.defaultDb` |
+| `DEFAULT_SCOPE` | `string` | **Yes*** | — | **Required** when `MULTIDB_ENABLED=true`. The default scope used when `x-scope` header is not provided. All operations (read, write, delete, patch) target only this scope by default. Must be one of `MULTIDB_SCOPES`. Its database is also used for infrastructure purposes (cursor cache). Exposed as `fastify.multidb.defaultDb` |
+| `CURSOR_CACHE_COLLECTION` | `string` | No | `_multidb_cursors` | Name of the MongoDB collection (on DEFAULT_SCOPE database) used as cursor cache for keyset pagination. The collection **must** already have a TTL index on `expireAt` (see below) |
 | `CURSOR_TTL` | `number` | No | `300` | Time-to-live (seconds) for cursor cache entries in MongoDB. Cached cursors expire after this duration |
 | `MAX_SKIP` | `number` | No | `2000` | Maximum `_sk` value allowed in multi-db GET list. Prevents deep pagination abuse |
 | `MAX_REBUILD_PAGES` | `number` | No | `5` | Maximum pages to replay from page 0 when a cursor cache miss occurs. If the requested page exceeds this, a 410 Gone is returned |
@@ -383,7 +384,7 @@ When the client sends the cursor:
 | Property | Detail |
 |----------|--------|
 | **Self-contained** | The cursor contains all necessary state, encoded in base64url. Any replica can decode it. |
-| **Cached for `_sk` translation** | Cursors are also stored in a MongoDB collection (`_multidb_cursors`) to support `_sk` offset-based pagination. |
+| **Cached for `_sk` translation** | Cursors are also stored in a MongoDB collection (configurable via `CURSOR_CACHE_COLLECTION`, default `_multidb_cursors`) to support `_sk` offset-based pagination. |
 | **Multi-replica safe** | Any replica can decode it — no shared secrets required. |
 | **Sort-locked** | Changing the sort field between pages raises an error, as it would invalidate positions. |
 
@@ -443,7 +444,7 @@ sequenceDiagram
 
 | Property | Detail |
 |----------|--------|
-| **Collection** | `_multidb_cursors` on the DEFAULT_SCOPE database |
+| **Collection** | Configurable via `CURSOR_CACHE_COLLECTION` env var (default: `_multidb_cursors`), on the DEFAULT_SCOPE database. **Must** already have a TTL index: `db.collection.createIndex({ expireAt: 1 }, { expireAfterSeconds: 0 })` |
 | **TTL** | Automatic cleanup via MongoDB TTL index on `expireAt` field (default: 300s, configurable via `CURSOR_TTL`) |
 | **Key format** | `cursor:{collection}:{scope}:{sort}:{filter}:{state}:p{page}` |
 | **Value** | The base64url-encoded cursor string for that page |
@@ -496,7 +497,7 @@ This allows the UI to display a warning like *"Partial results: the naples scope
 | **Identical collections** | The plugin assumes all scopes have the same collections with the same schema. |
 | **No aggregation pipeline** | Queries use `find()` with sort/limit. For complex aggregations, use the CRUD Service APIs per scope directly. |
 | **Eventual consistency** | Cross-scope results are eventually consistent: there is no global transaction. |
-| **`_sk` → cursor translation** | The `_sk` offset parameter is transparently translated to keyset cursors using a MongoDB-backed cache (`_multidb_cursors` collection on DEFAULT_SCOPE). Existing clients using `_sk` pagination continue to work transparently. Direct `x-cursor` header is also supported for advanced use cases. |
+| **`_sk` → cursor translation** | The `_sk` offset parameter is transparently translated to keyset cursors using a MongoDB-backed cache (collection configurable via `CURSOR_CACHE_COLLECTION`, on DEFAULT_SCOPE). Existing clients using `_sk` pagination continue to work transparently. Direct `x-cursor` header is also supported for advanced use cases. |
 | **`_useEstimate` silently ignored** | Count estimation is accepted but has no effect across N databases. |
 | **Single-scope writes** | POST, DELETE default to DEFAULT_SCOPE when x-scope is omitted. |
 | **Single-scope export/lookup** | GET export and lookup default to DEFAULT_SCOPE when x-scope is omitted. |

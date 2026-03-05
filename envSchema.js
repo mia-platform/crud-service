@@ -146,6 +146,11 @@ const properties = {
     type: 'string',
     description: 'Required when MULTIDB_ENABLED=true. The default scope used when x-scope header is not provided. All operations (read, write, delete, patch) target only this scope by default. Must be one of MULTIDB_SCOPES. Its database is also used for infrastructure purposes (e.g. cursor cache).',
   },
+  CURSOR_CACHE_COLLECTION: {
+    type: 'string',
+    description: 'Name of the MongoDB collection (on DEFAULT_SCOPE database) used as cursor cache for keyset pagination. The collection MUST already have a TTL index on the `expireAt` field.',
+    default: '_multidb_cursors',
+  },
   CURSOR_TTL: {
     type: 'number',
     description: 'Time-to-live (seconds) for cursor cache entries in MongoDB. Default: 300.',
