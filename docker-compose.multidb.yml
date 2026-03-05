@@ -1,0 +1,26 @@
+# docker-compose.multidb.yml
+# Local multi-database testing environment.
+#
+# Usage:
+#   docker compose -f docker-compose.multidb.yml up -d
+#   npm run start:multidb
+#
+# Scopes (rome, milan, naples) are separate databases inside the same MongoDB instance.
+# The CRUD service connects via MULTIDB_URL_TEMPLATE = mongodb://localhost:27017/crud-{{scope}}
+
+services:
+  mongodb:
+    image: mongo:6.0
+    ports:
+      - '27017:27017'
+    volumes:
+      - multidb-data:/data/db
+    healthcheck:
+      test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
+volumes:
+  multidb-data:

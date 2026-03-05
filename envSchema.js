@@ -123,6 +123,44 @@ const properties = {
     description: 'customize how many milliseconds are allowed to elapse to load a fastify plugin',
     default: 20000,
   },
+  // Multi-DB properties (additive, all optional unless MULTIDB_ENABLED=true)
+  MULTIDB_ENABLED: {
+    type: 'boolean',
+    description: 'Enable multi-database support. When true, existing GET routes use scatter-gather across scopes.',
+    default: false,
+  },
+  MULTIDB_SCOPES: {
+    type: 'string',
+    description: 'Comma-separated or JSON array of scope names, e.g. "rome,milan,naples"',
+  },
+  MULTIDB_URL_TEMPLATE: {
+    type: 'string',
+    description: 'MongoDB connection URL template with {{scope}} placeholder, e.g. mongodb+srv://user:pwd@cluster/myapp-prod-{{scope}}?retryWrites=true&w=majority',
+  },
+  MULTIDB_MAX_IDLE_TIME_MS: {
+    type: 'number',
+    description: 'maxIdleTimeMS for multi-db scope connections (default: 0)',
+    default: 0,
+  },
+  DEFAULT_SCOPE: {
+    type: 'string',
+    description: 'Required when MULTIDB_ENABLED=true. The default scope used when x-scope header is not provided. All operations (read, write, delete, patch) target only this scope by default. Must be one of MULTIDB_SCOPES. Its database is also used for infrastructure purposes (e.g. cursor cache).',
+  },
+  CURSOR_TTL: {
+    type: 'number',
+    description: 'Time-to-live (seconds) for cursor cache entries in MongoDB. Default: 300.',
+    default: 300,
+  },
+  MAX_SKIP: {
+    type: 'number',
+    description: 'Maximum _sk value allowed in multi-db GET list. Prevents deep pagination abuse. Default: 2000.',
+    default: 2000,
+  },
+  MAX_REBUILD_PAGES: {
+    type: 'number',
+    description: 'Maximum pages to replay from page 0 when a cursor cache miss occurs. Default: 5.',
+    default: 5,
+  },
 }
 
 const fastifyEnvSchema = {

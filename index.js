@@ -25,7 +25,7 @@ const ajvFormats = require('ajv-formats')
 
 const { unset: lunset } = require('lodash')
 const { readdirSync } = require('fs')
-const { join } = require('path')
+const { join, resolve } = require('path')
 const { JSONPath } = require('jsonpath-plus')
 
 
@@ -41,6 +41,7 @@ const {
 } = require('./lib/consts')
 const { registerMongoInstances } = require('./lib/mongo/mongo-plugin')
 const { ajvSerializer } = require('./lib/validatorGetters')
+const multidbPlugin = require('./lib/multidb')
 const { pointerSeparator } = require('./lib/JSONPath.utils')
 const { registerHelperRoutes } = require('./lib/helpersRoutes')
 const { addSerializerCompiler } = require('./lib/compilers')
@@ -189,14 +190,15 @@ async function setupCruds(fastify) {
   fastify.decorate('validateOutput', ENABLE_STRICT_OUTPUT_VALIDATION)
   fastify.setNotFoundHandler(notFoundHandler)
   fastify.setErrorHandler(customErrorHandler)
-  const collections = readdirSync(COLLECTION_DEFINITION_FOLDER)
+  const collectionsFolder = resolve(COLLECTION_DEFINITION_FOLDER)
+  const collections = readdirSync(collectionsFolder)
     .filter(validCrudFolder)
-    .map(path => join(COLLECTION_DEFINITION_FOLDER, path))
+    .map(path => join(collectionsFolder, path))
     .map(require)
 
   fastify.decorate('collections', collections)
 
-  const viewsFolder = VIEWS_DEFINITION_FOLDER
+  const viewsFolder = VIEWS_DEFINITION_FOLDER ? resolve(VIEWS_DEFINITION_FOLDER) : null
   if (viewsFolder) {
     const views = readdirSync(viewsFolder)
       .filter(validCrudFolder)
@@ -211,6 +213,14 @@ async function setupCruds(fastify) {
 
     await fastify.register(registerDatabase)
     await fastify.register(fp(loadModels))
+
+    // Multi-DB plugin: must register BEFORE routes so the onRoute hook is active
+    // when collection endpoints are registered. The hook transparently replaces
+    // read handlers (GET list, count, getById) with scatter-gather versions.
+    if (fastify.config.MULTIDB_ENABLED) {
+      fastify.log.info('Multi-DB mode enabled, registering multidb plugin')
+      await fastify.register(multidbPlugin)
+    }
 
     await fastify.register(iterateOverCollectionDefinitionAndRegisterCruds)
     await fastify.register(joinPlugin, { prefix: '/join' })
