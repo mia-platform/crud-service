@@ -1,7 +1,16 @@
 'use strict'
 
 const { test } = require('tap')
-const { encodeCursor, decodeCursor, buildKeysetFilter, computeNextPositions, CursorError } = require('../lib/multidb/cursor')
+const { ObjectId } = require('mongodb')
+const {
+  encodeCursor,
+  decodeCursor,
+  buildKeysetFilter,
+  computeNextPositions,
+  serializeValue,
+  deserializeValue,
+  CursorError,
+} = require('../lib/multidb/cursor')
 
 test('cursor module', async(t) => {
   t.test('encodeCursor and decodeCursor roundtrip', async(t) => {
@@ -134,4 +143,94 @@ test('computeNextPositions', async(t) => {
     t.same(positions.naples, { sortValue: '2024-01-05', _id: 'prev1' })
     t.same(positions.rome, { sortValue: '2024-01-10', _id: '1' })
   })
+})
+
+// ────────────────────────────────────────────────────────────────────────────
+// Type-preserving serialization (Date, ObjectId)
+// ────────────────────────────────────────────────────────────────────────────
+
+test('serializeValue / deserializeValue', async(t) => {
+  t.test('Date → { $date } → Date roundtrip', async(t) => {
+    const date = new Date('2025-12-31T09:53:21.283Z')
+    const serialized = serializeValue(date)
+    t.same(serialized, { $date: '2025-12-31T09:53:21.283Z' })
+    const deserialized = deserializeValue(serialized)
+    t.ok(deserialized instanceof Date)
+    t.equal(deserialized.toISOString(), '2025-12-31T09:53:21.283Z')
+  })
+
+  t.test('ObjectId → { $oid } → ObjectId roundtrip', async(t) => {
+    const oid = new ObjectId('507f1f77bcf86cd799439011')
+    const serialized = serializeValue(oid)
+    t.same(serialized, { $oid: '507f1f77bcf86cd799439011' })
+    const deserialized = deserializeValue(serialized)
+    t.ok(deserialized instanceof ObjectId)
+    t.equal(deserialized.toHexString(), '507f1f77bcf86cd799439011')
+  })
+
+  t.test('plain string passes through unchanged', async(t) => {
+    t.equal(serializeValue('hello'), 'hello')
+    t.equal(deserializeValue('hello'), 'hello')
+  })
+
+  t.test('number passes through unchanged', async(t) => {
+    t.equal(serializeValue(42), 42)
+    t.equal(deserializeValue(42), 42)
+  })
+
+  t.test('null passes through unchanged', async(t) => {
+    t.equal(serializeValue(null), null)
+    t.equal(deserializeValue(null), null)
+  })
+})
+
+test('encodeCursor/decodeCursor preserves Date and ObjectId types', async(t) => {
+  const date = new Date('2025-06-15T12:30:00.000Z')
+  const oid = new ObjectId('6939a5e3becbbda73d8ccdcd')
+
+  const state = {
+    sortField: 'updatedAt',
+    sortDir: -1,
+    positions: {
+      tutor: { sortValue: date, _id: oid },
+      quiperte: null,
+    },
+    filter: {},
+    states: ['PUBLIC'],
+  }
+
+  const token = encodeCursor(state)
+  const decoded = decodeCursor(token)
+
+  t.equal(decoded.sortField, 'updatedAt')
+  t.equal(decoded.sortDir, -1)
+
+  // tutor position should be restored to native types
+  const tutorPos = decoded.positions.tutor
+  t.ok(tutorPos.sortValue instanceof Date, 'sortValue should be Date')
+  t.equal(tutorPos.sortValue.toISOString(), '2025-06-15T12:30:00.000Z')
+  t.ok(tutorPos._id instanceof ObjectId, '_id should be ObjectId')
+  t.equal(tutorPos._id.toHexString(), '6939a5e3becbbda73d8ccdcd')
+
+  // null position preserved
+  t.equal(decoded.positions.quiperte, null)
+})
+
+test('buildKeysetFilter with native types produces correct MongoDB query', async(t) => {
+  const date = new Date('2025-12-31T09:53:21.283Z')
+  const oid = new ObjectId('6939a5e3becbbda73d8ccdcd')
+
+  const position = { sortValue: date, _id: oid }
+  const result = buildKeysetFilter(position, 'updatedAt', -1)
+
+  t.same(result, {
+    $or: [
+      { updatedAt: { $lt: date } },
+      { updatedAt: date, _id: { $gt: oid } },
+    ],
+  })
+
+  // Verify the Date is a real Date object in the filter
+  t.ok(result.$or[0].updatedAt.$lt instanceof Date)
+  t.ok(result.$or[1]._id.$gt instanceof ObjectId)
 })

@@ -200,7 +200,7 @@ test('scatterGather', async(t) => {
     }
 
     // First item should be Naples A (2024-01-16)
-    t.equal(result.data[0].scope, 'naples')
+    t.equal(result.data[0].database, 'naples')
     t.equal(result.data[0].name, 'Naples A')
   })
 
@@ -290,8 +290,8 @@ test('scatterGather', async(t) => {
     })
 
     for (const doc of result.data) {
-      t.ok(doc.scope, 'scope must be present')
-      t.ok(['rome', 'milan'].includes(doc.scope), `scope must be rome or milan, got ${doc.scope}`)
+      t.ok(doc.database, 'database must be present')
+      t.ok(['rome', 'milan'].includes(doc.database), `database must be rome or milan, got ${doc.database}`)
     }
   })
 
@@ -446,9 +446,9 @@ test('scatterGather with sub-partitions', async(t) => {
     t.equal(result.data.length, 3)
     const names = result.data.map(d => d.name)
     t.same(names, ['Roma A', 'Roma C', 'Roma E'])
-    // All results should have scope = physical and subScope = sub
+    // All results should have database = physical and subScope = sub
     for (const doc of result.data) {
-      t.equal(doc.scope, 'rome')
+      t.equal(doc.database, 'rome')
       t.equal(doc.subScope, 'programA')
     }
   })
@@ -508,12 +508,12 @@ test('scatterGather with sub-partitions', async(t) => {
     // programA@rome: 3 docs, milan: 3 docs = 6 total
     t.equal(result.data.length, 6)
     // Milan docs should not have subScope
-    const milanDocs = result.data.filter(d => d.scope === 'milan')
+    const milanDocs = result.data.filter(d => d.database === 'milan')
     for (const doc of milanDocs) {
       t.notOk(doc.subScope, 'milan docs should not have subScope')
     }
     // Rome docs should have subScope
-    const romeDocs = result.data.filter(d => d.scope === 'rome')
+    const romeDocs = result.data.filter(d => d.database === 'rome')
     for (const doc of romeDocs) {
       t.equal(doc.subScope, 'programA')
     }
@@ -602,7 +602,7 @@ test('scatterGather with crossFilter', async(t) => {
     // Rome (normal): only Private Rome matches → 1 doc
     // Milan (cross): crossFilter = {} → all 3 docs
     t.equal(result.data.length, 4)
-    const romeResults = result.data.filter(d => d.scope === 'rome')
+    const romeResults = result.data.filter(d => d.database === 'rome')
     t.equal(romeResults.length, 1)
     t.equal(romeResults[0].name, 'Private Rome')
   })

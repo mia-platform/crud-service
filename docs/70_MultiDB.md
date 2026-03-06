@@ -27,7 +27,7 @@ When `x-scope` is **not provided**, all operations (read, write, delete, patch) 
    - The document state filter (`__STATE__`)
    - The **keyset filter** derived from the cursor position for that scope
 4. The N queries run **in parallel**.
-5. **Gather**: results are tagged with `scope` and merged into a single array.
+5. **Gather**: results are tagged with `database` and merged into a single array.
 6. **Merge sort**: the merged array is sorted by `(sortField, _id)` respecting direction.
 7. **Truncation**: only the first `limit` documents are emitted.
 8. **Cursor computation**: for each scope that contributed to the page, the position of the last emitted document is saved (`sortValue` + `_id`).
@@ -129,7 +129,7 @@ The `x-scope` header is **optional**. If provided, targets that scope. If omitte
 | **`x-cursor` request header** | Not present | Added — opaque token from previous response |
 | **`x-cursor` response header** | Not present | Added — opaque cursor for the next page (`null` if last page) |
 | **`x-scope` header** | Not present | Added — optional, targets specific scopes. Defaults to DEFAULT_SCOPE |
-| **`scope` field in documents** | Not present | Each document includes `scope` with the name of the originating scope |
+| **`database` field in documents** | Not present | Each document includes `database` with the name of the originating database |
 
 ### GET count (`GET /:collectionName/count`)
 
@@ -143,7 +143,7 @@ The `x-scope` header is **optional**. If provided, targets that scope. If omitte
 
 | Aspect | Standard | Multi-DB |
 |--------|----------|----------|
-| **Response format** | Single document | Document with `scope` added |
+| **Response format** | Single document | Document with `database` added |
 | **`x-scope` header** | Not present | Added — optional, limits search to specific scopes. Defaults to DEFAULT_SCOPE |
 | **Search** | Single DB | Target scopes in parallel, returns first match |
 
@@ -294,7 +294,7 @@ X-Multidb-Degraded: naples          (only if a scope errored)
     "createdAt": "2024-01-16T12:00:00Z",
     "priority": "high",
     "__STATE__": "PUBLIC",
-    "scope": "naples"
+    "database": "naples"
   },
   {
     "_id": "507f1f77bcf86cd799439022",
@@ -302,13 +302,13 @@ X-Multidb-Degraded: naples          (only if a scope errored)
     "createdAt": "2024-01-15T10:00:00Z",
     "priority": "medium",
     "__STATE__": "PUBLIC",
-    "scope": "rome"
+    "database": "rome"
   }
 ]
 ```
 
 **Response notes:**
-- Each document includes the `scope` field indicating which database it came from.
+- Each document includes the `database` field indicating which database it came from.
 - The `x-cursor` response header contains the opaque cursor for the next page. If absent, this is the last page.
 - The `X-Multidb-Degraded` header lists scopes that returned errors (the others continue to work).
 
@@ -324,7 +324,7 @@ The total is the sum of counts across all scopes (or only those specified by the
   "name": "Urgent ticket",
   "createdAt": "2024-01-16T12:00:00Z",
   "__STATE__": "PUBLIC",
-  "scope": "naples"
+  "database": "naples"
 }
 ```
 

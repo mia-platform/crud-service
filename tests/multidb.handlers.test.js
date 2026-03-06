@@ -252,7 +252,7 @@ test('wrapWriteHandler', async(t) => {
     }
     const wrapped = wrapWriteHandler(handleInsertOne)
 
-    const mockRequest = { headers: {}, query: {}, log: { debug() {}, warn() {} } }
+    const mockRequest = { headers: {}, query: {}, log: { debug() { /* noop */ }, warn() { /* noop */ } } }
     const mockReply = {}
 
     const context = {
@@ -310,7 +310,7 @@ test('wrapWriteHandler', async(t) => {
     }
     const wrapped = wrapWriteHandler(handleInsertOne)
 
-    const mockRequest = { headers: { 'x-scope': 'rome' }, query: {}, log: { debug() {}, warn() {} } }
+    const mockRequest = { headers: { 'x-scope': 'rome' }, query: {}, log: { debug() { /* noop */ }, warn() { /* noop */ } } }
     const mockReply = {}
 
     const context = {
@@ -344,7 +344,7 @@ test('wrapWriteHandler', async(t) => {
     }
     const wrapped = wrapWriteHandler(handleInsertOne)
 
-    const mockRequest = { headers: { 'x-scope': 'rome' }, query: {}, log: { debug() {}, warn() {} } }
+    const mockRequest = { headers: { 'x-scope': 'rome' }, query: {}, log: { debug() { /* noop */ }, warn() { /* noop */ } } }
     const mockReply = {}
     const scopedCollection = { name: 'scoped' }
 
@@ -373,7 +373,7 @@ test('wrapWriteHandler', async(t) => {
     }
     const wrapped = wrapWriteHandler(handleInsertOne)
 
-    const mockRequest = { headers: { 'x-scope': 'rome' }, query: {}, log: { debug() {}, warn() {} } }
+    const mockRequest = { headers: { 'x-scope': 'rome' }, query: {}, log: { debug() { /* noop */ }, warn() { /* noop */ } } }
     const mockReply = {}
     const scopedCollection = { name: 'scoped' }
     const mockParser = { parse() { /* noop */ } }
@@ -398,7 +398,7 @@ test('wrapWriteHandler', async(t) => {
     async function handleInsertOne() { return 'ok' }
     const wrapped = wrapWriteHandler(handleInsertOne)
 
-    const mockRequest = { headers: { 'x-scope': '  rome  ' }, query: {}, log: { debug() {}, warn() {} } }
+    const mockRequest = { headers: { 'x-scope': '  rome  ' }, query: {}, log: { debug() { /* noop */ }, warn() { /* noop */ } } }
     const mockReply = {}
 
     const context = {
@@ -420,7 +420,7 @@ test('wrapWriteHandler', async(t) => {
     }
     const wrapped = wrapWriteHandler(handleInsertOne)
 
-    const mockRequest = { headers: { 'x-scope': 'rome' }, query: {}, log: { debug() {}, warn() {} } }
+    const mockRequest = { headers: { 'x-scope': 'rome' }, query: {}, log: { debug() { /* noop */ }, warn() { /* noop */ } } }
     const mockReply = {}
 
     const context = {
@@ -442,7 +442,7 @@ test('wrapWriteHandler', async(t) => {
     }
     const wrapped = wrapWriteHandler(handleInsertMany)
 
-    const mockRequest = { headers: { 'x-scope': 'milan' }, query: {}, log: { debug() {}, warn() {} } }
+    const mockRequest = { headers: { 'x-scope': 'milan' }, query: {}, log: { debug() { /* noop */ }, warn() { /* noop */ } } }
     const mockReply = {}
 
     const context = {
@@ -466,7 +466,7 @@ test('wrapWriteHandler', async(t) => {
     async function handleDelete() { return mockReply }
     const wrapped = wrapWriteHandler(handleDelete)
 
-    const mockRequest = { headers: { 'x-scope': 'rome' }, query: {}, log: { debug() {}, warn() {} } }
+    const mockRequest = { headers: { 'x-scope': 'rome' }, query: {}, log: { debug() { /* noop */ }, warn() { /* noop */ } } }
 
     const context = {
       multidb: {
@@ -485,7 +485,7 @@ test('wrapWriteHandler', async(t) => {
     async function handleCount() { return 42 }
     const wrapped = wrapWriteHandler(handleCount)
 
-    const mockRequest = { headers: { 'x-scope': 'rome' }, query: {}, log: { debug() {}, warn() {} } }
+    const mockRequest = { headers: { 'x-scope': 'rome' }, query: {}, log: { debug() { /* noop */ }, warn() { /* noop */ } } }
     const mockReply = {}
 
     const context = {
@@ -520,7 +520,7 @@ test('wrapWriteHandler', async(t) => {
     }
     const wrapped = wrapWriteHandler(handleExport)
 
-    const mockRequest = { headers: { 'x-scope': 'rome' }, query: {}, log: { debug() {}, warn() {} } }
+    const mockRequest = { headers: { 'x-scope': 'rome' }, query: {}, log: { debug() { /* noop */ }, warn() { /* noop */ } } }
     const mockReply = {}
 
     const context = {
@@ -544,7 +544,7 @@ test('wrapWriteHandler', async(t) => {
     // But since JSON.stringify returns a string (not object), scope is added to the string wrapper.
     // Actually, the wrapping adds scope to the result of userTransform.
     // Since JSON.stringify returns a string, { ...string, scope } = { scope }
-    t.equal(transformed.scope, 'rome')
+    t.equal(transformed.database, 'rome')
   })
 })
 
@@ -553,15 +553,15 @@ test('wrapWriteHandler', async(t) => {
 // ────────────────────────────────────────────────────────────────────────────
 
 test('addScopeToResult', async(t) => {
-  t.test('adds scope to a plain object', async(t) => {
+  t.test('adds database to a plain object', async(t) => {
     const result = addScopeToResult({ _id: 'abc', name: 'Test' }, 'rome', {})
-    t.same(result, { _id: 'abc', name: 'Test', scope: 'rome' })
+    t.same(result, { _id: 'abc', name: 'Test', database: 'rome' })
   })
 
-  t.test('adds scope to each item in an array', async(t) => {
+  t.test('adds database to each item in an array', async(t) => {
     const input = [{ _id: 'a' }, { _id: 'b' }]
     const result = addScopeToResult(input, 'milan', {})
-    t.same(result, [{ _id: 'a', scope: 'milan' }, { _id: 'b', scope: 'milan' }])
+    t.same(result, [{ _id: 'a', database: 'milan' }, { _id: 'b', database: 'milan' }])
   })
 
   t.test('returns null unchanged', async(t) => {
@@ -589,10 +589,10 @@ test('addScopeToResult', async(t) => {
     const input = [{ _id: 'a' }, 'string-item', null, { _id: 'b' }]
     const result = addScopeToResult(input, 'naples', {})
     t.same(result, [
-      { _id: 'a', scope: 'naples' },
+      { _id: 'a', database: 'naples' },
       'string-item',
       null,
-      { _id: 'b', scope: 'naples' },
+      { _id: 'b', database: 'naples' },
     ])
   })
 })
@@ -619,7 +619,7 @@ test('wrapCursorStreamWithScope', async(t) => {
     t.ok(capturedTransform, 'transform should be injected')
 
     const doc = { _id: 'abc', name: 'Test' }
-    t.same(capturedTransform(doc), { _id: 'abc', name: 'Test', scope: 'rome' })
+    t.same(capturedTransform(doc), { _id: 'abc', name: 'Test', database: 'rome' })
   })
 
   t.test('chains with user-provided transform', async(t) => {
@@ -638,7 +638,7 @@ test('wrapCursorStreamWithScope', async(t) => {
 
     const doc = { _id: 'x' }
     const result = capturedTransform(doc)
-    t.same(result, { _id: 'x', extra: true, scope: 'milan' })
+    t.same(result, { _id: 'x', extra: true, database: 'milan' })
   })
 
   t.test('passes through other stream options', async(t) => {
@@ -769,7 +769,7 @@ test('handleMultidbPatchId', async(t) => {
       notFound() { return { statusCode: 404 } },
     })
 
-    t.equal(result.scope, 'rome')
+    t.equal(result.database, 'rome')
     t.equal(result.name, 'Updated')
   })
 
