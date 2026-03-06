@@ -252,7 +252,7 @@ test('wrapWriteHandler', async(t) => {
     }
     const wrapped = wrapWriteHandler(handleInsertOne)
 
-    const mockRequest = { headers: {}, query: {} }
+    const mockRequest = { headers: {}, query: {}, log: { debug() {}, warn() {} } }
     const mockReply = {}
 
     const context = {
@@ -310,7 +310,7 @@ test('wrapWriteHandler', async(t) => {
     }
     const wrapped = wrapWriteHandler(handleInsertOne)
 
-    const mockRequest = { headers: { 'x-scope': 'rome' }, query: {} }
+    const mockRequest = { headers: { 'x-scope': 'rome' }, query: {}, log: { debug() {}, warn() {} } }
     const mockReply = {}
 
     const context = {
@@ -344,7 +344,7 @@ test('wrapWriteHandler', async(t) => {
     }
     const wrapped = wrapWriteHandler(handleInsertOne)
 
-    const mockRequest = { headers: { 'x-scope': 'rome' }, query: {} }
+    const mockRequest = { headers: { 'x-scope': 'rome' }, query: {}, log: { debug() {}, warn() {} } }
     const mockReply = {}
     const scopedCollection = { name: 'scoped' }
 
@@ -373,7 +373,7 @@ test('wrapWriteHandler', async(t) => {
     }
     const wrapped = wrapWriteHandler(handleInsertOne)
 
-    const mockRequest = { headers: { 'x-scope': 'rome' }, query: {} }
+    const mockRequest = { headers: { 'x-scope': 'rome' }, query: {}, log: { debug() {}, warn() {} } }
     const mockReply = {}
     const scopedCollection = { name: 'scoped' }
     const mockParser = { parse() { /* noop */ } }
@@ -398,7 +398,7 @@ test('wrapWriteHandler', async(t) => {
     async function handleInsertOne() { return 'ok' }
     const wrapped = wrapWriteHandler(handleInsertOne)
 
-    const mockRequest = { headers: { 'x-scope': '  rome  ' }, query: {} }
+    const mockRequest = { headers: { 'x-scope': '  rome  ' }, query: {}, log: { debug() {}, warn() {} } }
     const mockReply = {}
 
     const context = {
@@ -414,13 +414,13 @@ test('wrapWriteHandler', async(t) => {
     t.equal(usedScope, 'rome', 'should trim scope value')
   })
 
-  t.test('injects scope into object result from handler', async(t) => {
+  t.test('returns handler result unchanged (no scope injection)', async(t) => {
     async function handleInsertOne() {
       return { _id: 'abc123' }
     }
     const wrapped = wrapWriteHandler(handleInsertOne)
 
-    const mockRequest = { headers: { 'x-scope': 'rome' }, query: {} }
+    const mockRequest = { headers: { 'x-scope': 'rome' }, query: {}, log: { debug() {}, warn() {} } }
     const mockReply = {}
 
     const context = {
@@ -433,16 +433,16 @@ test('wrapWriteHandler', async(t) => {
     }
 
     const result = await wrapped.call(context, mockRequest, mockReply)
-    t.same(result, { _id: 'abc123', scope: 'rome' })
+    t.same(result, { _id: 'abc123' }, 'write response should not include scope')
   })
 
-  t.test('injects scope into array result from handler', async(t) => {
+  t.test('returns array result unchanged (no scope injection)', async(t) => {
     async function handleInsertMany() {
       return [{ _id: 'a1' }, { _id: 'a2' }]
     }
     const wrapped = wrapWriteHandler(handleInsertMany)
 
-    const mockRequest = { headers: { 'x-scope': 'milan' }, query: {} }
+    const mockRequest = { headers: { 'x-scope': 'milan' }, query: {}, log: { debug() {}, warn() {} } }
     const mockReply = {}
 
     const context = {
@@ -455,10 +455,10 @@ test('wrapWriteHandler', async(t) => {
     }
 
     const result = await wrapped.call(context, mockRequest, mockReply)
-    t.same(result, [{ _id: 'a1', scope: 'milan' }, { _id: 'a2', scope: 'milan' }])
+    t.same(result, [{ _id: 'a1' }, { _id: 'a2' }], 'write response should not include scope')
   })
 
-  t.test('does not inject scope when handler returns reply (e.g. 204)', async(t) => {
+  t.test('returns reply object untouched (e.g. 204)', async(t) => {
     const mockReply = {
       code() { return this },
       send() { return this },
@@ -466,7 +466,7 @@ test('wrapWriteHandler', async(t) => {
     async function handleDelete() { return mockReply }
     const wrapped = wrapWriteHandler(handleDelete)
 
-    const mockRequest = { headers: { 'x-scope': 'rome' }, query: {} }
+    const mockRequest = { headers: { 'x-scope': 'rome' }, query: {}, log: { debug() {}, warn() {} } }
 
     const context = {
       multidb: {
@@ -481,11 +481,11 @@ test('wrapWriteHandler', async(t) => {
     t.equal(result, mockReply, 'should return reply object untouched')
   })
 
-  t.test('does not inject scope when handler returns a number', async(t) => {
+  t.test('returns numeric result unchanged', async(t) => {
     async function handleCount() { return 42 }
     const wrapped = wrapWriteHandler(handleCount)
 
-    const mockRequest = { headers: { 'x-scope': 'rome' }, query: {} }
+    const mockRequest = { headers: { 'x-scope': 'rome' }, query: {}, log: { debug() {}, warn() {} } }
     const mockReply = {}
 
     const context = {
@@ -520,7 +520,7 @@ test('wrapWriteHandler', async(t) => {
     }
     const wrapped = wrapWriteHandler(handleExport)
 
-    const mockRequest = { headers: { 'x-scope': 'rome' }, query: {} }
+    const mockRequest = { headers: { 'x-scope': 'rome' }, query: {}, log: { debug() {}, warn() {} } }
     const mockReply = {}
 
     const context = {

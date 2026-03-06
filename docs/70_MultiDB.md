@@ -47,7 +47,7 @@ When `x-scope` is **not provided**, all operations (read, write, delete, patch) 
 | `MULTIDB_URL_TEMPLATE` | `string` | Yes* | — | MongoDB connection string template with `{{scope}}` placeholder. E.g.: `mongodb+srv://user:pwd@cluster/myapp-prod-{{scope}}?retryWrites=true&w=majority` |
 | `MULTIDB_MAX_IDLE_TIME_MS` | `number` | No | `0` | `maxIdleTimeMS` for scope MongoDB connections |
 | `DEFAULT_SCOPE` | `string` | **Yes*** | — | **Required** when `MULTIDB_ENABLED=true`. The default scope used when `x-scope` header is not provided. All operations (read, write, delete, patch) target only this scope by default. Must be one of `MULTIDB_SCOPES`. Its database is also used for infrastructure purposes (cursor cache). Exposed as `fastify.multidb.defaultDb` |
-| `CURSOR_CACHE_COLLECTION` | `string` | No | `_multidb_cursors` | Name of the MongoDB collection (on DEFAULT_SCOPE database) used as cursor cache for keyset pagination. The collection **must** already have a TTL index on `expireAt` (see below) |
+| `CURSOR_CACHE_COLLECTION` | `string` | No | `_multidb_cursors` | Name of the MongoDB collection (on DEFAULT_SCOPE database) used as cursor cache for keyset pagination. The collection **must** already have a unique index on `cacheKey` and a TTL index on `expireAt` (see [Cache Storage](#cache-storage)) |
 | `CURSOR_TTL` | `number` | No | `300` | Time-to-live (seconds) for cursor cache entries in MongoDB. Cached cursors expire after this duration |
 | `MAX_SKIP` | `number` | No | `2000` | Maximum `_sk` value allowed in multi-db GET list. Prevents deep pagination abuse |
 | `MAX_REBUILD_PAGES` | `number` | No | `5` | Maximum pages to replay from page 0 when a cursor cache miss occurs. If the requested page exceeds this, a 410 Gone is returned |
@@ -97,9 +97,9 @@ The `x-scope` header is **optional**. If provided, targets that scope. If omitte
 
 | Original Route | Verb | Multi-DB Behavior |
 |----------------|------|-------------------|
-| `POST /:collectionName/` | POST | INSERT → scoped collection via Proxy. Response includes `scope` |
-| `POST /:collectionName/bulk` | POST | INSERT MANY → scoped collection. Response includes `scope` on each item |
-| `POST /:collectionName/upsert-one` | POST | UPSERT → scoped collection. Response includes `scope` |
+| `POST /:collectionName/` | POST | INSERT → scoped collection via Proxy |
+| `POST /:collectionName/bulk` | POST | INSERT MANY → scoped collection |
+| `POST /:collectionName/upsert-one` | POST | UPSERT → scoped collection |
 | `POST /:collectionName/:id/state` | POST | CHANGE STATE → scoped collection |
 | `POST /:collectionName/state` | POST | CHANGE STATE MANY → scoped collection |
 | `POST /:collectionName/import` | POST | IMPORT (file) → scoped collection |
@@ -151,7 +151,7 @@ The `x-scope` header is **optional**. If provided, targets that scope. If omitte
 
 | Aspect | Standard | Multi-DB |
 |--------|----------|----------|
-| **Response format** | Unchanged | Each returned document includes `scope` with the target scope name. E.g. `{"_id": "...", "scope": "rome"}` |
+| **Response format** | Unchanged | **Unchanged** — the response body is identical to the standard CRUD Service. The target scope is already known from the `x-scope` header (or DEFAULT_SCOPE) |
 | **`x-scope` header** | Not present | **Optional** — identifies the target database. Defaults to DEFAULT_SCOPE |
 | **Handler logic** | Direct on `crudService._mongoCollection` | Proxy intercepts `_mongoCollection` → collection of the requested scope |
 | **Concurrency** | — | Each request creates an isolated Proxy (no shared state) |
@@ -444,10 +444,10 @@ sequenceDiagram
 
 | Property | Detail |
 |----------|--------|
-| **Collection** | Configurable via `CURSOR_CACHE_COLLECTION` env var (default: `_multidb_cursors`), on the DEFAULT_SCOPE database. **Must** already have a TTL index: `db.collection.createIndex({ expireAt: 1 }, { expireAfterSeconds: 0 })` |
+| **Collection** | Configurable via `CURSOR_CACHE_COLLECTION` env var (default: `_multidb_cursors`), on the DEFAULT_SCOPE database. **Must** already have the indexes listed below |
 | **TTL** | Automatic cleanup via MongoDB TTL index on `expireAt` field (default: 300s, configurable via `CURSOR_TTL`) |
-| **Key format** | `cursor:{collection}:{scope}:{sort}:{filter}:{state}:p{page}` |
-| **Value** | The base64url-encoded cursor string for that page |
+| **Key format** | `cursor:{collection}:{scope}:{sort}:{filter}:{state}:p{page}` — stored in the `cacheKey` field |
+| **Value** | The base64url-encoded cursor string for that page (stored in the `cursor` field) |
 
 ### Cache Miss Recovery
 
@@ -504,6 +504,72 @@ This allows the UI to display a warning like *"Partial results: the naples scope
 
 ---
 
+## Encryption (CSFLE) in Multi-DB Mode
+
+When **Client-Side Field Level Encryption** (CSFLE) is enabled together with multi-db mode, encryption is configured **per scope**. Each scope gets its own `KEY_VAULT_NAMESPACE` and its own data encryption keys, so that data isolation is preserved across databases.
+
+### `KEY_VAULT_NAMESPACE` with `{{scope}}` Placeholder
+
+In multi-db mode, the `KEY_VAULT_NAMESPACE` environment variable supports a `{{scope}}` placeholder that is resolved at startup for each scope:
+
+```bash
+KEY_VAULT_NAMESPACE=myapp-prod-{{scope}}.encryption_keys
+```
+
+With scopes `rome,milan,naples`, this produces:
+
+| Scope | Resolved `KEY_VAULT_NAMESPACE` |
+|-------|-------------------------------|
+| `rome` | `myapp-prod-rome.encryption_keys` |
+| `milan` | `myapp-prod-milan.encryption_keys` |
+| `naples` | `myapp-prod-naples.encryption_keys` |
+
+If no `{{scope}}` placeholder is present, the same `KEY_VAULT_NAMESPACE` is used for all scopes (not recommended for data isolation).
+
+### `MONGODB_URL` in Multi-DB Mode
+
+When `MULTIDB_ENABLED=true`, the `MONGODB_URL` environment variable is **not required**. If omitted, it is automatically derived from `MULTIDB_URL_TEMPLATE` by replacing `{{scope}}` with `DEFAULT_SCOPE`:
+
+```bash
+# These two configurations are equivalent:
+MULTIDB_URL_TEMPLATE=mongodb://host/myapp-{{scope}}
+DEFAULT_SCOPE=rome
+# → MONGODB_URL is auto-derived as: mongodb://host/myapp-rome
+```
+
+If `MONGODB_URL` is explicitly provided, it takes precedence over the auto-derived value.
+
+### Per-Scope Encryption Flow
+
+At startup, for each scope:
+
+1. `KEY_VAULT_NAMESPACE` is resolved with the scope name
+2. Data encryption keys are retrieved (or created) from the scope's key vault
+3. A `schemaMap` is generated for collections that have encrypted fields
+4. The scope's `MongoClient` is created with `autoEncryption` configuration
+
+The KMS provider configuration (`KMS_PROVIDER`, `KMS_GCP_*` or `LOCAL_MASTER_KEY_PATH`) is **shared** across all scopes — only the key vault namespace varies per scope.
+
+### `.env` Example (Multi-DB + Encryption)
+
+```bash
+MULTIDB_ENABLED=true
+MULTIDB_SCOPES=rome,milan,naples
+MULTIDB_URL_TEMPLATE=mongodb+srv://admin:secret@cluster/myapp-prod-{{scope}}
+DEFAULT_SCOPE=rome
+
+KMS_PROVIDER=gcp
+KMS_GCP_EMAIL=my-service-account@project.iam.gserviceaccount.com
+KMS_GCP_PROJECT_ID=my-project
+KMS_GCP_LOCATION=europe-west1
+KMS_GCP_KEY_RING=my-keyring
+KMS_GCP_KEY_NAME=my-key
+KMS_GCP_PRIVATE_KEY_PATH=/secrets/gcp-private-key.pem
+KEY_VAULT_NAMESPACE=myapp-prod-{{scope}}.encryption_keys
+```
+
+---
+
 ## Local End-to-End Execution
 
 You can start the CRUD Service with multi-db enabled against a real MongoDB instance in Docker. This allows you to verify end-to-end behavior: scatter-gather, cursor pagination, single-scope writes, etc.
@@ -550,15 +616,7 @@ The script is idempotent: on each run it drops existing collections before reins
 npm run start:multidb
 ```
 
-The service starts on port `3000` with the configuration from `multidb.local.env`:
-
-| Variable | Value |
-|----------|-------|
-| `MULTIDB_ENABLED` | `true` |
-| `MULTIDB_SCOPES` | `rome,milan,naples` |
-| `MULTIDB_URL_TEMPLATE` | `mongodb://localhost:27017/crud-{{scope}}` |
-| `DEFAULT_SCOPE` | `rome` |
-| `COLLECTION_DEFINITION_FOLDER` | `./bench/definitions/collections` |
+The service starts on port `3000` loading all variables from `multidb.local.env`.
 
 ### 4. Test the APIs
 
@@ -648,19 +706,22 @@ curl -s -X POST http://localhost:3000/customers/ \
   }' | jq
 ```
 
-The response includes `"scope": "milan"` confirming the target database.
+The response is identical to the standard CRUD Service (e.g. `{"_id": "..."}`).
 
-**Cursor pagination:**
+**Pagination with `_sk` (transparent cursor translation):**
 
 ```bash
-# First page (limited to 2 results) — show response headers with -D-
-curl -s -D- "http://localhost:3000/customers/?_l=2"
-# Look for the x-cursor response header in the output
+# Page 1 (first 2 results)
+curl -s "http://localhost:3000/customers/?_l=2&_sk=0" -H "x-scope: rome,milan,naples" | jq
 
-# Next page — pass the x-cursor value from the previous response header
-curl -s "http://localhost:3000/customers/?_l=2" \
-  -H "x-cursor: <value-from-x-cursor-response-header>" | jq
+# Page 2 — _sk is transparently translated to a keyset cursor via cache
+curl -s "http://localhost:3000/customers/?_l=2&_sk=2" -H "x-scope: rome,milan,naples" | jq
+
+# Page 3
+curl -s "http://localhost:3000/customers/?_l=2&_sk=4" -H "x-scope: rome,milan,naples" | jq
 ```
+
+Existing clients using `_sk` pagination continue to work transparently. The CRUD Service internally translates offsets to keyset cursors via a MongoDB-backed cache (see [Cursor Cache](#cursor-cache-_sk--cursor-translation)).
 
 ### 5. Inspect Databases with mongosh
 

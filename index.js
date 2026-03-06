@@ -242,6 +242,19 @@ module.exports = async function plugin(fastify, opts) {
   addPreHandlerHooks(fastify)
 
   await fastify.register(fastifyEnv, { schema: fastifyEnvSchema, data: opts })
+
+  // In multi-db mode, if MONGODB_URL is not provided, derive it from the
+  // URL template using DEFAULT_SCOPE. This allows registerMongoInstances
+  // and loadModels to work against the default scope's database.
+  if (fastify.config.MULTIDB_ENABLED && !fastify.config.MONGODB_URL) {
+    const { MULTIDB_URL_TEMPLATE, DEFAULT_SCOPE } = fastify.config
+    fastify.config.MONGODB_URL = MULTIDB_URL_TEMPLATE.replace(/\{\{scope\}\}/g, DEFAULT_SCOPE)
+    fastify.log.info(
+      { derivedUrl: '***' },
+      'MONGODB_URL derived from MULTIDB_URL_TEMPLATE + DEFAULT_SCOPE'
+    )
+  }
+
   await fastify.register(fastifyMultipart, {
     limits: {
       fields: 5,

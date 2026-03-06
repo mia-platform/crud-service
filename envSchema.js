@@ -94,7 +94,11 @@ const properties = {
     description: 'Allow disk use in queries to mongo. It works with Mongo 4.4 or above. WARNING: using this variable set to true with MongoDB version below 4.4 will break all the GETs.',
   },
   // Encryption properties
-  KEY_VAULT_NAMESPACE: { type: 'string', pattern: DATABASE_DOT_COLLECTION },
+  KEY_VAULT_NAMESPACE: {
+    type: 'string',
+    pattern: DATABASE_DOT_COLLECTION,
+    description: 'Key vault namespace in the format {databaseName}.{collectionName}. In multi-db mode, use {{scope}} placeholder in the database part (e.g. "myapp-{{scope}}.keyVaultCollection") to generate per-scope namespaces.',
+  },
   LOCAL_MASTER_KEY_PATH: { type: 'string', description: 'Path for the local Master key', minLength: 1 },
   CRYPT_SHARED_LIB_PATH: {
     type: 'string',
@@ -170,9 +174,19 @@ const properties = {
 
 const fastifyEnvSchema = {
   type: 'object',
-  required: ['MONGODB_URL', 'COLLECTION_DEFINITION_FOLDER', 'USER_ID_HEADER_KEY'],
+  required: ['COLLECTION_DEFINITION_FOLDER', 'USER_ID_HEADER_KEY'],
   properties,
   anyOf: [gcpCryptSchema, localCryptSchema, noCryptSchema],
+  if: {
+    properties: { MULTIDB_ENABLED: { enum: [true, 'true'] } },
+    required: ['MULTIDB_ENABLED'],
+  },
+  then: {
+    required: ['MULTIDB_SCOPES', 'MULTIDB_URL_TEMPLATE', 'DEFAULT_SCOPE'],
+  },
+  else: {
+    required: ['MONGODB_URL'],
+  },
   additionalProperties: false,
 }
 

@@ -91,6 +91,7 @@ module.exports = {
       type: 'RawObject',
       required: true,
       nullable: false,
+      encryption: { enabled: true, searchable: false },
       schema: {
         properties: {
           name: { type: 'string' },
@@ -112,6 +113,7 @@ module.exports = {
       type: 'string',
       required: true,
       nullable: false,
+      encryption: { enabled: true, searchable: true },
     },
     {
       name: 'phoneNumber',

@@ -219,3 +219,15 @@ So your final schema would be:
   }
 }
 ```
+
+## Encryption in Multi-DB Mode
+
+When using CSFLE together with **Multi-DB mode** (`MULTIDB_ENABLED=true`), encryption is configured **per scope**. The `KEY_VAULT_NAMESPACE` environment variable supports a `{{scope}}` placeholder that is resolved for each scope at startup:
+
+```bash
+KEY_VAULT_NAMESPACE={{databaseName}}-{{scope}}.{{collectionName}}
+```
+
+This ensures each scope (database) has its own key vault, preserving data isolation.
+
+For full details, see [Multi-DB — Encryption (CSFLE)](./70_MultiDB.md#encryption-csfle-in-multi-db-mode).
