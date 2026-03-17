@@ -63,6 +63,24 @@ function createMockCollection(docs) {
     for (const [key, val] of Object.entries(filter)) {
       if (val && typeof val === 'object' && !Array.isArray(val)) {
         const docVal = doc[key]
+        if ('$eq' in val) {
+          // Match MongoDB: { field: { $eq: null } } matches null AND missing
+          const expected = val.$eq
+          if (expected === null) {
+            if (docVal !== null && docVal !== undefined) { return false }
+          } else if (docVal !== expected) {
+            return false
+          }
+        }
+        if ('$ne' in val) {
+          // Match MongoDB: { field: { $ne: null } } excludes null AND missing
+          const excluded = val.$ne
+          if (excluded === null) {
+            if (docVal === null || docVal === undefined) { return false }
+          } else if (docVal === excluded) {
+            return false
+          }
+        }
         if ('$lt' in val && !(docVal < val.$lt)) {
           return false
         }
@@ -76,6 +94,11 @@ function createMockCollection(docs) {
           return false
         }
         if ('$in' in val && !val.$in.includes(docVal)) {
+          return false
+        }
+      } else if (val === null) {
+        // Match MongoDB: { field: null } matches null AND missing
+        if (doc[key] !== null && doc[key] !== undefined) {
           return false
         }
       } else if (doc[key] !== val) {
@@ -391,11 +414,13 @@ test('compareValues', async(t) => {
     t.equal(compareValues('hello', 'hello'), 0)
   })
 
-  t.test('handles nulls', async(t) => {
-    t.ok(compareValues(null, 'a') > 0, 'null pushed to end')
-    t.ok(compareValues('a', null) < 0, 'non-null comes first')
+  t.test('handles nulls (MongoDB BSON ordering: null < any value)', async(t) => {
+    t.ok(compareValues(null, 'a') < 0, 'null is less than any value')
+    t.ok(compareValues('a', null) > 0, 'any value is greater than null')
     t.equal(compareValues(null, null), 0)
     t.equal(compareValues(undefined, undefined), 0)
+    t.ok(compareValues(undefined, 1) < 0, 'undefined treated as null')
+    t.ok(compareValues(1, undefined) > 0, 'value > undefined')
   })
 
   t.test('compares dates', async(t) => {

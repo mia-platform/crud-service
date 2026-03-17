@@ -76,7 +76,7 @@ test('buildKeysetFilter', async(t) => {
     t.same(result, {})
   })
 
-  t.test('builds $lt filter for DESC sort', async(t) => {
+  t.test('builds $lt filter for DESC sort (includes null clause)', async(t) => {
     const position = { sortValue: '2024-01-15', _id: 'abc' }
     const result = buildKeysetFilter(position, 'createdAt', -1)
 
@@ -84,6 +84,7 @@ test('buildKeysetFilter', async(t) => {
       $or: [
         { createdAt: { $lt: '2024-01-15' } },
         { createdAt: '2024-01-15', _id: { $gt: 'abc' } },
+        { createdAt: { $eq: null } },
       ],
     })
   })
@@ -96,6 +97,40 @@ test('buildKeysetFilter', async(t) => {
       $or: [
         { name: { $gt: 'Alice' } },
         { name: 'Alice', _id: { $gt: 'xyz' } },
+      ],
+    })
+  })
+
+  t.test('DESC with null sortValue: only null/missing docs with later _id', async(t) => {
+    const position = { sortValue: null, _id: 'abc' }
+    const result = buildKeysetFilter(position, 'expectedDate', -1)
+
+    t.same(result, {
+      $or: [
+        { expectedDate: { $eq: null }, _id: { $gt: 'abc' } },
+      ],
+    })
+  })
+
+  t.test('ASC with null sortValue: remaining nulls + all non-null docs', async(t) => {
+    const position = { sortValue: null, _id: 'abc' }
+    const result = buildKeysetFilter(position, 'expectedDate', 1)
+
+    t.same(result, {
+      $or: [
+        { expectedDate: { $eq: null }, _id: { $gt: 'abc' } },
+        { expectedDate: { $ne: null } },
+      ],
+    })
+  })
+
+  t.test('DESC with undefined sortValue: treated same as null', async(t) => {
+    const position = { sortValue: undefined, _id: 'xyz' }
+    const result = buildKeysetFilter(position, 'expectedDate', -1)
+
+    t.same(result, {
+      $or: [
+        { expectedDate: { $eq: null }, _id: { $gt: 'xyz' } },
       ],
     })
   })
@@ -227,6 +262,7 @@ test('buildKeysetFilter with native types produces correct MongoDB query', async
     $or: [
       { updatedAt: { $lt: date } },
       { updatedAt: date, _id: { $gt: oid } },
+      { updatedAt: { $eq: null } },
     ],
   })
 
