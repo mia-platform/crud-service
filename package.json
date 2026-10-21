@@ -72,7 +72,7 @@
     "uuid-validate": "0.0.3"
   },
   "engines": {
-    "node": ">=v20"
+    "node": ">=v24"
   },
   "private": true,
   "tap": {
