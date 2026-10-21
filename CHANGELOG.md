@@ -20,6 +20,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - updated `proxy-addr` to `v2.0.8`
 - updated `js-yaml` to `v4.1.1`
 - updated `actions/setup-node` to `v6.0.0`, `github/codeql-action` to `v4.31.2` and `sigstore/cosign-installer` to `v4.0.0` in GitHub workflows
+- updated `csv-parse` to `v7.0.3`
+- updated `@faker-js/faker` to `v10.6.0`
+- updated `csv-stringify` to `v6.9.0`, `jsonpath-plus` to `v10.4.0`, `p-limit` to `v7.3.3`, `pino` to `v9.14.0` and `xlsx-write-stream` to `v1.0.4`
+- updated `fast-json-stringify` peer dependency to `v6.4.0` and `mongodb` peer dependency to `v6.21.0`
+- updated dev dependencies `@eslint/js` to `v9.39.5`, `commander` to `v14.0.3`, `eslint` to `v9.39.5`, `eslint-plugin-n` to `v17.24.0` and `globals` to `v16.5.0`
+- updated transitive dependencies within their existing semver ranges, including the OpenTelemetry packages pulled in by `@mia-platform/lc39`
 
 ## 7.2.5 - 2025-10-01
 
