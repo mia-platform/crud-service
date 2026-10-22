@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Dependencies
 
+- updated `@mia-platform/lc39` to `v9.1.3`
+- updated `fastify` to `v5.12.7`, `@fastify/env` to `v7.0.1`, `@fastify/mongodb` to `v9.0.2`, `@fastify/multipart` to `v10.1.5` and `fastify-plugin` to `v6.0.1`
 - updated `curlimages/curl` to `8.23.0` in Docker image
 - updated `tap` to `v21.8.0`
 - updated `@fastify/busboy` to `v3.2.3`
