@@ -33,9 +33,9 @@ nvm use
 
 About mongo, we suggest you to have it in a separate Docker container. You can follow this small guide or use the configuration you prefer:
 ```shell
-docker pull mongo:7.0
+docker pull mongo:8.0
 docker volume create mongo
-docker run --detach --name mongo -p 27017:27017 --mount source=mongo,target=/data/db mongo:7.0
+docker run --detach --name mongo -p 27017:27017 --mount source=mongo,target=/data/db mongo:8.0
 ```
 
 In case you want to use the MongoDB Encryption functionality, you must install in your machine the [MongoDB Enterprise Server](https://www.mongodb.com/try/download/enterprise?tck=docs_server) and run the `mongocryptd` file (its location may change based on the version you downloaded).

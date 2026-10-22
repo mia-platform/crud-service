@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+
+- updated NodeJS to v24: Docker images, `.nvmrc`, devcontainer and `engines` field now require Node.js `>=24`
+- updated the suggested MongoDB version in the README to `mongo:8.0`
+
+### Dependencies
+
+- updated `@mia-platform/lc39` to `v9.1.3`
+- updated `fastify` to `v5.12.7`, `@fastify/env` to `v7.0.1`, `@fastify/mongodb` to `v9.0.2`, `@fastify/multipart` to `v10.1.5` and `fastify-plugin` to `v6.0.1`
+- updated `curlimages/curl` to `8.23.0` in Docker image
+- updated `tap` to `v21.8.0`
+- updated `@fastify/busboy` to `v3.2.3`
+- updated `proxy-addr` to `v2.0.8`
+- updated `js-yaml` to `v4.1.1`
+- updated `actions/setup-node` to `v6.0.0`, `github/codeql-action` to `v4.31.2` and `sigstore/cosign-installer` to `v4.0.0` in GitHub workflows
+- updated `csv-parse` to `v7.0.3`
+- updated `@faker-js/faker` to `v10.6.0`
+- updated `csv-stringify` to `v6.9.0`, `jsonpath-plus` to `v10.4.0`, `p-limit` to `v7.3.3`, `pino` to `v9.14.0` and `xlsx-write-stream` to `v1.0.4`
+- updated `fast-json-stringify` peer dependency to `v6.4.0` and `mongodb` peer dependency to `v6.21.0`
+- updated dev dependencies `@eslint/js` to `v9.39.5`, `commander` to `v14.0.3`, `eslint` to `v9.39.5`, `eslint-plugin-n` to `v17.24.0` and `globals` to `v16.5.0`
+- updated transitive dependencies within their existing semver ranges, including the OpenTelemetry packages pulled in by `@mia-platform/lc39`
+
 ## 7.2.5 - 2025-10-01
 
 ### Fixed
