@@ -123,6 +123,11 @@ const properties = {
     description: 'customize how many milliseconds are allowed to elapse to load a fastify plugin',
     default: 20000,
   },
+  CAST_ONLY_DECLARED_GEOPOINT_FIELDS: {
+    type: 'boolean',
+    description: 'When enabled, only fields declared as GeoPoint are returned as coordinates array; GeoJSON Points stored in other fields (e.g. RawObject) are returned as they are',
+    default: false,
+  },
 }
 
 const fastifyEnvSchema = {
