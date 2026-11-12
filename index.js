@@ -60,6 +60,7 @@ function decorateCrud(fastify, model, modelName) {
   fastify.decorate('jsonSchemaGenerator', model.jsonSchemaGenerator)
   fastify.decorate('jsonSchemaGeneratorWithNested', model.jsonSchemaGenerator)
   fastify.decorate('modelName', modelName)
+  fastify.decorate('geoPointPaths', model.geoPointPaths)
   addModelNameHook(fastify, modelName)
 }
 
@@ -184,6 +185,7 @@ async function setupCruds(fastify) {
     VIEWS_DEFINITION_FOLDER,
     HELPERS_PREFIX,
     ENABLE_STRICT_OUTPUT_VALIDATION,
+    CAST_ONLY_DECLARED_GEOPOINT_FIELDS,
   } = fastify.config
 
   fastify.decorate('validateOutput', ENABLE_STRICT_OUTPUT_VALIDATION)
@@ -207,7 +209,7 @@ async function setupCruds(fastify) {
   }
 
   if (collections.length > 0) {
-    addSerializerCompiler(fastify, ajvSerializer, ENABLE_STRICT_OUTPUT_VALIDATION)
+    addSerializerCompiler(fastify, ajvSerializer, ENABLE_STRICT_OUTPUT_VALIDATION, CAST_ONLY_DECLARED_GEOPOINT_FIELDS)
 
     await fastify.register(registerDatabase)
     await fastify.register(fp(loadModels))
