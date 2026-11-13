@@ -85,8 +85,12 @@ jobs:
           mongodb-version: "8.0"
         continue-on-error: true
 
+      - name: Warn if MongoDB failed to start
+        if: steps.startmongo.outcome == 'failure'
+        run: echo "::warning::MongoDB failed to start, tests skipped"
+
       - name: Run tests
-        if: steps.startmongo.outcome != "failure"
+        if: steps.startmongo.outcome == 'success'
         run: npm run coverage -- --jobs 3 # limit the number of jobs that can be run in parallel in the CI
         env:
           MONGO_VERSION: ${{ matrix.mongodb-version }}
