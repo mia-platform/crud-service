@@ -36,7 +36,8 @@ async function setUpTest(
   mongoDBCollectionName = BOOKS_COLLECTION_NAME,
   exposeMetrics = false,
   strictOutputValidation = false,
-  openApiSpecification = 'swagger'
+  openApiSpecification = 'swagger',
+  additionalEnvVariables = {}
 ) {
   const databaseName = getMongoDatabaseName()
   const mongoURL = getMongoURL(databaseName)
@@ -60,6 +61,7 @@ async function setUpTest(
     USER_ID_HEADER_KEY: 'userId',
     VIEWS_DEFINITION_FOLDER: join(__dirname, 'viewsDefinitions'),
     OPEN_API_SPECIFICATION: openApiSpecification,
+    ...additionalEnvVariables,
   }
 
   const fastify = await lc39('./index', { logLevel, envVariables, exposeMetrics })

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+- new environment variable `CAST_ONLY_DECLARED_GEOPOINT_FIELDS` (default `false`): when enabled, only the fields declared as `GeoPoint` are returned as an array of coordinates, while GeoJSON Points stored in other fields (e.g. `RawObject`) are returned as they are. Since v7.0.3 every GeoJSON Point was converted, regardless of the field type, making `RawObject` responses not compliant with their schema
+
 ## 7.2.5 - 2025-10-01
 
 ### Fixed

@@ -17,8 +17,10 @@
 'use strict'
 
 const tap = require('tap')
-const { castItem, castCollectionId } = require('../lib/AdditionalCaster')
+const { castItem, castCollectionId, getGeoPointPaths } = require('../lib/AdditionalCaster')
 const { ObjectId } = require('mongodb')
+const oldCollectionDefinition = require('./collectionDefinitions/books')
+const newCollectionDefinition = require('./newCollectionDefinitions/books')
 
 tap.test('AdditionalCaster', test => {
   test.test('old configuration', async assert => {
@@ -176,6 +178,44 @@ tap.test('AdditionalCaster', test => {
   })
 
   test.end()
+})
+
+tap.test('castItem with declared GeoPoint paths', async t => {
+  const point = (lon, lat) => ({ type: 'Point', coordinates: [lon, lat] })
+  const geoPointPaths = new Set(['position', 'library.position', 'positions.__items', 'branches.position'])
+
+  const result = castItem({
+    _id: new ObjectId('111111111111111111111111'),
+    publishDate: new Date('2015-01-01T00:00:00.000Z'),
+    position: point(1, 2),
+    positions: [point(3, 4), point(5, 6)],
+    library: { position: point(7, 8), rawLocation: point(9, 10) },
+    branches: [{ position: point(11, 12), rawLocation: point(13, 14) }],
+    rawLocation: point(15, 16),
+    rawLocations: [point(17, 18)],
+  }, geoPointPaths)
+
+  t.strictSame(result, {
+    _id: '111111111111111111111111',
+    publishDate: '2015-01-01T00:00:00.000Z',
+    position: [1, 2],
+    positions: [[3, 4], [5, 6]],
+    library: { position: [7, 8], rawLocation: point(9, 10) },
+    branches: [{ position: [11, 12], rawLocation: point(13, 14) }],
+    rawLocation: point(15, 16),
+    rawLocations: [point(17, 18)],
+  })
+
+  t.strictSame(castItem([{ position: point(1, 2), rawLocation: point(3, 4) }], geoPointPaths), [
+    { position: [1, 2], rawLocation: point(3, 4) },
+  ], 'works on a list of documents')
+
+  t.strictSame(castItem({ rawLocation: point(1, 2) }), { rawLocation: [1, 2] }, 'without paths every Point is cast')
+})
+
+tap.test('getGeoPointPaths', async t => {
+  t.strictSame(getGeoPointPaths(oldCollectionDefinition), new Set(['position']), 'fields definition')
+  t.strictSame(getGeoPointPaths(newCollectionDefinition), new Set(['position']), 'schema definition')
 })
 
 tap.test('castCollectionId', async t => {
