@@ -9,7 +9,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 
+- updated NodeJS to v26, `.nvmrc`, devcontainer and `engines` field now require Node.js `>=24`
 - unit tests now runs with `node:test`, replacing `tap`
+
+### Dependencies
+
+- updated libraries to run GitHub workflows for code quality, tests, release
 
 ## 7.3.0 - 2026-11-17
 

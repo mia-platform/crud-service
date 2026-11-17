@@ -70,7 +70,7 @@
     "uuid-validate": "0.0.3"
   },
   "engines": {
-    "node": ">=v24"
+    "node": ">=v26"
   },
   "private": true
 }
