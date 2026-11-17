@@ -1,6 +1,6 @@
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const { resolveProjection } = require('../lib/projectionUtils')
 const BadRequestError = require('../lib/BadRequestError')
 
@@ -51,9 +51,9 @@ const RAW_PROJECTION_PLAIN_EXCLUSIVE = JSON.stringify({
   zipCode: false,
 })
 
-tap.test('Projection Utils tests', async t => {
+test('Projection Utils tests', async t => {
   await t.test('resolveProjection', async t => {
-    await t.test('OK - no projection provided', async assert => {
+    await t.test('OK - no projection provided', async t => {
       const parsedProjection = resolveProjection(
         undefined,
         undefined,
@@ -62,7 +62,7 @@ tap.test('Projection Utils tests', async t => {
         loggerMock
       )
 
-      assert.strictSame(parsedProjection, { _id: 1 })
+      t.assert.deepStrictEqual(parsedProjection, { _id: 1 })
     })
 
     await t.test(`OK - simple without ACL`, async t => {
@@ -118,7 +118,7 @@ tap.test('Projection Utils tests', async t => {
       ]
 
       for (const [idx, { clientProjection, rawProjection, expected }] of cases.entries()) {
-        await t.test(`${idx}`, async assert => {
+        await t.test(`${idx}`, async t => {
           const parsedProjection = resolveProjection(
             clientProjection,
             undefined,
@@ -127,7 +127,7 @@ tap.test('Projection Utils tests', async t => {
             loggerMock
           )
 
-          assert.strictSame(
+          t.assert.deepStrictEqual(
             parsedProjection,
             expected
           )
@@ -165,7 +165,7 @@ tap.test('Projection Utils tests', async t => {
       ]
 
       for (const [idx, { clientProjection, rawProjection, expected }] of cases.entries()) {
-        await t.test(`${idx}`, async assert => {
+        await t.test(`${idx}`, async t => {
           const parsedProjection = resolveProjection(
             clientProjection,
             'street,zipCode',
@@ -174,7 +174,7 @@ tap.test('Projection Utils tests', async t => {
             loggerMock
           )
 
-          assert.strictSame(
+          t.assert.deepStrictEqual(
             parsedProjection,
             expected
           )
@@ -182,7 +182,7 @@ tap.test('Projection Utils tests', async t => {
       }
     })
 
-    await t.test(`OK - simple with ACL containing spaces`, async assert => {
+    await t.test(`OK - simple with ACL containing spaces`, async t => {
       const parsedProjection = resolveProjection(
         'street, , number,zipCode',
         'street, ,zipCode ',
@@ -191,7 +191,7 @@ tap.test('Projection Utils tests', async t => {
         loggerMock
       )
 
-      assert.strictSame(
+      t.assert.deepStrictEqual(
         parsedProjection,
         { street: 1, zipCode: 1 }
       )
@@ -260,7 +260,7 @@ tap.test('Projection Utils tests', async t => {
       ]
 
       for (const [idx, { clientProjection, rawProjection, expected }] of cases.entries()) {
-        await t.test(`${idx}`, async assert => {
+        await t.test(`${idx}`, async t => {
           const parsedProjection = resolveProjection(
             clientProjection,
             undefined,
@@ -269,7 +269,7 @@ tap.test('Projection Utils tests', async t => {
             loggerMock
           )
 
-          assert.strictSame(
+          t.assert.deepStrictEqual(
             parsedProjection,
             expected
           )
@@ -292,7 +292,7 @@ tap.test('Projection Utils tests', async t => {
       ]
 
       for (const [idx, { clientProjection, rawProjection, expectedError }] of cases.entries()) {
-        await t.test(`${idx}`, async assert => {
+        await t.test(`${idx}`, async t => {
           try {
             resolveProjection(
               clientProjection,
@@ -301,9 +301,9 @@ tap.test('Projection Utils tests', async t => {
               rawProjection,
               loggerMock
             )
-            assert.fail()
+            t.assert.fail()
           } catch (error) {
-            assert.match(error, expectedError)
+            t.assert.deepStrictEqual(error, expectedError)
           }
         })
       }
@@ -409,7 +409,7 @@ tap.test('Projection Utils tests', async t => {
 
 
       for (const [idx, { rawProjection, unwantedOperator }] of cases.entries()) {
-        await t.test(`${idx}`, async assert => {
+        await t.test(`${idx}`, async t => {
           try {
             resolveProjection(
               undefined,
@@ -418,9 +418,9 @@ tap.test('Projection Utils tests', async t => {
               JSON.stringify(rawProjection),
               loggerMock
             )
-            assert.fail()
+            t.assert.fail()
           } catch (error) {
-            assert.match(error, new BadRequestError(`Operator ${unwantedOperator} is not allowed in raw projection`))
+            t.assert.deepStrictEqual(error, new BadRequestError(`Operator ${unwantedOperator} is not allowed in raw projection`))
           }
         })
       }

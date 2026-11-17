@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM docker.io/curlimages/curl:8.16.0@sha256:463eaf6072688fe96ac64fa623fe73e1dbe25d8ad6c34404a669ad3ce1f104b6 AS crypt-lib
+FROM docker.io/curlimages/curl:8.23.0@sha256:a134550be58ab783810e613ae96fd253c38f7bdd16d9bf9be350700c7a29ac06 AS crypt-lib
 
 ARG TARGETARCH
 
@@ -23,7 +23,7 @@ RUN case "${TARGETARCH}" in \
 
 ########################################################################################################################
 
-FROM docker.io/library/node:22.20.0-bookworm-slim@sha256:c407baf6e71f4127777b0b660b162e3c88c1974067b1be9f1f962709ea817d59 AS build
+FROM docker.io/library/node:26.13.1-bookworm-slim@sha256:5df79989ed685e09f0a98019db4cebfb22fb9df1a53c0161664a011f7ff6b0f1 AS build
 
 ENV NODE_ENV=production
 
@@ -40,7 +40,7 @@ COPY . .
 
 # create a CRUD Service image that does not support automatic CSFLE
 # and therefore it can be employed by everybody in any MongoDB product
-FROM docker.io/library/node:22.20.0-bookworm-slim@sha256:c407baf6e71f4127777b0b660b162e3c88c1974067b1be9f1f962709ea817d59 AS crud-service-no-encryption
+FROM docker.io/library/node:26.13.1-bookworm-slim@sha256:5df79989ed685e09f0a98019db4cebfb22fb9df1a53c0161664a011f7ff6b0f1 AS crud-service-no-encryption
 
 ARG COMMIT_SHA
 ARG DEBIAN_FRONTEND=noninteractive

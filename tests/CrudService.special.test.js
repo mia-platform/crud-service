@@ -16,7 +16,7 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const abstractLogger = require('abstract-logging')
 const { MongoClient } = require('mongodb')
 
@@ -45,7 +45,7 @@ const context = {
 }
 const DEFAULT_PROJECTION = { _id: 1 }
 
-tap.test('allowDiskUse', async t => {
+test('allowDiskUse', async t => {
   const databaseName = getMongoDatabaseName()
   const mongoURL = getMongoURL(databaseName)
 
@@ -55,7 +55,7 @@ tap.test('allowDiskUse', async t => {
 
   await clearCollectionAndInsertFixtures(collection)
 
-  t.teardown(async() => {
+  t.after(async() => {
     await database.dropDatabase()
     await client.close()
   })
@@ -81,20 +81,20 @@ tap.test('allowDiskUse', async t => {
 
     t.test('in findAll', async t => {
       await crudService.findAll(context, { price: { $gt: 20 } }, DEFAULT_PROJECTION).toArray()
-      t.strictSame(commandFailedEvents, [])
-      t.match(commandStartedEvents, [{ commandName: 'find', command: { allowDiskUse: true } }])
+      t.assert.deepStrictEqual(commandFailedEvents, [])
+      t.assert.deepStrictEqual([commandStartedEvents[0]?.commandName, commandStartedEvents[0]?.command?.allowDiskUse], ['find', true])
     })
 
     t.test('in findById', async t => {
       await crudService.findById(context, OBJECT_ID)
-      t.strictSame(commandFailedEvents, [])
-      t.match(commandStartedEvents, [{ commandName: 'find', command: { allowDiskUse: true } }])
+      t.assert.deepStrictEqual(commandFailedEvents, [])
+      t.assert.deepStrictEqual([commandStartedEvents[0]?.commandName, commandStartedEvents[0]?.command?.allowDiskUse], ['find', true])
     })
 
     t.test('in count', async t => {
       await crudService.count(context)
-      t.strictSame(commandFailedEvents, [])
-      t.match(commandStartedEvents, [{ commandName: 'aggregate', command: { allowDiskUse: true } }])
+      t.assert.deepStrictEqual(commandFailedEvents, [])
+      t.assert.deepStrictEqual([commandStartedEvents[0]?.commandName, commandStartedEvents[0]?.command?.allowDiskUse], ['aggregate', true])
     })
   })
 
@@ -108,20 +108,20 @@ tap.test('allowDiskUse', async t => {
 
     t.test('in findAll', async t => {
       await crudService.findAll(context, { price: { $gt: 20 } }, ALL_FIELDS).toArray()
-      t.strictSame(commandFailedEvents, [])
-      t.strictSame(commandStartedEvents[0].command.allowDiskUse, false)
+      t.assert.deepStrictEqual(commandFailedEvents, [])
+      t.assert.deepStrictEqual(commandStartedEvents[0].command.allowDiskUse, false)
     })
 
     t.test('in findById', async t => {
       await crudService.findAll(context, { price: { $gt: 20 } }, ALL_FIELDS).toArray()
-      t.strictSame(commandFailedEvents, [])
-      t.strictSame(commandStartedEvents[0].command.allowDiskUse, false)
+      t.assert.deepStrictEqual(commandFailedEvents, [])
+      t.assert.deepStrictEqual(commandStartedEvents[0].command.allowDiskUse, false)
     })
 
     t.test('in count', async t => {
       await crudService.count(context)
-      t.strictSame(commandFailedEvents, [])
-      t.strictSame(commandStartedEvents[0].command.allowDiskUse, false)
+      t.assert.deepStrictEqual(commandFailedEvents, [])
+      t.assert.deepStrictEqual(commandStartedEvents[0].command.allowDiskUse, false)
     })
   })
 
@@ -130,20 +130,20 @@ tap.test('allowDiskUse', async t => {
 
     t.test('in findAll', async t => {
       await crudService.findAll(context, { price: { $gt: 20 } }, ALL_FIELDS).toArray()
-      t.strictSame(commandFailedEvents, [])
-      t.strictSame(commandStartedEvents[0].command.allowDiskUse, undefined)
+      t.assert.deepStrictEqual(commandFailedEvents, [])
+      t.assert.deepStrictEqual(commandStartedEvents[0].command.allowDiskUse, undefined)
     })
 
     t.test('in findById', async t => {
       await crudService.findAll(context, { price: { $gt: 20 } }, ALL_FIELDS).toArray()
-      t.strictSame(commandFailedEvents, [])
-      t.strictSame(commandStartedEvents[0].command.allowDiskUse, undefined)
+      t.assert.deepStrictEqual(commandFailedEvents, [])
+      t.assert.deepStrictEqual(commandStartedEvents[0].command.allowDiskUse, undefined)
     })
 
     t.test('in count', async t => {
       await crudService.count(context)
-      t.strictSame(commandFailedEvents, [])
-      t.strictSame(commandStartedEvents[0].command.allowDiskUse, undefined)
+      t.assert.deepStrictEqual(commandFailedEvents, [])
+      t.assert.deepStrictEqual(commandStartedEvents[0].command.allowDiskUse, undefined)
     })
   })
 
@@ -159,7 +159,7 @@ tap.test('allowDiskUse', async t => {
     const defaultAscendendFixtures = getSortedFixtures((a, b) => a.name.localeCompare(b.name))
     t.test('if isn\'t defined, defaultSorting is applied', async t => {
       const result = await crudService.findAll(context, {}, DEFAULT_PROJECTION).toArray()
-      t.strictSame(
+      t.assert.deepStrictEqual(
         result,
         defaultAscendendFixtures
       )
@@ -171,11 +171,11 @@ tap.test('allowDiskUse', async t => {
       }
       const ascendedFixturesByPrice = getSortedFixtures((a, b) => a.price - b.price)
 
-      t.notSame(ascendedFixturesByPrice, defaultAscendendFixtures)
+      t.assert.notDeepEqual(ascendedFixturesByPrice, defaultAscendendFixtures)
 
       const result = await crudService.findAll(context, {}, DEFAULT_PROJECTION, sort).toArray()
 
-      t.strictSame(
+      t.assert.deepStrictEqual(
         result,
         ascendedFixturesByPrice
       )

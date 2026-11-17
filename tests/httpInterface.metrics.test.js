@@ -16,7 +16,7 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 
 const { setUpTest, prefix } = require('./httpInterface.utils')
 
@@ -25,7 +25,7 @@ const DOC = {
   isbn: 'aaaaa',
 }
 
-tap.test('HTTP GET /-/metrics', async t => {
+test('HTTP GET /-/metrics', async t => {
   const { fastify } = await setUpTest(t, null, undefined, true)
 
   let response
@@ -33,29 +33,27 @@ tap.test('HTTP GET /-/metrics', async t => {
     method: 'GET',
     url: `${prefix}/count`,
   })
-  t.strictSame(response.statusCode, 200)
+  t.assert.deepStrictEqual(response.statusCode, 200)
 
   response = await fastify.inject({
     method: 'GET',
     url: `${prefix}/`,
   })
-  t.strictSame(response.statusCode, 200)
+  t.assert.deepStrictEqual(response.statusCode, 200)
 
   response = await fastify.inject({
     method: 'POST',
     url: `${prefix}/`,
     payload: DOC,
   })
-  t.strictSame(response.statusCode, 200)
+  t.assert.deepStrictEqual(response.statusCode, 200)
 
   const metricsResponse = await fastify.inject({
     method: 'GET',
     url: '/-/metrics',
   })
-  t.strictSame(metricsResponse.statusCode, 200)
+  t.assert.deepStrictEqual(metricsResponse.statusCode, 200)
 
-  t.ok(/mia_platform_crud_service_collection_invocation{collection_name="books-endpoint",type="fetch"} 2/.test(metricsResponse.payload))
-  t.ok(/mia_platform_crud_service_collection_invocation{collection_name="books-endpoint",type="insert_or_update"} 1/.test(metricsResponse.payload))
-
-  t.end()
+  t.assert.ok(/mia_platform_crud_service_collection_invocation{collection_name="books-endpoint",type="fetch"} 2/.test(metricsResponse.payload))
+  t.assert.ok(/mia_platform_crud_service_collection_invocation{collection_name="books-endpoint",type="insert_or_update"} 1/.test(metricsResponse.payload))
 })

@@ -3,13 +3,12 @@
 .github
 .idea
 .local
-.tap
+coverage
 .vscode
 bench
 docs
 node_modules
 scripts
-tap-snapshots
 tests
 .dockerignore
 .editorconfig

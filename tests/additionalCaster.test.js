@@ -16,12 +16,12 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const { castItem, castCollectionId } = require('../lib/AdditionalCaster')
 const { ObjectId } = require('mongodb')
 
-tap.test('AdditionalCaster', test => {
-  test.test('old configuration', async assert => {
+test('AdditionalCaster', test => {
+  test.test('old configuration', async t => {
     const testCases = [
       {
         name: 'should return document as it is',
@@ -113,16 +113,14 @@ tap.test('AdditionalCaster', test => {
     ]
 
     for (const { name, document, expectedResult } of testCases) {
-      assert.test(name, async test => {
+      t.test(name, async test => {
         const result = castItem(document)
-        test.strictSame(result, expectedResult)
-        test.end()
+        test.assert.deepStrictEqual(result, expectedResult)
       })
     }
-    assert.end()
   })
 
-  test.test('new configuration', async assert => {
+  test.test('new configuration', async t => {
     const testCases = [
       {
         name: 'should return document as it is',
@@ -166,32 +164,26 @@ tap.test('AdditionalCaster', test => {
     ]
 
     for (const { name, document, expectedResult } of testCases) {
-      assert.test(name, test => {
+      t.test(name, test => {
         const result = castItem(document)
-        test.strictSame(result, expectedResult)
-        test.end()
+        test.assert.deepStrictEqual(result, expectedResult)
       })
     }
-    assert.end()
   })
-
-  test.end()
 })
 
-tap.test('castCollectionId', async t => {
+test('castCollectionId', async t => {
   const objectId = '111111111111111111111111'
   const stringId = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
 
-  t.test('works for both types of input', assert => {
+  t.test('works for both types of input', t => {
     const castedObjectId = castCollectionId(objectId)
     const castedStringId = castCollectionId(stringId)
 
-    assert.ok(castedObjectId)
-    assert.equal(typeof castedObjectId, 'object')
+    t.assert.ok(castedObjectId)
+    t.assert.strictEqual(typeof castedObjectId, 'object')
 
-    assert.ok(castedStringId)
-    assert.equal(typeof castedStringId, 'string')
-
-    assert.end()
+    t.assert.ok(castedStringId)
+    t.assert.strictEqual(typeof castedStringId, 'string')
   })
 })

@@ -16,7 +16,7 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const path = require('path')
 const { createReadStream } = require('fs')
 
@@ -28,7 +28,7 @@ const { omit: lomit } = require('lodash')
 const { CREATORID, UPDATERID, CREATEDAT, UPDATEDAT } = require('../lib/consts')
 const { ObjectId } = require('mongodb')
 
-tap.test('HTTP PATCH /import', async t => {
+test('HTTP PATCH /import', async t => {
   const jsonFileReader = () => createReadStream(path.join(__dirname, 'filesFixtures/books.json'))
   const ndjsonFileReader = () => createReadStream(path.join(__dirname, 'filesFixtures/books.ndjson'))
   const CSVFileReader = () => createReadStream(path.join(__dirname, 'filesFixtures/books.csv'))
@@ -104,19 +104,16 @@ tap.test('HTTP PATCH /import', async t => {
         })
 
         t.test('and return 200', t => {
-          t.strictSame(response.statusCode, 200, response.payload)
-          t.end()
+          t.assert.deepStrictEqual(response.statusCode, 200, response.payload)
         })
 
         t.test('and return application/json', t => {
-          t.ok(/application\/json/.test(response.headers['content-type']))
-          t.end()
+          t.assert.ok(/application\/json/.test(response.headers['content-type']))
         })
 
         t.test('and return the right message', t => {
           const body = JSON.parse(response.payload)
-          t.strictSame(body, { message: 'File uploaded successfully' })
-          t.end()
+          t.assert.deepStrictEqual(body, { message: 'File uploaded successfully' })
         })
       })
     }
@@ -162,23 +159,20 @@ tap.test('HTTP PATCH /import', async t => {
         })
 
         t.test('and return 400', t => {
-          t.strictSame(response.statusCode, 400, response.payload)
-          t.end()
+          t.assert.deepStrictEqual(response.statusCode, 400, response.payload)
         })
 
         t.test('and return application/json', t => {
-          t.ok(/application\/json/.test(response.headers['content-type']))
-          t.end()
+          t.assert.ok(/application\/json/.test(response.headers['content-type']))
         })
 
         t.test('and return the right message', t => {
           const body = JSON.parse(response.payload)
-          t.strictSame(body, {
+          t.assert.deepStrictEqual(body, {
             'statusCode': 400,
             'error': 'Bad Request',
             'message': 'Invalid options',
           })
-          t.end()
         })
       })
     }
@@ -197,12 +191,12 @@ tap.test('HTTP PATCH /import', async t => {
       headers: form.getHeaders(),
     })
 
-    t.strictSame(response.statusCode, 200, response.payload)
+    t.assert.deepStrictEqual(response.statusCode, 200, response.payload)
     const body = JSON.parse(response.payload)
-    t.strictSame(body, { message: 'File uploaded successfully' })
+    t.assert.deepStrictEqual(body, { message: 'File uploaded successfully' })
 
     const document = await collection.findOne({ _id: bookToUpdate._id })
-    t.strictSame(lomit(document, [CREATORID, UPDATERID, CREATEDAT, UPDATEDAT]), bookToUpdate)
+    t.assert.deepStrictEqual(lomit(document, [CREATORID, UPDATERID, CREATEDAT, UPDATEDAT]), bookToUpdate)
   })
 
   t.test('should insert non existing documents', async t => {
@@ -217,12 +211,12 @@ tap.test('HTTP PATCH /import', async t => {
       headers: form.getHeaders(),
     })
 
-    t.strictSame(response.statusCode, 200, response.payload)
+    t.assert.deepStrictEqual(response.statusCode, 200, response.payload)
     const body = JSON.parse(response.payload)
-    t.strictSame(body, { message: 'File uploaded successfully' })
+    t.assert.deepStrictEqual(body, { message: 'File uploaded successfully' })
 
     const documentsCount = await collection.countDocuments()
-    t.strictSame(documentsCount, 3)
+    t.assert.deepStrictEqual(documentsCount, 3)
   })
 
   t.test('should update the state of a deleted document', async t => {
@@ -241,9 +235,9 @@ tap.test('HTTP PATCH /import', async t => {
       headers: form.getHeaders(),
     })
 
-    t.strictSame(response.statusCode, 200, response.payload)
+    t.assert.deepStrictEqual(response.statusCode, 200, response.payload)
     const body = JSON.parse(response.payload)
-    t.strictSame(body, { message: 'File uploaded successfully' })
+    t.assert.deepStrictEqual(body, { message: 'File uploaded successfully' })
 
     const document = await collection.findOne({
       _id: new ObjectId('64940bd37955234169667b47'),
@@ -251,7 +245,7 @@ tap.test('HTTP PATCH /import', async t => {
       // default state
       __STATE__: 'DRAFT',
     })
-    t.ok(document)
+    t.assert.ok(document)
   })
 
   t.test('should insert if no _id is provided', async t => {
@@ -266,20 +260,20 @@ tap.test('HTTP PATCH /import', async t => {
       headers: form.getHeaders(),
     })
 
-    t.strictSame(response.statusCode, 200, response.payload)
+    t.assert.deepStrictEqual(response.statusCode, 200, response.payload)
     const body = JSON.parse(response.payload)
-    t.strictSame(body, { message: 'File uploaded successfully' })
+    t.assert.deepStrictEqual(body, { message: 'File uploaded successfully' })
 
     const documentsCount = await collection.countDocuments()
-    t.strictSame(documentsCount, 2)
+    t.assert.deepStrictEqual(documentsCount, 2)
 
     // Make sure we're inserting documents with valid defaults
     const firstDocument = await collection.findOne({})
-    t.ok(firstDocument._id instanceof ObjectId)
-    t.ok(firstDocument.createdAt instanceof Date)
-    t.ok(firstDocument.updatedAt instanceof Date)
-    t.strictSame(firstDocument.creatorId, 'public')
-    t.strictSame(firstDocument.updaterId, 'public')
+    t.assert.ok(firstDocument._id instanceof ObjectId)
+    t.assert.ok(firstDocument.createdAt instanceof Date)
+    t.assert.ok(firstDocument.updatedAt instanceof Date)
+    t.assert.deepStrictEqual(firstDocument.creatorId, 'public')
+    t.assert.deepStrictEqual(firstDocument.updaterId, 'public')
   })
 
   t.test('should not duplicate when the same records witout _id are imported', async t => {
@@ -296,13 +290,13 @@ tap.test('HTTP PATCH /import', async t => {
         headers: form.getHeaders(),
       })
 
-      t.strictSame(response.statusCode, 200, response.payload)
+      t.assert.deepStrictEqual(response.statusCode, 200, response.payload)
       const body = JSON.parse(response.payload)
-      t.strictSame(body, { message: 'File uploaded successfully' })
+      t.assert.deepStrictEqual(body, { message: 'File uploaded successfully' })
     }
 
     const documentsCount = await collection.countDocuments()
-    t.strictSame(documentsCount, 2)
+    t.assert.deepStrictEqual(documentsCount, 2)
   })
 
   t.test('should return the correct error if a row is invalid', async t => {
@@ -315,12 +309,11 @@ tap.test('HTTP PATCH /import', async t => {
       headers: form.getHeaders(),
     })
 
-    t.strictSame(response.statusCode, 400, response.payload)
-    t.ok(/application\/json/.test(response.headers['content-type']))
+    t.assert.deepStrictEqual(response.statusCode, 400, response.payload)
+    t.assert.ok(/application\/json/.test(response.headers['content-type']))
     const body = JSON.parse(response.payload)
-    t.strictSame(body.statusCode, 400)
-    t.strictSame(body.error, 'Bad Request')
-    t.match(body.message, '(index: 0, /publishDate) must match pattern "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$"')
-    t.end()
+    t.assert.deepStrictEqual(body.statusCode, 400)
+    t.assert.deepStrictEqual(body.error, 'Bad Request')
+    t.assert.ok(body.message.includes('(index: 0, /publishDate) must match pattern "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$"'))
   })
 })

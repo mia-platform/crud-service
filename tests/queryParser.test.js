@@ -16,7 +16,7 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const { ObjectId } = require('mongodb')
 const logger = require('pino')({ level: 'silent' })
 
@@ -25,7 +25,7 @@ const collectionDefinition = require('./newCollectionDefinitions/books')
 const projectsCollectionDefinition = require('./collectionDefinitions/projects')
 const generatePathFieldsForRawSchema = require('../lib/generatePathFieldsForRawSchema')
 
-tap.test('queryParser', t => {
+test('queryParser', t => {
   const nowDate = new Date()
   const nowString = nowDate.toISOString()
   const nowInteger = nowDate.getTime()
@@ -421,16 +421,16 @@ tap.test('queryParser', t => {
           t.plan(1)
           try {
             queryParser.parseAndCast(testDef.query)
-            t.fail('This test should fail')
+            t.assert.fail('This test should fail')
           } catch (error) {
-            t.strictSame(error.message, testDef.throw)
+            t.assert.deepStrictEqual(error.message, testDef.throw)
           }
         })
       } else {
         t.test(testDef.name, t => {
           t.plan(1)
           queryParser.parseAndCast(testDef.query)
-          t.strictSame(testDef.query, testDef.expected)
+          t.assert.deepStrictEqual(testDef.query, testDef.expected)
         })
       }
     })
@@ -459,16 +459,16 @@ tap.test('queryParser', t => {
           t.plan(1)
           try {
             queryParser.parseAndCastTextSearchQuery(testDef.query)
-            t.fail('This test should fail')
+            t.assert.fail('This test should fail')
           } catch (error) {
-            t.strictSame(error.message, testDef.throw)
+            t.assert.deepStrictEqual(error.message, testDef.throw)
           }
         })
       } else {
         t.test(testDef.name, t => {
           t.plan(1)
           queryParser.parseAndCastTextSearchQuery(testDef.query)
-          t.strictSame(testDef.query, testDef.expected)
+          t.assert.deepStrictEqual(testDef.query, testDef.expected)
         })
       }
     })
@@ -531,16 +531,16 @@ tap.test('queryParser', t => {
           t.plan(1)
           try {
             queryParser.parseAndCastBody(testDef.body)
-            t.fail()
+            t.assert.fail()
           } catch (error) {
-            t.strictSame(error.message, testDef.throw)
+            t.assert.deepStrictEqual(error.message, testDef.throw)
           }
         })
       } else {
         t.test(testDef.name, t => {
           t.plan(1)
           queryParser.parseAndCastBody(testDef.body)
-          t.strictSame(testDef.body, testDef.expected)
+          t.assert.deepStrictEqual(testDef.body, testDef.expected)
         })
       }
     })
@@ -835,16 +835,16 @@ tap.test('queryParser', t => {
           t.plan(1)
           try {
             testQueryParser.parseAndCastCommands(testDef.commands, testDef.editableFields)
-            t.fail()
+            t.assert.fail()
           } catch (error) {
-            t.strictSame(error.message, testDef.throw)
+            t.assert.deepStrictEqual(error.message, testDef.throw)
           }
         })
       } else {
         t.test(testDef.name, t => {
           t.plan(1)
           testQueryParser.parseAndCastCommands(testDef.commands, testDef.editableFields)
-          t.strictSame(testDef.commands, testDef.expected)
+          t.assert.deepStrictEqual(testDef.commands, testDef.expected)
         })
       }
     })
@@ -892,24 +892,23 @@ tap.test('queryParser', t => {
           t.plan(1)
           try {
             queryParser.isTextSearchQuery(testDef.query)
-            t.fail()
+            t.assert.fail()
           } catch (error) {
-            t.strictSame(error.message, testDef.throw)
+            t.assert.deepStrictEqual(error.message, testDef.throw)
           }
         })
       } else {
         t.test(testDef.name, t => {
           t.plan(1)
           const result = queryParser.isTextSearchQuery(testDef.query)
-          t.strictSame(result, testDef.expected)
+          t.assert.deepStrictEqual(result, testDef.expected)
         })
       }
     })
   })
-  t.end()
 })
 
-tap.test('queryParser $in filter', t => {
+test('queryParser $in filter', t => {
   const queries = {
     objectId: {
       fieldObjectId: { $in: [null] },
@@ -940,17 +939,16 @@ tap.test('queryParser $in filter', t => {
   t.test('test different cases of a ObjectId', t => {
     t.plan(2)
     queryParser.parseAndCast(queries.objectId)
-    t.strictSame({ fieldObjectId: { $in: [null] } }, queries.objectId)
+    t.assert.deepStrictEqual({ fieldObjectId: { $in: [null] } }, queries.objectId)
 
     queryParser.parseAndCast(queries.objectIdWithValue)
-    t.strictSame({ fieldObjectId: new ObjectId('aaaaaaaaaaaaaaaaaaaaaaaa') }, queries.objectIdWithValue)
+    t.assert.deepStrictEqual({ fieldObjectId: new ObjectId('aaaaaaaaaaaaaaaaaaaaaaaa') }, queries.objectIdWithValue)
   })
   t.test('test different cases of a Date', t => {
     t.plan(1)
     queryParser.parseAndCast(queries.date)
-    t.strictSame({ fieldDate: { $in: [null] } }, queries.date)
+    t.assert.deepStrictEqual({ fieldDate: { $in: [null] } }, queries.date)
   })
-  t.end()
 })
 
 function generateTestForValues(type, key) {

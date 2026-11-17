@@ -16,7 +16,7 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const path = require('path')
 const { StringDecoder } = require('string_decoder')
 
@@ -24,17 +24,14 @@ const cryptFactory = require('../../../lib/mongo/mongo-crypt-factory')
 
 const buildFastifyInstance = (config) => ({ config })
 
-tap.test('No kms provider tests', t => {
+test('No kms provider tests', t => {
   t.test('undefined crypt configuration for none kms provider', t => {
     const fastify = buildFastifyInstance({ KMS_PROVIDER: 'none' })
-    t.equal(cryptFactory(fastify), undefined)
-    t.end()
+    t.assert.strictEqual(cryptFactory(fastify), undefined)
   })
-
-  t.end()
 })
 
-tap.test('GCP kms provider tests', t => {
+test('GCP kms provider tests', t => {
   t.test('right crypt configuration for gcp kms provider', t => {
     const fastify = buildFastifyInstance({
       KMS_PROVIDER: 'gcp',
@@ -55,8 +52,7 @@ tap.test('GCP kms provider tests', t => {
         cryptSharedLibPath: fastify.config.CRYPT_SHARED_LIB_PATH,
       },
     }
-    t.strictSame(cryptFactory(fastify), expectedConfiguration)
-    t.end()
+    t.assert.deepStrictEqual(cryptFactory(fastify), expectedConfiguration)
   })
 
   t.test('correctly insert schemaMap for gcp', t => {
@@ -102,14 +98,11 @@ U9VQQSQzY1oZMVX8i1m5WUTLPz2yLJIBQVdXqhMCQBGoiuSoSjafUhV7i1cEGpb88h5NBYZzWXGZ
       },
       schemaMap,
     }
-    t.strictSame(cryptFactory(fastify, schemaMap), expectedConfiguration)
-    t.end()
+    t.assert.deepStrictEqual(cryptFactory(fastify, schemaMap), expectedConfiguration)
   })
-
-  t.end()
 })
 
-tap.test('Local kms provider tests', t => {
+test('Local kms provider tests', t => {
   t.test('right crypt configuration for local kms provider', t => {
     const fastify = buildFastifyInstance({
       KMS_PROVIDER: 'local',
@@ -119,8 +112,8 @@ tap.test('Local kms provider tests', t => {
     })
     const localCryptConfiguration = cryptFactory(fastify)
     const stringDecoder = new StringDecoder('utf-8')
-    t.equal(localCryptConfiguration.keyVaultNamespace, 'key.vault')
-    t.equal(stringDecoder.write(localCryptConfiguration.kmsProviders.local.key), '-----BEGIN PRIVATE KEY-----\n'
+    t.assert.strictEqual(localCryptConfiguration.keyVaultNamespace, 'key.vault')
+    t.assert.strictEqual(stringDecoder.write(localCryptConfiguration.kmsProviders.local.key), '-----BEGIN PRIVATE KEY-----\n'
       + 'MIICXAIBAAKBgQCqGKukO1De7zhZj6+H0qtjTkVxwTCpvKe4eCZ0FPqri0cb2JZfXJ/DgYSF6vUp\n'
       + 'wmJG8wVQZKjeGcjDOL5UlsuusFncCzWBQ7RKNUSesmQRMSGkVb1/3j+skZ6UtW+5u09lHNsj6tQ5\n'
       + '1s1SPrCBkedbNf0Tp0GbMJDyR4e9T04ZZwIDAQABAoGAFijko56+qGyN8M0RVyaRAXz++xTqHBLh\n'
@@ -133,8 +126,7 @@ tap.test('Local kms provider tests', t => {
       + 'U9VQQSQzY1oZMVX8i1m5WUTLPz2yLJIBQVdXqhMCQBGoiuSoSjafUhV7i1cEGpb88h5NBYZzWXGZ\n'
       + '37sJ5QsW+sJyoNde3xH8vdXhzU7eT82D6X/scw9RZz+/6rCJ4p0=\n'
       + '-----END PRIVATE KEY-----\n')
-    t.equal(localCryptConfiguration.schemaMap, undefined)
-    t.end()
+    t.assert.strictEqual(localCryptConfiguration.schemaMap, undefined)
   })
 
   t.test('correctly insert schemaMap for local', t => {
@@ -158,8 +150,8 @@ tap.test('Local kms provider tests', t => {
     })
     const localCryptConfiguration = cryptFactory(fastify, schemaMap)
     const stringDecoder = new StringDecoder('utf-8')
-    t.equal(localCryptConfiguration.keyVaultNamespace, 'key.vault')
-    t.equal(stringDecoder.write(localCryptConfiguration.kmsProviders.local.key), '-----BEGIN PRIVATE KEY-----\n'
+    t.assert.strictEqual(localCryptConfiguration.keyVaultNamespace, 'key.vault')
+    t.assert.strictEqual(stringDecoder.write(localCryptConfiguration.kmsProviders.local.key), '-----BEGIN PRIVATE KEY-----\n'
       + 'MIICXAIBAAKBgQCqGKukO1De7zhZj6+H0qtjTkVxwTCpvKe4eCZ0FPqri0cb2JZfXJ/DgYSF6vUp\n'
       + 'wmJG8wVQZKjeGcjDOL5UlsuusFncCzWBQ7RKNUSesmQRMSGkVb1/3j+skZ6UtW+5u09lHNsj6tQ5\n'
       + '1s1SPrCBkedbNf0Tp0GbMJDyR4e9T04ZZwIDAQABAoGAFijko56+qGyN8M0RVyaRAXz++xTqHBLh\n'
@@ -172,9 +164,6 @@ tap.test('Local kms provider tests', t => {
       + 'U9VQQSQzY1oZMVX8i1m5WUTLPz2yLJIBQVdXqhMCQBGoiuSoSjafUhV7i1cEGpb88h5NBYZzWXGZ\n'
       + '37sJ5QsW+sJyoNde3xH8vdXhzU7eT82D6X/scw9RZz+/6rCJ4p0=\n'
       + '-----END PRIVATE KEY-----\n')
-    t.equal(localCryptConfiguration.schemaMap, schemaMap)
-    t.end()
+    t.assert.strictEqual(localCryptConfiguration.schemaMap, schemaMap)
   })
-
-  t.end()
 })

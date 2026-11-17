@@ -7,6 +7,42 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+
+- unit tests now runs with `node:test`, replacing `tap`
+
+## 7.3.0 - 2026-11-17
+
+### Changed
+
+- updated NodeJS to v24: Docker images, `.nvmrc`, devcontainer and `engines` field now require Node.js `>=24`
+- updated the suggested MongoDB version in the README to `mongo:8.2`
+
+### Dependencies
+
+- updated `@mia-platform/lc39` to `v9.1.3`
+- updated `fastify` to `v5.12.7`, `@fastify/env` to `v7.0.1`, `@fastify/mongodb` to `v9.0.2`, `@fastify/multipart` to `v10.1.5` and `fastify-plugin` to `v6.0.1`
+- updated `curlimages/curl` to `8.23.0` in Docker image
+- updated `tap` to `v21.8.0`
+- updated `@fastify/busboy` to `v3.2.3`
+- updated `proxy-addr` to `v2.0.8`
+- updated `js-yaml` to `v4.1.1`
+- updated `actions/setup-node` to `v6.0.0`, `github/codeql-action` to `v4.31.2` and `sigstore/cosign-installer` to `v4.0.0` in GitHub workflows
+- updated `csv-parse` to `v7.0.3`
+- updated `@faker-js/faker` to `v10.6.0`
+- updated `csv-stringify` to `v6.9.0`, `jsonpath-plus` to `v10.4.0`, `p-limit` to `v7.3.3`, `pino` to `v9.14.0` and `xlsx-write-stream` to `v1.0.4`
+- updated `fast-json-stringify` peer dependency to `v6.4.0` and `mongodb` peer dependency to `v6.21.0`
+- updated dev dependencies `@eslint/js` to `v9.39.5`, `commander` to `v14.0.3`, `eslint` to `v9.39.5`, `eslint-plugin-n` to `v17.24.0` and `globals` to `v16.5.0`
+- updated transitive dependencies within their existing semver ranges, including the OpenTelemetry packages pulled in by `@mia-platform/lc39`
+
+## 7.2.7 - 2026-11-16
+
+## 7.2.6 - 2026-11-16
+
+### Fixed
+
+- Updated internal libraries to fix vulnerabilities
+
 ## 7.2.5 - 2025-10-01
 
 ### Fixed
@@ -14,7 +50,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - introduce environment variable `FASTIFY_PLUGIN_TIMEOUT_MS` to allow users customizing
   the startup timeout of a fastify plugin
 
-### Dependencies 
+### Dependencies
 
 - updated NodeJS version in Docker image to v20.20.0
 
@@ -97,7 +133,7 @@ is already set within the Docker image and it points to the correct location, so
 
 ### Fixed
 
-- when the service was configured to run with the (CSFLE)[https://www.mongodb.com/docs/manual/core/csfle/] feature enabled and a Mongo View was defined alongside the collections models, the service crashed at startup due to an incompatibility between Mongo Views and the auto-encryption feature.  
+- when the service was configured to run with the (CSFLE)[https://www.mongodb.com/docs/manual/core/csfle/] feature enabled and a Mongo View was defined alongside the collections models, the service crashed at startup due to an incompatibility between Mongo Views and the auto-encryption feature.
 This issue has been resolved and the service can now properly start, creating the Mongo Views even in such situation.
 
 ## 7.0.4 - 2024-06-28
@@ -119,7 +155,7 @@ This issue has been resolved and the service can now properly start, creating th
 ### Fixed
 
 - fixed projection example in json schema generator
-- `serializerCompiler` has been added to use explicitly [`fastifiy-fast-json`](https://github.com/fastify/fast-json-stringify), along with `AdditionalCaster`  
+- `serializerCompiler` has been added to use explicitly [`fastifiy-fast-json`](https://github.com/fastify/fast-json-stringify), along with `AdditionalCaster`
 - `$eq` operator can now be used also for array fields
 - [#286](https://github.com/mia-platform/crud-service/issues/286): `/-/schemas` accept header defaults to `application/json`
 - [#326](https://github.com/mia-platform/crud-service/issues/326): `/schemas` and `/-/schemas` endpoints now return also `required` property
@@ -130,7 +166,7 @@ This issue has been resolved and the service can now properly start, creating th
 
 - added `_exportOpts` query parameter for `GET /export` calls
 
-### Fixed 
+### Fixed
 
 - fixed `GET /export` with `csv` format: `csv` files contain all the requested fields as columns without omissions
 - fixed `GET /export` with `excel` format: `excel` files contain all the requested fields as columns instead of containing always all the collection fields
@@ -158,7 +194,7 @@ This issue has been resolved and the service can now properly start, creating th
 
 ### Added
 
-- [#236](https://github.com/mia-platform/crud-service/issues/236) added `defaultSorting` field to collection definition: the field applies a sorting object document to find queries, if no explicit `_s` parameter is set on request 
+- [#236](https://github.com/mia-platform/crud-service/issues/236) added `defaultSorting` field to collection definition: the field applies a sorting object document to find queries, if no explicit `_s` parameter is set on request
 
 ### Changed
 
@@ -352,7 +388,7 @@ values and select the one with the highest weight
 ### Added
 
 - Collections configuration files can now accept a new field `schema` which allows to define the collection data model by means of a JSON Schema.
-  The property `schema` in the configuration files is an _opt-in_ feature and when defined it takes precedence over the `fields` property.  
+  The property `schema` in the configuration files is an _opt-in_ feature and when defined it takes precedence over the `fields` property.
   Though the latter property is still supported, it is recommended to convert your collections to adopt a JSON schema definition to access the new functionality offered by JSON schema.
 - `$pull` operator support
 - `$addToSet` supports mongo operators

@@ -16,7 +16,7 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 
 const { STATES, ARRAY_MERGE_ELEMENT_OPERATOR } = require('../lib/consts')
 const { fixtures, draftFixture } = require('./utils')
@@ -36,7 +36,7 @@ const MATCHING_QUERY = { price: { $gt: MATCHING_PRICE } }
 const NON_MATCHING_QUERY = { price: { $gt: NON_MATCHING_PRICE } }
 const UPDATE_COMMAND = { $set: { price: NEW_PRICE } }
 
-tap.test('HTTP PATCH /bulk', async t => {
+test('HTTP PATCH /bulk', async t => {
   const tests = [
     {
       name: 'without filter - one',
@@ -299,42 +299,32 @@ tap.test('HTTP PATCH /bulk', async t => {
       })
 
       t.test('should return 200', t => {
-        t.strictSame(response.statusCode, 200)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 200)
       })
 
       t.test('should return "application/json"', t => {
-        t.ok(/application\/json/.test(response.headers['content-type']))
-        t.end()
+        t.assert.ok(/application\/json/.test(response.headers['content-type']))
       })
 
       t.test(`should return ${conf.updatedDocumentNumber}`, t => {
-        t.strictSame(JSON.parse(response.payload), conf.updatedDocumentNumber)
-        t.end()
+        t.assert.deepStrictEqual(JSON.parse(response.payload), conf.updatedDocumentNumber)
       })
 
       t.test('on database', t => {
         t.test('should update the documents', async t => {
           const docs = await collection.find({ _id: { $in: conf.updatedDocumentIds } }).toArray()
-          docs.forEach(d => t.strictSame(d.price, NEW_PRICE))
+          docs.forEach(d => t.assert.deepStrictEqual(d.price, NEW_PRICE))
 
           if (conf.new_attachments_name) {
-            docs.forEach((d, i) => t.strictSame(d.attachments[0].name, conf.new_attachments_name[i]))
+            docs.forEach((d, i) => t.assert.deepStrictEqual(d.attachments[0].name, conf.new_attachments_name[i]))
           }
-
-          t.end()
         })
 
         t.test('should keep the other documents as is', async t => {
           const documents = await collection.find({ _id: { $nin: conf.updatedDocumentIds } }).toArray()
-          t.strictSame(documents, fixtures.filter(d => conf.updatedDocumentIds.indexOf(d._id) < 0))
-          t.end()
+          t.assert.deepStrictEqual(documents, fixtures.filter(d => conf.updatedDocumentIds.indexOf(d._id) < 0))
         })
-
-        t.end()
       })
-
-      t.end()
     })
   })
 
@@ -370,10 +360,9 @@ tap.test('HTTP PATCH /bulk', async t => {
           ],
         })
 
-        t.equal(JSON.parse(response.payload), 1)
+        t.assert.strictEqual(JSON.parse(response.payload), 1)
         const docOnDb = await collection.findOne({ _id: DOC_FILTER_TEST._id })
-        t.equal(docOnDb.price, 999)
-        t.end()
+        t.assert.strictEqual(docOnDb.price, 999)
       })
 
       t.test('for array value', async t => {
@@ -393,10 +382,9 @@ tap.test('HTTP PATCH /bulk', async t => {
           ],
         })
 
-        t.equal(JSON.parse(response.payload), 1)
+        t.assert.strictEqual(JSON.parse(response.payload), 1)
         const docOnDb = await collection.findOne({ _id: DOC_FILTER_TEST._id })
-        t.equal(docOnDb.price, 999)
-        t.end()
+        t.assert.strictEqual(docOnDb.price, 999)
       })
 
       t.test('unmatching', async t => {
@@ -416,13 +404,10 @@ tap.test('HTTP PATCH /bulk', async t => {
           ],
         })
 
-        t.equal(JSON.parse(response.payload), 0)
+        t.assert.strictEqual(JSON.parse(response.payload), 0)
         const docOnDb = await collection.findOne({ _id: DOC_FILTER_TEST._id })
-        t.equal(docOnDb.price, DOC_FILTER_TEST.price)
-        t.end()
+        t.assert.strictEqual(docOnDb.price, DOC_FILTER_TEST.price)
       })
-
-      t.end()
     })
 
     t.test('$set', async t => {
@@ -452,13 +437,12 @@ tap.test('HTTP PATCH /bulk', async t => {
       })
 
       t.test('should update one document', t => {
-        t.equal(JSON.parse(response.payload), 1)
-        t.end()
+        t.assert.strictEqual(JSON.parse(response.payload), 1)
       })
 
       t.test('should update the document', async t => {
         const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
-        t.strictSame(docOnDb.metadata, {
+        t.assert.deepStrictEqual(docOnDb.metadata, {
           somethingNumber: VALUE_AS_NUMBER,
           somethingString: 'the-saved-string',
           somethingArrayObject: [{
@@ -466,10 +450,7 @@ tap.test('HTTP PATCH /bulk', async t => {
           }],
           somethingArrayOfNumbers: [VALUE_AS_NUMBER],
         })
-        t.end()
       })
-
-      t.end()
     })
 
     t.test('$set - with nested additional property', async t => {
@@ -501,13 +482,12 @@ tap.test('HTTP PATCH /bulk', async t => {
       })
 
       t.test('should update one document', t => {
-        t.equal(JSON.parse(response.payload), 1)
-        t.end()
+        t.assert.strictEqual(JSON.parse(response.payload), 1)
       })
 
       t.test('should update the document', async t => {
         const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
-        t.strictSame(docOnDb.metadata, {
+        t.assert.deepStrictEqual(docOnDb.metadata, {
           somethingNumber: VALUE_AS_NUMBER,
           somethingString: 'the-saved-string',
           somethingArrayObject: [
@@ -521,10 +501,7 @@ tap.test('HTTP PATCH /bulk', async t => {
           ],
           somethingArrayOfNumbers: [VALUE_AS_NUMBER],
         })
-        t.end()
       })
-
-      t.end()
     })
 
     t.test('$set - with replace operator', async t => {
@@ -561,14 +538,11 @@ tap.test('HTTP PATCH /bulk', async t => {
       })
 
       t.test('should update the document', async t => {
-        t.equal(JSON.parse(response.payload), 1)
+        t.assert.strictEqual(JSON.parse(response.payload), 1)
 
         const docOnDb = await collection.findOne({ _id: DOC_REPLACE_TEST._id })
-        t.strictSame(docOnDb.metadata.somethingArrayOfNumbers, [3, VALUE_AS_NUMBER, 6])
-        t.end()
+        t.assert.deepStrictEqual(docOnDb.metadata.somethingArrayOfNumbers, [3, VALUE_AS_NUMBER, 6])
       })
-
-      t.end()
     })
 
     t.test('$push', async t => {
@@ -606,27 +580,22 @@ tap.test('HTTP PATCH /bulk', async t => {
       })
 
       t.test('should update one document', t => {
-        t.equal(JSON.parse(response.payload), 1)
-        t.end()
+        t.assert.strictEqual(JSON.parse(response.payload), 1)
       })
 
       t.test('should update the document', async t => {
         const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
 
-        t.strictSame(docOnDb.metadata, {
+        t.assert.deepStrictEqual(docOnDb.metadata, {
           somethingString: 'the-saved-string',
           somethingArrayOfNumbers: [3, VALUE_AS_NUMBER],
         })
 
-        t.strictSame(docOnDb.attachments, [{
+        t.assert.deepStrictEqual(docOnDb.attachments, [{
           name: 'note',
           nestedArr: [123, VALUE_AS_NUMBER],
         }])
-
-        t.end()
       })
-
-      t.end()
     })
 
     t.test('$push - with array of object and nested additional property', async t => {
@@ -665,30 +634,25 @@ tap.test('HTTP PATCH /bulk', async t => {
       })
 
       t.test('should update one document', t => {
-        t.equal(JSON.parse(response.payload), 1)
-        t.end()
+        t.assert.strictEqual(JSON.parse(response.payload), 1)
       })
 
       t.test('should update the document', async t => {
         const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
 
-        t.strictSame(docOnDb.metadata, {
+        t.assert.deepStrictEqual(docOnDb.metadata, {
           somethingString: 'the-saved-string',
           somethingArrayOfNumbers: [3, VALUE_AS_NUMBER],
         })
 
-        t.strictSame(docOnDb.attachments, [{
+        t.assert.deepStrictEqual(docOnDb.attachments, [{
           name: 'note',
           nestedArr: [123, VALUE_AS_NUMBER],
           additionalInfo: {
             additionalArray: [VALUE_AS_STRING],
           },
         }])
-
-        t.end()
       })
-
-      t.end()
     })
 
     t.test('$addToSet', async t => {
@@ -726,27 +690,22 @@ tap.test('HTTP PATCH /bulk', async t => {
       })
 
       t.test('should update one document', t => {
-        t.equal(JSON.parse(response.payload), 1)
-        t.end()
+        t.assert.strictEqual(JSON.parse(response.payload), 1)
       })
 
       t.test('should update the document without duplicates', async t => {
         const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
 
-        t.strictSame(docOnDb.metadata, {
+        t.assert.deepStrictEqual(docOnDb.metadata, {
           somethingString: 'the-saved-string',
           somethingArrayOfNumbers: [VALUE_AS_NUMBER],
         })
 
-        t.strictSame(docOnDb.attachments, [{
+        t.assert.deepStrictEqual(docOnDb.attachments, [{
           name: 'note',
           nestedArr: [123, VALUE_AS_NUMBER],
         }])
-
-        t.end()
       })
-
-      t.end()
     })
 
     t.test('$addToSet - with array of object and nested additional property', async t => {
@@ -787,30 +746,25 @@ tap.test('HTTP PATCH /bulk', async t => {
       })
 
       t.test('should update one document', t => {
-        t.equal(JSON.parse(response.payload), 1)
-        t.end()
+        t.assert.strictEqual(JSON.parse(response.payload), 1)
       })
 
       t.test('should update the document without duplicates', async t => {
         const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
 
-        t.strictSame(docOnDb.metadata, {
+        t.assert.deepStrictEqual(docOnDb.metadata, {
           somethingString: 'the-saved-string',
           somethingArrayOfNumbers: [VALUE_AS_NUMBER],
         })
 
-        t.strictSame(docOnDb.attachments, [{
+        t.assert.deepStrictEqual(docOnDb.attachments, [{
           name: 'note',
           nestedArr: [123, VALUE_AS_NUMBER],
           additionalInfo: {
             additionalArray: [VALUE_AS_STRING],
           },
         }])
-
-        t.end()
       })
-
-      t.end()
     })
 
     t.test('$pull', async t => {
@@ -850,28 +804,23 @@ tap.test('HTTP PATCH /bulk', async t => {
       })
 
       t.test('should update one document', t => {
-        t.equal(JSON.parse(response.payload), 1)
-        t.end()
+        t.assert.strictEqual(JSON.parse(response.payload), 1)
       })
 
       t.test('should update the document removing values from arrays', async t => {
         const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
 
-        t.strictSame(docOnDb.tags, ['tag1', 'tag3'])
-        t.strictSame(docOnDb.metadata, {
+        t.assert.deepStrictEqual(docOnDb.tags, ['tag1', 'tag3'])
+        t.assert.deepStrictEqual(docOnDb.metadata, {
           somethingString: 'the-saved-string',
           somethingArrayOfNumbers: [456, 678],
         })
 
-        t.strictSame(docOnDb.attachments, [{
+        t.assert.deepStrictEqual(docOnDb.attachments, [{
           name: 'note',
           nestedArr: [987, 654],
         }])
-
-        t.end()
       })
-
-      t.end()
     })
 
     t.test('$pull - with array of object and nested additional property', async t => {
@@ -915,31 +864,26 @@ tap.test('HTTP PATCH /bulk', async t => {
       })
 
       t.test('should update one document', t => {
-        t.equal(JSON.parse(response.payload), 1)
-        t.end()
+        t.assert.strictEqual(JSON.parse(response.payload), 1)
       })
 
       t.test('should update the document removing values from arrays', async t => {
         const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
 
-        t.strictSame(docOnDb.tags, ['tag1', 'tag3'])
-        t.strictSame(docOnDb.metadata, {
+        t.assert.deepStrictEqual(docOnDb.tags, ['tag1', 'tag3'])
+        t.assert.deepStrictEqual(docOnDb.metadata, {
           somethingString: 'the-saved-string',
           somethingArrayOfNumbers: [456, 678],
         })
 
-        t.strictSame(docOnDb.attachments, [{
+        t.assert.deepStrictEqual(docOnDb.attachments, [{
           name: 'note',
           nestedArr: [987, 654],
           additionalInfo: {
             additionalArray: [],
           },
         }])
-
-        t.end()
       })
-
-      t.end()
     })
 
     t.test('$pull with mongo operator on path with pattern properties', async t => {
@@ -979,28 +923,23 @@ tap.test('HTTP PATCH /bulk', async t => {
       })
 
       t.test('should update one document', t => {
-        t.equal(JSON.parse(response.payload), 1)
-        t.end()
+        t.assert.strictEqual(JSON.parse(response.payload), 1)
       })
 
       t.test('should update the document removing values from arrays', async t => {
         const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
 
-        t.strictSame(docOnDb.tags, ['tag1', 'tag3'])
-        t.strictSame(docOnDb.metadata, {
+        t.assert.deepStrictEqual(docOnDb.tags, ['tag1', 'tag3'])
+        t.assert.deepStrictEqual(docOnDb.metadata, {
           somethingString: 'the-saved-string',
           somethingArrayOfNumbers: [456, 678],
         })
 
-        t.strictSame(docOnDb.attachments, [{
+        t.assert.deepStrictEqual(docOnDb.attachments, [{
           name: 'note',
           nestedArr: [987],
         }])
-
-        t.end()
       })
-
-      t.end()
     })
 
 
@@ -1054,31 +993,25 @@ tap.test('HTTP PATCH /bulk', async t => {
       })
 
       t.test('should update one document', t => {
-        t.equal(JSON.parse(response.payload), 1)
-        t.end()
+        t.assert.strictEqual(JSON.parse(response.payload), 1)
       })
 
       t.test('should update the document', async t => {
         const docOnDb = await collection.findOne({ _id: DOC_TO_UNSET._id })
-        t.strictSame(docOnDb.metadata, {
+        t.assert.deepStrictEqual(docOnDb.metadata, {
           somethingNumber: 3,
           somethingObject: {},
           somethingArrayObject: [{
             arrayItemObjectChildNumber: 4,
           }],
         })
-        t.strictSame(docOnDb.attachments, [
+        t.assert.deepStrictEqual(docOnDb.attachments, [
           {
             name: 'note-1',
           },
         ])
-        t.end()
       })
-
-      t.end()
     })
-
-    t.end()
   })
 
   t.test('with empty list', async t => {
@@ -1092,16 +1025,12 @@ tap.test('HTTP PATCH /bulk', async t => {
     })
 
     t.test('should return 400', t => {
-      t.strictSame(response.statusCode, 400)
-      t.end()
+      t.assert.deepStrictEqual(response.statusCode, 400)
     })
 
     t.test('should return "application/json"', t => {
-      t.ok(/application\/json/.test(response.headers['content-type']))
-      t.end()
+      t.assert.ok(/application\/json/.test(response.headers['content-type']))
     })
-
-    t.end()
   })
 
   t.test('unset ObjectId property', async t => {
@@ -1122,36 +1051,28 @@ tap.test('HTTP PATCH /bulk', async t => {
     })
 
     t.test('should return 200', t => {
-      t.strictSame(response.statusCode, 200)
-      t.end()
+      t.assert.deepStrictEqual(response.statusCode, 200)
     })
 
     t.test('should return "application/json"', t => {
-      t.ok(/application\/json/.test(response.headers['content-type']))
-      t.end()
+      t.assert.ok(/application\/json/.test(response.headers['content-type']))
     })
 
     t.test('should return 1', t => {
-      t.strictSame(JSON.parse(response.payload), 1)
-      t.end()
+      t.assert.deepStrictEqual(JSON.parse(response.payload), 1)
     })
 
     t.test('on database', t => {
       t.test('should update the document', async t => {
         const doc = await collection.findOne({ _id: DOC._id })
-        t.strictSame(doc.authorAddressId, undefined)
-        t.end()
+        t.assert.deepStrictEqual(doc.authorAddressId, undefined)
       })
 
       t.test('should keep the other documents as is', async t => {
         const documents = await collection.find({ _id: { $ne: DOC._id } }).toArray()
-        t.strictSame(documents, fixtures.filter(d => d._id !== DOC._id))
-        t.end()
+        t.assert.deepStrictEqual(documents, fixtures.filter(d => d._id !== DOC._id))
       })
-      t.end()
     })
-
-    t.end()
   })
 
   t.test('unset required property', async t => {
@@ -1172,16 +1093,12 @@ tap.test('HTTP PATCH /bulk', async t => {
     })
 
     t.test('should return 400', t => {
-      t.strictSame(response.statusCode, 400)
-      t.end()
+      t.assert.deepStrictEqual(response.statusCode, 400)
     })
 
     t.test('should return "application/json"', t => {
-      t.ok(/application\/json/.test(response.headers['content-type']))
-      t.end()
+      t.assert.ok(/application\/json/.test(response.headers['content-type']))
     })
-
-    t.end()
   })
 
   t.test('patch bulk bigger than 1 MB', async t => {
@@ -1209,16 +1126,12 @@ tap.test('HTTP PATCH /bulk', async t => {
     })
 
     t.test('should return 200', t => {
-      t.strictSame(response.statusCode, 200)
-      t.end()
+      t.assert.deepStrictEqual(response.statusCode, 200)
     })
 
     t.test('should return "application/json"', t => {
-      t.ok(/application\/json/.test(response.headers['content-type']))
-      t.end()
+      t.assert.ok(/application\/json/.test(response.headers['content-type']))
     })
-
-    t.end()
   })
 
   t.test('allow nullable field', async t => {
@@ -1259,21 +1172,18 @@ tap.test('HTTP PATCH /bulk', async t => {
       payload: DOCS,
     })
 
-    t.test('should return 200', assert => {
-      assert.strictSame(postResponse.statusCode, 200, postResponse.payload)
-      assert.end()
+    t.test('should return 200', t => {
+      t.assert.deepStrictEqual(postResponse.statusCode, 200, postResponse.payload)
     })
 
-    t.test('should return application/json', assert => {
-      assert.ok(/application\/json/.test(postResponse.headers['content-type']))
-      assert.end()
+    t.test('should return application/json', t => {
+      t.assert.ok(/application\/json/.test(postResponse.headers['content-type']))
     })
 
-    t.test('should return the inserted ids', assert => {
+    t.test('should return the inserted ids', t => {
       const postResult = JSON.parse(postResponse.payload)
-      assert.strictSame(postResult.length, DOCS.length)
-      postResult.forEach(el => assert.ok(el._id))
-      assert.end()
+      t.assert.deepStrictEqual(postResult.length, DOCS.length)
+      postResult.forEach(el => t.assert.ok(el._id))
     })
 
     // test that created record can be updated
@@ -1293,38 +1203,31 @@ tap.test('HTTP PATCH /bulk', async t => {
         payload,
       })
 
-      t.test('should return 200', assert => {
-        assert.strictSame(patchResponse.statusCode, 200)
-        assert.end()
+      t.test('should return 200', t => {
+        t.assert.deepStrictEqual(patchResponse.statusCode, 200)
       })
 
-      t.test('should return application/json', assert => {
-        assert.ok(/application\/json/.test(patchResponse.headers['content-type']))
-        assert.end()
+      t.test('should return application/json', t => {
+        t.assert.ok(/application\/json/.test(patchResponse.headers['content-type']))
       })
 
-      t.test('should return the number of updated elements', assert => {
+      t.test('should return the number of updated elements', t => {
         const patchResult = JSON.parse(patchResponse.payload)
-        assert.strictSame(patchResult, DOCS.length)
-        assert.end()
+        t.assert.deepStrictEqual(patchResult, DOCS.length)
       })
 
-      t.test('should have null name', async assert => {
+      t.test('should have null name', async t => {
         await Promise.all(postResult.map(async el => {
           const getResponse = await fastify.inject({
             method: 'GET',
             url: `${prefix}/${el._id}`,
           })
 
-          assert.strictSame(getResponse.statusCode, 200)
+          t.assert.deepStrictEqual(getResponse.statusCode, 200)
           const getResult = JSON.parse(getResponse.payload)
-          assert.equal(getResult.name, null)
+          t.assert.strictEqual(getResult.name, null)
         }))
-
-        assert.end()
       })
-
-      t.end()
     })
   })
 
@@ -1344,15 +1247,11 @@ tap.test('HTTP PATCH /bulk', async t => {
       message: 'Unknown field: not_a_field',
     }
 
-    t.strictSame(response.statusCode, 400)
-    t.ok(/application\/json/.test(response.headers['content-type']))
-    t.strictSame(JSON.parse(response.payload), expectedResponse)
+    t.assert.deepStrictEqual(response.statusCode, 400)
+    t.assert.ok(/application\/json/.test(response.headers['content-type']))
+    t.assert.deepStrictEqual(JSON.parse(response.payload), expectedResponse)
 
     const documents = await collection.find().toArray()
-    t.strictSame(documents, fixtures)
-
-    t.end()
+    t.assert.deepStrictEqual(documents, fixtures)
   })
-
-  t.end()
 })

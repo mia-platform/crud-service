@@ -16,7 +16,7 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const abstractLogger = require('abstract-logging')
 const { MongoClient, ObjectId } = require('mongodb')
 
@@ -42,7 +42,7 @@ const context = {
   now: new Date('2018-02-08'),
 }
 
-tap.test('findById', async t => {
+test('findById', async t => {
   const databaseName = getMongoDatabaseName()
   const mongoURL = getMongoURL(databaseName)
 
@@ -52,7 +52,7 @@ tap.test('findById', async t => {
 
   await clearCollectionAndInsertFixtures(collection)
 
-  t.teardown(async() => {
+  t.after(async() => {
     await database.dropDatabase()
     await client.close()
   })
@@ -66,7 +66,7 @@ tap.test('findById', async t => {
 
     t.test('should return the document', t => {
       t.plan(1)
-      t.strictSame(doc, { _id: OBJECT_ID })
+      t.assert.deepStrictEqual(doc, { _id: OBJECT_ID })
     })
   })
 
@@ -77,7 +77,7 @@ tap.test('findById', async t => {
 
     t.test('should return null', t => {
       t.plan(1)
-      t.strictSame(doc, null)
+      t.assert.deepStrictEqual(doc, null)
     })
   })
 
@@ -94,7 +94,7 @@ tap.test('findById', async t => {
 
       t.test('should return the document', t => {
         t.plan(1)
-        t.strictSame(doc, { _id: OBJECT_ID })
+        t.assert.deepStrictEqual(doc, { _id: OBJECT_ID })
       })
     })
 
@@ -107,7 +107,7 @@ tap.test('findById', async t => {
 
       t.test('should return null', t => {
         t.plan(1)
-        t.strictSame(doc, null)
+        t.assert.deepStrictEqual(doc, null)
       })
     })
 
@@ -123,11 +123,9 @@ tap.test('findById', async t => {
 
       t.test('should return null', t => {
         t.plan(1)
-        t.strictSame(doc, null)
+        t.assert.deepStrictEqual(doc, null)
       })
     })
-
-    t.end()
   })
 
   t.test('projection', t => {
@@ -140,15 +138,13 @@ tap.test('findById', async t => {
 
       t.test('should return the correct fields', t => {
         t.plan(1)
-        t.strictSame(doc, {
+        t.assert.deepStrictEqual(doc, {
           _id: OBJECT_ID,
           name: 'Ulysses',
           isbn: 'fake isbn 1',
         })
       })
     })
-
-    t.end()
   })
 
   t.test('__STATE__', t => {
@@ -161,7 +157,7 @@ tap.test('findById', async t => {
 
       t.test('should return null', t => {
         t.plan(1)
-        t.strictSame(doc, null)
+        t.assert.deepStrictEqual(doc, null)
       })
     })
 
@@ -178,7 +174,7 @@ tap.test('findById', async t => {
 
       t.test('should return the document', t => {
         t.plan(1)
-        t.strictSame(doc, { _id: draftFixture._id })
+        t.assert.deepStrictEqual(doc, { _id: draftFixture._id })
       })
     })
 
@@ -196,7 +192,7 @@ tap.test('findById', async t => {
 
       t.test('should return the document', t => {
         t.plan(1)
-        t.strictSame(doc, { _id: draftFixture._id })
+        t.assert.deepStrictEqual(doc, { _id: draftFixture._id })
       })
     })
 
@@ -214,12 +210,8 @@ tap.test('findById', async t => {
 
       t.test('should return null', t => {
         t.plan(1)
-        t.strictSame(doc, null)
+        t.assert.deepStrictEqual(doc, null)
       })
     })
-
-    t.end()
   })
-
-  t.end()
 })

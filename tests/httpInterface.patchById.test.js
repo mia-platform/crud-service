@@ -16,7 +16,7 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 
 const {
   STATES,
@@ -81,7 +81,7 @@ const UPDATED_HTTP_DOC = {
  * might be resolved splitting this file in two
  */
 
-tap.test('HTTP PATCH /<id>', async t => {
+test('HTTP PATCH /<id>', async t => {
   t.test('test cases with valid query', async t => {
     const tests = [
       {
@@ -646,13 +646,11 @@ tap.test('HTTP PATCH /<id>', async t => {
         })
 
         t.test(`should return ${found ? 200 : 404}`, t => {
-          t.strictSame(response.statusCode, found ? 200 : 404, response.payload)
-          t.end()
+          t.assert.deepStrictEqual(response.statusCode, found ? 200 : 404, response.payload)
         })
 
         t.test('should return "application/json"', t => {
-          t.ok(/application\/json/.test(response.headers['content-type']))
-          t.end()
+          t.assert.ok(/application\/json/.test(response.headers['content-type']))
         })
 
         t.test(`should return ${found ? 'the id' : 'the not NOT_FOUND_BODY'}`, t => {
@@ -660,13 +658,12 @@ tap.test('HTTP PATCH /<id>', async t => {
             const expected = { ...conf.returnDoc }
             delete expected.updatedAt
             const actual = JSON.parse(response.payload)
-            t.ok(Number.isFinite(new Date(actual.updatedAt).getTime()))
+            t.assert.ok(Number.isFinite(new Date(actual.updatedAt).getTime()))
             delete actual.updatedAt
-            t.strictSame(actual, expected)
+            t.assert.deepStrictEqual(actual, expected)
           } else {
-            t.strictSame(JSON.parse(response.payload), found ? { _id: conf.id.toString() } : NOT_FOUND_BODY)
+            t.assert.deepStrictEqual(JSON.parse(response.payload), found ? { _id: conf.id.toString() } : NOT_FOUND_BODY)
           }
-          t.end()
         })
 
         t.test('on database', t => {
@@ -674,30 +671,24 @@ tap.test('HTTP PATCH /<id>', async t => {
             t.test(`should ${found ? '' : 'not'} update the document`, async t => {
               const doc = await collection.findOne({ _id: conf.id })
               if (found) {
-                t.strictSame(doc.price, NEW_PRICE)
-                t.strictSame(doc.attachments, NEW_ATTACHMENTS)
-                t.strictSame(doc.updaterId, newUpdaterId)
-                t.ok(Math.abs(Date.now() - doc.updatedAt.getTime()) < 5000, '`updatedAt` should be updated')
+                t.assert.deepStrictEqual(doc.price, NEW_PRICE)
+                t.assert.deepStrictEqual(doc.attachments, NEW_ATTACHMENTS)
+                t.assert.deepStrictEqual(doc.updaterId, newUpdaterId)
+                t.assert.ok(Math.abs(Date.now() - doc.updatedAt.getTime()) < 5000, '`updatedAt` should be updated')
               } else {
-                t.strictSame(doc.price, DOC.price)
-                t.strictSame(doc.attachments, HTTP_DOC.attachments)
-                t.strictSame(doc.updaterId, oldUpdaterId)
-                t.ok(Math.abs(Date.now() - doc.updatedAt.getTime()) > 5000, '`updatedAt` should not be updated')
+                t.assert.deepStrictEqual(doc.price, DOC.price)
+                t.assert.deepStrictEqual(doc.attachments, HTTP_DOC.attachments)
+                t.assert.deepStrictEqual(doc.updaterId, oldUpdaterId)
+                t.assert.ok(Math.abs(Date.now() - doc.updatedAt.getTime()) > 5000, '`updatedAt` should not be updated')
               }
-              t.end()
             })
           }
 
           t.test('should keep the other documents as is', async t => {
             const documents = await collection.find({ _id: { $ne: conf.id } }).toArray()
-            t.strictSame(documents, fixtures.filter(d => d._id.toString() !== conf.id.toString()))
-            t.end()
+            t.assert.deepStrictEqual(documents, fixtures.filter(d => d._id.toString() !== conf.id.toString()))
           })
-
-          t.end()
         })
-
-        t.end()
       })
     })
   })
@@ -718,13 +709,11 @@ tap.test('HTTP PATCH /<id>', async t => {
       message: 'Unknown field: not_a_field',
     }
 
-    t.strictSame(response.statusCode, 400)
-    t.ok(/application\/json/.test(response.headers['content-type']))
-    t.strictSame(JSON.parse(response.payload), expectedResponse)
+    t.assert.deepStrictEqual(response.statusCode, 400)
+    t.assert.ok(/application\/json/.test(response.headers['content-type']))
+    t.assert.deepStrictEqual(JSON.parse(response.payload), expectedResponse)
 
     const documents = await collection.find().toArray()
-    t.strictSame(documents, fixtures)
-
-    t.end()
+    t.assert.deepStrictEqual(documents, fixtures)
   })
 })

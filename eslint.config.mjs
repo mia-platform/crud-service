@@ -9,7 +9,6 @@ export default [
             'docs/**/*',
             'dist/**/*',
             'build/**/*',
-            'tap-snapshots/**/*',
             "bench/**/*.js",
             '.vscode/**/*',
             '.idea/**/*',

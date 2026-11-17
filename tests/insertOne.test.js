@@ -16,7 +16,7 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const abstractLogger = require('abstract-logging')
 const { MongoClient } = require('mongodb')
 
@@ -59,7 +59,7 @@ const context = {
   now: new Date('2018-02-08'),
 }
 
-tap.test('insertOne', async t => {
+test('insertOne', async t => {
   const databaseName = getMongoDatabaseName()
   const mongoURL = getMongoURL(databaseName)
 
@@ -69,7 +69,7 @@ tap.test('insertOne', async t => {
 
   await clearCollectionAndInsertFixtures(collection)
 
-  t.teardown(async() => {
+  t.after(async() => {
     await database.dropDatabase()
     await client.close()
   })
@@ -81,12 +81,12 @@ tap.test('insertOne', async t => {
 
     const doc = await crudService.insertOne(context, { ...DOC })
     const docId = doc._id
-    t.ok(docId)
+    t.assert.ok(docId)
 
     t.test('should return the document', async t => {
       t.plan(1)
 
-      t.strictSame(doc, {
+      t.assert.deepStrictEqual(doc, {
         ...DOC,
         _id: docId,
         [UPDATEDAT]: context.now,
@@ -102,7 +102,7 @@ tap.test('insertOne', async t => {
 
       const savedDoc = await collection.findOne({ _id: docId })
 
-      t.strictSame(doc, savedDoc)
+      t.assert.deepStrictEqual(doc, savedDoc)
     })
   })
 
@@ -111,12 +111,12 @@ tap.test('insertOne', async t => {
 
     const doc = await crudService.insertOne(context, { ...DOC, __STATE__: STATES.DRAFT })
     const docId = doc._id
-    t.ok(docId)
+    t.assert.ok(docId)
 
     t.test('should return the document with the specified state', async t => {
       t.plan(1)
 
-      t.strictSame(doc, {
+      t.assert.deepStrictEqual(doc, {
         ...DOC,
         _id: docId,
         [UPDATEDAT]: context.now,
@@ -132,7 +132,7 @@ tap.test('insertOne', async t => {
 
       const savedDoc = await collection.findOne({ _id: docId })
 
-      t.strictSame(doc, savedDoc)
+      t.assert.deepStrictEqual(doc, savedDoc)
     })
   })
 
@@ -142,19 +142,19 @@ tap.test('insertOne', async t => {
 
       try {
         await crudService.insertOne(context, { ...DOC, [standardField]: 'some truly value' })
-        t.fail()
+        t.assert.fail()
       } catch (error) {
-        t.equal(error.message, `${standardField} cannot be specified`)
+        t.assert.strictEqual(error.message, `${standardField} cannot be specified`)
       }
     })
   })
 })
 
-tap.test('insertOne with string id', async t => {
+test('insertOne with string id', async t => {
   const databaseName = getMongoDatabaseName()
   const mongoURL = getMongoURL(databaseName)
   const client = await MongoClient.connect(mongoURL, { pkFactory: pkFactories.string })
-  t.teardown(async() => client.close())
+  t.after(async() => client.close())
 
   const database = client.db(databaseName)
   const collection = database.collection(STATIONS_COLLECTION_NAME)
@@ -168,12 +168,12 @@ tap.test('insertOne with string id', async t => {
 
     const doc = await crudService.insertOne(context, { ...DOC })
     const docId = doc._id
-    t.ok(docId)
+    t.assert.ok(docId)
 
     t.test('should return the document', async t => {
       t.plan(1)
 
-      t.strictSame(doc, {
+      t.assert.deepStrictEqual(doc, {
         ...DOC,
         _id: docId,
         [UPDATEDAT]: context.now,
@@ -189,7 +189,7 @@ tap.test('insertOne with string id', async t => {
 
       const savedDoc = await collection.findOne({ _id: docId })
 
-      t.strictSame(doc, savedDoc)
+      t.assert.deepStrictEqual(doc, savedDoc)
     })
   })
 
@@ -198,12 +198,12 @@ tap.test('insertOne with string id', async t => {
 
     const doc = await crudService.insertOne(context, { ...DOC, __STATE__: STATES.DRAFT })
     const docId = doc._id
-    t.ok(docId)
+    t.assert.ok(docId)
 
     t.test('should return the document with the specified state', async t => {
       t.plan(1)
 
-      t.strictSame(doc, {
+      t.assert.deepStrictEqual(doc, {
         ...DOC,
         _id: docId,
         [UPDATEDAT]: context.now,
@@ -219,7 +219,7 @@ tap.test('insertOne with string id', async t => {
 
       const savedDoc = await collection.findOne({ _id: docId })
 
-      t.strictSame(doc, savedDoc)
+      t.assert.deepStrictEqual(doc, savedDoc)
     })
   })
 
@@ -229,9 +229,9 @@ tap.test('insertOne with string id', async t => {
 
       try {
         await crudService.insertOne(context, { ...DOC, [standardField]: 'some truly value' })
-        t.fail()
+        t.assert.fail()
       } catch (error) {
-        t.equal(error.message, `${standardField} cannot be specified`)
+        t.assert.strictEqual(error.message, `${standardField} cannot be specified`)
       }
     })
   })

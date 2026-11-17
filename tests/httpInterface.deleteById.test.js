@@ -16,7 +16,7 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const { ObjectId } = require('mongodb')
 
 const { STATES } = require('../lib/consts')
@@ -32,7 +32,7 @@ const [STATION_DOC] = stationFixtures
 const STATION_ID = STATION_DOC._id.toString()
 const MATCHING_MIR_CODE = STATION_DOC.CodiceMIR
 
-tap.test('HTTP DELETE /<id>', async t => {
+test('HTTP DELETE /<id>', async t => {
   const tests = [
     {
       name: 'without filter',
@@ -129,28 +129,23 @@ tap.test('HTTP DELETE /<id>', async t => {
       })
 
       t.test(`should return ${deleted ? '204' : '404'}`, t => {
-        t.strictSame(response.statusCode, (deleted ? 204 : 404))
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, (deleted ? 204 : 404))
       })
 
       t.test('should return the right content-type', t => {
         if (deleted) {
-          t.strictSame(response.headers['content-type'], undefined)
+          t.assert.deepStrictEqual(response.headers['content-type'], undefined)
         } else {
-          t.ok(/application\/json/.test(response.headers['content-type']))
+          t.assert.ok(/application\/json/.test(response.headers['content-type']))
         }
-
-        t.end()
       })
 
       t.test(`should return ${deleted ? 'undefined' : 'NOT_FOUND_BODY'}`, t => {
         if (deleted) {
-          t.strictSame(response.payload, '')
+          t.assert.deepStrictEqual(response.payload, '')
         } else {
-          t.strictSame(JSON.parse(response.payload), NOT_FOUND_BODY)
+          t.assert.deepStrictEqual(JSON.parse(response.payload), NOT_FOUND_BODY)
         }
-
-        t.end()
       })
 
       t.test('on GET /<id>', async t => {
@@ -161,25 +156,19 @@ tap.test('HTTP DELETE /<id>', async t => {
 
         if (deleted) {
           t.test('should return 404', t => {
-            t.strictSame(response.statusCode, 404)
-            t.end()
+            t.assert.deepStrictEqual(response.statusCode, 404)
           })
           t.test('should return the right id', t => {
-            t.strictSame(JSON.parse(response.payload), NOT_FOUND_BODY)
-            t.end()
+            t.assert.deepStrictEqual(JSON.parse(response.payload), NOT_FOUND_BODY)
           })
         } else {
           t.test('should return 200', t => {
-            t.strictSame(response.statusCode, 200)
-            t.end()
+            t.assert.deepStrictEqual(response.statusCode, 200)
           })
           t.test('should return the right id', t => {
-            t.strictSame(JSON.parse(response.payload)._id, ID)
-            t.end()
+            t.assert.deepStrictEqual(JSON.parse(response.payload)._id, ID)
           })
         }
-
-        t.end()
       })
 
       t.test('on database', async t => {
@@ -187,20 +176,14 @@ tap.test('HTTP DELETE /<id>', async t => {
 
         if (deleted) {
           t.test('should not be there', t => {
-            t.strictSame(document, null)
-            t.end()
+            t.assert.deepStrictEqual(document, null)
           })
         } else {
           t.test('should be there', t => {
-            t.strictSame(document, DOC)
-            t.end()
+            t.assert.deepStrictEqual(document, DOC)
           })
         }
-
-        t.end()
       })
-
-      t.end()
     })
   })
 
@@ -221,7 +204,7 @@ tap.test('HTTP DELETE /<id>', async t => {
     await resetCollection([DOC])
 
     let docOnDb = await collection.findOne({ _id: DOC._id })
-    t.ok(docOnDb)
+    t.assert.ok(docOnDb)
 
     const failingDelete = await fastify.inject({
       method: 'DELETE',
@@ -232,9 +215,9 @@ tap.test('HTTP DELETE /<id>', async t => {
       headers: {},
     })
 
-    t.strictSame(failingDelete.statusCode, 404)
+    t.assert.deepStrictEqual(failingDelete.statusCode, 404)
     docOnDb = await collection.findOne({ _id: DOC._id })
-    t.ok(docOnDb)
+    t.assert.ok(docOnDb)
 
     const response = await fastify.inject({
       method: 'DELETE',
@@ -248,18 +231,14 @@ tap.test('HTTP DELETE /<id>', async t => {
       headers: {},
     })
 
-    t.strictSame(response.statusCode, 204)
+    t.assert.deepStrictEqual(response.statusCode, 204)
 
     docOnDb = await collection.findOne({ _id: DOC._id })
-    t.notOk(docOnDb)
-
-    t.end()
+    t.assert.ok(!(docOnDb))
   })
-
-  t.end()
 })
 
-tap.test('HTTP DELETE /<id> with string id', async t => {
+test('HTTP DELETE /<id> with string id', async t => {
   const tests = [
     {
       name: 'without filter',
@@ -291,28 +270,23 @@ tap.test('HTTP DELETE /<id> with string id', async t => {
       })
 
       t.test(`should return ${deleted ? '204' : '404'}`, t => {
-        t.strictSame(response.statusCode, (deleted ? 204 : 404))
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, (deleted ? 204 : 404))
       })
 
       t.test('should return the right content-type', t => {
         if (deleted) {
-          t.strictSame(response.headers['content-type'], undefined)
+          t.assert.deepStrictEqual(response.headers['content-type'], undefined)
         } else {
-          t.ok(/application\/json/.test(response.headers['content-type']))
+          t.assert.ok(/application\/json/.test(response.headers['content-type']))
         }
-
-        t.end()
       })
 
       t.test(`should return ${deleted ? 'undefined' : 'NOT_FOUND_BODY'}`, t => {
         if (deleted) {
-          t.strictSame(response.payload, '')
+          t.assert.deepStrictEqual(response.payload, '')
         } else {
-          t.strictSame(JSON.parse(response.payload), NOT_FOUND_BODY)
+          t.assert.deepStrictEqual(JSON.parse(response.payload), NOT_FOUND_BODY)
         }
-
-        t.end()
       })
 
       t.test('on GET /<id>', async t => {
@@ -323,25 +297,19 @@ tap.test('HTTP DELETE /<id> with string id', async t => {
 
         if (deleted) {
           t.test('should return 404', t => {
-            t.strictSame(response.statusCode, 404)
-            t.end()
+            t.assert.deepStrictEqual(response.statusCode, 404)
           })
           t.test('should return the right id', t => {
-            t.strictSame(JSON.parse(response.payload), NOT_FOUND_BODY)
-            t.end()
+            t.assert.deepStrictEqual(JSON.parse(response.payload), NOT_FOUND_BODY)
           })
         } else {
           t.test('should return 200', t => {
-            t.strictSame(response.statusCode, 200)
-            t.end()
+            t.assert.deepStrictEqual(response.statusCode, 200)
           })
           t.test('should return the right id', t => {
-            t.strictSame(JSON.parse(response.payload)._id, STATION_ID)
-            t.end()
+            t.assert.deepStrictEqual(JSON.parse(response.payload)._id, STATION_ID)
           })
         }
-
-        t.end()
       })
 
       t.test('on database', async t => {
@@ -349,25 +317,19 @@ tap.test('HTTP DELETE /<id> with string id', async t => {
 
         if (deleted) {
           t.test('should not be there', t => {
-            t.strictSame(document, null)
-            t.end()
+            t.assert.deepStrictEqual(document, null)
           })
         } else {
           t.test('should be there', t => {
-            t.strictSame(document, DOC)
-            t.end()
+            t.assert.deepStrictEqual(document, DOC)
           })
         }
-
-        t.end()
       })
-
-      t.end()
     })
   })
 })
 
-tap.test('HTTP DELETE /<id> filter with text query (_q) with not fields not included in JSON Schema returns 400', async t => {
+test('HTTP DELETE /<id> filter with text query (_q) with not fields not included in JSON Schema returns 400', async t => {
   const { fastify, collection } = await setUpTest(t)
 
   const response = await fastify.inject({
@@ -382,12 +344,10 @@ tap.test('HTTP DELETE /<id> filter with text query (_q) with not fields not incl
     message: 'Unknown field: not_a_field',
   }
 
-  t.strictSame(response.statusCode, 400)
-  t.ok(/application\/json/.test(response.headers['content-type']))
-  t.strictSame(JSON.parse(response.payload), expectedResponse)
+  t.assert.deepStrictEqual(response.statusCode, 400)
+  t.assert.ok(/application\/json/.test(response.headers['content-type']))
+  t.assert.deepStrictEqual(JSON.parse(response.payload), expectedResponse)
 
   const documents = await collection.find().toArray()
-  t.strictSame(documents, fixtures)
-
-  t.end()
+  t.assert.deepStrictEqual(documents, fixtures)
 })
