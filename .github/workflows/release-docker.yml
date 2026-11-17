@@ -13,8 +13,6 @@ on:
         required: true
       nexus_token:
         required: true
-      sysdig_token:
-        required: true
       kms_gcp_project:
         required: false
       gcp_wif:
@@ -99,15 +97,6 @@ jobs:
         platforms: linux/amd64 # ${{ steps.buildx.outputs.platforms }} use this for multiarch images
         cache-from: type=gha
         cache-to: type=gha,mode=max
-    - name: Scan image
-      uses: sysdiglabs/scan-action@0065d3b93bd4115371b55720251adb1d228fe188 # v5.1.1
-      with:
-        image-tag: nexus.mia-platform.eu/core/crud-service:${{ steps.meta.outputs.version }}
-        sysdig-secure-url: "https://eu1.app.sysdig.com"
-        sysdig-secure-token: ${{ secrets.sysdig_token }}
-        registry-user: ${{ secrets.nexus_username }}
-        registry-password: ${{ secrets.nexus_token }}
-        stop-on-processing-error: true
     - name: Generate SBOM
       uses: anchore/sbom-action@f8bdd1d8ac5e901a77a92f111440fdb1b593736b # v0.20.6
       if: github.ref_type == 'tag'

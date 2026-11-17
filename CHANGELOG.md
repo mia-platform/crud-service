@@ -29,6 +29,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - updated dev dependencies `@eslint/js` to `v9.39.5`, `commander` to `v14.0.3`, `eslint` to `v9.39.5`, `eslint-plugin-n` to `v17.24.0` and `globals` to `v16.5.0`
 - updated transitive dependencies within their existing semver ranges, including the OpenTelemetry packages pulled in by `@mia-platform/lc39`
 
+## 7.2.7 - 2026-11-16
+
+## 7.2.6 - 2026-11-16
+
+### Fixed
+
+- Updated internal libraries to fix vulnerabilities
+
 ## 7.2.5 - 2025-10-01
 
 ### Fixed
