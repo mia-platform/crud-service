@@ -16,7 +16,7 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const abstractLogger = require('abstract-logging')
 const { MongoClient } = require('mongodb')
 
@@ -46,7 +46,7 @@ const context = {
 }
 const DEFAULT_PROJECTION = { _id: 1 }
 
-tap.test('patchById', async t => {
+test('patchById', async t => {
   const databaseName = getMongoDatabaseName()
   const mongoURL = getMongoURL(databaseName)
 
@@ -56,7 +56,7 @@ tap.test('patchById', async t => {
 
   const crudService = new CrudService(collection, STATES.PUBLIC)
 
-  t.teardown(async() => {
+  t.after(async() => {
     await database.dropDatabase()
     await client.close()
   })
@@ -82,13 +82,13 @@ tap.test('patchById', async t => {
 
     t.test('should return the updated object', t => {
       t.plan(1)
-      t.strictSame(ret, updatedDoc)
+      t.assert.deepStrictEqual(ret, updatedDoc)
     })
 
     t.test('should update the doc from the database', async t => {
       t.plan(1)
       const doc = await collection.findOne({ _id: chosenDocId })
-      t.strictSame(doc, updatedDoc)
+      t.assert.deepStrictEqual(doc, updatedDoc)
     })
 
     checkDocumentsInDatabase(t, collection, [chosenDoc._id], fixtures.filter(d => d._id !== chosenDoc._id))
@@ -104,13 +104,13 @@ tap.test('patchById', async t => {
 
     t.test('should return the updated object', t => {
       t.plan(1)
-      t.strictSame(ret, updatedDoc)
+      t.assert.deepStrictEqual(ret, updatedDoc)
     })
 
     t.test('should update the doc from the database', async t => {
       t.plan(1)
       const doc = await collection.findOne({ _id: chosenDocId })
-      t.strictSame(doc, updatedDoc)
+      t.assert.deepStrictEqual(doc, updatedDoc)
     })
 
     checkDocumentsInDatabase(t, collection, [chosenDoc._id], fixtures.filter(d => d._id !== chosenDoc._id))
@@ -127,7 +127,7 @@ tap.test('patchById', async t => {
 
     t.test('should return null', t => {
       t.plan(1)
-      t.strictSame(r, null)
+      t.assert.deepStrictEqual(r, null)
     })
 
     checkDocumentsInDatabase(t, collection, [chosenDoc._id], fixtures.filter(d => d._id !== chosenDoc._id))
@@ -144,7 +144,7 @@ tap.test('patchById', async t => {
 
     t.test('should return null', t => {
       t.plan(1)
-      t.strictSame(r, null)
+      t.assert.deepStrictEqual(r, null)
     })
 
     checkDocumentsInDatabase(t, collection, [fixtures[4]._id], fixtures.filter(d => d._id !== fixtures[4]._id))
@@ -168,7 +168,7 @@ tap.test('patchById', async t => {
 
     t.test('should return the document', t => {
       t.plan(1)
-      t.strictNotSame(r, null)
+      t.assert.notDeepStrictEqual(r, null)
     })
 
     checkDocumentsInDatabase(t, collection, [fixtures[4]._id], fixtures.filter(d => d._id !== fixtures[4]._id))
@@ -219,12 +219,12 @@ tap.test('patchById', async t => {
 
         t.test('should return the updated object', t => {
           t.plan(1)
-          t.strictSame(ret, { ...chosenDoc, ...conf.updatedFields })
+          t.assert.deepStrictEqual(ret, { ...chosenDoc, ...conf.updatedFields })
         })
         t.test('should update the doc from the database', async t => {
           t.plan(1)
           const doc = await collection.findOne({ _id: chosenDocId })
-          t.strictSame(doc, { ...chosenDoc, ...conf.updatedFields })
+          t.assert.deepStrictEqual(doc, { ...chosenDoc, ...conf.updatedFields })
         })
         checkDocumentsInDatabase(t, collection, [chosenDocId], fixtures.filter(d => d._id !== chosenDocId))
       })
@@ -250,9 +250,9 @@ tap.test('patchById', async t => {
       t.test(JSON.stringify(testConf.cmd), async t => {
         try {
           await crudService.patchById(context, chosenDocId, testConf.cmd, {}, DEFAULT_PROJECTION)
-          t.fail()
+          t.assert.fail()
         } catch (error) {
-          t.ok(testConf.regex.test(error.message), error.message)
+          t.assert.ok(testConf.regex.test(error.message), error.message)
         }
       })
     })
@@ -295,13 +295,13 @@ tap.test('patchById', async t => {
     const ret = await crudService.patchById(context, docId, updateArrayNestedObject(), arrayQuery, docProjection)
     t.test('should return the updated object', t => {
       t.plan(1)
-      t.strictSame(ret, updatedObjectWithArray)
+      t.assert.deepStrictEqual(ret, updatedObjectWithArray)
     })
 
     t.test('should update the doc from the database', async t => {
       t.plan(1)
       const doc = await collection.findOne({ _id: docId })
-      t.strictSame(doc, updatedObjectWithArray)
+      t.assert.deepStrictEqual(doc, updatedObjectWithArray)
     })
   })
 
@@ -313,13 +313,13 @@ tap.test('patchById', async t => {
     const ret = await crudService.patchById(context, docId, updateNumberArrayObject(), { tagIds: 1 }, docProjection)
     t.test('should return the updated object', t => {
       t.plan(1)
-      t.strictSame(ret, updatedObjectWithNumberArray)
+      t.assert.deepStrictEqual(ret, updatedObjectWithNumberArray)
     })
 
     t.test('should update the doc from the database', async t => {
       t.plan(1)
       const doc = await collection.findOne({ _id: docId })
-      t.strictSame(doc, updatedObjectWithNumberArray)
+      t.assert.deepStrictEqual(doc, updatedObjectWithNumberArray)
     })
   })
 
@@ -347,13 +347,13 @@ tap.test('patchById', async t => {
 
     t.test('should return the updated object', t => {
       t.plan(1)
-      t.strictSame(ret, updatedObjectWithStringNumberArray)
+      t.assert.deepStrictEqual(ret, updatedObjectWithStringNumberArray)
     })
 
     t.test('should update the doc from the database', async t => {
       t.plan(1)
       const doc = await collection.findOne({ _id: docId })
-      t.strictSame(doc, updatedObjectWithStringNumberArray)
+      t.assert.deepStrictEqual(doc, updatedObjectWithStringNumberArray)
     })
   })
 })

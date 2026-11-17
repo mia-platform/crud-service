@@ -16,10 +16,11 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const path = require('path')
 const abstractLogger = require('abstract-logging')
 const mongodb = require('mongodb')
+const mock = require('mock-require')
 
 const dataKeygen = require('../../../lib/mongo/mongo-data-keygen')
 
@@ -42,7 +43,7 @@ const clientEncryptionMock = class ClientEncryption {
   }
 }
 
-tap.test('Data keygen tests', async t => {
+test('Data keygen tests', async t => {
   const mongoClient = await mongodb.MongoClient.connect(mongoURL)
 
   t.beforeEach(async() => {
@@ -51,9 +52,9 @@ tap.test('Data keygen tests', async t => {
     } catch (error) { /* NOOP */ }
   })
 
-  t.teardown(async() => mongoClient.close())
+  t.after(async() => mongoClient.close())
 
-  t.test('Key correctly created', async assert => {
+  t.test('Key correctly created', async t => {
     const collectionName = 'testCollection'
     const { dataKeysId: generatedKeyId } = await dataKeygen(buildFastifyInstance(), [{
       name: collectionName,
@@ -63,11 +64,10 @@ tap.test('Data keygen tests', async t => {
     const retrievedKey = await mongoClient.db('default').collection('ns')
       .findOne({ keyAltNames: { $all: [collectionName] } })
 
-    assert.equal(generatedKeyId[collectionName].toString(), retrievedKey._id.toString())
-    assert.end()
+    t.assert.strictEqual(generatedKeyId[collectionName].toString(), retrievedKey._id.toString())
   })
 
-  t.test('Key correctly retrieved', async assert => {
+  t.test('Key correctly retrieved', async t => {
     const collectionName = 'testCollection'
     const keyToRetrieve = '123'
 
@@ -84,42 +84,39 @@ tap.test('Data keygen tests', async t => {
       ]
     )
 
-    assert.equal(retrievedKey[collectionName], keyToRetrieve)
-    assert.end()
+    t.assert.strictEqual(retrievedKey[collectionName], keyToRetrieve)
   })
 
-  t.test('Throws if error happen', async assert => {
+  t.test('Throws if error happen', async t => {
     const collectionName = 'testCollection'
-    const dataKeygenMock = assert.mockRequire('../../../lib/mongo/mongo-data-keygen', {
-      'mongodb': {
-        ...mongodb,
-        ClientEncryption: clientEncryptionMock,
-      },
+    mock('mongodb', {
+      ...mongodb,
+      ClientEncryption: clientEncryptionMock,
     })
+    t.after(() => mock.stopAll())
+    const dataKeygenMock = mock.reRequire('../../../lib/mongo/mongo-data-keygen')
 
     const errorMessage = { message: 'Unable to retrieve required data key for testCollection' }
 
-    assert.rejects(dataKeygenMock(
+    await t.assert.rejects(dataKeygenMock(
       buildFastifyInstance(),
       [
         { name: collectionName, encryption: { enabled: true } },
       ]
     ), errorMessage)
-    assert.end()
   })
 
-  t.test('Empty map for missing configuration', async assert => {
+  t.test('Empty map for missing configuration', async t => {
     const fastifyInstance = { config: { MONGODB_URL: mongoURL } }
     const { dataKeysId: retrievedKey } = await dataKeygen(
       fastifyInstance,
       [{ name: 'test', encryption: { enabled: true } }]
     )
 
-    assert.equal(Object.keys(retrievedKey).length, 0)
-    assert.end()
+    t.assert.strictEqual(Object.keys(retrievedKey).length, 0)
   })
 
-  t.test('Key correctly created and retrieved', async assert => {
+  t.test('Key correctly created and retrieved', async t => {
     const createdCollection = 'testCollection'
     const retrievedCollection = 'testCollection1'
     const keyToRetrieve = '123'
@@ -141,12 +138,11 @@ tap.test('Data keygen tests', async t => {
     const retrievedKey = await mongoClient.db('default').collection('ns')
       .findOne({ keyAltNames: { $all: ['crud-service', retrievedCollection] } })
 
-    assert.equal(generatedKeyId[retrievedCollection].toString(), retrievedKey._id.toString())
-    assert.equal(generatedKeyId[createdCollection], '123')
-    assert.end()
+    t.assert.strictEqual(generatedKeyId[retrievedCollection].toString(), retrievedKey._id.toString())
+    t.assert.strictEqual(generatedKeyId[createdCollection], '123')
   })
 
-  t.test('Key not generated for disabled collection', async assert => {
+  t.test('Key not generated for disabled collection', async t => {
     const collectionName = 'testCollection'
     const { dataKeysId: generatedKeyId } = await dataKeygen(
       buildFastifyInstance(),
@@ -155,9 +151,6 @@ tap.test('Data keygen tests', async t => {
       ]
     )
 
-    assert.notOk(generatedKeyId[collectionName])
-    assert.end()
+    t.assert.ok(!(generatedKeyId[collectionName]))
   })
-
-  t.end()
 })

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+
+- unit tests now runs with `node:test`, replacing `tap`
+
 ## 7.3.0 - 2026-11-17
 
 ### Changed

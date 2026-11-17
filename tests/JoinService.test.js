@@ -16,7 +16,7 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const abstractLogger = require('abstract-logging')
 const { MongoClient, ObjectId } = require('mongodb')
 
@@ -45,14 +45,14 @@ const context = {
   now: new Date('2018-02-08'),
 }
 
-tap.test('JoinService', async t => {
+test('JoinService', async t => {
   const databaseName = getMongoDatabaseName()
   const mongoURL = getMongoURL(databaseName)
 
   const client = await MongoClient.connect(mongoURL)
   const database = client.db(databaseName)
 
-  t.teardown(async() => {
+  t.after(async() => {
     await database.dropDatabase()
     await client.close()
   })
@@ -97,7 +97,7 @@ tap.test('JoinService', async t => {
         foreignField: '_id',
       }).toArray()
 
-      t.strictSame(people, [
+      t.assert.deepStrictEqual(people, [
         {
           _id: new ObjectId('111111111111111111111111'),
           filmObjects: [
@@ -171,8 +171,6 @@ tap.test('JoinService', async t => {
           name: 'wrong data',
         },
       ])
-
-      t.end()
     })
 
     t.test('people.height > 170 join films', async t => {
@@ -186,7 +184,7 @@ tap.test('JoinService', async t => {
         foreignField: '_id',
       }).toArray()
 
-      t.strictSame(people, [
+      t.assert.deepStrictEqual(people, [
         {
           _id: new ObjectId('111111111111111111111111'),
           filmObjects: [
@@ -230,8 +228,6 @@ tap.test('JoinService', async t => {
           name: 'Darth Vader',
         },
       ])
-
-      t.end()
     })
 
     t.test('people join films.episode_id > 2', async t => {
@@ -245,7 +241,7 @@ tap.test('JoinService', async t => {
         foreignField: '_id',
       }).toArray()
 
-      t.strictSame(people, [
+      t.assert.deepStrictEqual(people, [
         {
           _id: new ObjectId('111111111111111111111111'),
           filmObjects: [
@@ -299,8 +295,6 @@ tap.test('JoinService', async t => {
           name: 'wrong data',
         },
       ])
-
-      t.end()
     })
 
     t.test('people.height > 170 join films.episode_id > 2', async t => {
@@ -314,7 +308,7 @@ tap.test('JoinService', async t => {
         foreignField: '_id',
       }).toArray()
 
-      t.strictSame(people, [
+      t.assert.deepStrictEqual(people, [
         {
           _id: new ObjectId('111111111111111111111111'),
           filmObjects: [
@@ -343,8 +337,6 @@ tap.test('JoinService', async t => {
           name: 'Darth Vader',
         },
       ])
-
-      t.end()
     })
 
     t.test('people join films - with projections', async t => {
@@ -370,7 +362,7 @@ tap.test('JoinService', async t => {
         },
       }).toArray()
 
-      t.strictSame(people, [
+      t.assert.deepStrictEqual(people, [
         {
           _id: new ObjectId('111111111111111111111111'),
           filmObjects: [
@@ -417,8 +409,6 @@ tap.test('JoinService', async t => {
           name: 'wrong data',
         },
       ])
-
-      t.end()
     })
 
     t.test('people join films - with projections #2', async t => {
@@ -444,7 +434,7 @@ tap.test('JoinService', async t => {
         },
       }).toArray()
 
-      t.strictSame(people, [
+      t.assert.deepStrictEqual(people, [
         {
           _id: new ObjectId('111111111111111111111111'),
           filmObjects: [],
@@ -471,11 +461,7 @@ tap.test('JoinService', async t => {
           name: 'wrong data',
         },
       ])
-
-      t.end()
     })
-
-    t.end()
   })
 
   t.test('joinOneToMany', t => {
@@ -490,7 +476,7 @@ tap.test('JoinService', async t => {
         foreignField: 'addressId',
       }).toArray()
 
-      t.strictSame(addresses, [
+      t.assert.deepStrictEqual(addresses, [
         {
           _id: new ObjectId('111111111111111111111111'),
           displayName: 'via Calatafimi, 11',
@@ -552,8 +538,6 @@ tap.test('JoinService', async t => {
           street: 'via Cilea',
         },
       ])
-
-      t.end()
     })
 
     t.test('addresses.house_number > 10 join address-statistics', async t => {
@@ -567,7 +551,7 @@ tap.test('JoinService', async t => {
         foreignField: 'addressId',
       }).toArray()
 
-      t.strictSame(addresses, [
+      t.assert.deepStrictEqual(addresses, [
         {
           _id: new ObjectId('111111111111111111111111'),
           displayName: 'via Calatafimi, 11',
@@ -603,8 +587,6 @@ tap.test('JoinService', async t => {
           street: 'via Cilea',
         },
       ])
-
-      t.end()
     })
 
     t.test('addresses join address-statistics.tag = \'tag2\'', async t => {
@@ -618,7 +600,7 @@ tap.test('JoinService', async t => {
         foreignField: 'addressId',
       }).toArray()
 
-      t.strictSame(addresses, [
+      t.assert.deepStrictEqual(addresses, [
         {
           _id: new ObjectId('111111111111111111111111'),
           displayName: 'via Calatafimi, 11',
@@ -656,8 +638,6 @@ tap.test('JoinService', async t => {
           street: 'via Cilea',
         },
       ])
-
-      t.end()
     })
 
     t.test('addresses.house_number > 0 join address-statistics.tag = \'tag2\'', async t => {
@@ -671,7 +651,7 @@ tap.test('JoinService', async t => {
         foreignField: 'addressId',
       }).toArray()
 
-      t.strictSame(addresses, [
+      t.assert.deepStrictEqual(addresses, [
         {
           _id: new ObjectId('111111111111111111111111'),
           displayName: 'via Calatafimi, 11',
@@ -695,8 +675,6 @@ tap.test('JoinService', async t => {
           street: 'via Cilea',
         },
       ])
-
-      t.end()
     })
 
     t.test('addresses join address-statistics - with projections', async t => {
@@ -722,7 +700,7 @@ tap.test('JoinService', async t => {
         },
       }).toArray()
 
-      t.strictSame(addresses, [
+      t.assert.deepStrictEqual(addresses, [
         {
           _id: new ObjectId('111111111111111111111111'),
           displayName: 'via Calatafimi, 11',
@@ -766,11 +744,7 @@ tap.test('JoinService', async t => {
           ],
         },
       ])
-
-      t.end()
     })
-
-    t.end()
   })
 
   t.test('joinOneToOne', t => {
@@ -785,7 +759,7 @@ tap.test('JoinService', async t => {
         foreignField: 'addressId',
       }, false).toArray()
 
-      t.strictSame(addresses, [
+      t.assert.deepStrictEqual(addresses, [
         {
           _id: new ObjectId('111111111111111111111111'),
           displayName: 'via Calatafimi, 11',
@@ -823,8 +797,6 @@ tap.test('JoinService', async t => {
           street: 'via Cilea',
         },
       ])
-
-      t.end()
     })
 
     t.test('addresses.house_number > 10 join address-statistics', async t => {
@@ -838,7 +810,7 @@ tap.test('JoinService', async t => {
         foreignField: 'addressId',
       }, false).toArray()
 
-      t.strictSame(addresses, [
+      t.assert.deepStrictEqual(addresses, [
         {
           _id: new ObjectId('111111111111111111111111'),
           displayName: 'via Calatafimi, 11',
@@ -864,8 +836,6 @@ tap.test('JoinService', async t => {
           street: 'via Cilea',
         },
       ])
-
-      t.end()
     })
 
     t.test('addresses join address-statistics.tag = \'tag2\'', async t => {
@@ -879,7 +849,7 @@ tap.test('JoinService', async t => {
         foreignField: 'addressId',
       }, false).toArray()
 
-      t.strictSame(addresses, [
+      t.assert.deepStrictEqual(addresses, [
         {
           _id: new ObjectId('111111111111111111111111'),
           displayName: 'via Calatafimi, 11',
@@ -912,8 +882,6 @@ tap.test('JoinService', async t => {
           street: 'via Cilea',
         },
       ])
-
-      t.end()
     })
 
     t.test('addresses.house_number > 0 join address-statistics.tag = \'tag2\'', async t => {
@@ -927,7 +895,7 @@ tap.test('JoinService', async t => {
         foreignField: 'addressId',
       }, false).toArray()
 
-      t.strictSame(addresses, [
+      t.assert.deepStrictEqual(addresses, [
         {
           _id: new ObjectId('111111111111111111111111'),
           displayName: 'via Calatafimi, 11',
@@ -948,8 +916,6 @@ tap.test('JoinService', async t => {
           street: 'via Cilea',
         },
       ])
-
-      t.end()
     })
 
     t.test('addresses join address-statistics merged', async t => {
@@ -963,7 +929,7 @@ tap.test('JoinService', async t => {
         foreignField: 'addressId',
       }, true).toArray()
 
-      t.strictSame(addresses, [
+      t.assert.deepStrictEqual(addresses, [
         {
           _id: new ObjectId('111111111111111111111111'),
           displayName: 'via Calatafimi, 11',
@@ -992,8 +958,6 @@ tap.test('JoinService', async t => {
           street: 'via Cilea',
         },
       ])
-
-      t.end()
     })
 
     t.test('addresses join address-statistics - with projections', async t => {
@@ -1019,7 +983,7 @@ tap.test('JoinService', async t => {
         },
       }, true).toArray()
 
-      t.strictSame(addresses, [
+      t.assert.deepStrictEqual(addresses, [
         {
           _id: new ObjectId('111111111111111111111111'),
           displayName: 'via Calatafimi, 11',
@@ -1036,8 +1000,6 @@ tap.test('JoinService', async t => {
           tag: 'tag1',
         },
       ])
-
-      t.end()
     })
 
     t.test('addresses join address-statistics - with projections #2', async t => {
@@ -1063,7 +1025,7 @@ tap.test('JoinService', async t => {
         },
       }, true).toArray()
 
-      t.strictSame(addresses, [
+      t.assert.deepStrictEqual(addresses, [
         {
           _id: new ObjectId('111111111111111111111111'),
           displayName: 'via Calatafimi, 11',
@@ -1083,11 +1045,7 @@ tap.test('JoinService', async t => {
           street: 'via Cilea',
         },
       ])
-
-      t.end()
     })
-
-    t.end()
   })
 
   t.test('joinOneToOneNew', t => {
@@ -1102,7 +1060,7 @@ tap.test('JoinService', async t => {
         foreignField: '_id',
       }, false).toArray()
 
-      t.strictSame(books, [
+      t.assert.deepStrictEqual(books, [
         {
           _id: new ObjectId('000000000000000000000000'),
           name: 'fake name other-0',
@@ -1151,8 +1109,6 @@ tap.test('JoinService', async t => {
           },
         },
       ])
-
-      t.end()
     })
 
     t.test('books.price > 10 join people', async t => {
@@ -1166,7 +1122,7 @@ tap.test('JoinService', async t => {
         foreignField: '_id',
       }, false).toArray()
 
-      t.strictSame(books, [
+      t.assert.deepStrictEqual(books, [
         {
           _id: new ObjectId('111111111111111111111111'),
           name: 'fake name other-1',
@@ -1185,8 +1141,6 @@ tap.test('JoinService', async t => {
           },
         },
       ])
-
-      t.end()
     })
 
     t.test('books join people.name = \'Darth Vader\'', async t => {
@@ -1200,7 +1154,7 @@ tap.test('JoinService', async t => {
         foreignField: '_id',
       }, false).toArray()
 
-      t.strictSame(books, [
+      t.assert.deepStrictEqual(books, [
         {
           _id: new ObjectId('000000000000000000000000'),
           name: 'fake name other-0',
@@ -1235,8 +1189,6 @@ tap.test('JoinService', async t => {
           stats: null,
         },
       ])
-
-      t.end()
     })
 
     t.test('books.price > 10 join people.name = \'Darth Vader\'', async t => {
@@ -1250,7 +1202,7 @@ tap.test('JoinService', async t => {
         foreignField: '_id',
       }, false).toArray()
 
-      t.strictSame(books, [
+      t.assert.deepStrictEqual(books, [
         {
           _id: new ObjectId('111111111111111111111111'),
           name: 'fake name other-1',
@@ -1269,8 +1221,6 @@ tap.test('JoinService', async t => {
           },
         },
       ])
-
-      t.end()
     })
 
     t.test('books join people merged', async t => {
@@ -1284,7 +1234,7 @@ tap.test('JoinService', async t => {
         foreignField: '_id',
       }, true).toArray()
 
-      t.strictSame(books, [
+      t.assert.deepStrictEqual(books, [
         {
           _id: new ObjectId('000000000000000000000000'),
           name: 'fake name other-0',
@@ -1321,11 +1271,6 @@ tap.test('JoinService', async t => {
           ],
         },
       ])
-
-      t.end()
     })
-    t.end()
   })
-
-  t.end()
 })

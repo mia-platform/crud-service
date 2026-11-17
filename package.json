@@ -17,14 +17,13 @@
     "bench:queryParser": "node bench/queryParser.bench.js",
     "bench:init": "docker compose -f bench/docker-compose.yml up -d --force-recreate && node bench/utils/generate-customer-data.js",
     "checkonly": "! grep -r '\\.only' tests/",
-    "coverage": "npm run unit -- --jobs=4",
-    "postcoverage": "tap report --coverage-report=lcovonly --coverage-report=text-summary",
+    "coverage": "mkdir -p coverage && MONGO_HOST=${MONGO_HOST_CI:-127.0.0.1} MONGO_VERSION=${MONGO_VERSION:-6.0.2} CRYPT_SHARED_LIB_PATH=${CRYPT_SHARED_LIB_PATH:-.local/lib/mongo_crypt_v1.so} node --test --test-timeout=240000 --test-concurrency=${TEST_CONCURRENCY:-4} --experimental-test-coverage --test-coverage-include='lib/**/*.js' --test-coverage-include='*.js' --test-reporter=spec --test-reporter-destination=stdout --test-reporter=lcov --test-reporter-destination=coverage/lcov.info 'tests/**/*.test.js'",
     "lint": "eslint .",
     "start": "lc39 index.js",
     "start:local": "set -a && . ./local.env && lc39 index.js",
     "pretest": "node tests/generatedJSONSchemasToFiles.js && eslint --fix tests/expectedSchemas/*.js",
-    "test": "npm run lint && npm run unit -- --disable-coverage && npm run checkonly",
-    "unit": "MONGO_HOST=${MONGO_HOST_CI:-127.0.0.1} MONGO_VERSION=${MONGO_VERSION:-6.0.2} CRYPT_SHARED_LIB_PATH=${CRYPT_SHARED_LIB_PATH:-.local/lib/mongo_crypt_v1.so} tap -b --allow-incomplete-coverage 'tests/**/*.test.js'",
+    "test": "npm run lint && npm run unit && npm run checkonly",
+    "unit": "MONGO_HOST=${MONGO_HOST_CI:-127.0.0.1} MONGO_VERSION=${MONGO_VERSION:-6.0.2} CRYPT_SHARED_LIB_PATH=${CRYPT_SHARED_LIB_PATH:-.local/lib/mongo_crypt_v1.so} node --test --test-timeout=240000 'tests/**/*.test.js'",
     "update-changelog": "node ./scripts/update-changelog.js ${npm_package_version}",
     "version": "npm run update-changelog && git add CHANGELOG.md"
   },
@@ -68,22 +67,10 @@
     "globals": "^16.5.0",
     "mock-require": "^3.0.3",
     "node-xlsx": "^0.24.0",
-    "tap": "^21.8.0",
     "uuid-validate": "0.0.3"
   },
   "engines": {
     "node": ">=v24"
   },
-  "private": true,
-  "tap": {
-    "timeout": 240,
-    "allow-incomplete-coverage": true,
-    "allow-empty-coverage": true
-  },
-  "nyc": {
-    "include": [
-      "lib/**/*.js",
-      "*.js"
-    ]
-  }
+  "private": true
 }

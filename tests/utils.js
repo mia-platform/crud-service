@@ -427,9 +427,8 @@ function checkDocumentsInDatabase(tap, collection, idsToExclude, documents) {
   tap.test('documents in database', async t => {
     const docs = await collection.find({ _id: { $nin: idsToExclude } }).toArray()
 
-    t.equal(docs.length, documents.length)
-    t.strictSame(docs, documents)
-    t.end()
+    t.assert.strictEqual(docs.length, documents.length)
+    t.assert.deepStrictEqual(docs, documents)
   })
 }
 

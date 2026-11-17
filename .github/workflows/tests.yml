@@ -39,8 +39,9 @@ jobs:
           mongodb-version: ${{ matrix.mongodb-version }}
 
       - name: Run tests
-        run: npm run coverage -- --jobs 3 # limit the number of jobs that can be run in parallel in the CI
+        run: npm run coverage
         env:
+          TEST_CONCURRENCY: 3
           MONGO_VERSION: ${{ matrix.mongodb-version }}
           CRYPT_SHARED_LIB_PATH: ${{ github.workspace }}/crypt_shared/lib/mongo_crypt_v1.so
 
@@ -48,7 +49,7 @@ jobs:
         uses: coverallsapp/github-action@648a8eb78e6d50909eff900e4ec85cab4524a45b # v2.3.6
         with:
           github-token: ${{ secrets.token }}
-          file: .tap/report/lcov.info
+          file: coverage/lcov.info
           format: lcov
         # allow the pipeline to continue even when the coverage decreases
         continue-on-error: true
@@ -76,12 +77,10 @@ jobs:
           curl -fsSL https://downloads.mongodb.com/linux/mongo_crypt_shared_v1-linux-x86_64-enterprise-ubuntu2404-8.0.12.tgz -o crypt_shared.tar.gz
           tar -xz --one-top-level=crypt_shared -f crypt_shared.tar.gz
 
-        # NOTE: There's an issue on the latest MongoDB (v8) that cannot start in Ubuntu distro.
-        #       Therefore this test can be skipped until a fix is released.
       - name: start MongoDB instance
         uses: supercharge/mongodb-github-action@315db7fe45ac2880b7758f1933e6e5d59afd5e94 # v1.12.1
         with:
-          mongodb-version: "8.0"
+          mongodb-version: "8.2"
         continue-on-error: true
 
       - name: Warn if MongoDB failed to start
@@ -90,8 +89,9 @@ jobs:
 
       - name: Run tests
         if: steps.startmongo.outcome == 'success'
-        run: npm run coverage -- --jobs 3 # limit the number of jobs that can be run in parallel in the CI
+        run: npm run coverage
         env:
+          TEST_CONCURRENCY: 3
           MONGO_VERSION: ${{ matrix.mongodb-version }}
           CRYPT_SHARED_LIB_PATH: ${{ github.workspace }}/crypt_shared/lib/mongo_crypt_v1.so
         # allow the pipeline to continue even when the coverage decreases

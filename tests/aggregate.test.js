@@ -16,7 +16,7 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const abstractLogger = require('abstract-logging')
 
 const { STATES } = require('../lib/consts')
@@ -39,14 +39,14 @@ const context = {
   now: new Date('2018-02-08'),
 }
 
-tap.test('aggregate', async t => {
+test('aggregate', async t => {
   const { collection } = await setUpTest(t)
   const crudService = new CrudService(collection, STATES.PUBLIC)
 
   await t.test('should return all the documents if no query are specified', async t => {
     const data = await crudService.aggregate(context, EMPTY_QUERY, ALL_FIELDS).toArray()
 
-    t.strictSame(data, publicFixtures)
+    t.assert.deepStrictEqual(data, publicFixtures)
   })
 
   await t.test('query', async t => {
@@ -55,13 +55,13 @@ tap.test('aggregate', async t => {
 
       const data = await crudService.aggregate(context, { price: { $gt: PRICE_LIMIT } }, ALL_FIELDS).toArray()
 
-      t.strictSame(data, publicFixtures.filter(d => d.price > PRICE_LIMIT))
+      t.assert.deepStrictEqual(data, publicFixtures.filter(d => d.price > PRICE_LIMIT))
     })
 
     await t.test('could return an empty array', async t => {
       const data = await crudService.aggregate(context, { foo: 'bar' }, DEFAULT_PROJECTION).toArray()
 
-      t.strictSame(data, [])
+      t.assert.deepStrictEqual(data, [])
     })
   })
 
@@ -74,13 +74,13 @@ tap.test('aggregate', async t => {
         },
       }, ALL_FIELDS).toArray()
 
-      t.strictSame(data, publicFixtures.filter(d => /ulysses/i.test(d.name)))
+      t.assert.deepStrictEqual(data, publicFixtures.filter(d => /ulysses/i.test(d.name)))
     })
 
     await t.test('could return an empty array', async t => {
       const data = await crudService.aggregate(context, { foo: 'bar' }, DEFAULT_PROJECTION).toArray()
 
-      t.strictSame(data, [])
+      t.assert.deepStrictEqual(data, [])
     })
   })
 
@@ -88,7 +88,7 @@ tap.test('aggregate', async t => {
     await t.test('should return only the specified fields', async t => {
       const data = await crudService.aggregate(context, EMPTY_QUERY, { name: 1, price: 1, isPromoted: 1 }).toArray()
 
-      t.strictSame(data, publicFixtures.map(d => {
+      t.assert.deepStrictEqual(data, publicFixtures.map(d => {
         return {
           _id: d._id,
           name: d.name,
@@ -113,7 +113,7 @@ tap.test('aggregate', async t => {
 
       const data = await crudService.aggregate(context, EMPTY_QUERY, customProjection).toArray()
 
-      t.strictSame(data, publicFixtures.map(d => {
+      t.assert.deepStrictEqual(data, publicFixtures.map(d => {
         return {
           value: d._id,
           label: `${d.name} ${d.author} (${d.isbn})`,
@@ -124,13 +124,13 @@ tap.test('aggregate', async t => {
     await t.test('should return only _id if no projection is specified', async t => {
       const data = await crudService.aggregate(context, EMPTY_QUERY, DEFAULT_PROJECTION).toArray()
 
-      t.strictSame(data.map(mapOnlyId), publicFixtures.map(mapOnlyId))
+      t.assert.deepStrictEqual(data.map(mapOnlyId), publicFixtures.map(mapOnlyId))
     })
 
     await t.test('should return only _id without projection', async t => {
       const data = await crudService.aggregate(context, EMPTY_QUERY, DEFAULT_PROJECTION).toArray()
 
-      t.strictSame(data.map(mapOnlyId), publicFixtures.map(mapOnlyId))
+      t.assert.deepStrictEqual(data.map(mapOnlyId), publicFixtures.map(mapOnlyId))
     })
   })
 
@@ -143,7 +143,7 @@ tap.test('aggregate', async t => {
         .sort((a, b) => sortByPrice(a, b, 1))
         .map(mapOnlyId)
 
-      t.strictSame(data, expectedSortedIds)
+      t.assert.deepStrictEqual(data, expectedSortedIds)
     })
 
     await t.test('should return with the correct order descendent', async t => {
@@ -154,7 +154,7 @@ tap.test('aggregate', async t => {
         .sort((a, b) => sortByPrice(a, b, -1))
         .map(mapOnlyId)
 
-      t.strictSame(data, expectedSortedIds)
+      t.assert.deepStrictEqual(data, expectedSortedIds)
     })
 
     await t.test('should return with the correct order ascendant for multiple fields', async t => {
@@ -168,7 +168,7 @@ tap.test('aggregate', async t => {
         .sort((a, b) => sortByPrice(a, b, 1))
         .map(mapOnlyId)
 
-      t.strictSame(data, expectedSortedIds)
+      t.assert.deepStrictEqual(data, expectedSortedIds)
     })
 
     await t.test('should return with the correct order descendent for multiple fields', async t => {
@@ -184,7 +184,7 @@ tap.test('aggregate', async t => {
         .sort((a, b) => sortByPrice(a, b, -1))
         .map(mapOnlyId)
 
-      t.strictSame(data, expectedSortedIds)
+      t.assert.deepStrictEqual(data, expectedSortedIds)
     })
 
     await t.test('should return with the correct order: ascendant for the first field, descendent for the second', async t => {
@@ -198,7 +198,7 @@ tap.test('aggregate', async t => {
         .sort((a, b) => sortByPrice(a, b, 1))
         .map(mapOnlyId)
 
-      t.strictSame(data, expectedSortedIds)
+      t.assert.deepStrictEqual(data, expectedSortedIds)
     })
 
     await t.test('should return with the correct order: descendent for the first field, ascendant for the second', async t => {
@@ -212,7 +212,7 @@ tap.test('aggregate', async t => {
         .sort((a, b) => sortByPrice(a, b, -1))
         .map(mapOnlyId)
 
-      t.strictSame(data, expectedSortedIds)
+      t.assert.deepStrictEqual(data, expectedSortedIds)
     })
 
     await t.test('should return with the correct order: descendent for the first field, ascendant for the second and the third', async t => {
@@ -233,7 +233,7 @@ tap.test('aggregate', async t => {
         .sort((a, b) => sortByPrice(a, b, -1))
         .map(mapOnlyId)
 
-      t.strictSame(data, expectedSortedIds)
+      t.assert.deepStrictEqual(data, expectedSortedIds)
     })
 
     await t.test('should return with the correct order: descendent for the first field, ascendant for the second (array) and for the third', async t => {
@@ -254,7 +254,7 @@ tap.test('aggregate', async t => {
         .sort((a, b) => sortByPrice(a, b, -1))
         .map(mapOnlyId)
 
-      t.strictSame(data, expectedSortedIds)
+      t.assert.deepStrictEqual(data, expectedSortedIds)
     })
   })
 
@@ -275,7 +275,7 @@ tap.test('aggregate', async t => {
         .slice(SKIP_COUNT)
         .map(mapOnlyId)
 
-      t.strictSame(data, expectedSortedIds)
+      t.assert.deepStrictEqual(data, expectedSortedIds)
     })
   })
 
@@ -297,8 +297,8 @@ tap.test('aggregate', async t => {
         .slice(0, LIMIT)
         .map(mapOnlyId)
 
-      t.equal(data.length, LIMIT)
-      t.strictSame(data, expectedSortedIds)
+      t.assert.strictEqual(data.length, LIMIT)
+      t.assert.deepStrictEqual(data, expectedSortedIds)
     })
   })
 
@@ -314,7 +314,7 @@ tap.test('aggregate', async t => {
         [STATES.DRAFT]
       ).toArray()
 
-      t.strictSame(data.map(mapOnlyId), [mapOnlyId(draftFixture)])
+      t.assert.deepStrictEqual(data.map(mapOnlyId), [mapOnlyId(draftFixture)])
     })
   })
 }).then()

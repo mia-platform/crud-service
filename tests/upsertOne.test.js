@@ -16,7 +16,7 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const abstractLogger = require('abstract-logging')
 const { MongoClient } = require('mongodb')
 const { omit: lomit } = require('lodash')
@@ -48,7 +48,7 @@ const context = {
   now: new Date('2018-02-08'),
 }
 
-tap.test('upsertOne', async t => {
+test('upsertOne', async t => {
   const databaseName = getMongoDatabaseName()
   const mongoURL = getMongoURL(databaseName)
 
@@ -58,7 +58,7 @@ tap.test('upsertOne', async t => {
 
   const crudService = new CrudService(collection, STATES.PUBLIC)
 
-  t.teardown(async() => {
+  t.after(async() => {
     await database.dropDatabase()
     await client.close()
   })
@@ -84,13 +84,13 @@ tap.test('upsertOne', async t => {
 
     t.test('should return the updated object', t => {
       t.plan(1)
-      t.strictSame(ret, updatedDoc)
+      t.assert.deepStrictEqual(ret, updatedDoc)
     })
 
     t.test('should update the doc from the database', async t => {
       t.plan(1)
       const doc = await collection.findOne({ _id: ret._id })
-      t.strictSame(doc, updatedDoc)
+      t.assert.deepStrictEqual(doc, updatedDoc)
     })
 
     checkDocumentsInDatabase(t, collection, [ret._id], fixtures.filter(d => d.name !== 'The Odyssey'))
@@ -104,8 +104,8 @@ tap.test('upsertOne', async t => {
     const ret = await crudService.upsertOne(context, updateCommand(), { name: 'Strange Book' }, { name: 1, price: 1 })
     t.test('should return the new object', t => {
       t.plan(2)
-      t.equal(ret.name, 'Strange Book')
-      t.equal(ret.price, 44)
+      t.assert.strictEqual(ret.name, 'Strange Book')
+      t.assert.strictEqual(ret.price, 44)
     })
 
     t.test('should insert the doc in the database', async t => {
@@ -113,7 +113,7 @@ tap.test('upsertOne', async t => {
       const doc = await collection.findOne({ _id: ret._id })
       const docWithoutId = lomit(doc, ['_id'])
 
-      t.strictSame(docWithoutId, {
+      t.assert.deepStrictEqual(docWithoutId, {
         name: 'Strange Book',
         price: 44,
         [UPDATERID]: context.userId,
@@ -138,8 +138,8 @@ tap.test('upsertOne', async t => {
 
     t.test('should return the new object', t => {
       t.plan(2)
-      t.equal(ret.name, 'Strange Book')
-      t.equal(ret.price, 50)
+      t.assert.strictEqual(ret.name, 'Strange Book')
+      t.assert.strictEqual(ret.price, 50)
     })
 
     t.test('should insert the doc in the database', async t => {
@@ -147,7 +147,7 @@ tap.test('upsertOne', async t => {
       const doc = await collection.findOne({ _id: ret._id })
       const docWithoutId = lomit(doc, ['_id'])
 
-      t.strictSame(docWithoutId, {
+      t.assert.deepStrictEqual(docWithoutId, {
         name: 'Strange Book',
         price: 50,
         [UPDATERID]: context.userId,
@@ -175,13 +175,13 @@ tap.test('upsertOne', async t => {
 
     t.test('should return the updated object', t => {
       t.plan(1)
-      t.strictSame(ret, updatedDoc)
+      t.assert.deepStrictEqual(ret, updatedDoc)
     })
 
     t.test('should update the doc from the database', async t => {
       t.plan(1)
       const doc = await collection.findOne({ _id: ret._id })
-      t.strictSame(doc, updatedDoc)
+      t.assert.deepStrictEqual(doc, updatedDoc)
     })
 
     checkDocumentsInDatabase(t, collection, [ret._id], fixtures.filter(d => d.name !== 'The Odyssey'))
@@ -212,12 +212,12 @@ tap.test('upsertOne', async t => {
 
         t.test('should return the updated object', t => {
           t.plan(1)
-          t.strictSame(ret, { ...chosenDoc, ...conf.updatedFields })
+          t.assert.deepStrictEqual(ret, { ...chosenDoc, ...conf.updatedFields })
         })
         t.test('should update the doc from the database', async t => {
           t.plan(1)
           const doc = await collection.findOne({ _id: chosenDocId })
-          t.strictSame(doc, { ...chosenDoc, ...conf.updatedFields })
+          t.assert.deepStrictEqual(doc, { ...chosenDoc, ...conf.updatedFields })
         })
         checkDocumentsInDatabase(t, collection, [chosenDocId], fixtures.filter(d => d._id !== chosenDocId))
       })
@@ -249,9 +249,9 @@ tap.test('upsertOne', async t => {
       t.test(JSON.stringify(testConf.cmd), async t => {
         try {
           await crudService.upsertOne(context, testConf.cmd, { name: 'The Odyssey' })
-          t.fail()
+          t.assert.fail()
         } catch (error) {
-          t.ok(testConf.regex.test(error.message), error.message)
+          t.assert.ok(testConf.regex.test(error.message), error.message)
         }
       })
     })

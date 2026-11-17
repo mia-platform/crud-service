@@ -16,7 +16,7 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const { STATES, __STATE__ } = require('../lib/consts')
 const {
   publicFixtures,
@@ -82,7 +82,7 @@ const EXPECTED_PUBLIC_DOCS_FOR_INCLUSIVE_RAW_PROJECTION = publicFixtures.map((do
 
 const DEFAULT_EXPECTED_COLUMNS = ['_id', '__STATE__', 'creatorId', 'createdAt', 'updaterId', 'updatedAt', 'name', 'isbn', 'price', 'author', 'authorAddressId', 'isPromoted', 'publishDate', 'position', 'tags', 'tagIds', 'tagObjectIds', 'additionalInfo', 'signature', 'metadata', 'attachments', 'editionsDates']
 
-tap.test('HTTP GET /export', async t => {
+test('HTTP GET /export', async t => {
   const tests = [
     {
       name: 'with sorting',
@@ -697,30 +697,24 @@ tap.test('HTTP GET /export', async t => {
       })
 
       t.test('should return 200', t => {
-        t.strictSame(response.statusCode, 200)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 200)
       })
 
       t.test('should return "application/x-ndjson"', t => {
-        t.ok(/application\/x-ndjson/.test(response.headers['content-type']))
-        t.end()
+        t.assert.ok(/application\/x-ndjson/.test(response.headers['content-type']))
       })
 
       t.test('should return the document', t => {
         const documents = response.payload.split('\n')
           .filter(s => s !== '')
           .map(JSON.parse)
-        t.strictSame(documents, found, response.payload)
-        t.end()
+        t.assert.deepStrictEqual(documents, found, response.payload)
       })
 
       t.test('should keep the document as is in database', async t => {
         const documents = await collection.find().toArray()
-        t.strictSame(documents, fixtures)
-        t.end()
+        t.assert.deepStrictEqual(documents, fixtures)
       })
-
-      t.end()
     })
 
     t.test(`EXPORT json ${name}`, async t => {
@@ -735,28 +729,22 @@ tap.test('HTTP GET /export', async t => {
       })
 
       t.test('should return 200', t => {
-        t.strictSame(response.statusCode, 200)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 200)
       })
 
       t.test('should return "application/json"', t => {
-        t.ok(/application\/json/.test(response.headers['content-type']))
-        t.end()
+        t.assert.ok(/application\/json/.test(response.headers['content-type']))
       })
 
       t.test('should return the document', t => {
         const documents = JSON.parse(response.payload)
-        t.strictSame(documents, found)
-        t.end()
+        t.assert.deepStrictEqual(documents, found)
       })
 
       t.test('should keep the document as is in database', async t => {
         const documents = await collection.find().toArray()
-        t.strictSame(documents, fixtures)
-        t.end()
+        t.assert.deepStrictEqual(documents, fixtures)
       })
-
-      t.end()
     })
 
     t.test(`EXPORT csv ${name}`, async t => {
@@ -771,13 +759,11 @@ tap.test('HTTP GET /export', async t => {
       })
 
       t.test('should return 200', t => {
-        t.strictSame(response.statusCode, 200)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 200)
       })
 
       t.test('should return "text/csv"', t => {
-        t.ok(/text\/csv/.test(response.headers['content-type']))
-        t.end()
+        t.assert.ok(/text\/csv/.test(response.headers['content-type']))
       })
 
       t.test('should return the document', t => {
@@ -798,17 +784,13 @@ tap.test('HTTP GET /export', async t => {
             },
           },
         })
-        t.strictSame(response.payload, foundCsv)
-        t.end()
+        t.assert.deepStrictEqual(response.payload, foundCsv)
       })
 
       t.test('should keep the document as is in database', async t => {
         const documents = await collection.find().toArray()
-        t.strictSame(documents, fixtures)
-        t.end()
+        t.assert.deepStrictEqual(documents, fixtures)
       })
-
-      t.end()
     })
 
     t.test(`EXPORT x-ndjson ${name} - use multiple weighted accepts`, async t => {
@@ -820,30 +802,24 @@ tap.test('HTTP GET /export', async t => {
       })
 
       t.test('should return 200', t => {
-        t.strictSame(response.statusCode, 200)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 200)
       })
 
       t.test('should return "application/x-ndjson"', t => {
-        t.ok(/application\/x-ndjson/.test(response.headers['content-type']))
-        t.end()
+        t.assert.ok(/application\/x-ndjson/.test(response.headers['content-type']))
       })
 
       t.test('should return the document', t => {
         const documents = response.payload.split('\n')
           .filter(s => s !== '')
           .map(JSON.parse)
-        t.strictSame(documents, found, response.payload)
-        t.end()
+        t.assert.deepStrictEqual(documents, found, response.payload)
       })
 
       t.test('should keep the document as is in database', async t => {
         const documents = await collection.find().toArray()
-        t.strictSame(documents, fixtures)
-        t.end()
+        t.assert.deepStrictEqual(documents, fixtures)
       })
-
-      t.end()
     })
 
     t.test(`EXPORT xlsx ${name}`, async t => {
@@ -858,19 +834,17 @@ tap.test('HTTP GET /export', async t => {
       })
 
       t.test('should return 200', t => {
-        t.strictSame(response.statusCode, 200)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 200)
       })
 
       t.test('should return "application/vnd.ms-excel"', t => {
-        t.ok(/application\/vnd.openxmlformats-officedocument.spreadsheetml.sheet/.test(response.headers['content-type']))
-        t.end()
+        t.assert.ok(/application\/vnd.openxmlformats-officedocument.spreadsheetml.sheet/.test(response.headers['content-type']))
       })
 
       t.test('file has proper content', t => {
         const [{ data }] = xlsx.parse(response.rawPayload)
         if (found.length === 0) {
-          t.strictSame(data, [])
+          t.assert.deepStrictEqual(data, [])
         } else {
           const keys = conf.expectedColumns
           const rows = found.map(row => {
@@ -881,12 +855,9 @@ tap.test('HTTP GET /export', async t => {
             })
             return values
           })
-          t.strictSame(data, [keys, ...rows])
+          t.assert.deepStrictEqual(data, [keys, ...rows])
         }
-        t.end()
       })
-
-      t.end()
     })
 
     t.test(`EXPORT unexpected accept type ${name}`, async t => {
@@ -898,21 +869,17 @@ tap.test('HTTP GET /export', async t => {
       })
 
       t.test('should return 406 HTTP error', t => {
-        t.strictSame(response.statusCode, 406)
-        t.strictSame(
+        t.assert.deepStrictEqual(response.statusCode, 406)
+        t.assert.deepStrictEqual(
           JSON.parse(response.payload),
           { statusCode: 406, error: 'Not Acceptable', message: 'unsupported file type image/jpeg' }
         )
-        t.end()
       })
-
-      t.end()
     })
   })
-  t.end()
 })
 
-tap.test('HTTP GET /export - $text search', async t => {
+test('HTTP GET /export - $text search', async t => {
   const DEFAULT_COLUMNS_WITH_SCORE = [...DEFAULT_EXPECTED_COLUMNS, 'score']
   const textTests = [
     {
@@ -1006,13 +973,11 @@ tap.test('HTTP GET /export - $text search', async t => {
       })
 
       t.test('should return 200', t => {
-        t.strictSame(response.statusCode, 200)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 200)
       })
 
       t.test('should return "application/x-ndjson"', t => {
-        t.ok(/application\/x-ndjson/.test(response.headers['content-type']))
-        t.end()
+        t.assert.ok(/application\/x-ndjson/.test(response.headers['content-type']))
       })
 
       t.test('should return the document', t => {
@@ -1020,16 +985,12 @@ tap.test('HTTP GET /export - $text search', async t => {
           .filter(s => s !== '')
           .map(JSON.parse)
 
-        t.strictSame(documents, foundWithScores)
-        t.end()
+        t.assert.deepStrictEqual(documents, foundWithScores)
       })
       t.test('should keep the document as is in database', async t => {
         const documents = await collection.find().toArray()
-        t.strictSame(documents, fixtures)
-        t.end()
+        t.assert.deepStrictEqual(documents, fixtures)
       })
-
-      t.end()
     })
 
     t.test(`EXPORT json ${name}`, async t => {
@@ -1044,28 +1005,22 @@ tap.test('HTTP GET /export - $text search', async t => {
       })
 
       t.test('should return 200', t => {
-        t.strictSame(response.statusCode, 200)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 200)
       })
 
       t.test('should return "application/json"', t => {
-        t.ok(/application\/json/.test(response.headers['content-type']))
-        t.end()
+        t.assert.ok(/application\/json/.test(response.headers['content-type']))
       })
 
       t.test('should return the document', t => {
         const documents = JSON.parse(response.payload)
-        t.strictSame(documents, foundWithScores)
-        t.end()
+        t.assert.deepStrictEqual(documents, foundWithScores)
       })
 
       t.test('should keep the document as is in database', async t => {
         const documents = await collection.find().toArray()
-        t.strictSame(documents, fixtures)
-        t.end()
+        t.assert.deepStrictEqual(documents, fixtures)
       })
-
-      t.end()
     })
 
     t.test(`EXPORT csv ${name}`, async t => {
@@ -1080,13 +1035,11 @@ tap.test('HTTP GET /export - $text search', async t => {
       })
 
       t.test('should return 200', t => {
-        t.strictSame(response.statusCode, 200)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 200)
       })
 
       t.test('should return "text/csv"', t => {
-        t.ok(/text\/csv/.test(response.headers['content-type']))
-        t.end()
+        t.assert.ok(/text\/csv/.test(response.headers['content-type']))
       })
 
       t.test('should return the document', t => {
@@ -1107,23 +1060,18 @@ tap.test('HTTP GET /export - $text search', async t => {
             },
           },
         })
-        t.strictSame(response.payload, foundCsv)
-        t.end()
+        t.assert.deepStrictEqual(response.payload, foundCsv)
       })
 
       t.test('should keep the document as is in database', async t => {
         const documents = await collection.find().toArray()
-        t.strictSame(documents, fixtures)
-        t.end()
+        t.assert.deepStrictEqual(documents, fixtures)
       })
-
-      t.end()
     })
   })
-  t.end()
 })
 
-tap.test('HTTP GET /export with _id in querystring', async t => {
+test('HTTP GET /export with _id in querystring', async t => {
   const tests = [
     {
       name: 'without filters',
@@ -1147,29 +1095,23 @@ tap.test('HTTP GET /export with _id in querystring', async t => {
       })
 
       t.test('should return 200', t => {
-        t.strictSame(response.statusCode, 200)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 200)
       })
 
-      t.test('should return "application/x-ndjson"', assert => {
-        assert.ok(/application\/x-ndjson/.test(response.headers['content-type']))
-        assert.end()
+      t.test('should return "application/x-ndjson"', t => {
+        t.assert.ok(/application\/x-ndjson/.test(response.headers['content-type']))
       })
 
-      t.test('should return the document', assert => {
+      t.test('should return the document', t => {
         const documents = response.payload.split('\n')
           .filter(s => s !== '')
           .map(JSON.parse)
-        assert.strictSame(documents, found)
-        assert.end()
+        t.assert.deepStrictEqual(documents, found)
       })
-      t.test('should keep the document as is in database', async assert => {
+      t.test('should keep the document as is in database', async t => {
         const documents = await collection.find().toArray()
-        assert.strictSame(documents, stationFixtures)
-        assert.end()
+        t.assert.deepStrictEqual(documents, stationFixtures)
       })
-
-      t.end()
     })
 
     t.test(`EXPORT json ${name}`, async t => {
@@ -1184,28 +1126,22 @@ tap.test('HTTP GET /export with _id in querystring', async t => {
       })
 
       t.test('should return 200', t => {
-        t.strictSame(response.statusCode, 200, response.payload)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 200, response.payload)
       })
 
       t.test('should return "application/json"', t => {
-        t.ok(/application\/json/.test(response.headers['content-type']))
-        t.end()
+        t.assert.ok(/application\/json/.test(response.headers['content-type']))
       })
 
       t.test('should return the document', t => {
         const documents = JSON.parse(response.payload)
-        t.strictSame(documents, found)
-        t.end()
+        t.assert.deepStrictEqual(documents, found)
       })
 
       t.test('should keep the document as is in database', async t => {
         const documents = await collection.find().toArray()
-        t.strictSame(documents, stationFixtures)
-        t.end()
+        t.assert.deepStrictEqual(documents, stationFixtures)
       })
-
-      t.end()
     })
 
     t.test(`EXPORT csv ${name}`, async t => {
@@ -1220,13 +1156,11 @@ tap.test('HTTP GET /export with _id in querystring', async t => {
       })
 
       t.test('should return 200', t => {
-        t.strictSame(response.statusCode, 200)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 200)
       })
 
       t.test('should return "text/csv"', t => {
-        t.ok(/text\/csv/.test(response.headers['content-type']))
-        t.end()
+        t.assert.ok(/text\/csv/.test(response.headers['content-type']))
       })
 
       t.test('should return the document', t => {
@@ -1247,17 +1181,13 @@ tap.test('HTTP GET /export with _id in querystring', async t => {
             },
           },
         })
-        t.strictSame(response.payload, foundCsv)
-        t.end()
+        t.assert.deepStrictEqual(response.payload, foundCsv)
       })
 
       t.test('should keep the document as is in database', async t => {
         const documents = await collection.find().toArray()
-        t.strictSame(documents, stationFixtures)
-        t.end()
+        t.assert.deepStrictEqual(documents, stationFixtures)
       })
-
-      t.end()
     })
 
     t.test(`EXPORT xls ${name}`, async t => {
@@ -1272,20 +1202,18 @@ tap.test('HTTP GET /export with _id in querystring', async t => {
       })
 
       t.test('should return 200', t => {
-        t.strictSame(response.statusCode, 200)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 200)
       })
 
       t.test('should return "application/vnd.ms-excel"', t => {
-        t.ok(/application\/vnd.ms-excel/.test(response.headers['content-type']))
-        t.end()
+        t.assert.ok(/application\/vnd.ms-excel/.test(response.headers['content-type']))
       })
 
       t.test('file has proper content', t => {
         const [{ data }] = xlsx.parse(response.rawPayload)
-        t.strictSame(data.length, 2)
+        t.assert.deepStrictEqual(data.length, 2)
         const [row1, row2] = data
-        t.strictSame(row1, [
+        t.assert.deepStrictEqual(row1, [
           '_id',
           'updaterId',
           'updatedAt',
@@ -1300,7 +1228,7 @@ tap.test('HTTP GET /export with _id in querystring', async t => {
           'country',
           'nonNullableDate',
         ])
-        t.strictSame(row2, [
+        t.assert.deepStrictEqual(row2, [
           '002415b0-8d6d-427c-b654-9857183e57a7',
           'my-updated-id',
           '2017-11-11T00:00:00.000Z',
@@ -1315,10 +1243,7 @@ tap.test('HTTP GET /export with _id in querystring', async t => {
           'it',
           '',
         ])
-        t.end()
       })
-
-      t.end()
     })
 
     t.test(`EXPORT xlsx ${name}`, async t => {
@@ -1333,21 +1258,19 @@ tap.test('HTTP GET /export with _id in querystring', async t => {
       })
 
       t.test('should return 200', t => {
-        t.strictSame(response.statusCode, 200)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 200)
       })
 
       t.test('should return "application/vnd.ms-excel"', t => {
-        t.ok(/application\/vnd.openxmlformats-officedocument.spreadsheetml.sheet/.test(response.headers['content-type']))
-        t.end()
+        t.assert.ok(/application\/vnd.openxmlformats-officedocument.spreadsheetml.sheet/.test(response.headers['content-type']))
       })
 
 
       t.test('file has proper content', t => {
         const [{ data }] = xlsx.parse(response.rawPayload)
-        t.strictSame(data.length, 2)
+        t.assert.deepStrictEqual(data.length, 2)
         const [row1, row2] = data
-        t.strictSame(row1, [
+        t.assert.deepStrictEqual(row1, [
           '_id',
           'updaterId',
           'updatedAt',
@@ -1362,7 +1285,7 @@ tap.test('HTTP GET /export with _id in querystring', async t => {
           'country',
           'nonNullableDate',
         ])
-        t.strictSame(row2, [
+        t.assert.deepStrictEqual(row2, [
           '002415b0-8d6d-427c-b654-9857183e57a7',
           'my-updated-id',
           '2017-11-11T00:00:00.000Z',
@@ -1377,17 +1300,12 @@ tap.test('HTTP GET /export with _id in querystring', async t => {
           'it',
           '',
         ])
-        t.end()
       })
-
-      t.end()
     })
   })
-
-  t.end()
 })
 
-tap.test('HTTP GET /export', async t => {
+test('HTTP GET /export', async t => {
   const mongoDbCollectionName = booksCollectionDefinition.name
   const { fastify } = await setUpTest(t, lotOfBooksFixtures, mongoDbCollectionName)
 
@@ -1399,10 +1317,8 @@ tap.test('HTTP GET /export', async t => {
     const parseBodyResponse = response.body.split('\n').filter(item => item)
       .map(item => JSON.parse(item))
 
-    t.strictSame(response.statusCode, 200)
-    t.equal(parseBodyResponse.length, lotOfBooksFixtures.length)
-
-    t.end()
+    t.assert.deepStrictEqual(response.statusCode, 200)
+    t.assert.strictEqual(parseBodyResponse.length, lotOfBooksFixtures.length)
   })
 
   t.test('should return only 3 documents', async(t) => {
@@ -1413,10 +1329,8 @@ tap.test('HTTP GET /export', async t => {
     const parseBodyResponse = response.body.split('\n').filter(item => item)
       .map(item => JSON.parse(item))
 
-    t.strictSame(response.statusCode, 200)
-    t.equal(parseBodyResponse.length, 3)
-
-    t.end()
+    t.assert.deepStrictEqual(response.statusCode, 200)
+    t.assert.strictEqual(parseBodyResponse.length, 3)
   })
 
   t.test('should return greater than previous maximum default (200 documents)', async(t) => {
@@ -1427,11 +1341,7 @@ tap.test('HTTP GET /export', async t => {
     const parseBodyResponse = response.body.split('\n').filter(item => item)
       .map(item => JSON.parse(item))
 
-    t.strictSame(response.statusCode, 200)
-    t.equal(parseBodyResponse.length, 201)
-
-    t.end()
+    t.assert.deepStrictEqual(response.statusCode, 200)
+    t.assert.strictEqual(parseBodyResponse.length, 201)
   })
-
-  t.end()
 })

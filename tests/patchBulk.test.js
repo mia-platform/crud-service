@@ -17,7 +17,7 @@
 
 'use strict'
 
-const t = require('tap')
+const { test } = require('node:test')
 const abstractLogger = require('abstract-logging')
 const { MongoClient, ObjectId } = require('mongodb')
 
@@ -44,7 +44,7 @@ const context = {
   now: new Date('2018-02-08'),
 }
 
-t.test('patchBulk', async t => {
+test('patchBulk', async t => {
   const databaseName = getMongoDatabaseName()
   const mongoURL = getMongoURL(databaseName)
 
@@ -59,7 +59,7 @@ t.test('patchBulk', async t => {
     parseAndCastTextSearchQuery: () => {},
   }
 
-  t.teardown(async() => {
+  t.after(async() => {
     await database.dropDatabase()
     await client.close()
   })
@@ -92,13 +92,13 @@ t.test('patchBulk', async t => {
 
     t.test('should return ok and one modification', t => {
       t.plan(1)
-      t.equal(ret, 1)
+      t.assert.strictEqual(ret, 1)
     })
 
     t.test('should update the doc from the database', async t => {
       t.plan(1)
       const doc = await collection.findOne({ _id: fixtures[firstDocIndex]._id })
-      t.strictSame(doc, newDoc)
+      t.assert.deepStrictEqual(doc, newDoc)
     })
 
     checkDocumentsInDatabase(
@@ -141,15 +141,15 @@ t.test('patchBulk', async t => {
 
     t.test('should return ok and two modifications', t => {
       t.plan(1)
-      t.equal(ret, 2)
+      t.assert.strictEqual(ret, 2)
     })
 
     t.test('should update the docs from the database', async t => {
       t.plan(2)
       const doc = await collection.findOne({ _id: fixtures[firstDocIndex]._id })
-      t.strictSame(doc, newDoc)
+      t.assert.deepStrictEqual(doc, newDoc)
       const doc2 = await collection.findOne({ _id: fixtures[secondDocIndex]._id })
-      t.strictSame(doc2, newDoc2)
+      t.assert.deepStrictEqual(doc2, newDoc2)
     })
 
     checkDocumentsInDatabase(
@@ -178,13 +178,13 @@ t.test('patchBulk', async t => {
 
     t.test('should return ok and one modification', t => {
       t.plan(1)
-      t.equal(ret, 1)
+      t.assert.strictEqual(ret, 1)
     })
 
     t.test('should update the doc from the database', async t => {
       t.plan(1)
       const doc = await collection.findOne({ _id: fixtures[firstDocIndex]._id })
-      t.strictSame(doc, newDoc)
+      t.assert.deepStrictEqual(doc, newDoc)
     })
 
     checkDocumentsInDatabase(
@@ -212,7 +212,7 @@ t.test('patchBulk', async t => {
 
     t.test('should return ok and no modifications', t => {
       t.plan(1)
-      t.equal(ret, 0)
+      t.assert.strictEqual(ret, 0)
     })
 
     checkDocumentsInDatabase(
@@ -249,15 +249,15 @@ t.test('patchBulk', async t => {
 
     t.test('should return ok and one modifications', t => {
       t.plan(1)
-      t.equal(ret, 1)
+      t.assert.strictEqual(ret, 1)
     })
 
     t.test('should update only one doc from the database', async t => {
       t.plan(2)
       const doc = await collection.findOne({ _id: fixtures[firstDocIndex]._id })
-      t.strictSame(doc.price, 44.0)
+      t.assert.deepStrictEqual(doc.price, 44.0)
       const doc2 = await collection.findOne({ _id: fixtures[secondDocIndex]._id })
-      t.strictSame(doc2.price, fixtures[secondDocIndex].price)
+      t.assert.deepStrictEqual(doc2.price, fixtures[secondDocIndex].price)
     })
 
     checkDocumentsInDatabase(
@@ -290,13 +290,13 @@ t.test('patchBulk', async t => {
 
     t.test('should return ok and one modifications', t => {
       t.plan(1)
-      t.equal(ret, 1)
+      t.assert.strictEqual(ret, 1)
     })
 
     t.test('should update only one doc from the database', async t => {
       t.plan(1)
       const doc = await collection.findOne({ _id: fixtures[0]._id })
-      t.strictSame(doc.price, 55)
+      t.assert.deepStrictEqual(doc.price, 55)
     })
 
     checkDocumentsInDatabase(
@@ -312,7 +312,7 @@ t.test('patchBulk', async t => {
 
     await clearCollectionAndInsertFixtures(collection)
 
-    t.rejects(crudService.patchBulk(context, []), 'should throw an AssertionError')
+    await t.assert.rejects(crudService.patchBulk(context, []), 'should throw an AssertionError')
   })
 
   const veryBadCommands = []
@@ -350,9 +350,9 @@ t.test('patchBulk', async t => {
             ],
             mockQueryParser
           )
-          t.fail()
+          t.assert.fail()
         } catch (error) {
-          t.ok(testConf.regex.test(error.message), error.message)
+          t.assert.ok(testConf.regex.test(error.message), error.message)
         }
       })
     })
@@ -409,19 +409,19 @@ t.test('patchBulk', async t => {
 
     t.test('should return ok and one modification', t => {
       t.plan(1)
-      t.equal(ret, 2)
+      t.assert.strictEqual(ret, 2)
     })
 
     t.test('should update first doc from the database', async t => {
       t.plan(1)
       const doc = await collection.findOne({ _id: fixtures[0]._id })
-      t.strictSame(doc, firstUpdatedDoc)
+      t.assert.deepStrictEqual(doc, firstUpdatedDoc)
     })
 
     t.test('should update second doc from the database', async t => {
       t.plan(1)
       const doc = await collection.findOne({ _id: fixtures[7]._id })
-      t.strictSame(doc, secondUpdatedDoc)
+      t.assert.deepStrictEqual(doc, secondUpdatedDoc)
     })
 
     checkDocumentsInDatabase(

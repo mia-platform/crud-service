@@ -16,7 +16,7 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 
 const booksNewCollectionDefinition = require('./newCollectionDefinitions/books')
 const booksCollectionDefinition = require('./collectionDefinitions/books')
@@ -34,7 +34,7 @@ const {
 } = require('../lib/consts')
 const { getFieldDefinition, getFieldDefinitionNameFromQuery } = require('../lib/QueryParser.utils')
 
-tap.test('queryParser utils', t => {
+test('queryParser utils', t => {
   t.test('getFieldDefinition', t => {
     t.test('books collection', t => {
       const EXPECTED_BOOKS_FIELD_DEFINITION = {
@@ -93,19 +93,13 @@ tap.test('queryParser utils', t => {
 
       t.test('with legacy definition', t => {
         const result = getFieldDefinition(booksCollectionDefinition)
-        t.strictSame(result, EXPECTED_BOOKS_FIELD_DEFINITION)
-
-        t.end()
+        t.assert.deepStrictEqual(result, EXPECTED_BOOKS_FIELD_DEFINITION)
       })
 
       t.test('with JSON Schema', t => {
         const result = getFieldDefinition(booksNewCollectionDefinition)
-        t.strictSame(result, EXPECTED_BOOKS_FIELD_DEFINITION)
-
-        t.end()
+        t.assert.deepStrictEqual(result, EXPECTED_BOOKS_FIELD_DEFINITION)
       })
-
-      t.end()
     })
 
     t.test('books_encrypted collection', t => {
@@ -158,24 +152,18 @@ tap.test('queryParser utils', t => {
 
       t.test('with legacy definition', t => {
         const result = getFieldDefinition(booksEncryptedCollectionDefinition)
-        t.strictSame(result, EXPECTED_BOOKS_ENCRYPTED_FIELD_DEFINITION)
-
-        t.end()
+        t.assert.deepStrictEqual(result, EXPECTED_BOOKS_ENCRYPTED_FIELD_DEFINITION)
       })
 
       t.test('with JSON Schema', t => {
         const result = getFieldDefinition(booksEncryptedNewCollectionDefinition)
-        t.strictSame(result, EXPECTED_BOOKS_ENCRYPTED_FIELD_DEFINITION)
-
-        t.end()
+        t.assert.deepStrictEqual(result, EXPECTED_BOOKS_ENCRYPTED_FIELD_DEFINITION)
       })
-
-      t.end()
     })
 
     t.test('projects collection definition', t => {
       const result = getFieldDefinition(projectsCollectionDefinition)
-      t.strictSame(result, {
+      t.assert.deepStrictEqual(result, {
         '_id': 'ObjectId',
         [CREATORID]: 'string',
         [CREATEDAT]: 'Date',
@@ -192,18 +180,12 @@ tap.test('queryParser utils', t => {
         'environments.dashboards.label': 'string',
         'environments.dashboards.id': 'string',
       })
-
-      t.end()
     })
-
-    t.end()
   })
-
-  t.end()
 })
 
 
-tap.test('getFieldDefinitionNameFromQuery', async t => {
+test('getFieldDefinitionNameFromQuery', async t => {
   const testCases = [
     {
       description: 'parse root level field',
@@ -243,8 +225,8 @@ tap.test('getFieldDefinitionNameFromQuery', async t => {
   ]
 
   testCases.forEach(testCase => {
-    t.test(testCase.description, async assert => {
-      assert.strictSame(getFieldDefinitionNameFromQuery(testCase.input), testCase.output)
+    t.test(testCase.description, async t => {
+      t.assert.deepStrictEqual(getFieldDefinitionNameFromQuery(testCase.input), testCase.output)
     })
   })
 })

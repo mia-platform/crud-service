@@ -16,7 +16,7 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const { omit: lomit } = require('lodash')
 
 const { fixtures, newUpdaterId } = require('./utils')
@@ -47,7 +47,7 @@ const UPDATED_NULL_NAME_HTTP_DOC = { ...HTTP_DOC,
 const SET_ON_INSERT_COMMAND = { $setOnInsert: UPDATES }
 const baseQuery = '/upsert-one'
 
-tap.test('HTTP POST /upsert-one', async t => {
+test('HTTP POST /upsert-one', async t => {
   const tests = [
     {
       name: 'on document found',
@@ -145,13 +145,11 @@ tap.test('HTTP POST /upsert-one', async t => {
       })
 
       t.test('should return 200', t => {
-        t.strictSame(response.statusCode, 200)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 200)
       })
 
       t.test('should return "application/json"', t => {
-        t.ok(/application\/json/.test(response.headers['content-type']))
-        t.end()
+        t.assert.ok(/application\/json/.test(response.headers['content-type']))
       })
 
       t.test(`should return ${found ? 'the id' : 'the inserted document'}`, t => {
@@ -160,27 +158,25 @@ tap.test('HTTP POST /upsert-one', async t => {
           const expected = { ...conf.returnDoc }
           delete expected.updatedAt
           const actual = { ...responseDocument }
-          t.ok(Number.isFinite(new Date(actual.updatedAt).getTime()))
+          t.assert.ok(Number.isFinite(new Date(actual.updatedAt).getTime()))
           delete actual.updatedAt
-          t.strictSame(actual, expected)
+          t.assert.deepStrictEqual(actual, expected)
         } else {
           const otherProperties = lomit(responseDocument, ['_id', 'name'])
-          t.strictSame(otherProperties, UPDATES)
+          t.assert.deepStrictEqual(otherProperties, UPDATES)
         }
-        t.end()
       })
 
       t.test('on database', async t => {
         t.test(`should ${found ? 'update' : 'insert'} the document`, async t => {
           const doc = await collection.findOne(conf.retrieveDocumentQuery)
-          t.strictSame(doc.price, NEW_PRICE)
-          t.strictSame(doc.attachments, NEW_ATTACHMENTS)
-          t.strictSame(doc.updaterId, newUpdaterId)
-          t.ok(doc.creatorId)
-          t.ok(doc.createdAt)
-          t.ok(doc.__STATE__)
-          t.ok(Math.abs(Date.now() - doc.updatedAt.getTime()) < 5000, '`updatedAt` should be updated')
-          t.end()
+          t.assert.deepStrictEqual(doc.price, NEW_PRICE)
+          t.assert.deepStrictEqual(doc.attachments, NEW_ATTACHMENTS)
+          t.assert.deepStrictEqual(doc.updaterId, newUpdaterId)
+          t.assert.ok(doc.creatorId)
+          t.assert.ok(doc.createdAt)
+          t.assert.ok(doc.__STATE__)
+          t.assert.ok(Math.abs(Date.now() - doc.updatedAt.getTime()) < 5000, '`updatedAt` should be updated')
         })
       })
     })
@@ -197,19 +193,17 @@ tap.test('HTTP POST /upsert-one', async t => {
     })
 
     t.test('should return 200', t => {
-      t.strictSame(response.statusCode, 200)
-      t.end()
+      t.assert.deepStrictEqual(response.statusCode, 200)
     })
 
     t.test('should return "application/json"', t => {
-      t.ok(/application\/json/.test(response.headers['content-type']))
-      t.end()
+      t.assert.ok(/application\/json/.test(response.headers['content-type']))
     })
 
     t.test('should return the id', t => {
       const responseDocument = JSON.parse(response.payload)
       const actual = { ...responseDocument }
-      t.ok(Number.isFinite(new Date(actual.updatedAt).getTime()))
+      t.assert.ok(Number.isFinite(new Date(actual.updatedAt).getTime()))
       delete actual.updatedAt
 
       const expected = lomit(
@@ -217,19 +211,17 @@ tap.test('HTTP POST /upsert-one', async t => {
         ['authorAddressId', 'updatedAt']
       )
 
-      t.strictSame(actual, expected)
-      t.end()
+      t.assert.deepStrictEqual(actual, expected)
     })
 
     t.test('on database', async t => {
       t.test('should update the document', async t => {
         const doc = await collection.findOne({ _id: DOC._id })
-        t.strictSame(doc.authorAddressId, undefined)
-        t.ok(doc.creatorId)
-        t.ok(doc.createdAt)
-        t.ok(doc.__STATE__)
-        t.ok(Math.abs(Date.now() - doc.updatedAt.getTime()) < 5000, '`updatedAt` should be updated')
-        t.end()
+        t.assert.deepStrictEqual(doc.authorAddressId, undefined)
+        t.assert.ok(doc.creatorId)
+        t.assert.ok(doc.createdAt)
+        t.assert.ok(doc.__STATE__)
+        t.assert.ok(Math.abs(Date.now() - doc.updatedAt.getTime()) < 5000, '`updatedAt` should be updated')
       })
     })
   })
@@ -333,13 +325,11 @@ tap.test('HTTP POST /upsert-one', async t => {
         })
 
         t.test('should return 200', t => {
-          t.strictSame(response.statusCode, 200, response.payload)
-          t.end()
+          t.assert.deepStrictEqual(response.statusCode, 200, response.payload)
         })
 
         t.test('should return "application/json"', t => {
-          t.ok(/application\/json/.test(response.headers['content-type']))
-          t.end()
+          t.assert.ok(/application\/json/.test(response.headers['content-type']))
         })
 
         t.test(`should return ${found ? 'the id' : 'the inserted document'}`, t => {
@@ -348,21 +338,20 @@ tap.test('HTTP POST /upsert-one', async t => {
           if (found) {
             if (conf.checkOnlySubset) {
               Object.keys(conf.returnDoc).forEach(key => {
-                t.strictSame(responseDocument[key], conf.returnDoc[key])
+                t.assert.deepStrictEqual(responseDocument[key], conf.returnDoc[key])
               })
             } else {
               const expected = { ...conf.returnDoc }
               delete expected.updatedAt
               const actual = { ...responseDocument }
-              t.ok(Number.isFinite(new Date(actual.updatedAt).getTime()))
+              t.assert.ok(Number.isFinite(new Date(actual.updatedAt).getTime()))
               delete actual.updatedAt
-              t.strictSame(actual, expected)
+              t.assert.deepStrictEqual(actual, expected)
             }
           } else {
             const otherProperties = lomit(responseDocument, ['_id'])
-            t.strictSame(otherProperties, NULL_NAME_UPDATES)
+            t.assert.deepStrictEqual(otherProperties, NULL_NAME_UPDATES)
           }
-          t.end()
         })
 
         t.test('on database', async t => {
@@ -370,25 +359,22 @@ tap.test('HTTP POST /upsert-one', async t => {
             t.test(`should ${found ? 'update' : 'insert'} the document`, async t => {
               const doc = await collection.findOne(conf.retrieveDocumentQuery)
               Object.keys(conf.docOnDatabase).forEach(key => {
-                t.strictSame(doc[key], conf.docOnDatabase[key])
+                t.assert.deepStrictEqual(doc[key], conf.docOnDatabase[key])
               })
             })
           } else {
             t.test(`should ${found ? 'update' : 'insert'} the document`, async t => {
               const doc = await collection.findOne(conf.retrieveDocumentQuery)
-              t.equal(doc.name, null)
-              t.strictSame(doc.price, NEW_PRICE)
-              t.strictSame(doc.attachments, NEW_ATTACHMENTS)
-              t.strictSame(doc.updaterId, newUpdaterId)
-              t.ok(doc.creatorId)
-              t.ok(doc.createdAt)
-              t.ok(doc.__STATE__)
-              t.ok(Math.abs(Date.now() - doc.updatedAt.getTime()) < 5000, '`updatedAt` should be updated')
-
-              t.end()
+              t.assert.strictEqual(doc.name, null)
+              t.assert.deepStrictEqual(doc.price, NEW_PRICE)
+              t.assert.deepStrictEqual(doc.attachments, NEW_ATTACHMENTS)
+              t.assert.deepStrictEqual(doc.updaterId, newUpdaterId)
+              t.assert.ok(doc.creatorId)
+              t.assert.ok(doc.createdAt)
+              t.assert.ok(doc.__STATE__)
+              t.assert.ok(Math.abs(Date.now() - doc.updatedAt.getTime()) < 5000, '`updatedAt` should be updated')
             })
           }
-          t.end()
         })
       })
     })
@@ -417,9 +403,9 @@ tap.test('HTTP POST /upsert-one', async t => {
 
       const parsedResponse = JSON.parse(response.payload)
 
-      t.ok(parsedResponse.updatedAt)
-      t.ok(parsedResponse.updaterId)
-      t.equal(parsedResponse.updaterId, 'my-totally-new-user')
+      t.assert.ok(parsedResponse.updatedAt)
+      t.assert.ok(parsedResponse.updaterId)
+      t.assert.strictEqual(parsedResponse.updaterId, 'my-totally-new-user')
     })
 
     t.test('using $setOnInsert in body', async t => {
@@ -444,9 +430,9 @@ tap.test('HTTP POST /upsert-one', async t => {
 
       const parsedResponse = JSON.parse(response.payload)
 
-      t.ok(parsedResponse.updatedAt)
-      t.ok(parsedResponse.updaterId)
-      t.equal(parsedResponse.updaterId, 'my-totally-new-user')
+      t.assert.ok(parsedResponse.updatedAt)
+      t.assert.ok(parsedResponse.updaterId)
+      t.assert.strictEqual(parsedResponse.updaterId, 'my-totally-new-user')
     })
 
     t.test('using $set and $setOnInsert in body', async t => {
@@ -473,9 +459,9 @@ tap.test('HTTP POST /upsert-one', async t => {
 
       const parsedResponse = JSON.parse(response.payload)
 
-      t.ok(parsedResponse.updatedAt)
-      t.ok(parsedResponse.updaterId)
-      t.equal(parsedResponse.updaterId, 'my-totally-new-user')
+      t.assert.ok(parsedResponse.updatedAt)
+      t.assert.ok(parsedResponse.updaterId)
+      t.assert.strictEqual(parsedResponse.updaterId, 'my-totally-new-user')
     })
 
     t.test('upsert without userId', async t => {
@@ -502,9 +488,9 @@ tap.test('HTTP POST /upsert-one', async t => {
 
       const parsedResponse = JSON.parse(response.payload)
 
-      t.ok(parsedResponse.updatedAt)
-      t.ok(parsedResponse.updaterId)
-      t.equal(parsedResponse.updaterId, 'public')
+      t.assert.ok(parsedResponse.updatedAt)
+      t.assert.ok(parsedResponse.updaterId)
+      t.assert.strictEqual(parsedResponse.updaterId, 'public')
     })
 
     t.test('upsert with empty userId', async t => {
@@ -531,9 +517,9 @@ tap.test('HTTP POST /upsert-one', async t => {
 
       const parsedResponse = JSON.parse(response.payload)
 
-      t.ok(parsedResponse.updatedAt)
-      t.ok(parsedResponse.updaterId)
-      t.equal(parsedResponse.updaterId, 'public')
+      t.assert.ok(parsedResponse.updatedAt)
+      t.assert.ok(parsedResponse.updaterId)
+      t.assert.strictEqual(parsedResponse.updaterId, 'public')
     })
 
     t.test('upsert with userId "null"', async t => {
@@ -560,9 +546,9 @@ tap.test('HTTP POST /upsert-one', async t => {
 
       const parsedResponse = JSON.parse(response.payload)
 
-      t.ok(parsedResponse.updatedAt)
-      t.ok(parsedResponse.updaterId)
-      t.equal(parsedResponse.updaterId, 'public')
+      t.assert.ok(parsedResponse.updatedAt)
+      t.assert.ok(parsedResponse.updaterId)
+      t.assert.strictEqual(parsedResponse.updaterId, 'public')
     })
 
     t.test('upsert with userId "undefined"', async t => {
@@ -589,9 +575,9 @@ tap.test('HTTP POST /upsert-one', async t => {
 
       const parsedResponse = JSON.parse(response.payload)
 
-      t.ok(parsedResponse.updatedAt)
-      t.ok(parsedResponse.updaterId)
-      t.equal(parsedResponse.updaterId, 'public')
+      t.assert.ok(parsedResponse.updatedAt)
+      t.assert.ok(parsedResponse.updaterId)
+      t.assert.strictEqual(parsedResponse.updaterId, 'public')
     })
   })
 })

@@ -16,7 +16,7 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const { ObjectId } = require('mongodb')
 const { omit: lomit } = require('lodash')
 const { STANDARD_FIELDS } = require('../lib/CrudService')
@@ -70,7 +70,7 @@ const UPDATE_REPLACE_ARRAY_ELEMENT_COMMAND = {
   },
 }
 
-tap.test('HTTP PATCH /<id> - ', async t => {
+test('HTTP PATCH /<id> - ', async t => {
   const { fastify, collection, resetCollection } = await setUpTest(t)
   const [DOC_TEST] = fixtures
 
@@ -96,16 +96,12 @@ tap.test('HTTP PATCH /<id> - ', async t => {
           })
 
           t.test('should return 400', t => {
-            t.strictSame(response.statusCode, 400)
-            t.end()
+            t.assert.deepStrictEqual(response.statusCode, 400)
           })
           t.test('should return JSON', t => {
-            t.ok(/application\/json/.test(response.headers['content-type']))
-            t.end()
+            t.assert.ok(/application\/json/.test(response.headers['content-type']))
           })
           checkDocumentsInDatabase(t, collection, [], fixtures)
-
-          t.end()
         })
       }
 
@@ -116,8 +112,6 @@ tap.test('HTTP PATCH /<id> - ', async t => {
       requiredFieldNames.map(
         name => makeCheck(t, name, { $unset: { [name]: true } })
       )
-
-      t.end()
     })
 
     t.test('allow nullable field', async t => {
@@ -143,18 +137,15 @@ tap.test('HTTP PATCH /<id> - ', async t => {
       })
 
       t.test('should return 200', t => {
-        t.strictSame(postResponse.statusCode, 200)
-        t.end()
+        t.assert.deepStrictEqual(postResponse.statusCode, 200)
       })
       t.test('should return application/json', t => {
-        t.ok(/application\/json/.test(postResponse.headers['content-type']))
-        t.end()
+        t.assert.ok(/application\/json/.test(postResponse.headers['content-type']))
       })
       t.test('should return the inserted id', t => {
         const body = JSON.parse(postResponse.payload)
 
-        t.ok(body._id)
-        t.end()
+        t.assert.ok(body._id)
       })
 
       t.test('PATCH', async t => {
@@ -168,16 +159,13 @@ tap.test('HTTP PATCH /<id> - ', async t => {
         const patchBody = JSON.parse(patchResponse.payload)
 
         t.test('should return 200', t => {
-          t.strictSame(patchResponse.statusCode, 200)
-          t.end()
+          t.assert.deepStrictEqual(patchResponse.statusCode, 200)
         })
         t.test('should return application/json', t => {
-          t.ok(/application\/json/.test(patchResponse.headers['content-type']))
-          t.end()
+          t.assert.ok(/application\/json/.test(patchResponse.headers['content-type']))
         })
         t.test('should return the inserted id', t => {
-          t.ok(patchBody._id)
-          t.end()
+          t.assert.ok(patchBody._id)
         })
         t.test('should have null name', async t => {
           const patchResponse = await fastify.inject({
@@ -188,16 +176,11 @@ tap.test('HTTP PATCH /<id> - ', async t => {
             },
           })
 
-          t.strictSame(patchResponse.statusCode, 200)
+          t.assert.deepStrictEqual(patchResponse.statusCode, 200)
           const result = JSON.parse(patchResponse.payload)
-          t.equal(result.name, null)
-          t.end()
+          t.assert.strictEqual(result.name, null)
         })
-
-        t.end()
       })
-
-      t.end()
     })
 
     t.test('trying to merge an array of non-object elements', async t => {
@@ -210,20 +193,15 @@ tap.test('HTTP PATCH /<id> - ', async t => {
       })
 
       t.test('should return 400', t => {
-        t.strictSame(response.statusCode, 400)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 400)
       })
       t.test('should return JSON', t => {
-        t.ok(/application\/json/.test(response.headers['content-type']))
-        t.end()
+        t.assert.ok(/application\/json/.test(response.headers['content-type']))
       })
       t.test('body should be "Bad Request" error message', t => {
         const expectedBody = '{"statusCode":400,"error":"Bad Request","message":"body/$set must NOT have additional properties. Property \\"tagIds.$.merge\\" is not defined in validation schema"}'
-        t.strictSame(response.body, expectedBody)
-        t.end()
+        t.assert.deepStrictEqual(response.body, expectedBody)
       })
-
-      t.end()
     })
 
     t.test('trying to replace an array without specifying an element matching query', async t => {
@@ -235,17 +213,14 @@ tap.test('HTTP PATCH /<id> - ', async t => {
         payload: UPDATE_REPLACE_ARRAY_ELEMENT_COMMAND,
       })
       t.test('should return 500', t => {
-        t.strictSame(response.statusCode, 500)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 500)
       })
       t.test('should return JSON', t => {
-        t.ok(/application\/json/.test(response.headers['content-type']))
-        t.end()
+        t.assert.ok(/application\/json/.test(response.headers['content-type']))
       })
       t.test('should return error message should be "Internal Server Error" error message', t => {
         const expectedErrorMessage = 'The positional operator did not find the match needed from the query.'
-        t.match(response.body, expectedErrorMessage)
-        t.end()
+        t.assert.ok(response.body.includes(expectedErrorMessage))
       })
     })
 
@@ -259,23 +234,16 @@ tap.test('HTTP PATCH /<id> - ', async t => {
       })
 
       t.test('should return 400', t => {
-        t.strictSame(response.statusCode, 400)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 400)
       })
       t.test('should return JSON', t => {
-        t.ok(/application\/json/.test(response.headers['content-type']))
-        t.end()
+        t.assert.ok(/application\/json/.test(response.headers['content-type']))
       })
       t.test('body.$set["tagIds.$.replace"] should be number', t => {
         const expectedErrorMessage = 'body/$set/tagIds.$.replace must be number'
-        t.strictSame(JSON.parse(response.body)?.message, expectedErrorMessage)
-        t.end()
+        t.assert.deepStrictEqual(JSON.parse(response.body)?.message, expectedErrorMessage)
       })
-
-      t.end()
     })
-
-    t.end()
   })
 
   t.test('nested object', t => {
@@ -298,12 +266,11 @@ tap.test('HTTP PATCH /<id> - ', async t => {
             },
           })
 
-          t.strictSame(response.statusCode, 200)
-          t.equal(JSON.parse(response.payload).metadata.somethingNumber, VALUE_AS_NUMBER)
+          t.assert.deepStrictEqual(response.statusCode, 200)
+          t.assert.strictEqual(JSON.parse(response.payload).metadata.somethingNumber, VALUE_AS_NUMBER)
 
           const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
-          t.strictSame(docOnDb.metadata.somethingNumber, VALUE_AS_NUMBER)
-          t.end()
+          t.assert.deepStrictEqual(docOnDb.metadata.somethingNumber, VALUE_AS_NUMBER)
         })
 
         t.test('number as string is casted', async t => {
@@ -324,7 +291,7 @@ tap.test('HTTP PATCH /<id> - ', async t => {
               userId: newUpdaterId,
             },
           })
-          t.strictSame(response.statusCode, 200)
+          t.assert.deepStrictEqual(response.statusCode, 200)
 
           const EXPECTED_CASTED_OBJECT = {
             somethingNumber: VALUE_AS_NUMBER,
@@ -335,11 +302,10 @@ tap.test('HTTP PATCH /<id> - ', async t => {
             somethingArrayOfNumbers: [VALUE_AS_NUMBER],
           }
 
-          t.strictSame(JSON.parse(response.payload).metadata, EXPECTED_CASTED_OBJECT)
+          t.assert.deepStrictEqual(JSON.parse(response.payload).metadata, EXPECTED_CASTED_OBJECT)
 
           const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
-          t.strictSame(docOnDb.metadata, EXPECTED_CASTED_OBJECT)
-          t.end()
+          t.assert.deepStrictEqual(docOnDb.metadata, EXPECTED_CASTED_OBJECT)
         })
 
         t.test('cast with middle path', async t => {
@@ -361,25 +327,23 @@ tap.test('HTTP PATCH /<id> - ', async t => {
               userId: newUpdaterId,
             },
           })
-          t.strictSame(response.statusCode, 200)
+          t.assert.deepStrictEqual(response.statusCode, 200)
           const metadataFromPayload = JSON.parse(response.payload).metadata
 
           const EXPECTED_SOMETHING_ARRAY_OBJECT = [{ arrayItemObjectChildNumber: VALUE_AS_NUMBER }]
           const EXPECTED_SOMETHING_ARRAT_OF_NUMBERS = [VALUE_AS_NUMBER]
           const EXPECTED_SOMETHING_OBJECT = { childNumber: VALUE_AS_NUMBER }
 
-          t.strictSame(metadataFromPayload.somethingArrayObject, EXPECTED_SOMETHING_ARRAY_OBJECT)
-          t.strictSame(metadataFromPayload.somethingArrayOfNumbers, EXPECTED_SOMETHING_ARRAT_OF_NUMBERS)
-          t.strictSame(metadataFromPayload.somethingObject, EXPECTED_SOMETHING_OBJECT)
+          t.assert.deepStrictEqual(metadataFromPayload.somethingArrayObject, EXPECTED_SOMETHING_ARRAY_OBJECT)
+          t.assert.deepStrictEqual(metadataFromPayload.somethingArrayOfNumbers, EXPECTED_SOMETHING_ARRAT_OF_NUMBERS)
+          t.assert.deepStrictEqual(metadataFromPayload.somethingObject, EXPECTED_SOMETHING_OBJECT)
 
           const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
           const metadataOnDb = docOnDb.metadata
 
-          t.strictSame(metadataOnDb.somethingArrayObject, EXPECTED_SOMETHING_ARRAY_OBJECT)
-          t.strictSame(metadataOnDb.somethingArrayOfNumbers, EXPECTED_SOMETHING_ARRAT_OF_NUMBERS)
-          t.strictSame(metadataOnDb.somethingObject, EXPECTED_SOMETHING_OBJECT)
-
-          t.end()
+          t.assert.deepStrictEqual(metadataOnDb.somethingArrayObject, EXPECTED_SOMETHING_ARRAY_OBJECT)
+          t.assert.deepStrictEqual(metadataOnDb.somethingArrayOfNumbers, EXPECTED_SOMETHING_ARRAT_OF_NUMBERS)
+          t.assert.deepStrictEqual(metadataOnDb.somethingObject, EXPECTED_SOMETHING_OBJECT)
         })
 
         t.test('support additionalProperties true', async t => {
@@ -401,7 +365,7 @@ tap.test('HTTP PATCH /<id> - ', async t => {
             },
           })
 
-          t.strictSame(response.statusCode, 200)
+          t.assert.deepStrictEqual(response.statusCode, 200)
 
           const EXPECED_SOMETHING_ARRAY_OBJECT_0 = {
             arrayItemObjectChildNumber: 4,
@@ -414,17 +378,17 @@ tap.test('HTTP PATCH /<id> - ', async t => {
             additionalField: '9',
           }
 
-          t.strictSame(JSON.parse(response.payload).metadata.somethingArrayObject[0], EXPECED_SOMETHING_ARRAY_OBJECT_0)
-          t.strictSame(JSON.parse(response.payload).metadata.somethingObject, EXPECTED_SOMETHING_OBJECT)
+          t.assert.deepStrictEqual(
+            JSON.parse(response.payload).metadata.somethingArrayObject[0],
+            EXPECED_SOMETHING_ARRAY_OBJECT_0
+          )
+          t.assert.deepStrictEqual(JSON.parse(response.payload).metadata.somethingObject, EXPECTED_SOMETHING_OBJECT)
 
           const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
-          t.strictSame(docOnDb.metadata.somethingArrayObject[0], EXPECED_SOMETHING_ARRAY_OBJECT_0)
+          t.assert.deepStrictEqual(docOnDb.metadata.somethingArrayObject[0], EXPECED_SOMETHING_ARRAY_OBJECT_0)
 
-          t.strictSame(docOnDb.metadata.somethingObject, EXPECTED_SOMETHING_OBJECT)
-
-          t.end()
+          t.assert.deepStrictEqual(docOnDb.metadata.somethingObject, EXPECTED_SOMETHING_OBJECT)
         })
-        t.end()
       })
 
       t.test('with object in $set', async t => {
@@ -446,12 +410,11 @@ tap.test('HTTP PATCH /<id> - ', async t => {
             },
           })
 
-          t.strictSame(response.statusCode, 200)
-          t.equal(JSON.parse(response.payload).metadata.somethingNumber, VALUE_AS_NUMBER)
+          t.assert.deepStrictEqual(response.statusCode, 200)
+          t.assert.strictEqual(JSON.parse(response.payload).metadata.somethingNumber, VALUE_AS_NUMBER)
 
           const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
-          t.strictSame(docOnDb.metadata.somethingNumber, VALUE_AS_NUMBER)
-          t.end()
+          t.assert.deepStrictEqual(docOnDb.metadata.somethingNumber, VALUE_AS_NUMBER)
         })
 
         t.test('number as string is casted', async t => {
@@ -471,14 +434,12 @@ tap.test('HTTP PATCH /<id> - ', async t => {
               userId: newUpdaterId,
             },
           })
-          t.strictSame(response.statusCode, 200)
-          t.equal(JSON.parse(response.payload).metadata.somethingNumber, VALUE_AS_NUMBER)
+          t.assert.deepStrictEqual(response.statusCode, 200)
+          t.assert.strictEqual(JSON.parse(response.payload).metadata.somethingNumber, VALUE_AS_NUMBER)
 
           const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
-          t.strictSame(docOnDb.metadata.somethingNumber, VALUE_AS_NUMBER)
-          t.end()
+          t.assert.deepStrictEqual(docOnDb.metadata.somethingNumber, VALUE_AS_NUMBER)
         })
-        t.end()
       })
 
       t.test('$.replace - positional operator', async t => {
@@ -517,15 +478,12 @@ tap.test('HTTP PATCH /<id> - ', async t => {
             },
           })
 
-          t.equal(response.statusCode, 200)
-          t.strictSame(JSON.parse(response.payload).metadata.somethingArrayOfNumbers, [3, NEW_VALUE, 6])
+          t.assert.strictEqual(response.statusCode, 200)
+          t.assert.deepStrictEqual(JSON.parse(response.payload).metadata.somethingArrayOfNumbers, [3, NEW_VALUE, 6])
 
           const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
-          t.strictSame(docOnDb.metadata.somethingArrayOfNumbers, [3, NEW_VALUE, 6])
-
-          t.end()
+          t.assert.deepStrictEqual(docOnDb.metadata.somethingArrayOfNumbers, [3, NEW_VALUE, 6])
         })
-        t.end()
       })
 
       t.test('$.merge - positional operator', async t => {
@@ -569,8 +527,8 @@ tap.test('HTTP PATCH /<id> - ', async t => {
             },
           })
 
-          t.equal(response.statusCode, 200)
-          t.strictSame(JSON.parse(response.payload).metadata.somethingArrayObject, [{
+          t.assert.strictEqual(response.statusCode, 200)
+          t.assert.deepStrictEqual(JSON.parse(response.payload).metadata.somethingArrayObject, [{
             arrayItemObjectChildNumber: 2,
           }, {
             arrayItemObjectChildNumber: 3,
@@ -578,13 +536,12 @@ tap.test('HTTP PATCH /<id> - ', async t => {
           }])
 
           const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
-          t.strictSame(docOnDb.metadata.somethingArrayObject, [{
+          t.assert.deepStrictEqual(docOnDb.metadata.somethingArrayObject, [{
             arrayItemObjectChildNumber: 2,
           }, {
             arrayItemObjectChildNumber: 3,
             anotherNumber: NEW_VALUE,
           }])
-          t.end()
         })
 
         t.test('ok - with multiple nested arrays', async t => {
@@ -638,8 +595,8 @@ tap.test('HTTP PATCH /<id> - ', async t => {
             },
           })
 
-          t.equal(response.statusCode, 200)
-          t.strictSame(lomit(JSON.parse(response.payload), [UPDATEDAT, CREATEDAT, UPDATERID]), {
+          t.assert.strictEqual(response.statusCode, 200)
+          t.assert.deepStrictEqual(lomit(JSON.parse(response.payload), [UPDATEDAT, CREATEDAT, UPDATERID]), {
             _id: DOC_TEST._id.toHexString(),
             name: DOC_TEST.name,
             environments: [{
@@ -661,7 +618,7 @@ tap.test('HTTP PATCH /<id> - ', async t => {
           })
 
           const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
-          t.strictSame(docOnDb.environments, [{
+          t.assert.deepStrictEqual(docOnDb.environments, [{
             label: 'Env 1',
             value: 'env1',
             envId: 'env1',
@@ -675,12 +632,8 @@ tap.test('HTTP PATCH /<id> - ', async t => {
               label: 'foobar',
             }],
           }])
-          t.end()
         })
-        t.end()
       })
-
-      t.end()
     })
 
     t.test('$push', async t => {
@@ -701,37 +654,35 @@ tap.test('HTTP PATCH /<id> - ', async t => {
             userId: newUpdaterId,
           },
         })
-        t.equal(response.statusCode, 200)
+        t.assert.strictEqual(response.statusCode, 200)
         const payload = JSON.parse(response.payload)
 
-        t.strictSame(
+        t.assert.deepStrictEqual(
           payload.attachments,
           DOC_TEST.attachments.concat([{ detail: { size: 9999 }, name: 'pushed' }])
         )
-        t.strictSame(
+        t.assert.deepStrictEqual(
           payload.metadata.somethingArrayObject,
           DOC_TEST.metadata.somethingArrayObject.concat([{ arrayItemObjectChildNumber: 8888 }])
         )
-        t.strictSame(
+        t.assert.deepStrictEqual(
           payload.metadata.somethingArrayOfNumbers,
           DOC_TEST.metadata.somethingArrayOfNumbers.concat([7777])
         )
 
         const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
-        t.strictSame(
+        t.assert.deepStrictEqual(
           docOnDb.attachments,
           DOC_TEST.attachments.concat([{ detail: { size: 9999 }, name: 'pushed' }])
         )
-        t.strictSame(
+        t.assert.deepStrictEqual(
           docOnDb.metadata.somethingArrayObject,
           DOC_TEST.metadata.somethingArrayObject.concat([{ arrayItemObjectChildNumber: 8888 }])
         )
-        t.strictSame(
+        t.assert.deepStrictEqual(
           docOnDb.metadata.somethingArrayOfNumbers,
           DOC_TEST.metadata.somethingArrayOfNumbers.concat([7777])
         )
-
-        t.end()
       })
 
       t.test('ok with casting of array in array', async t => {
@@ -757,15 +708,13 @@ tap.test('HTTP PATCH /<id> - ', async t => {
             userId: newUpdaterId,
           },
         })
-        t.equal(response.statusCode, 200)
+        t.assert.strictEqual(response.statusCode, 200)
 
         const payload = JSON.parse(response.payload)
-        t.strictSame(payload.attachments, [{ name: 'attach-0', nestedArr: [2, 55] }])
+        t.assert.deepStrictEqual(payload.attachments, [{ name: 'attach-0', nestedArr: [2, 55] }])
 
         const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
-        t.strictSame(docOnDb.attachments, [{ name: 'attach-0', nestedArr: [2, 55] }])
-
-        t.end()
+        t.assert.deepStrictEqual(docOnDb.attachments, [{ name: 'attach-0', nestedArr: [2, 55] }])
       })
 
       t.test('ok with array of array', async t => {
@@ -794,21 +743,19 @@ tap.test('HTTP PATCH /<id> - ', async t => {
               userId: newUpdaterId,
             },
           })
-          t.equal(response.statusCode, 200)
+          t.assert.strictEqual(response.statusCode, 200)
 
           const { metadata } = JSON.parse(response.payload)
-          t.strictSame(metadata.exampleArrayOfArray, [
+          t.assert.deepStrictEqual(metadata.exampleArrayOfArray, [
             ['item1'],
             ['new-item'],
           ])
 
           const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
-          t.strictSame(docOnDb.metadata.exampleArrayOfArray, [
+          t.assert.deepStrictEqual(docOnDb.metadata.exampleArrayOfArray, [
             ['item1'],
             ['new-item'],
           ])
-
-          t.end()
         })
 
         t.test('push to child array', async t => {
@@ -828,22 +775,18 @@ tap.test('HTTP PATCH /<id> - ', async t => {
               userId: newUpdaterId,
             },
           })
-          t.equal(response.statusCode, 200)
+          t.assert.strictEqual(response.statusCode, 200)
 
           const { metadata } = JSON.parse(response.payload)
-          t.strictSame(metadata.exampleArrayOfArray, [
+          t.assert.deepStrictEqual(metadata.exampleArrayOfArray, [
             ['item1', 'new-item'],
           ])
 
           const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
-          t.strictSame(docOnDb.metadata.exampleArrayOfArray, [
+          t.assert.deepStrictEqual(docOnDb.metadata.exampleArrayOfArray, [
             ['item1', 'new-item'],
           ])
-
-          t.end()
         })
-
-        t.end()
       })
 
       t.test('fails if missing to push a required field of an object', async t => {
@@ -866,15 +809,13 @@ tap.test('HTTP PATCH /<id> - ', async t => {
           },
         })
 
-        t.equal(response.statusCode, 400)
-        t.strictSame(JSON.parse(response.payload), {
+        t.assert.strictEqual(response.statusCode, 400)
+        t.assert.deepStrictEqual(JSON.parse(response.payload), {
           statusCode: 400,
           error: 'Bad Request',
           message: "body/$push/attachments must have required property 'name', body/$push/attachments must have required property '$', body/$push/attachments must have required property '$each', body/$push/attachments must have required property '$sort', body/$push/attachments must have required property '$in', body/$push/attachments must have required property '$position', body/$push/attachments must have required property '$each', body/$push/attachments must match a schema in anyOf, body/$push/attachments must match a schema in anyOf",
           code: 'FST_ERR_VALIDATION',
         })
-
-        t.end()
       })
 
       t.test('fails if push is not compliant to additionalProperties of the field', async t => {
@@ -898,17 +839,13 @@ tap.test('HTTP PATCH /<id> - ', async t => {
           },
         })
 
-        t.equal(response.statusCode, 400)
-        t.strictSame(JSON.parse(response.payload), {
+        t.assert.strictEqual(response.statusCode, 400)
+        t.assert.deepStrictEqual(JSON.parse(response.payload), {
           statusCode: 400,
           error: 'Bad Request',
           message: 'body/$push/attachments must NOT have additional properties, body/$push/attachments must have required property \'$\', body/$push/attachments must have required property \'$each\', body/$push/attachments must have required property \'$sort\', body/$push/attachments must have required property \'$in\', body/$push/attachments must have required property \'$position\', body/$push/attachments must have required property \'$each\', body/$push/attachments must match a schema in anyOf, body/$push/attachments must match a schema in anyOf. Property "unknownField" is not defined in validation schema',
         })
-
-        t.end()
       })
-
-      t.end()
     })
 
     t.test('$addToSet', async t => {
@@ -931,37 +868,35 @@ tap.test('HTTP PATCH /<id> - ', async t => {
             userId: newUpdaterId,
           },
         })
-        t.equal(response.statusCode, 200)
+        t.assert.strictEqual(response.statusCode, 200)
         const payload = JSON.parse(response.payload)
 
-        t.strictSame(
+        t.assert.deepStrictEqual(
           payload.attachments,
           DOC_TEST.attachments.concat([{ detail: { size: 9999 }, name: 'addedToSet' }])
         )
-        t.strictSame(
+        t.assert.deepStrictEqual(
           payload.metadata.somethingArrayObject,
           DOC_TEST.metadata.somethingArrayObject.concat([{ arrayItemObjectChildNumber: 8888 }])
         )
-        t.strictSame(
+        t.assert.deepStrictEqual(
           payload.metadata.somethingArrayOfNumbers,
           DOC_TEST.metadata.somethingArrayOfNumbers.concat([7777])
         )
 
         const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
-        t.strictSame(
+        t.assert.deepStrictEqual(
           docOnDb.attachments,
           DOC_TEST.attachments.concat([{ detail: { size: 9999 }, name: 'addedToSet' }])
         )
-        t.strictSame(
+        t.assert.deepStrictEqual(
           docOnDb.metadata.somethingArrayObject,
           DOC_TEST.metadata.somethingArrayObject.concat([{ arrayItemObjectChildNumber: 8888 }])
         )
-        t.strictSame(
+        t.assert.deepStrictEqual(
           docOnDb.metadata.somethingArrayOfNumbers,
           DOC_TEST.metadata.somethingArrayOfNumbers.concat([7777])
         )
-
-        t.end()
       })
 
       t.test('ok with casting of array in array', async t => {
@@ -988,15 +923,13 @@ tap.test('HTTP PATCH /<id> - ', async t => {
             userId: newUpdaterId,
           },
         })
-        t.equal(response.statusCode, 200)
+        t.assert.strictEqual(response.statusCode, 200)
 
         const payload = JSON.parse(response.payload)
-        t.strictSame(payload.attachments, [{ name: 'attach-0', nestedArr: [2, 55] }])
+        t.assert.deepStrictEqual(payload.attachments, [{ name: 'attach-0', nestedArr: [2, 55] }])
 
         const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
-        t.strictSame(docOnDb.attachments, [{ name: 'attach-0', nestedArr: [2, 55] }])
-
-        t.end()
+        t.assert.deepStrictEqual(docOnDb.attachments, [{ name: 'attach-0', nestedArr: [2, 55] }])
       })
 
       t.test('ok with array of array', async t => {
@@ -1026,21 +959,19 @@ tap.test('HTTP PATCH /<id> - ', async t => {
               userId: newUpdaterId,
             },
           })
-          t.equal(response.statusCode, 200)
+          t.assert.strictEqual(response.statusCode, 200)
 
           const { metadata } = JSON.parse(response.payload)
-          t.strictSame(metadata.exampleArrayOfArray, [
+          t.assert.deepStrictEqual(metadata.exampleArrayOfArray, [
             ['item1'],
             ['new-item'],
           ])
 
           const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
-          t.strictSame(docOnDb.metadata.exampleArrayOfArray, [
+          t.assert.deepStrictEqual(docOnDb.metadata.exampleArrayOfArray, [
             ['item1'],
             ['new-item'],
           ])
-
-          t.end()
         })
 
         t.test('addToSet to child array', async t => {
@@ -1059,22 +990,18 @@ tap.test('HTTP PATCH /<id> - ', async t => {
               userId: newUpdaterId,
             },
           })
-          t.equal(response.statusCode, 200)
+          t.assert.strictEqual(response.statusCode, 200)
 
           const { metadata } = JSON.parse(response.payload)
-          t.strictSame(metadata.exampleArrayOfArray, [
+          t.assert.deepStrictEqual(metadata.exampleArrayOfArray, [
             ['item1', 'new-item'],
           ])
 
           const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
-          t.strictSame(docOnDb.metadata.exampleArrayOfArray, [
+          t.assert.deepStrictEqual(docOnDb.metadata.exampleArrayOfArray, [
             ['item1', 'new-item'],
           ])
-
-          t.end()
         })
-
-        t.end()
       })
 
       t.test('fails if missing to addToSet a required field of an object', async t => {
@@ -1096,14 +1023,13 @@ tap.test('HTTP PATCH /<id> - ', async t => {
             userId: newUpdaterId,
           },
         })
-        t.equal(response.statusCode, 400)
-        t.strictSame(JSON.parse(response.payload), {
+        t.assert.strictEqual(response.statusCode, 400)
+        t.assert.deepStrictEqual(JSON.parse(response.payload), {
           statusCode: 400,
           error: 'Bad Request',
           message: "body/$addToSet/attachments must have required property 'name', body/$addToSet/attachments must have required property '$', body/$addToSet/attachments must have required property '$each', body/$addToSet/attachments must have required property '$sort', body/$addToSet/attachments must have required property '$in', body/$addToSet/attachments must have required property '$position', body/$addToSet/attachments must have required property '$each', body/$addToSet/attachments must match a schema in anyOf, body/$addToSet/attachments must match a schema in anyOf",
           code: 'FST_ERR_VALIDATION',
         })
-        t.end()
       })
 
       t.test('fails if addToSet is not compliant to additionalProperties of the field', async t => {
@@ -1126,13 +1052,12 @@ tap.test('HTTP PATCH /<id> - ', async t => {
             userId: newUpdaterId,
           },
         })
-        t.equal(response.statusCode, 400)
-        t.strictSame(JSON.parse(response.payload), {
+        t.assert.strictEqual(response.statusCode, 400)
+        t.assert.deepStrictEqual(JSON.parse(response.payload), {
           statusCode: 400,
           error: 'Bad Request',
           message: 'body/$addToSet/attachments must NOT have additional properties, body/$addToSet/attachments must have required property \'$\', body/$addToSet/attachments must have required property \'$each\', body/$addToSet/attachments must have required property \'$sort\', body/$addToSet/attachments must have required property \'$in\', body/$addToSet/attachments must have required property \'$position\', body/$addToSet/attachments must have required property \'$each\', body/$addToSet/attachments must match a schema in anyOf, body/$addToSet/attachments must match a schema in anyOf. Property "unknownField" is not defined in validation schema',
         })
-        t.end()
       })
 
       t.test('fails if addToSet if field is not an array', async t => {
@@ -1151,15 +1076,13 @@ tap.test('HTTP PATCH /<id> - ', async t => {
           },
         })
 
-        t.equal(response.statusCode, 400)
-        t.strictSame(JSON.parse(response.payload), {
+        t.assert.strictEqual(response.statusCode, 400)
+        t.assert.deepStrictEqual(JSON.parse(response.payload), {
           statusCode: 400,
           error: 'Bad Request',
           message: 'body/$addToSet must NOT have additional properties. Property "name" is not defined in validation schema',
         })
-        t.end()
       })
-      t.end()
     })
 
     t.test('$unset', async t => {
@@ -1196,7 +1119,7 @@ tap.test('HTTP PATCH /<id> - ', async t => {
             userId: newUpdaterId,
           },
         })
-        t.strictSame(response.statusCode, 200)
+        t.assert.deepStrictEqual(response.statusCode, 200)
 
         const expectedMetadata = {
           somethingNumber: 3,
@@ -1206,11 +1129,10 @@ tap.test('HTTP PATCH /<id> - ', async t => {
           }],
         }
 
-        t.strictSame(JSON.parse(response.payload).metadata, expectedMetadata)
+        t.assert.deepStrictEqual(JSON.parse(response.payload).metadata, expectedMetadata)
 
         const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
-        t.strictSame(docOnDb.metadata, expectedMetadata)
-        t.end()
+        t.assert.deepStrictEqual(docOnDb.metadata, expectedMetadata)
       })
 
       t.test('there is NO validation to prevent unset of required properties', async t => {
@@ -1230,28 +1152,22 @@ tap.test('HTTP PATCH /<id> - ', async t => {
             userId: newUpdaterId,
           },
         })
-        t.strictSame(response.statusCode, 500)
+        t.assert.deepStrictEqual(response.statusCode, 500)
 
-        t.strictSame(JSON.parse(response.payload), {
+        t.assert.deepStrictEqual(JSON.parse(response.payload), {
           statusCode: 500,
           error: 'Internal Server Error',
           message: '"somethingNumber" is required!',
         })
 
         const docOnDb = await collection.findOne({ _id: DOC_TEST._id })
-        t.strictSame(docOnDb.metadata.somethingNumber, undefined)
-        t.end()
+        t.assert.deepStrictEqual(docOnDb.metadata.somethingNumber, undefined)
       })
-      t.end()
     })
-
-    t.end()
   })
-
-  t.end()
 })
 
-tap.test('HTTP PATCH /<id> with string id', async t => {
+test('HTTP PATCH /<id> with string id', async t => {
   const tests = [
     {
       name: 'on document found',
@@ -1301,13 +1217,11 @@ tap.test('HTTP PATCH /<id> with string id', async t => {
       })
 
       t.test(`should return ${found ? 200 : 404}`, t => {
-        t.strictSame(response.statusCode, found ? 200 : 404, response.payload)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, found ? 200 : 404, response.payload)
       })
 
       t.test('should return "application/json"', t => {
-        t.ok(/application\/json/.test(response.headers['content-type']))
-        t.end()
+        t.assert.ok(/application\/json/.test(response.headers['content-type']))
       })
 
       t.test(`should return ${found ? 'the id' : 'the not NOT_FOUND_BODY'}`, t => {
@@ -1315,14 +1229,12 @@ tap.test('HTTP PATCH /<id> with string id', async t => {
           const expected = { ...conf.returnDoc }
           delete expected.updatedAt
           const actual = JSON.parse(response.payload)
-          t.ok(Number.isFinite(new Date(actual.updatedAt).getTime()))
+          t.assert.ok(Number.isFinite(new Date(actual.updatedAt).getTime()))
           delete actual.updatedAt
-          t.strictSame(actual, expected)
+          t.assert.deepStrictEqual(actual, expected)
         } else {
-          t.strictSame(JSON.parse(response.payload), found ? { _id: conf.id.toString() } : NOT_FOUND_BODY)
+          t.assert.deepStrictEqual(JSON.parse(response.payload), found ? { _id: conf.id.toString() } : NOT_FOUND_BODY)
         }
-
-        t.end()
       })
 
       t.test('on database', t => {
@@ -1330,28 +1242,22 @@ tap.test('HTTP PATCH /<id> with string id', async t => {
           t.test(`should ${found ? '' : 'not'} update the document`, async t => {
             const doc = await collection.findOne({ _id: conf.id })
             if (found) {
-              t.strictSame(doc.Comune, NEW_COMUNE)
-              t.strictSame(doc.updaterId, newUpdaterId)
-              t.ok(Math.abs(Date.now() - doc.updatedAt.getTime()) < 5000, '`updatedAt` should be updated')
+              t.assert.deepStrictEqual(doc.Comune, NEW_COMUNE)
+              t.assert.deepStrictEqual(doc.updaterId, newUpdaterId)
+              t.assert.ok(Math.abs(Date.now() - doc.updatedAt.getTime()) < 5000, '`updatedAt` should be updated')
             } else {
-              t.strictSame(doc.Comune, STATION_DOC.Comune)
-              t.strictSame(doc.updaterId, oldUpdaterId)
-              t.ok(Math.abs(Date.now() - doc.updatedAt.getTime()) > 5000, '`updatedAt` should not be updated')
+              t.assert.deepStrictEqual(doc.Comune, STATION_DOC.Comune)
+              t.assert.deepStrictEqual(doc.updaterId, oldUpdaterId)
+              t.assert.ok(Math.abs(Date.now() - doc.updatedAt.getTime()) > 5000, '`updatedAt` should not be updated')
             }
-            t.end()
           })
         }
 
         t.test('should keep the other documents as is', async t => {
           const documents = await collection.find({ _id: { $ne: conf.id } }).toArray()
-          t.strictSame(documents, stationFixtures.filter(d => d._id.toString() !== conf.id.toString()))
-          t.end()
+          t.assert.deepStrictEqual(documents, stationFixtures.filter(d => d._id.toString() !== conf.id.toString()))
         })
-
-        t.end()
       })
-
-      t.end()
     })
   })
 })

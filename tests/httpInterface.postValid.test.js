@@ -16,14 +16,14 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const { STANDARD_FIELDS } = require('../lib/CrudService')
 
 const { __STATE__ } = require('../lib/consts')
 const { newUpdaterId, fixtures } = require('./utils')
 const { setUpTest, prefix } = require('./httpInterface.utils')
 
-tap.test('HTTP POST /validate', async t => {
+test('HTTP POST /validate', async t => {
   const { fastify, collection, resetCollection } = await setUpTest(t)
 
   t.test('valid value', async t => {
@@ -64,13 +64,11 @@ tap.test('HTTP POST /validate', async t => {
       })
 
       t.test('should return 200', t => {
-        t.strictSame(response.statusCode, 200)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 200)
       })
       t.test('should not insert the document in the database', async t => {
         const count = await collection.countDocuments()
-        t.strictSame(count, fixtures.length)
-        t.end()
+        t.assert.deepStrictEqual(count, fixtures.length)
       })
     })
   })
@@ -96,17 +94,14 @@ tap.test('HTTP POST /validate', async t => {
       })
 
       t.test('should return 400', t => {
-        t.strictSame(response.statusCode, 400)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 400)
       })
       t.test('should return application/json', t => {
-        t.ok(/application\/json/.test(response.headers['content-type']))
-        t.end()
+        t.assert.ok(/application\/json/.test(response.headers['content-type']))
       })
       t.test('should not insert the document in the database', async t => {
         const count = await collection.countDocuments()
-        t.strictSame(count, fixtures.length)
-        t.end()
+        t.assert.deepStrictEqual(count, fixtures.length)
       })
     })
   })
@@ -125,9 +120,9 @@ tap.test('HTTP POST /validate', async t => {
         userId: newUpdaterId,
       },
     })
-    t.strictSame(response.statusCode, 400)
-    t.ok(/application\/json/.test(response.headers['content-type']))
-    t.equal(await collection.countDocuments(), fixtures.length, 'the document was not inserted in the database')
+    t.assert.deepStrictEqual(response.statusCode, 400)
+    t.assert.ok(/application\/json/.test(response.headers['content-type']))
+    t.assert.strictEqual(await collection.countDocuments(), fixtures.length, 'the document was not inserted in the database')
   })
 
   t.test('invalid position', async t => {
@@ -158,17 +153,14 @@ tap.test('HTTP POST /validate', async t => {
       })
 
       t.test('should return 400', async t => {
-        t.strictSame(response.statusCode, 400)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 400)
       })
       t.test('should return application/json', t => {
-        t.ok(/application\/json/.test(response.headers['content-type']))
-        t.end()
+        t.assert.ok(/application\/json/.test(response.headers['content-type']))
       })
       t.test('should not insert the document in the database', async t => {
         const count = await collection.countDocuments()
-        t.strictSame(count, fixtures.length)
-        t.end()
+        t.assert.deepStrictEqual(count, fixtures.length)
       })
     })
   })
@@ -185,18 +177,15 @@ tap.test('HTTP POST /validate', async t => {
         })
 
         t.test('should return 400', t => {
-          t.strictSame(response.statusCode, 400)
-          t.end()
+          t.assert.deepStrictEqual(response.statusCode, 400)
         })
         t.test('should return JSON', t => {
-          t.ok(/application\/json/.test(response.headers['content-type']))
-          t.end()
+          t.assert.ok(/application\/json/.test(response.headers['content-type']))
         })
       })
     }
 
     STANDARD_FIELDS.forEach(standardField => makeCheck(t, standardField))
     makeCheck(t, __STATE__)
-    t.end()
   })
 })

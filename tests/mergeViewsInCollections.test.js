@@ -16,7 +16,7 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 
 const mergeViewsInCollections = require('../lib/mergeViewsInCollections')
 const animalsColl = require('./collectionDefinitions/animals')
@@ -27,13 +27,13 @@ const openStoresColl = require('./collectionDefinitions/store-open')
 const felinesView = require('./viewsDefinitions/felines')
 const openStoresView = require('./viewsDefinitions/store-open')
 
-tap.test('mergeViewsInCollections', t => {
+test('mergeViewsInCollections', t => {
   t.test('correctly merges view definition into related collection definition', t => {
     const result = mergeViewsInCollections([animalsColl, felinesColl], [felinesView])
     const [unmodifiedAnimals, mergedFelines] = result
 
-    t.strictSame(unmodifiedAnimals, animalsColl)
-    t.strictSame(mergedFelines, {
+    t.assert.deepStrictEqual(unmodifiedAnimals, animalsColl)
+    t.assert.deepStrictEqual(mergedFelines, {
       name: 'felines',
       endpointBasePath: '/felines-endpoint',
       enableLookup: false,
@@ -58,14 +58,12 @@ tap.test('mergeViewsInCollections', t => {
         },
       }],
     })
-    t.end()
   })
 
   t.test('does not modify view already present in collections folder if no corresponding view is present in views folder', t => {
     const result = mergeViewsInCollections([caninesColl], [])
     const [unmodifiedCanines] = result
-    t.strictSame(unmodifiedCanines, caninesColl)
-    t.end()
+    t.assert.deepStrictEqual(unmodifiedCanines, caninesColl)
   })
 
   t.test('modifies view already present in collections folder if a corresponding view is present in views folder', t => {
@@ -96,7 +94,7 @@ tap.test('mergeViewsInCollections', t => {
       ]
     )
     const [mergedCanines] = result
-    t.strictSame(mergedCanines, {
+    t.assert.deepStrictEqual(mergedCanines, {
       name: 'canines',
       endpointBasePath: '/canines-endpoint',
       enableLookup: false,
@@ -120,15 +118,14 @@ tap.test('mergeViewsInCollections', t => {
         },
       }],
     })
-    t.end()
   })
 
   t.test('Recognize a definition as a view despite despite the absence of the \'type\' property.', t => {
     const result = mergeViewsInCollections([storesColl, openStoresColl], [openStoresView])
     const [collection, view] = result
 
-    t.strictSame(collection, storesColl)
-    t.strictSame(view, {
+    t.assert.deepStrictEqual(collection, storesColl)
+    t.assert.deepStrictEqual(view, {
       name: 'store-open',
       endpointBasePath: '/store-open-endpoint',
       enableLookup: false,
@@ -153,9 +150,5 @@ tap.test('mergeViewsInCollections', t => {
         },
       ],
     })
-
-    t.end()
   })
-
-  t.end()
 })

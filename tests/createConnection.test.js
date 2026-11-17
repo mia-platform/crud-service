@@ -16,7 +16,7 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const { ObjectId } = require('mongodb')
 const { getDatabaseNameByType } = require('../lib/pkFactories')
 const { fixtures, stationFixtures } = require('./utils')
@@ -27,18 +27,17 @@ const multipleFixtures = {
   stations: stationFixtures,
 }
 
-tap.test('Fastify register two different mongo instance', async t => {
+test('Fastify register two different mongo instance', async t => {
   const { fastify } = await setUpMultipleCollectionTest(t, multipleFixtures, ['books', 'stations'])
   const mongoDbStringCollection = fastify.mongo[getDatabaseNameByType('string')].db.collection('books')
   const mongoDbObjectIdCollection = fastify.mongo[getDatabaseNameByType('ObjectId')].db.collection('stations')
 
-  await t.test('Collection exists', async assert => {
-    assert.ok(mongoDbStringCollection)
-    assert.ok(mongoDbObjectIdCollection)
-    assert.end()
+  await t.test('Collection exists', async t => {
+    t.assert.ok(mongoDbStringCollection)
+    t.assert.ok(mongoDbObjectIdCollection)
   })
 
-  await t.test('The correct pkFactory is used and different ids are generated', async assert => {
+  await t.test('The correct pkFactory is used and different ids are generated', async t => {
     const stringIdentifier = 'stringIdentifier'
     const objectIdIdentifier = 'objectIdIdentifier'
 
@@ -48,11 +47,10 @@ tap.test('Fastify register two different mongo instance', async t => {
     const stringDocument = await mongoDbStringCollection.findOne({ testIdentifier: stringIdentifier })
     const objectIdDocument = await mongoDbObjectIdCollection.findOne({ testIdentifier: objectIdIdentifier })
 
-    assert.ok(stringDocument)
-    assert.ok(objectIdDocument)
+    t.assert.ok(stringDocument)
+    t.assert.ok(objectIdDocument)
 
-    assert.throws(() => new ObjectId(stringDocument._id))
-    assert.doesNotThrow(() => new ObjectId(objectIdDocument._id))
-    assert.end()
+    t.assert.throws(() => new ObjectId(stringDocument._id))
+    t.assert.doesNotThrow(() => new ObjectId(objectIdDocument._id))
   })
 }).then()

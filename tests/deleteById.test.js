@@ -16,7 +16,7 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const abstractLogger = require('abstract-logging')
 const { MongoClient } = require('mongodb')
 
@@ -40,7 +40,7 @@ const context = {
   now: new Date('2018-02-08'),
 }
 
-tap.test('deleteById', async t => {
+test('deleteById', async t => {
   const databaseName = getMongoDatabaseName()
   const mongoURL = getMongoURL(databaseName)
 
@@ -48,7 +48,7 @@ tap.test('deleteById', async t => {
   const database = client.db(databaseName)
   const collection = database.collection(BOOKS_COLLECTION_NAME)
 
-  t.teardown(async() => {
+  t.after(async() => {
     await database.dropDatabase()
     await client.close()
   })
@@ -65,13 +65,13 @@ tap.test('deleteById', async t => {
 
     t.test('should return the document', t => {
       t.plan(1)
-      t.strictSame(ret, publicFixtures[1])
+      t.assert.deepStrictEqual(ret, publicFixtures[1])
     })
 
     t.test('should remove the doc from the database', async t => {
       t.plan(1)
       const doc = await collection.findOne(context, { _id: chosenDocId })
-      t.strictSame(doc, null)
+      t.assert.deepStrictEqual(doc, null)
     })
 
     checkDocumentsInDatabase(t, collection, [], fixtures.filter(d => d._id !== chosenDocId))
@@ -86,13 +86,13 @@ tap.test('deleteById', async t => {
 
     t.test('should return the document', t => {
       t.plan(1)
-      t.strictSame(ret, publicFixtures[1])
+      t.assert.deepStrictEqual(ret, publicFixtures[1])
     })
 
     t.test('should remove the doc from the database', async t => {
       t.plan(1)
       const doc = await collection.findOne({ _id: chosenDocId })
-      t.strictSame(doc, null)
+      t.assert.deepStrictEqual(doc, null)
     })
 
     checkDocumentsInDatabase(t, collection, [], fixtures.filter(d => d._id !== chosenDocId))
@@ -107,7 +107,7 @@ tap.test('deleteById', async t => {
 
     t.test('should return null', async t => {
       t.plan(1)
-      t.strictSame(d, null)
+      t.assert.deepStrictEqual(d, null)
     })
 
     checkDocumentsInDatabase(t, collection, [], fixtures)
@@ -121,7 +121,7 @@ tap.test('deleteById', async t => {
 
     t.test('should return the document', async t => {
       t.plan(1)
-      t.strictSame(d, draftFixture)
+      t.assert.deepStrictEqual(d, draftFixture)
     })
 
     checkDocumentsInDatabase(t, collection, [], fixtures.filter(d => d._id !== fixtures[4]._id))
@@ -136,7 +136,7 @@ tap.test('deleteById', async t => {
 
     t.test('should return the document', async t => {
       t.plan(1)
-      t.strictSame(d, draftFixture)
+      t.assert.deepStrictEqual(d, draftFixture)
     })
 
     checkDocumentsInDatabase(t, collection, [], fixtures.filter(d => d._id !== draftFixture._id))
@@ -151,7 +151,7 @@ tap.test('deleteById', async t => {
 
     t.test('should return null', async t => {
       t.plan(1)
-      t.strictSame(d, null)
+      t.assert.deepStrictEqual(d, null)
     })
 
     checkDocumentsInDatabase(t, collection, [], fixtures)
@@ -166,7 +166,7 @@ tap.test('deleteById', async t => {
 
     t.test('should return the document', async t => {
       t.plan(1)
-      t.strictSame(d, draftFixture)
+      t.assert.deepStrictEqual(d, draftFixture)
     })
 
     checkDocumentsInDatabase(t, collection, [], fixtures.filter(d => d._id !== draftFixture._id))
@@ -181,7 +181,7 @@ tap.test('deleteById', async t => {
 
     t.test('should return null', async t => {
       t.plan(1)
-      t.strictSame(d, null)
+      t.assert.deepStrictEqual(d, null)
     })
 
     checkDocumentsInDatabase(t, collection, [], fixtures)

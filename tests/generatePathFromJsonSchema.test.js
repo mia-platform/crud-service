@@ -16,11 +16,11 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 
 const generatePathFromJsonSchema = require('../lib/generatePathFromJsonSchema')
 
-tap.test('generatePathFromJsonSchema', t => {
+test('generatePathFromJsonSchema', t => {
   t.test('paths and patternProperties', t => {
     const tests = [
       {
@@ -493,11 +493,9 @@ tap.test('generatePathFromJsonSchema', t => {
           useRegex: test.useRegex,
           addRawSchemaForNested: test.addRawSchemaForNested,
         })
-        t.strictSame({ paths, patternProperties }, test.expected)
+        t.assert.deepStrictEqual({ paths, patternProperties }, test.expected)
       })
     }
-
-    t.end()
   })
 
   t.test('throws if contains unsupported json schema operator', t => {
@@ -596,15 +594,12 @@ tap.test('generatePathFromJsonSchema', t => {
 
     for (const testCase of tests) {
       t.test(testCase.name, t => {
-        t.throws(
+        t.assert.throws(
           () => generatePathFromJsonSchema(testCase.jsonSchema),
           new Error(`Unsupported operation in jsonSchema: ${testCase.operationThrow}`)
         )
-        t.end()
       })
     }
-
-    t.end()
   })
 
   t.test('operators', t => {
@@ -819,14 +814,8 @@ tap.test('generatePathFromJsonSchema', t => {
       t.test(test.name, t => {
         const jsonSchema = test.input
         const { pathsOperators, patternPropertiesOperators } = generatePathFromJsonSchema(jsonSchema)
-        t.strictSame({ pathsOperators, patternPropertiesOperators }, test.expected)
-
-        t.end()
+        t.assert.deepStrictEqual({ pathsOperators, patternPropertiesOperators }, test.expected)
       })
     }
-
-    t.end()
   })
-
-  t.end()
 })

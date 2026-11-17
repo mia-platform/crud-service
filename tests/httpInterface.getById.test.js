@@ -16,7 +16,7 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const { ObjectId } = require('mongodb')
 
 const { STATES, __STATE__ } = require('../lib/consts')
@@ -50,7 +50,7 @@ const STATION_ID = STATION_DOC._id.toString()
 const MATCHING_MIR_CODE = STATION_DOC.CodiceMIR
 const NON_MATCHING_MIR_CODE = 'WrongMirCode'
 
-tap.test('HTTP GET /<id>', async t => {
+test('HTTP GET /<id>', async t => {
   const tests = [
     {
       name: 'without filter',
@@ -288,36 +288,30 @@ tap.test('HTTP GET /<id>', async t => {
       })
 
       t.test(`should return ${found ? '200' : '404'}`, t => {
-        t.strictSame(response.statusCode, (found ? 200 : 404))
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, (found ? 200 : 404))
       })
 
       t.test('should return "application/json"', t => {
-        t.ok(/application\/json/.test(response.headers['content-type']))
-        t.end()
+        t.assert.ok(/application\/json/.test(response.headers['content-type']))
       })
 
       t.test(`should return ${found ? 'the document' : 'NOT_FOUND_BODY'}`, t => {
         if (found) {
-          t.strictSame(JSON.parse(response.payload), found)
+          t.assert.deepStrictEqual(JSON.parse(response.payload), found)
         } else {
-          t.strictSame(JSON.parse(response.payload), NOT_FOUND_BODY)
+          t.assert.deepStrictEqual(JSON.parse(response.payload), NOT_FOUND_BODY)
         }
-        t.end()
       })
 
       t.test('should keep the document as is in database', async t => {
         const documents = await collection.find().toArray()
-        t.strictSame(documents, fixtures)
-        t.end()
+        t.assert.deepStrictEqual(documents, fixtures)
       })
-
-      t.end()
     })
   })
 })
 
-tap.test('HTTP GET /<id> with string id', async t => {
+test('HTTP GET /<id> with string id', async t => {
   const tests = [
     {
       name: 'without filter',
@@ -462,36 +456,30 @@ tap.test('HTTP GET /<id> with string id', async t => {
         headers: getHeaders(conf),
       })
       t.test(`should return ${found ? '200' : '404'}`, t => {
-        t.strictSame(response.statusCode, (found ? 200 : 404))
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, (found ? 200 : 404))
       })
 
       t.test('should return "application/json"', t => {
-        t.ok(/application\/json/.test(response.headers['content-type']))
-        t.end()
+        t.assert.ok(/application\/json/.test(response.headers['content-type']))
       })
 
       t.test(`should return ${found ? 'the document' : 'NOT_FOUND_BODY'}`, t => {
         if (found) {
-          t.strictSame(JSON.parse(response.payload), found)
+          t.assert.deepStrictEqual(JSON.parse(response.payload), found)
         } else {
-          t.strictSame(JSON.parse(response.payload), NOT_FOUND_BODY)
+          t.assert.deepStrictEqual(JSON.parse(response.payload), NOT_FOUND_BODY)
         }
-        t.end()
       })
 
       t.test('should keep the document as is in database', async t => {
         const documents = await collection.find().toArray()
-        t.strictSame(documents, stationFixtures)
-        t.end()
+        t.assert.deepStrictEqual(documents, stationFixtures)
       })
-
-      t.end()
     })
   })
 })
 
-tap.test('HTTP GET', async t => {
+test('HTTP GET', async t => {
   const { fastify, resetCollection } = await setUpTest(t, null, 'books', undefined, true)
 
   t.test('/:id cast correctly nested object with schema', async t => {
@@ -519,17 +507,15 @@ tap.test('HTTP GET', async t => {
       url: `${prefix}/${DOC_TEST._id.toHexString()}`,
       headers: {},
     })
-    t.strictSame(JSON.parse(response.payload).metadata, {
+    t.assert.deepStrictEqual(JSON.parse(response.payload).metadata, {
       somethingNumber: 3333,
     })
-    t.strictSame(JSON.parse(response.payload).attachments, [{
+    t.assert.deepStrictEqual(JSON.parse(response.payload).attachments, [{
       name: 'the-note',
       detail: {
         size: 6,
       },
     }])
-
-    t.end()
   })
 
   t.test('/:id filter correctly by nested object field', async t => {
@@ -572,16 +558,14 @@ tap.test('HTTP GET', async t => {
       headers: {},
     })
 
-    t.equal(response.statusCode, 200)
-    t.strictSame(JSON.parse(response.payload).metadata, {
+    t.assert.strictEqual(response.statusCode, 200)
+    t.assert.deepStrictEqual(JSON.parse(response.payload).metadata, {
       somethingNumber: 3333,
       somethingArrayObject: [{
         arrayItemObjectChildNumber: 4,
       }],
       somethingArrayOfNumbers: [5],
     })
-
-    t.end()
   })
 
   t.test('/:id 404 with unmatching filter on nested object', async t => {
@@ -609,28 +593,26 @@ tap.test('HTTP GET', async t => {
       headers: {},
     })
 
-    t.equal(response.statusCode, 404)
-    t.strictSame(JSON.parse(response.payload), NOT_FOUND_BODY)
-    t.end()
+    t.assert.strictEqual(response.statusCode, 404)
+    t.assert.deepStrictEqual(JSON.parse(response.payload), NOT_FOUND_BODY)
   })
 
   t.test('/:id fails with 400', async t => {
     await resetCollection([DOC])
 
     UNALLOWED_RAW_PROJECTIONS.forEach(projection => {
-      t.test('Should not allow raw projection', async assert => {
+      t.test('Should not allow raw projection', async t => {
         const { statusCode } = await fastify.inject({
           method: 'GET',
           url: `${prefix}/${ID}?_rawp=${JSON.stringify(projection)}`,
           headers: {},
         })
 
-        assert.strictSame(statusCode, 400)
-        assert.end()
+        t.assert.deepStrictEqual(statusCode, 400)
       })
     })
 
-    t.test('Should raise error if raw projection tries to override acls', async assert => {
+    t.test('Should raise error if raw projection tries to override acls', async t => {
       const expectedPayload = {
         statusCode: 400,
         error: 'Bad Request',
@@ -644,13 +626,12 @@ tap.test('HTTP GET', async t => {
         },
       })
 
-      assert.strictSame(statusCode, 400)
-      assert.strictSame(JSON.parse(payload), expectedPayload)
-      assert.end()
+      t.assert.deepStrictEqual(statusCode, 400)
+      t.assert.deepStrictEqual(JSON.parse(payload), expectedPayload)
     })
 
     UNALLOWED_RAW_PROJECTIONS.forEach(() => {
-      t.test('should not allow raw projection with projection (mixed _rawp and _p)', async assert => {
+      t.test('should not allow raw projection with projection (mixed _rawp and _p)', async t => {
         const expectedPayload = {
           statusCode: 400,
           error: 'Bad Request',
@@ -662,19 +643,14 @@ tap.test('HTTP GET', async t => {
           headers: {},
         })
 
-        assert.strictSame(statusCode, 400)
-        assert.strictSame(JSON.parse(payload), expectedPayload)
-        assert.end()
+        t.assert.deepStrictEqual(statusCode, 400)
+        t.assert.deepStrictEqual(JSON.parse(payload), expectedPayload)
       })
     })
-
-    t.end()
   })
-
-  t.end()
 })
 
-tap.test('HTTP GET /<id> shouldn\'t return fields not included in schema', async t => {
+test('HTTP GET /<id> shouldn\'t return fields not included in schema', async t => {
   const fixtureWithNotDefinedField = {
     ...STATION_DOC,
     UnknownField: 'unknownValue',
@@ -693,11 +669,9 @@ tap.test('HTTP GET /<id> shouldn\'t return fields not included in schema', async
     headers: {},
   })
 
-  t.strictSame(response.statusCode, (200))
-  t.ok(/application\/json/.test(response.headers['content-type']))
-  t.strictSame(JSON.parse(response.payload), expectedResponse)
-
-  t.end()
+  t.assert.deepStrictEqual(response.statusCode, (200))
+  t.assert.ok(/application\/json/.test(response.headers['content-type']))
+  t.assert.deepStrictEqual(JSON.parse(response.payload), expectedResponse)
 })
 
 

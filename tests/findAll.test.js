@@ -16,7 +16,7 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const abstractLogger = require('abstract-logging')
 const { MongoClient } = require('mongodb')
 
@@ -43,7 +43,7 @@ const context = {
   now: new Date('2018-02-08'),
 }
 
-tap.test('findAll', async t => {
+test('findAll', async t => {
   const databaseName = getMongoDatabaseName()
   const mongoURL = getMongoURL(databaseName)
 
@@ -53,7 +53,7 @@ tap.test('findAll', async t => {
 
   await clearCollectionAndInsertFixtures(collection)
 
-  t.teardown(async() => {
+  t.after(async() => {
     await database.dropDatabase()
     await client.close()
   })
@@ -65,7 +65,7 @@ tap.test('findAll', async t => {
 
     const data = await crudService.findAll(context, EMPTY_QUERY, ALL_FIELDS).toArray()
 
-    t.strictSame(data, publicFixtures)
+    t.assert.deepStrictEqual(data, publicFixtures)
   })
 
   t.test('query', t => {
@@ -78,7 +78,7 @@ tap.test('findAll', async t => {
 
       const data = await crudService.findAll(context, { price: { $gt: PRICE_LIMIT } }, ALL_FIELDS).toArray()
 
-      t.strictSame(data, publicFixtures.filter(d => d.price > PRICE_LIMIT))
+      t.assert.deepStrictEqual(data, publicFixtures.filter(d => d.price > PRICE_LIMIT))
     })
 
     t.test('could return an empty array', async t => {
@@ -86,7 +86,7 @@ tap.test('findAll', async t => {
 
       const data = await crudService.findAll(context, { foo: 'bar' }, DEFAULT_PROJECTION).toArray()
 
-      t.strictSame(data, [])
+      t.assert.deepStrictEqual(data, [])
     })
   })
 
@@ -98,7 +98,7 @@ tap.test('findAll', async t => {
 
       const data = await crudService.findAll(context, { name: { $regex: 'ulysses', $options: 'si' } }, ALL_FIELDS).toArray()
 
-      t.strictSame(data, publicFixtures.filter(d => /ulysses/i.test(d.name)))
+      t.assert.deepStrictEqual(data, publicFixtures.filter(d => /ulysses/i.test(d.name)))
     })
 
     t.test('could return an empty array', async t => {
@@ -106,7 +106,7 @@ tap.test('findAll', async t => {
 
       const data = await crudService.findAll(context, { foo: 'bar' }, DEFAULT_PROJECTION).toArray()
 
-      t.strictSame(data, [])
+      t.assert.deepStrictEqual(data, [])
     })
   })
 
@@ -118,7 +118,7 @@ tap.test('findAll', async t => {
 
       const data = await crudService.findAll(context, EMPTY_QUERY, ['name', 'price', 'isPromoted']).toArray()
 
-      t.strictSame(data, publicFixtures.map(d => {
+      t.assert.deepStrictEqual(data, publicFixtures.map(d => {
         return {
           _id: d._id,
           name: d.name,
@@ -133,7 +133,7 @@ tap.test('findAll', async t => {
 
       const data = await crudService.findAll(context, EMPTY_QUERY, DEFAULT_PROJECTION).toArray()
 
-      t.strictSame(data, publicFixtures.map(mapOnlyId))
+      t.assert.deepStrictEqual(data, publicFixtures.map(mapOnlyId))
     })
 
     t.test('should return only _id without projection', async t => {
@@ -141,7 +141,7 @@ tap.test('findAll', async t => {
 
       const data = await crudService.findAll(context, EMPTY_QUERY, DEFAULT_PROJECTION).toArray()
 
-      t.strictSame(data, publicFixtures.map(mapOnlyId))
+      t.assert.deepStrictEqual(data, publicFixtures.map(mapOnlyId))
     })
   })
 
@@ -152,7 +152,7 @@ tap.test('findAll', async t => {
       t.plan(1)
 
       const data = await crudService.findAll(context, EMPTY_QUERY, DEFAULT_PROJECTION, { price: 1 }).toArray()
-      t.strictSame(data, publicFixtures
+      t.assert.deepStrictEqual(data, publicFixtures
         .sort((a, b) => sortByPrice(a, b, 1))
         .map(mapOnlyId)
       )
@@ -163,7 +163,7 @@ tap.test('findAll', async t => {
 
       const data = await crudService.findAll(context, EMPTY_QUERY, DEFAULT_PROJECTION, { price: -1 }).toArray()
 
-      t.strictSame(data, publicFixtures
+      t.assert.deepStrictEqual(data, publicFixtures
         .sort((a, b) => sortByPrice(a, b, -1))
         .map(mapOnlyId)
       )
@@ -173,7 +173,7 @@ tap.test('findAll', async t => {
       t.plan(1)
 
       const data = await crudService.findAll(context, EMPTY_QUERY, DEFAULT_PROJECTION, { price: 1, name: 1 }).toArray()
-      t.strictSame(data, publicFixtures
+      t.assert.deepStrictEqual(data, publicFixtures
         .sort((a, b) => sortByName(a, b, 1))
         .sort((a, b) => sortByPrice(a, b, 1))
         .map(mapOnlyId)
@@ -189,7 +189,7 @@ tap.test('findAll', async t => {
         DEFAULT_PROJECTION,
         { price: -1, name: -1 }
       ).toArray()
-      t.strictSame(data, publicFixtures
+      t.assert.deepStrictEqual(data, publicFixtures
         .sort((a, b) => sortByName(a, b, -1))
         .sort((a, b) => sortByPrice(a, b, -1))
         .map(mapOnlyId)
@@ -200,7 +200,7 @@ tap.test('findAll', async t => {
       t.plan(1)
 
       const data = await crudService.findAll(context, EMPTY_QUERY, DEFAULT_PROJECTION, { price: 1, name: -1 }).toArray()
-      t.strictSame(data, publicFixtures
+      t.assert.deepStrictEqual(data, publicFixtures
         .sort((a, b) => sortByName(a, b, -1))
         .sort((a, b) => sortByPrice(a, b, 1))
         .map(mapOnlyId)
@@ -211,7 +211,7 @@ tap.test('findAll', async t => {
       t.plan(1)
 
       const data = await crudService.findAll(context, EMPTY_QUERY, DEFAULT_PROJECTION, { price: -1, name: 1 }).toArray()
-      t.strictSame(data, publicFixtures
+      t.assert.deepStrictEqual(data, publicFixtures
         .sort((a, b) => sortByName(a, b, 1))
         .sort((a, b) => sortByPrice(a, b, -1))
         .map(mapOnlyId)
@@ -227,7 +227,7 @@ tap.test('findAll', async t => {
         DEFAULT_PROJECTION,
         { price: -1, name: 1, publishDate: 1 }
       ).toArray()
-      t.strictSame(data, publicFixtures
+      t.assert.deepStrictEqual(data, publicFixtures
         .sort((a, b) => sortByDate(a, b, 1))
         .sort((a, b) => sortByName(a, b, 1))
         .sort((a, b) => sortByPrice(a, b, -1))
@@ -244,7 +244,7 @@ tap.test('findAll', async t => {
         DEFAULT_PROJECTION,
         { price: -1, 'attachments.name': 1, publishDate: 1 }
       ).toArray()
-      t.strictSame(data, publicFixtures
+      t.assert.deepStrictEqual(data, publicFixtures
         .sort((a, b) => sortByDate(a, b, 1))
         .sort((a, b) => sortByAttachmentsName(a, b, 1))
         .sort((a, b) => sortByPrice(a, b, -1))
@@ -269,7 +269,7 @@ tap.test('findAll', async t => {
         SKIP_COUNT
       ).toArray()
 
-      t.strictSame(data, publicFixtures
+      t.assert.deepStrictEqual(data, publicFixtures
         .sort((a, b) => sortByPrice(a, b, 1))
         .map(mapOnlyId)
         .slice(SKIP_COUNT)
@@ -294,8 +294,8 @@ tap.test('findAll', async t => {
         LIMIT
       ).toArray()
 
-      t.equal(data.length, LIMIT)
-      t.strictSame(data, publicFixtures
+      t.assert.strictEqual(data.length, LIMIT)
+      t.assert.deepStrictEqual(data, publicFixtures
         .sort((a, b) => sortByPrice(a, b, 1))
         .map(mapOnlyId)
         .slice(0, LIMIT)
@@ -319,7 +319,7 @@ tap.test('findAll', async t => {
         [STATES.DRAFT]
       ).toArray()
 
-      t.strictSame(data, [mapOnlyId(draftFixture)])
+      t.assert.deepStrictEqual(data, [mapOnlyId(draftFixture)])
     })
   })
 
@@ -350,7 +350,7 @@ tap.test('findAll', async t => {
             return a.nestedArr && a.nestedArr.some(fp => fp === 3)
           })
       }
-      t.strictSame(data, fixtures.filter(mf).map(mapOnlyId))
+      t.assert.deepStrictEqual(data, fixtures.filter(mf).map(mapOnlyId))
     })
   })
 })

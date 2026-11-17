@@ -16,7 +16,7 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const abstractLogger = require('abstract-logging')
 const { MongoClient } = require('mongodb')
 
@@ -132,7 +132,7 @@ const unallowedTransitionTests = [
 
 // #endregion
 
-tap.test('CrudService -> changeStateById ->', async t => {
+test('CrudService -> changeStateById ->', async t => {
   const databaseName = getMongoDatabaseName()
   const mongoURL = getMongoURL(databaseName)
 
@@ -140,7 +140,7 @@ tap.test('CrudService -> changeStateById ->', async t => {
   const database = client.db(databaseName)
   const collection = database.collection(BOOKS_COLLECTION_NAME)
 
-  t.teardown(async() => {
+  t.after(async() => {
     await database.dropDatabase()
     await client.close()
   })
@@ -155,26 +155,21 @@ tap.test('CrudService -> changeStateById ->', async t => {
         const ret = await crudService.changeStateById(context, chosenDoc._id, stateTo)
 
         t.test('should acknowledge the update', t => {
-          t.strictSame(ret, 1)
           t.plan(1)
+          t.assert.deepStrictEqual(ret, 1)
         })
 
         t.test('should update the doc from the database', async t => {
           const doc = await collection.findOne({ _id: chosenDoc._id })
 
-          t.strictSame(doc.__STATE__, stateTo)
-          t.strictSame(doc.updaterId, context.userId)
+          t.assert.deepStrictEqual(doc.__STATE__, stateTo)
+          t.assert.deepStrictEqual(doc.updaterId, context.userId)
           // t.strictSame(ret.updatedAt, context.now)
-
-          t.end()
         })
 
         checkDocumentsInDatabase(t, collection, [chosenDoc._id], fixtures.filter(d => d._id !== chosenDoc._id))
-        t.end()
       })
     })
-
-    t.end()
   })
 
   t.test('Unallowed transition', async t => {
@@ -188,18 +183,14 @@ tap.test('CrudService -> changeStateById ->', async t => {
           t.plan(1)
           try {
             await crudService.changeStateById(context, chosenDoc._id, stateTo)
-            t.fail('The changeStateById request should throw an exception')
+            t.assert.fail('The changeStateById request should throw an exception')
           } catch {
-            t.ok(true)
+            t.assert.ok(true)
           }
-
-          t.end()
         })
 
         checkDocumentsInDatabase(t, collection, [chosenDoc._id], fixtures.filter(d => d._id !== chosenDoc._id))
       })
     })
   })
-
-  t.end()
 })
