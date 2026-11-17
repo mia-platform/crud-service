@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## 7.3.0 - 2026-11-17
+
 ### Changed
 
 - updated NodeJS to v24: Docker images, `.nvmrc`, devcontainer and `engines` field now require Node.js `>=24`
