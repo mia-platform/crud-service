@@ -16,13 +16,13 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 
 const lc39 = require('@mia-platform/lc39')
 const path = require('path')
 const { getMongoDatabaseName, getMongoURL } = require('./utils')
 
-tap.test('envSchema tests', async t => {
+test('envSchema tests', async t => {
   const databaseName = getMongoDatabaseName()
   const mongoURL = getMongoURL(databaseName)
 
@@ -41,23 +41,23 @@ tap.test('envSchema tests', async t => {
   }
 
   t.test('Invalid base schema', async t => {
-    t.rejects(startFastify({ COLLECTION_DEFINITION_FOLDER: undefined }))
+    await t.assert.rejects(startFastify({ COLLECTION_DEFINITION_FOLDER: undefined }))
   })
 
   t.test('Valid base schema', async t => {
-    t.resolves(startFastify())
+    await t.assert.doesNotReject(startFastify())
   })
 
   t.test('Valid base schema with none provider', async t => {
-    t.resolves(startFastify({ KMS_PROVIDER: 'none' }))
+    await t.assert.doesNotReject(startFastify({ KMS_PROVIDER: 'none' }))
   })
 
   t.test('Missing local master key path', async t => {
-    t.rejects(startFastify({ KMS_PROVIDER: 'local' }))
+    await t.assert.rejects(startFastify({ KMS_PROVIDER: 'local' }))
   })
 
   t.test('Invalid local configuration for empty path', async t => {
-    t.rejects(startFastify({
+    await t.assert.rejects(startFastify({
       KMS_PROVIDER: 'local',
       LOCAL_MASTER_KEY_PATH: '',
       KEY_VAULT_NAMESPACE: 'db.collection',
@@ -65,7 +65,7 @@ tap.test('envSchema tests', async t => {
   })
 
   t.test('Invalid local configuration for keyvault namespace', async t => {
-    t.rejects(startFastify({
+    await t.assert.rejects(startFastify({
       KMS_PROVIDER: 'local',
       LOCAL_MASTER_KEY_PATH: '',
       KEY_VAULT_NAMESPACE: 'db_only',
@@ -73,7 +73,7 @@ tap.test('envSchema tests', async t => {
   })
 
   t.test('Invalid local configuration for keyvault namespace format', async t => {
-    t.rejects(startFastify({
+    await t.assert.rejects(startFastify({
       KMS_PROVIDER: 'local',
       LOCAL_MASTER_KEY_PATH: '',
       KEY_VAULT_NAMESPACE: 'db.collection.other',
@@ -81,7 +81,7 @@ tap.test('envSchema tests', async t => {
   })
 
   t.test('Valid local configuration', async t => {
-    t.resolves(startFastify({
+    await t.assert.doesNotReject(startFastify({
       KMS_PROVIDER: 'local',
       LOCAL_MASTER_KEY_PATH: 'path',
       KEY_VAULT_NAMESPACE: 'db.collection',
@@ -89,21 +89,21 @@ tap.test('envSchema tests', async t => {
   })
 
   t.test('Valid base schema with views definition folder', async t => {
-    t.resolves(startFastify({
+    await t.assert.doesNotReject(startFastify({
       VIEWS_DEFINITION_FOLDER: path.join(__dirname, 'emptyViewsDefinitions'),
     }))
   })
 
   t.test('Missing props for gcp kms', async t => {
-    t.rejects(startFastify({ KMS_PROVIDER: 'gcp' }))
+    await t.assert.rejects(startFastify({ KMS_PROVIDER: 'gcp' }))
   })
 
   t.test('Missing half props for gcp kms', async t => {
-    t.rejects(startFastify({ KMS_PROVIDER: 'gcp', KMS_GCP_EMAIL: 'a@a.it', KMS_GCP_PROJECT_ID: '123', KMS_GCP_LOCATION: 'italy' }))
+    await t.assert.rejects(startFastify({ KMS_PROVIDER: 'gcp', KMS_GCP_EMAIL: 'a@a.it', KMS_GCP_PROJECT_ID: '123', KMS_GCP_LOCATION: 'italy' }))
   })
 
   t.test('Invalid gcp configuration for empty path', async t => {
-    t.rejects(
+    await t.assert.rejects(
       startFastify({
         KMS_PROVIDER: 'gcp',
         KMS_GCP_EMAIL: 'a@a.it',
@@ -118,7 +118,7 @@ tap.test('envSchema tests', async t => {
   })
 
   t.test('Invalid gcp configuration for bad kay vault namespace', async t => {
-    t.rejects(
+    await t.assert.rejects(
       startFastify({
         KMS_PROVIDER: 'gcp',
         KMS_GCP_EMAIL: 'a@a.it',
@@ -133,7 +133,7 @@ tap.test('envSchema tests', async t => {
   })
 
   t.test('Valid gcp configuration', async t => {
-    t.resolves(
+    await t.assert.doesNotReject(
       startFastify({
         KMS_PROVIDER: 'gcp',
         KMS_GCP_EMAIL: 'a@a.it',

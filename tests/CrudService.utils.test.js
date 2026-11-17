@@ -17,28 +17,28 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const { STATES, __STATE__ } = require('../lib/consts')
 const { getStateQuery } = require('../lib/CrudService.utils')
 
-tap.test('crudService utils', async test => {
+test('crudService utils', async test => {
   test.test('getStateQuery', async t => {
-    t.test('one state returns basic query', async assert => {
+    t.test('one state returns basic query', async t => {
       const mockStates = [STATES.DRAFT]
       const queryResult = getStateQuery(mockStates)
-      assert.strictSame(queryResult, { [__STATE__]: STATES.DRAFT })
+      t.assert.deepStrictEqual(queryResult, { [__STATE__]: STATES.DRAFT })
     })
 
-    t.test('empty array returns default query', async assert => {
+    t.test('empty array returns default query', async t => {
       const mockStates = []
       const queryResult = getStateQuery(mockStates)
-      assert.strictSame(queryResult, { [__STATE__]: STATES.PUBLIC })
+      t.assert.deepStrictEqual(queryResult, { [__STATE__]: STATES.PUBLIC })
     })
 
-    t.test('more states returns $in query', async assert => {
+    t.test('more states returns $in query', async t => {
       const mockStates = [STATES.PUBLIC, STATES.DELETED]
       const queryResult = getStateQuery(mockStates)
-      assert.strictSame(queryResult, { [__STATE__]: { $in: [STATES.PUBLIC, STATES.DELETED] } })
+      t.assert.deepStrictEqual(queryResult, { [__STATE__]: { $in: [STATES.PUBLIC, STATES.DELETED] } })
     })
   })
 })

@@ -16,7 +16,7 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const path = require('path')
 const lc39 = require('@mia-platform/lc39')
 
@@ -36,7 +36,7 @@ const NEW_COLLECTION_DEFINITION_FOLDER = path.join(__dirname, 'newCollectionDefi
 const WRONG_DEFINITION_FOLDER = path.join(__dirname, 'wrongDefinitions')
 const VIEWS_DEFINITION_FOLDER = path.join(__dirname, 'viewsDefinitions')
 
-tap.test('integration', async t => {
+test('integration', async t => {
   const databaseName = getMongoDatabaseName()
   const mongoURL = getMongoURL(databaseName)
 
@@ -55,7 +55,7 @@ tap.test('integration', async t => {
     logLevel: 'silent',
   })
 
-  t.teardown(async() => {
+  t.after(async() => {
     await database.dropDatabase()
     await client.close()
     await fastify.close()
@@ -69,7 +69,7 @@ tap.test('integration', async t => {
       url: '/books-endpoint/',
     })
 
-    t.strictSame(response.statusCode, 200)
+    t.assert.deepStrictEqual(response.statusCode, 200)
   })
 
   t.test('book second internal endpoint is up', async t => {
@@ -80,7 +80,7 @@ tap.test('integration', async t => {
       url: '/internal/books-endpoint/',
     })
 
-    t.strictSame(response.statusCode, 200)
+    t.assert.deepStrictEqual(response.statusCode, 200)
   })
 
   t.test('car is up', async t => {
@@ -91,13 +91,11 @@ tap.test('integration', async t => {
       url: '/cars-endpoint/',
     })
 
-    t.strictSame(response.statusCode, 200)
+    t.assert.deepStrictEqual(response.statusCode, 200)
   })
-
-  t.end()
 })
 
-tap.test('JSON Schema collection definition integration', async t => {
+test('JSON Schema collection definition integration', async t => {
   const databaseName = getMongoDatabaseName()
   const mongoURL = getMongoURL(databaseName)
 
@@ -116,7 +114,7 @@ tap.test('JSON Schema collection definition integration', async t => {
     logLevel: 'silent',
   })
 
-  t.teardown(async() => {
+  t.after(async() => {
     await database.dropDatabase()
     await client.close()
     await fastify.close()
@@ -130,7 +128,7 @@ tap.test('JSON Schema collection definition integration', async t => {
       url: '/books-endpoint/',
     })
 
-    t.strictSame(response.statusCode, 200)
+    t.assert.deepStrictEqual(response.statusCode, 200)
   })
 
   t.test('car is up', async t => {
@@ -141,13 +139,11 @@ tap.test('JSON Schema collection definition integration', async t => {
       url: '/cars-endpoint/',
     })
 
-    t.strictSame(response.statusCode, 200)
+    t.assert.deepStrictEqual(response.statusCode, 200)
   })
-
-  t.end()
 })
 
-tap.test('JSON Schema wrong collection definition integration', async t => {
+test('JSON Schema wrong collection definition integration', async t => {
   const databaseName = getMongoDatabaseName()
   const mongoURL = getMongoURL(databaseName)
 
@@ -164,16 +160,14 @@ tap.test('JSON Schema wrong collection definition integration', async t => {
         },
         logLevel: 'silent',
       })
-      t.fail()
+      t.assert.fail()
     } catch {
-      t.pass()
+      t.assert.ok(true)
     }
   })
-
-  t.end()
 })
 
-tap.test('service without collections configured not throw', async t => {
+test('service without collections configured not throw', async t => {
   t.plan(1)
 
   const databaseName = getMongoDatabaseName()
@@ -190,15 +184,15 @@ tap.test('service without collections configured not throw', async t => {
     logLevel: 'silent',
   })
 
-  t.teardown(async() => {
+  t.after(async() => {
     await client.close()
     await fastify.close()
   })
 
-  t.ok(true)
+  t.assert.ok(true)
 })
 
-tap.test('views integration', async t => {
+test('views integration', async t => {
   const databaseName = getMongoDatabaseName()
   const mongoURL = getMongoURL(databaseName)
   const client = await MongoClient.connect(mongoURL)
@@ -224,7 +218,7 @@ tap.test('views integration', async t => {
     logLevel: 'silent',
   })
 
-  t.teardown(async() => {
+  t.after(async() => {
     await felinesCollection.drop()
     await client.close()
     await fastify.close()
@@ -236,13 +230,13 @@ tap.test('views integration', async t => {
       url: '/animals-endpoint/',
     })
 
-    t.strictSame(response.statusCode, 200)
+    t.assert.deepStrictEqual(response.statusCode, 200)
 
     const [firstAnimal] = JSON.parse(response.payload)
-    t.strictSame(firstAnimal.name, 'fufi')
-    t.strictSame(firstAnimal.family, 'canines')
-    t.strictSame(firstAnimal.specie, 'dog')
-    t.strictSame(firstAnimal.weight, 14)
+    t.assert.deepStrictEqual(firstAnimal.name, 'fufi')
+    t.assert.deepStrictEqual(firstAnimal.family, 'canines')
+    t.assert.deepStrictEqual(firstAnimal.specie, 'dog')
+    t.assert.deepStrictEqual(firstAnimal.weight, 14)
   })
 
   t.test('felines view is up', async t => {
@@ -251,10 +245,10 @@ tap.test('views integration', async t => {
       url: '/felines-endpoint/',
     })
 
-    t.strictSame(response.statusCode, 200)
+    t.assert.deepStrictEqual(response.statusCode, 200)
     const [firstFeline] = JSON.parse(response.payload)
-    t.strictSame(firstFeline.name, 'oliver')
-    t.strictSame(firstFeline.weight, 6)
+    t.assert.deepStrictEqual(firstFeline.name, 'oliver')
+    t.assert.deepStrictEqual(firstFeline.weight, 6)
   })
 
   t.test('felines view does not expose DELETE route', async t => {
@@ -263,8 +257,8 @@ tap.test('views integration', async t => {
       url: '/felines-endpoint/',
     })
 
-    t.strictSame(response.statusCode, 404)
-    t.strictSame(JSON.parse(response.payload), { error: 'not found' })
+    t.assert.deepStrictEqual(response.statusCode, 404)
+    t.assert.deepStrictEqual(JSON.parse(response.payload), { error: 'not found' })
   })
 
   t.test('felines view does not expose POST route', async t => {
@@ -277,8 +271,8 @@ tap.test('views integration', async t => {
       },
     })
 
-    t.strictSame(response.statusCode, 404)
-    t.strictSame(JSON.parse(response.payload), { error: 'not found' })
+    t.assert.deepStrictEqual(response.statusCode, 404)
+    t.assert.deepStrictEqual(JSON.parse(response.payload), { error: 'not found' })
   })
 
   t.test('felines view does not expose PATCH route', async t => {
@@ -293,8 +287,8 @@ tap.test('views integration', async t => {
       },
     })
 
-    t.strictSame(response.statusCode, 404)
-    t.strictSame(JSON.parse(response.payload), { error: 'not found' })
+    t.assert.deepStrictEqual(response.statusCode, 404)
+    t.assert.deepStrictEqual(JSON.parse(response.payload), { error: 'not found' })
   })
 
   t.test('canines view integrated in collection definition is up', async t => {
@@ -303,10 +297,10 @@ tap.test('views integration', async t => {
       url: '/canines-endpoint/',
     })
 
-    t.strictSame(response.statusCode, 200)
+    t.assert.deepStrictEqual(response.statusCode, 200)
     const [firstFeline] = JSON.parse(response.payload)
-    t.strictSame(firstFeline.name, 'fufi')
-    t.strictSame(firstFeline.weight, 14)
+    t.assert.deepStrictEqual(firstFeline.name, 'fufi')
+    t.assert.deepStrictEqual(firstFeline.weight, 14)
   })
 
   t.test('canines view integrated in collection definition does not expose DELETE route', async t => {
@@ -315,8 +309,8 @@ tap.test('views integration', async t => {
       url: '/canines-endpoint/',
     })
 
-    t.strictSame(response.statusCode, 404)
-    t.strictSame(JSON.parse(response.payload), { error: 'not found' })
+    t.assert.deepStrictEqual(response.statusCode, 404)
+    t.assert.deepStrictEqual(JSON.parse(response.payload), { error: 'not found' })
   })
 
   t.test('canines view integrated in collection definition does not expose POST route', async t => {
@@ -329,8 +323,8 @@ tap.test('views integration', async t => {
       },
     })
 
-    t.strictSame(response.statusCode, 404)
-    t.strictSame(JSON.parse(response.payload), { error: 'not found' })
+    t.assert.deepStrictEqual(response.statusCode, 404)
+    t.assert.deepStrictEqual(JSON.parse(response.payload), { error: 'not found' })
   })
 
   t.test('canines view integrated in collection definition does not expose PATCH route', async t => {
@@ -345,14 +339,12 @@ tap.test('views integration', async t => {
       },
     })
 
-    t.strictSame(response.statusCode, 404)
-    t.strictSame(JSON.parse(response.payload), { error: 'not found' })
+    t.assert.deepStrictEqual(response.statusCode, 404)
+    t.assert.deepStrictEqual(JSON.parse(response.payload), { error: 'not found' })
   })
-
-  t.end()
 })
 
-tap.test('encryption integration', async t => {
+test('encryption integration', async t => {
   const databaseName = getMongoDatabaseName()
   const mongoURL = getMongoURL(databaseName)
 
@@ -362,9 +354,8 @@ tap.test('encryption integration', async t => {
   const isEncryptionSupported = process.env.MONGO_VERSION >= '4.2'
 
   if (!isEncryptionSupported) {
-    t.comment('For this mongo version encryption is not supported, I will skip this test')
+    t.diagnostic('For this mongo version encryption is not supported, I will skip this test')
     await client.close()
-    t.end()
     return
   }
 
@@ -372,6 +363,8 @@ tap.test('encryption integration', async t => {
   try {
     await collection.drop()
   } catch (error) { /* ignore errors raised while removing records from collection */ }
+
+  t.after(() => client.close())
 
   const fastify = await lc39('./index.js', {
     envVariables: {
@@ -385,8 +378,7 @@ tap.test('encryption integration', async t => {
     logLevel: 'silent',
   })
 
-  t.teardown(async() => {
-    await client.close()
+  t.after(async() => {
     await fastify.close()
   })
 
@@ -398,7 +390,7 @@ tap.test('encryption integration', async t => {
       url: '/books-endpoint/',
     })
 
-    t.strictSame(response.statusCode, 200)
+    t.assert.deepStrictEqual(response.statusCode, 200)
   })
 
   t.test('book encrypted is up', async t => {
@@ -409,7 +401,7 @@ tap.test('encryption integration', async t => {
       url: '/books-encrypted-endpoint/',
     })
 
-    t.strictSame(response.statusCode, 200)
+    t.assert.deepStrictEqual(response.statusCode, 200)
   })
 
   t.test('car is up', async t => {
@@ -420,7 +412,7 @@ tap.test('encryption integration', async t => {
       url: '/cars-endpoint/',
     })
 
-    t.strictSame(response.statusCode, 200)
+    t.assert.deepStrictEqual(response.statusCode, 200)
   })
 
   t.test('books-encrypted is really encrypted', async t => {
@@ -441,16 +433,16 @@ tap.test('encryption integration', async t => {
       },
     })
 
-    t.strictSame(postResponse.statusCode, 200)
+    t.assert.deepStrictEqual(postResponse.statusCode, 200)
 
     const book = await collection.findOne()
 
-    t.not(book.name, 'Crypted name')
-    t.not(book.isbn, 'Crypted isbn')
-    t.equal(book.author, 'Uncrypted author')
-    t.not(book.metadata.somethingString, 'String something')
-    t.not(book.metadata.somethingObject.childNumber, 3)
-    t.equal(book.metadata.somethingNumber, 3)
+    t.assert.notStrictEqual(book.name, 'Crypted name')
+    t.assert.notStrictEqual(book.isbn, 'Crypted isbn')
+    t.assert.strictEqual(book.author, 'Uncrypted author')
+    t.assert.notStrictEqual(book.metadata.somethingString, 'String something')
+    t.assert.notStrictEqual(book.metadata.somethingObject.childNumber, 3)
+    t.assert.strictEqual(book.metadata.somethingNumber, 3)
 
     const getResponse = await fastify.inject({
       method: 'GET',
@@ -459,19 +451,17 @@ tap.test('encryption integration', async t => {
 
     const [responsePayload] = JSON.parse(getResponse.payload)
 
-    t.strictSame(getResponse.statusCode, 200)
-    t.equal(responsePayload.name, 'Crypted name')
-    t.equal(responsePayload.isbn, 'Crypted isbn')
-    t.equal(responsePayload.author, 'Uncrypted author')
-    t.equal(responsePayload.metadata.somethingString, 'String something')
-    t.equal(responsePayload.metadata.somethingObject.childNumber, 3)
-    t.equal(responsePayload.metadata.somethingNumber, 3)
-
-    t.end()
+    t.assert.deepStrictEqual(getResponse.statusCode, 200)
+    t.assert.strictEqual(responsePayload.name, 'Crypted name')
+    t.assert.strictEqual(responsePayload.isbn, 'Crypted isbn')
+    t.assert.strictEqual(responsePayload.author, 'Uncrypted author')
+    t.assert.strictEqual(responsePayload.metadata.somethingString, 'String something')
+    t.assert.strictEqual(responsePayload.metadata.somethingObject.childNumber, 3)
+    t.assert.strictEqual(responsePayload.metadata.somethingNumber, 3)
   })
 })
 
-tap.test('JSON Schema collection definition encryption integration', async t => {
+test('JSON Schema collection definition encryption integration', async t => {
   const databaseName = getMongoDatabaseName()
   const mongoURL = getMongoURL(databaseName)
 
@@ -481,9 +471,8 @@ tap.test('JSON Schema collection definition encryption integration', async t => 
   const isEncryptionSupported = process.env.MONGO_VERSION >= '4.2'
 
   if (!isEncryptionSupported) {
-    t.comment('For this mongo version encryption is not supported, I will skip this test')
+    t.diagnostic('For this mongo version encryption is not supported, I will skip this test')
     await client.close()
-    t.end()
     return
   }
 
@@ -491,6 +480,8 @@ tap.test('JSON Schema collection definition encryption integration', async t => 
   try {
     await collection.drop()
   } catch (error) { /* ignore errors raised while removing records from collection */ }
+
+  t.after(() => client.close())
 
   const fastify = await lc39('./index.js', {
     envVariables: {
@@ -504,8 +495,7 @@ tap.test('JSON Schema collection definition encryption integration', async t => 
     logLevel: 'silent',
   })
 
-  t.teardown(async() => {
-    await client.close()
+  t.after(async() => {
     await fastify.close()
   })
 
@@ -517,7 +507,7 @@ tap.test('JSON Schema collection definition encryption integration', async t => 
       url: '/books-endpoint/',
     })
 
-    t.strictSame(response.statusCode, 200)
+    t.assert.deepStrictEqual(response.statusCode, 200)
   })
 
   t.test('book encrypted is up', async t => {
@@ -528,7 +518,7 @@ tap.test('JSON Schema collection definition encryption integration', async t => 
       url: '/books-encrypted-endpoint/',
     })
 
-    t.strictSame(response.statusCode, 200)
+    t.assert.deepStrictEqual(response.statusCode, 200)
   })
 
   t.test('car is up', async t => {
@@ -539,7 +529,7 @@ tap.test('JSON Schema collection definition encryption integration', async t => 
       url: '/cars-endpoint/',
     })
 
-    t.strictSame(response.statusCode, 200)
+    t.assert.deepStrictEqual(response.statusCode, 200)
   })
 
   t.test('books-encrypted is really encrypted', async t => {
@@ -560,16 +550,16 @@ tap.test('JSON Schema collection definition encryption integration', async t => 
       },
     })
 
-    t.strictSame(postResponse.statusCode, 200)
+    t.assert.deepStrictEqual(postResponse.statusCode, 200)
 
     const book = await collection.findOne()
 
-    t.not(book.name, 'Crypted name')
-    t.not(book.isbn, 'Crypted isbn')
-    t.equal(book.author, 'Uncrypted author')
-    t.not(book.metadata.somethingString, 'String something')
-    t.not(book.metadata.somethingObject.childNumber, 3)
-    t.equal(book.metadata.somethingNumber, 3)
+    t.assert.notStrictEqual(book.name, 'Crypted name')
+    t.assert.notStrictEqual(book.isbn, 'Crypted isbn')
+    t.assert.strictEqual(book.author, 'Uncrypted author')
+    t.assert.notStrictEqual(book.metadata.somethingString, 'String something')
+    t.assert.notStrictEqual(book.metadata.somethingObject.childNumber, 3)
+    t.assert.strictEqual(book.metadata.somethingNumber, 3)
 
     const getResponse = await fastify.inject({
       method: 'GET',
@@ -578,19 +568,17 @@ tap.test('JSON Schema collection definition encryption integration', async t => 
 
     const [responsePayload] = JSON.parse(getResponse.payload)
 
-    t.strictSame(getResponse.statusCode, 200)
-    t.equal(responsePayload.name, 'Crypted name')
-    t.equal(responsePayload.isbn, 'Crypted isbn')
-    t.equal(responsePayload.author, 'Uncrypted author')
-    t.equal(responsePayload.metadata.somethingString, 'String something')
-    t.equal(responsePayload.metadata.somethingObject.childNumber, 3)
-    t.equal(responsePayload.metadata.somethingNumber, 3)
-
-    t.end()
+    t.assert.deepStrictEqual(getResponse.statusCode, 200)
+    t.assert.strictEqual(responsePayload.name, 'Crypted name')
+    t.assert.strictEqual(responsePayload.isbn, 'Crypted isbn')
+    t.assert.strictEqual(responsePayload.author, 'Uncrypted author')
+    t.assert.strictEqual(responsePayload.metadata.somethingString, 'String something')
+    t.assert.strictEqual(responsePayload.metadata.somethingObject.childNumber, 3)
+    t.assert.strictEqual(responsePayload.metadata.somethingNumber, 3)
   })
 })
 
-tap.test('ALLOW_DISK_USE_IN_QUERIES integration', async t => {
+test('ALLOW_DISK_USE_IN_QUERIES integration', async t => {
   t.test('Should work correctly if set to true (mongo >= 4.4 only)', async t => {
     if (process.env.MONGO_VERSION < '4.4') {
       t.test()
@@ -618,9 +606,10 @@ tap.test('ALLOW_DISK_USE_IN_QUERIES integration', async t => {
 
     // The following test is based instead on the CrudService class implementation
     // Being bound to that, it's not safe, but it's better than a mock imho
-    t.match(fastify.models['books-endpoint'].crudService, { _options: { allowDiskUse: true } })
+    // eslint-disable-next-line no-underscore-dangle
+    t.assert.strictEqual(fastify.models['books-endpoint'].crudService._options.allowDiskUse, true)
 
-    t.teardown(async() => {
+    t.after(async() => {
       await client.close()
       await fastify.close()
     })
@@ -643,8 +632,8 @@ tap.test('ALLOW_DISK_USE_IN_QUERIES integration', async t => {
         url: '/books-endpoint/',
       })
 
-      t.strictSame(response.statusCode, 200)
-      t.match(commandStartedEvents, [{ commandName: 'find', command: { allowDiskUse: true } }])
+      t.assert.deepStrictEqual(response.statusCode, 200)
+      t.assert.deepStrictEqual([commandStartedEvents[0]?.commandName, commandStartedEvents[0]?.command?.allowDiskUse], ['find', true])
     })
   })
 
@@ -672,9 +661,9 @@ tap.test('ALLOW_DISK_USE_IN_QUERIES integration', async t => {
     // The following test is based instead on the CrudService class implementation
     // Being bound to that, it's not safe, but it's better than a mock imho
     // eslint-disable-next-line no-underscore-dangle
-    t.equal(fastify.models['books-endpoint'].crudService._options.allowDiskUse, undefined)
+    t.assert.strictEqual(fastify.models['books-endpoint'].crudService._options.allowDiskUse, undefined)
 
-    t.teardown(() => fastify.close())
+    t.after(() => fastify.close())
 
     t.test('GET is successful', async t => {
       t.plan(1)
@@ -684,7 +673,7 @@ tap.test('ALLOW_DISK_USE_IN_QUERIES integration', async t => {
         url: '/books-endpoint/',
       })
 
-      t.strictSame(response.statusCode, 200)
+      t.assert.deepStrictEqual(response.statusCode, 200)
     })
   })
 })

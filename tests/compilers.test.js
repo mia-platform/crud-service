@@ -16,7 +16,7 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const Fastify = require('fastify')
 const { addValidatorCompiler } = require('../lib/compilers')
 const books = require('./collectionDefinitions/books')
@@ -30,13 +30,13 @@ const SCHEMA_CUSTOM_KEYWORDS = {
   UNIQUE_OPERATION_ID: 'operationId',
 }
 
-tap.test('compilers', async(t) => {
+test('compilers', async(t) => {
   const databaseName = getMongoDatabaseName()
 
   t.test('validator compiler should extract property correctly without collisions', async t => {
     const fastify = Fastify()
 
-    t.teardown(async() => fastify.close())
+    t.after(async() => fastify.close())
 
     fastify.decorate('config', { MONGODB_URL: getMongoURL(databaseName) })
     fastify.decorate('collections', [books])
@@ -67,11 +67,11 @@ tap.test('compilers', async(t) => {
 
     const validationFunc = fastify.validatorCompiler({ schema, url })
 
-    t.ok(validationFunc, 'Validator function should be created')
-    t.equal(typeof validationFunc, 'function', 'Validator function should be a function')
+    t.assert.ok(validationFunc, 'Validator function should be created')
+    t.assert.strictEqual(typeof validationFunc, 'function', 'Validator function should be a function')
     //* here we test that post schema from model is recognized correctly.
     //* we pass an empty object for ok validation and a wrong formatted _id for ko validation
-    t.ok(validationFunc({}), 'Validation should return true with invalid obj')
-    t.notOk(validationFunc({ _id: 'a' }), 'Validation should return false with invalid obj')
+    t.assert.ok(validationFunc({}), 'Validation should return true with invalid obj')
+    t.assert.ok(!(validationFunc({ _id: 'a' })), 'Validation should return false with invalid obj')
   })
 })

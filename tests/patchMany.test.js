@@ -16,7 +16,7 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const abstractLogger = require('abstract-logging')
 const { MongoClient } = require('mongodb')
 
@@ -43,7 +43,7 @@ const context = {
   now: new Date('2018-02-08'),
 }
 
-tap.test('patchMany', async t => {
+test('patchMany', async t => {
   const databaseName = getMongoDatabaseName()
   const mongoURL = getMongoURL(databaseName)
 
@@ -53,7 +53,7 @@ tap.test('patchMany', async t => {
 
   const crudService = new CrudService(collection, STATES.PUBLIC)
 
-  t.teardown(async() => {
+  t.after(async() => {
     await database.dropDatabase()
     await client.close()
   })
@@ -84,13 +84,13 @@ tap.test('patchMany', async t => {
 
     t.test('should return ok and one modification', t => {
       t.plan(1)
-      t.equal(ret, 1)
+      t.assert.strictEqual(ret, 1)
     })
 
     t.test('should update the doc from the database', async t => {
       t.plan(1)
       const doc = await collection.findOne({ _id: fixtures[firstDocIndex]._id })
-      t.strictSame(doc, newDoc)
+      t.assert.deepStrictEqual(doc, newDoc)
     })
 
     checkDocumentsInDatabase(
@@ -123,15 +123,15 @@ tap.test('patchMany', async t => {
 
     t.test('should return ok and two modifications', t => {
       t.plan(1)
-      t.equal(ret, 2)
+      t.assert.strictEqual(ret, 2)
     })
 
     t.test('should update the docs from the database', async t => {
       t.plan(2)
       const doc = await collection.findOne({ _id: fixtures[firstDocIndex]._id })
-      t.strictSame(doc, newDoc)
+      t.assert.deepStrictEqual(doc, newDoc)
       const doc2 = await collection.findOne({ _id: fixtures[secondDocIndex]._id })
-      t.strictSame(doc2, newDoc2)
+      t.assert.deepStrictEqual(doc2, newDoc2)
     })
 
     checkDocumentsInDatabase(
@@ -171,7 +171,7 @@ tap.test('patchMany', async t => {
 
     t.test('should return ok and zero modification', t => {
       t.plan(1)
-      t.equal(ret, 0)
+      t.assert.strictEqual(ret, 0)
     })
 
     checkDocumentsInDatabase(t, collection, [], fixtures)
@@ -191,7 +191,7 @@ tap.test('patchMany', async t => {
 
     t.test('should return ok and no modifications', t => {
       t.plan(1)
-      t.equal(ret, 0)
+      t.assert.strictEqual(ret, 0)
     })
 
     checkDocumentsInDatabase(t, collection, [], fixtures)
@@ -221,9 +221,9 @@ tap.test('patchMany', async t => {
             {},
             [STATES.PUBLIC]
           )
-          t.fail()
+          t.assert.fail()
         } catch (error) {
-          t.ok(testConf.regex.test(error.message), error.message)
+          t.assert.ok(testConf.regex.test(error.message), error.message)
         }
       })
     })
@@ -254,13 +254,13 @@ tap.test('patchMany', async t => {
 
     t.test('should return ok and one modification', t => {
       t.plan(1)
-      t.equal(ret, 1)
+      t.assert.strictEqual(ret, 1)
     })
 
     t.test('should update the doc from the database', async t => {
       t.plan(1)
       const doc = await collection.findOne({ _id: fixtures[0]._id })
-      t.strictSame(doc, updatedDoc)
+      t.assert.deepStrictEqual(doc, updatedDoc)
     })
 
     checkDocumentsInDatabase(
@@ -291,19 +291,19 @@ tap.test('patchMany', async t => {
 
     t.test('should return ok and one modification', t => {
       t.plan(1)
-      t.equal(ret, 2)
+      t.assert.strictEqual(ret, 2)
     })
 
     t.test('should update first doc from the database', async t => {
       t.plan(1)
       const doc = await collection.findOne({ _id: fixtures[0]._id })
-      t.strictSame(doc, updatedDoc)
+      t.assert.deepStrictEqual(doc, updatedDoc)
     })
 
     t.test('should update second doc from the database', async t => {
       t.plan(1)
       const doc = await collection.findOne({ _id: fixtures[7]._id })
-      t.strictSame(doc, secondUpdatedDoc)
+      t.assert.deepStrictEqual(doc, secondUpdatedDoc)
     })
 
     checkDocumentsInDatabase(

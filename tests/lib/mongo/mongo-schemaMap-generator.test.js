@@ -16,11 +16,11 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 
 const generateForDefinitions = require('../../../lib/mongo/mongo-schemaMap-generator')
 
-tap.test('String encryption test', t => {
+test('String encryption test', t => {
   t.test('correctly generate for searchable and enabled plain string', t => {
     const definitions = generateForDefinitions('booksDb', [{
       name: 'books',
@@ -34,7 +34,7 @@ tap.test('String encryption test', t => {
       }],
     }], { books: 'abcd' })
 
-    t.strictSame(definitions, {
+    t.assert.deepStrictEqual(definitions, {
       'booksDb.books': {
         bsonType: 'object',
         properties: {
@@ -48,8 +48,6 @@ tap.test('String encryption test', t => {
         },
       },
     })
-
-    t.end()
   })
 
   t.test('correctly generate for searchable and disabled plain string', t => {
@@ -64,14 +62,12 @@ tap.test('String encryption test', t => {
       }],
     }], { books: 'abcd' })
 
-    t.strictSame(definitions, {
+    t.assert.deepStrictEqual(definitions, {
       'booksDb.books': {
         bsonType: 'object',
         properties: {},
       },
     })
-
-    t.end()
   })
 
   t.test('correctly generate for unsearchable and enabled plain string', t => {
@@ -87,7 +83,7 @@ tap.test('String encryption test', t => {
       }],
     }], { books: 'abcd' })
 
-    t.strictSame(definitions, {
+    t.assert.deepStrictEqual(definitions, {
       'booksDb.books': {
         bsonType: 'object',
         properties: {
@@ -101,14 +97,10 @@ tap.test('String encryption test', t => {
         },
       },
     })
-
-    t.end()
   })
-
-  t.end()
 })
 
-tap.test('Number encryption test', t => {
+test('Number encryption test', t => {
   t.test('correctly generate for searchable and enabled plain number', t => {
     const definitions = generateForDefinitions('booksDb', [{
       name: 'books',
@@ -122,7 +114,7 @@ tap.test('Number encryption test', t => {
       }],
     }], { books: 'cdef' })
 
-    t.strictSame(definitions, {
+    t.assert.deepStrictEqual(definitions, {
       'booksDb.books': {
         bsonType: 'object',
         properties: {
@@ -136,8 +128,6 @@ tap.test('Number encryption test', t => {
         },
       },
     })
-
-    t.end()
   })
 
   t.test('correctly generate for searchable and disabled plain number', t => {
@@ -152,14 +142,12 @@ tap.test('Number encryption test', t => {
       }],
     }], { books: 'cdef' })
 
-    t.strictSame(definitions, {
+    t.assert.deepStrictEqual(definitions, {
       'booksDb.books': {
         bsonType: 'object',
         properties: {},
       },
     })
-
-    t.end()
   })
 
   t.test('correctly generate for unsearchable and enabled plain number', t => {
@@ -175,7 +163,7 @@ tap.test('Number encryption test', t => {
       }],
     }], { books: 'cdef' })
 
-    t.strictSame(definitions, {
+    t.assert.deepStrictEqual(definitions, {
       'booksDb.books': {
         bsonType: 'object',
         properties: {
@@ -189,16 +177,12 @@ tap.test('Number encryption test', t => {
         },
       },
     })
-
-    t.end()
   })
-
-  t.end()
 })
 
-tap.test('Bool encryption test', t => {
+test('Bool encryption test', t => {
   t.test('correctly throws for searchable and enabled plain bool', t => {
-    t.throws(() => generateForDefinitions('booksDb', [{
+    t.assert.throws(() => generateForDefinitions('booksDb', [{
       name: 'books',
       fields: [{
         name: 'goodConditions',
@@ -209,8 +193,6 @@ tap.test('Bool encryption test', t => {
         encryption: { enabled: true, searchable: true },
       }],
     }], { books: 'aaaa' }), { message: 'boolean is not searchable, only ObjectId, Date, string, number can be searched.' })
-
-    t.end()
   })
 
   t.test('correctly generate for searchable and disabled plain bool', t => {
@@ -225,14 +207,12 @@ tap.test('Bool encryption test', t => {
       }],
     }], { books: 'aaaa' })
 
-    t.strictSame(definitions, {
+    t.assert.deepStrictEqual(definitions, {
       'booksDb.books': {
         bsonType: 'object',
         properties: {},
       },
     })
-
-    t.end()
   })
 
   t.test('correctly generate for unsearchable and enabled plain bool', t => {
@@ -248,7 +228,7 @@ tap.test('Bool encryption test', t => {
       }],
     }], { books: 'aaaa' })
 
-    t.strictSame(definitions, {
+    t.assert.deepStrictEqual(definitions, {
       'booksDb.books': {
         bsonType: 'object',
         properties: {
@@ -262,14 +242,10 @@ tap.test('Bool encryption test', t => {
         },
       },
     })
-
-    t.end()
   })
-
-  t.end()
 })
 
-tap.test('Date encryption test', t => {
+test('Date encryption test', t => {
   t.test('correctly generate for searchable and enabled plain date', t => {
     const definitions = generateForDefinitions('booksDb', [{
       name: 'books',
@@ -283,7 +259,7 @@ tap.test('Date encryption test', t => {
       }],
     }], { books: 'bbbb' })
 
-    t.strictSame(definitions, {
+    t.assert.deepStrictEqual(definitions, {
       'booksDb.books': {
         bsonType: 'object',
         properties: {
@@ -297,8 +273,6 @@ tap.test('Date encryption test', t => {
         },
       },
     })
-
-    t.end()
   })
 
   t.test('correctly generate for searchable and disabled plain date', t => {
@@ -313,14 +287,12 @@ tap.test('Date encryption test', t => {
       }],
     }], { books: 'bbbb' })
 
-    t.strictSame(definitions, {
+    t.assert.deepStrictEqual(definitions, {
       'booksDb.books': {
         bsonType: 'object',
         properties: {},
       },
     })
-
-    t.end()
   })
 
   t.test('correctly generate for unsearchable and enabled plain date', t => {
@@ -336,7 +308,7 @@ tap.test('Date encryption test', t => {
       }],
     }], { books: 'aaaa' })
 
-    t.strictSame(definitions, {
+    t.assert.deepStrictEqual(definitions, {
       'booksDb.books': {
         bsonType: 'object',
         properties: {
@@ -350,14 +322,10 @@ tap.test('Date encryption test', t => {
         },
       },
     })
-
-    t.end()
   })
-
-  t.end()
 })
 
-tap.test('ObjectID encryption test', t => {
+test('ObjectID encryption test', t => {
   t.test('correctly generate for searchable and enabled plain objectId', t => {
     const definitions = generateForDefinitions('booksDb', [{
       name: 'books',
@@ -371,7 +339,7 @@ tap.test('ObjectID encryption test', t => {
       }],
     }], { books: 'wwww' })
 
-    t.strictSame(definitions, {
+    t.assert.deepStrictEqual(definitions, {
       'booksDb.books': {
         bsonType: 'object',
         properties: {
@@ -385,8 +353,6 @@ tap.test('ObjectID encryption test', t => {
         },
       },
     })
-
-    t.end()
   })
 
   t.test('correctly generate for searchable and disabled plain objectId', t => {
@@ -401,14 +367,12 @@ tap.test('ObjectID encryption test', t => {
       }],
     }], { books: 'wwww' })
 
-    t.strictSame(definitions, {
+    t.assert.deepStrictEqual(definitions, {
       'booksDb.books': {
         bsonType: 'object',
         properties: {},
       },
     })
-
-    t.end()
   })
 
   t.test('correctly generate for unsearchable and enabled plain objectId', t => {
@@ -424,7 +388,7 @@ tap.test('ObjectID encryption test', t => {
       }],
     }], { books: 'wwww' })
 
-    t.strictSame(definitions, {
+    t.assert.deepStrictEqual(definitions, {
       'booksDb.books': {
         bsonType: 'object',
         properties: {
@@ -438,16 +402,12 @@ tap.test('ObjectID encryption test', t => {
         },
       },
     })
-
-    t.end()
   })
-
-  t.end()
 })
 
-tap.test('Array encryption test', t => {
+test('Array encryption test', t => {
   t.test('correctly throws for searchable and enabled plain array', t => {
-    t.throws(() => generateForDefinitions('booksDb', [{
+    t.assert.throws(() => generateForDefinitions('booksDb', [{
       name: 'books',
       fields: [{
         name: 'tags',
@@ -460,8 +420,6 @@ tap.test('Array encryption test', t => {
         encryption: { enabled: true, searchable: true },
       }],
     }], { books: 'cccc' }), { message: 'Array is not searchable, only ObjectId, Date, string, number can be searched.' })
-
-    t.end()
   })
 
   t.test('correctly generate for searchable and disabled plain array', t => {
@@ -478,14 +436,12 @@ tap.test('Array encryption test', t => {
       }],
     }], { books: 'cccc' })
 
-    t.strictSame(definitions, {
+    t.assert.deepStrictEqual(definitions, {
       'booksDb.books': {
         bsonType: 'object',
         properties: {},
       },
     })
-
-    t.end()
   })
 
   t.test('correctly generate for unsearchable and enabled plain array', t => {
@@ -503,7 +459,7 @@ tap.test('Array encryption test', t => {
       }],
     }], { books: 'cccc' })
 
-    t.strictSame(definitions, {
+    t.assert.deepStrictEqual(definitions, {
       'booksDb.books': {
         bsonType: 'object',
         properties: {
@@ -517,16 +473,12 @@ tap.test('Array encryption test', t => {
         },
       },
     })
-
-    t.end()
   })
-
-  t.end()
 })
 
-tap.test('GeoPoint encryption test', t => {
+test('GeoPoint encryption test', t => {
   t.test('correctly throws for searchable and enabled geopoint', t => {
-    t.throws(() => generateForDefinitions('booksDb', [{
+    t.assert.throws(() => generateForDefinitions('booksDb', [{
       name: 'books',
       fields: [{
         name: 'additionalInfo',
@@ -535,8 +487,6 @@ tap.test('GeoPoint encryption test', t => {
         encryption: { enabled: true, searchable: true },
       }],
     }], { books: 'pppp' }), { message: 'GeoPoint is not searchable, only ObjectId, Date, string, number can be searched.' })
-
-    t.end()
   })
 
   t.test('correctly generate for searchable and disabled geopoint', t => {
@@ -550,14 +500,12 @@ tap.test('GeoPoint encryption test', t => {
       }],
     }], { books: 'pppp' })
 
-    t.strictSame(definition, {
+    t.assert.deepStrictEqual(definition, {
       'booksDb.books': {
         bsonType: 'object',
         properties: {},
       },
     })
-
-    t.end()
   })
 
   t.test('correctly generate for unsearchable and enabled geopoint', t => {
@@ -571,7 +519,7 @@ tap.test('GeoPoint encryption test', t => {
       }],
     }], { books: 'pppp' })
 
-    t.strictSame(definition, {
+    t.assert.deepStrictEqual(definition, {
       'booksDb.books': {
         bsonType: 'object',
         properties: {
@@ -585,15 +533,12 @@ tap.test('GeoPoint encryption test', t => {
         },
       },
     })
-
-    t.end()
   })
-  t.end()
 })
 
-tap.test('RawObject encryption test', t => {
+test('RawObject encryption test', t => {
   t.test('correctly throw for searchable and enabled plain object', t => {
-    t.throws(() => generateForDefinitions('booksDb', [{
+    t.assert.throws(() => generateForDefinitions('booksDb', [{
       name: 'books',
       fields: [{
         name: 'attachments',
@@ -610,8 +555,6 @@ tap.test('RawObject encryption test', t => {
         required: false,
       }],
     }], { books: 'pppp' }), { message: 'RawObject is not searchable, only ObjectId, Date, string, number can be searched.' })
-
-    t.end()
   })
 
   t.test('correctly generate for disabled plain object', t => {
@@ -632,7 +575,7 @@ tap.test('RawObject encryption test', t => {
       }],
     }], { books: 'pppp' })
 
-    t.strictSame(definitions, {
+    t.assert.deepStrictEqual(definitions, {
       'booksDb.books': {
         bsonType: 'object',
         properties: {
@@ -643,8 +586,6 @@ tap.test('RawObject encryption test', t => {
         },
       },
     })
-
-    t.end()
   })
 
   t.test('correctly generate for unsearchable and enabled plain object', t => {
@@ -666,7 +607,7 @@ tap.test('RawObject encryption test', t => {
       }],
     }], { books: 'pppp' })
 
-    t.strictSame(definitions, {
+    t.assert.deepStrictEqual(definitions, {
       'booksDb.books': {
         bsonType: 'object',
         properties: {
@@ -680,14 +621,10 @@ tap.test('RawObject encryption test', t => {
         },
       },
     })
-
-    t.end()
   })
-
-  t.end()
 })
 
-tap.test('All searchable fields encryption test', t => {
+test('All searchable fields encryption test', t => {
   t.test('correctly create configuration for all searchable fields', t => {
     const definitions = generateForDefinitions('booksDb', [{
       name: 'books',
@@ -726,7 +663,7 @@ tap.test('All searchable fields encryption test', t => {
         }],
     }], { books: 'abcd' })
 
-    t.strictSame(definitions, {
+    t.assert.deepStrictEqual(definitions, {
       'booksDb.books': {
         bsonType: 'object',
         properties: {
@@ -761,16 +698,12 @@ tap.test('All searchable fields encryption test', t => {
         },
       },
     })
-
-    t.end()
   })
-
-  t.end()
 })
 
-tap.test('Nested object encryption test', t => {
+test('Nested object encryption test', t => {
   t.test('correctly throws for searchable and enabled nested object', t => {
-    t.throws(() => generateForDefinitions('booksDb', [{
+    t.assert.throws(() => generateForDefinitions('booksDb', [{
       name: 'books',
       fields: [{
         name: 'attachments',
@@ -791,12 +724,10 @@ tap.test('Nested object encryption test', t => {
         required: false,
       }],
     }], { books: 'pppp' }), { message: 'RawObject is not searchable, only ObjectId, Date, string, number can be searched.' })
-
-    t.end()
   })
 
   t.test('correctly throws for unsearchable and enabled nested object with nested encryption', t => {
-    t.throws(() => generateForDefinitions('booksDb', [{
+    t.assert.throws(() => generateForDefinitions('booksDb', [{
       name: 'books',
       fields: [{
         name: 'attachments',
@@ -818,12 +749,10 @@ tap.test('Nested object encryption test', t => {
         required: false,
       }],
     }], { books: 'pppp' }), { message: 'An object has been wrongly configured to have some encrypted properties' })
-
-    t.end()
   })
 
   t.test('correctly throws for unsearchable and enabled nested object with more nested encryption', t => {
-    t.throws(() => generateForDefinitions('booksDb', [{
+    t.assert.throws(() => generateForDefinitions('booksDb', [{
       name: 'books',
       fields: [{
         name: 'attachments',
@@ -850,8 +779,6 @@ tap.test('Nested object encryption test', t => {
         required: false,
       }],
     }], { books: 'pppp' }), { message: 'An object has been wrongly configured to have some encrypted properties' })
-
-    t.end()
   })
 
   t.test('correctly generate for nested uncrypted object with nested encryption', t => {
@@ -877,7 +804,7 @@ tap.test('Nested object encryption test', t => {
       }],
     }], { books: 'pppp' })
 
-    t.strictSame(definition, {
+    t.assert.deepStrictEqual(definition, {
       'booksDb.books': {
         bsonType: 'object',
         properties: {
@@ -896,8 +823,6 @@ tap.test('Nested object encryption test', t => {
         },
       },
     })
-
-    t.end()
   })
 
   t.test('correctly generate for unsearchable and enabled nested object with more nested encryption', t => {
@@ -929,7 +854,7 @@ tap.test('Nested object encryption test', t => {
       }],
     }], { books: 'pppp' })
 
-    t.strictSame(definition, {
+    t.assert.deepStrictEqual(definition, {
       'booksDb.books': {
         bsonType: 'object',
         properties: {
@@ -953,9 +878,5 @@ tap.test('Nested object encryption test', t => {
         },
       },
     })
-
-    t.end()
   })
-
-  t.end()
 })

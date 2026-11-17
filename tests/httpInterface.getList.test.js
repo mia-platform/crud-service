@@ -16,7 +16,7 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const { STATES, __STATE__ } = require('../lib/consts')
 const {
   publicFixtures,
@@ -78,7 +78,7 @@ const EXPECTED_PUBLIC_DOCS_FOR_INCLUSIVE_RAW_PROJECTION = publicFixtures.map((do
     }
 })
 
-tap.test('HTTP GET /', async t => {
+test('HTTP GET /', async t => {
   const tests = [
     {
       name: 'without filters',
@@ -614,32 +614,26 @@ tap.test('HTTP GET /', async t => {
       })
 
       t.test('should return 200', t => {
-        t.strictSame(response.statusCode, 200, response.payload)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 200, response.payload)
       })
 
       t.test('should return "application/json"', t => {
-        t.strictSame(response.headers['content-type'], 'application/json')
-        t.end()
+        t.assert.deepStrictEqual(response.headers['content-type'], 'application/json')
       })
 
       t.test('should return the document', t => {
-        t.strictSame(JSON.parse(response.payload), found)
-        t.end()
+        t.assert.deepStrictEqual(JSON.parse(response.payload), found)
       })
 
       t.test('should keep the document as is in database', async t => {
         const documents = await collection.find().toArray()
-        t.strictSame(documents, fixtures)
-        t.end()
+        t.assert.deepStrictEqual(documents, fixtures)
       })
-
-      t.end()
     })
   })
 })
 
-tap.test('HTTP GET / - $text search', async t => {
+test('HTTP GET / - $text search', async t => {
   const textTests = [
     {
       name: 'with filter with $text search',
@@ -692,7 +686,7 @@ tap.test('HTTP GET / - $text search', async t => {
     },
   ]
 
-  const assertExpectedResponse = (assert, payload, expectedPayload) => {
+  const assertExpectedResponse = (t, payload, expectedPayload) => {
     for (const doc of payload) {
       const expectedDoc = { ...expectedPayload.filter(el => el.isbn === doc.isbn)[0] }
       const foundDoc = { ...doc }
@@ -703,7 +697,7 @@ tap.test('HTTP GET / - $text search', async t => {
         delete foundDoc.score
         delete expectedDoc.score
       }
-      assert.strictSame(foundDoc, expectedDoc)
+      t.assert.deepStrictEqual(foundDoc, expectedDoc)
     }
   }
 
@@ -724,13 +718,11 @@ tap.test('HTTP GET / - $text search', async t => {
       })
 
       t.test('should return 200', t => {
-        t.strictSame(response.statusCode, 200)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 200)
       })
 
       t.test('should return "application/json"', t => {
-        t.strictSame(response.headers['content-type'], 'application/json')
-        t.end()
+        t.assert.deepStrictEqual(response.headers['content-type'], 'application/json')
       })
 
       t.test('should return the document', t => {
@@ -744,21 +736,17 @@ tap.test('HTTP GET / - $text search', async t => {
           })
         }
         assertExpectedResponse(t, JSON.parse(response.payload), expectedResponse)
-        t.end()
       })
 
       t.test('should keep the document as is in database', async t => {
         const documents = await collection.find().toArray()
-        t.strictSame(documents, fixtures)
-        t.end()
+        t.assert.deepStrictEqual(documents, fixtures)
       })
-
-      t.end()
     })
   })
 })
 
-tap.test('HTTP GET / ', async t => {
+test('HTTP GET / ', async t => {
   const { fastify, collection, resetCollection } = await setUpTest(t, [], undefined, undefined, true)
   t.test('cast correctly nested object with schema', async t => {
     const DOC_TEST = {
@@ -783,10 +771,10 @@ tap.test('HTTP GET / ', async t => {
       url: `${prefix}/`,
       headers: {},
     })
-    t.strictSame(JSON.parse(response.payload)[0].metadata, {
+    t.assert.deepStrictEqual(JSON.parse(response.payload)[0].metadata, {
       somethingNumber: 3333,
     })
-    t.strictSame(JSON.parse(response.payload)[0].attachments, [
+    t.assert.deepStrictEqual(JSON.parse(response.payload)[0].attachments, [
       {
         name: 'the-note',
         detail: {
@@ -794,8 +782,6 @@ tap.test('HTTP GET / ', async t => {
         },
       },
     ])
-
-    t.end()
   })
 
   t.test('filter on nested object with object notation cannot be used', async t => {
@@ -824,7 +810,7 @@ tap.test('HTTP GET / ', async t => {
 
     const docOnDb = await collection.findOne({ metadata: filterQueryMetadata, attachments: filterAttachments })
 
-    t.ok(docOnDb)
+    t.assert.ok(docOnDb)
 
     const response = await fastify.inject({
       method: 'GET',
@@ -836,14 +822,12 @@ tap.test('HTTP GET / ', async t => {
       headers: {},
     })
 
-    t.strictSame(response.statusCode, 400)
-    t.strictSame(JSON.parse(response.payload), {
+    t.assert.deepStrictEqual(response.statusCode, 400)
+    t.assert.deepStrictEqual(JSON.parse(response.payload), {
       statusCode: 400,
       error: 'Bad Request',
       message: 'querystring must NOT have additional properties. Property "metadata" is not defined in validation schema',
     })
-
-    t.end()
   })
 
   t.test('filter with text query (_q) with not fields not included in JSON Schema returns 400', async t => {
@@ -861,29 +845,26 @@ tap.test('HTTP GET / ', async t => {
       message: 'Unknown field: not_a_field',
     }
 
-    t.strictSame(response.statusCode, 400)
-    t.ok(/application\/json/.test(response.headers['content-type']))
-    t.strictSame(JSON.parse(response.payload), expectedResponse)
+    t.assert.deepStrictEqual(response.statusCode, 400)
+    t.assert.ok(/application\/json/.test(response.headers['content-type']))
+    t.assert.deepStrictEqual(JSON.parse(response.payload), expectedResponse)
 
     const documents = await collection.find().toArray()
-    t.strictSame(documents, fixtures)
-
-    t.end()
+    t.assert.deepStrictEqual(documents, fixtures)
   })
 
 
   t.test('(missing property)', async t => {
     await resetCollection()
 
-    t.test('with _s with nonexistent property', async assert => {
+    t.test('with _s with nonexistent property', async t => {
       const response = await fastify.inject({
         method: 'GET',
         url: `${prefix}/?_s=nonexistent`,
         headers: {},
       })
 
-      assert.strictSame(response.statusCode, 400)
-      assert.end()
+      t.assert.deepStrictEqual(response.statusCode, 400)
     })
 
     t.test('with _s with nonexistent and existing properties', async t => {
@@ -893,8 +874,7 @@ tap.test('HTTP GET / ', async t => {
         headers: {},
       })
 
-      t.strictSame(response.statusCode, 400)
-      t.end()
+      t.assert.deepStrictEqual(response.statusCode, 400)
     })
 
     t.test('with _s with existing nested and nonexistent properties', async t => {
@@ -904,8 +884,7 @@ tap.test('HTTP GET / ', async t => {
         headers: {},
       })
 
-      t.strictSame(response.statusCode, 400)
-      t.end()
+      t.assert.deepStrictEqual(response.statusCode, 400)
     })
 
     t.test('with _s with nonexistent and existing nested properties REPEATED QUERYSTRING', async t => {
@@ -915,11 +894,8 @@ tap.test('HTTP GET / ', async t => {
         headers: {},
       })
 
-      t.strictSame(response.statusCode, 400)
-      t.end()
+      t.assert.deepStrictEqual(response.statusCode, 400)
     })
-
-    t.end()
   })
 
   t.test('serialize correctly data on GET (a string should be casted to number to match schema)', async t => {
@@ -938,13 +914,11 @@ tap.test('HTTP GET / ', async t => {
       headers: {},
     })
 
-    t.strictSame(response.statusCode, 200)
+    t.assert.deepStrictEqual(response.statusCode, 200)
     const [item] = JSON.parse(response.payload)
 
-    t.equal(item.ignoreMe, undefined)
-    t.strictSame(item.price, 44)
-
-    t.end()
+    t.assert.strictEqual(item.ignoreMe, undefined)
+    t.assert.deepStrictEqual(item.price, 44)
   })
 
 
@@ -963,8 +937,7 @@ tap.test('HTTP GET / ', async t => {
           url: `${prefix}/?_l=1`,
         })
 
-        t.strictSame(response.statusCode, 200)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 200)
       })
 
       t.test('Maximum 200', async t => {
@@ -973,8 +946,7 @@ tap.test('HTTP GET / ', async t => {
           url: `${prefix}/?_l=200`,
         })
 
-        t.strictSame(response.statusCode, 200)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 200)
       })
 
       t.test('Return the default number of document', async t => {
@@ -983,25 +955,19 @@ tap.test('HTTP GET / ', async t => {
           url: `${prefix}/`,
         })
 
-        t.strictSame(response.statusCode, 200)
-        t.strictSame(JSON.parse(response.payload).length, 25)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 200)
+        t.assert.deepStrictEqual(JSON.parse(response.payload).length, 25)
       })
-
-      t.end()
     })
 
-    t.test('fails with wrong limit value', async assert => {
+    t.test('fails with wrong limit value', async t => {
       const response = await fastify.inject({
         method: 'GET',
         url: `${prefix}/?_l=500`,
       })
 
-      assert.strictSame(response.statusCode, 400)
-      assert.end()
+      t.assert.deepStrictEqual(response.statusCode, 400)
     })
-
-    t.end()
   })
 
   t.test('fails', async t => {
@@ -1009,19 +975,18 @@ tap.test('HTTP GET / ', async t => {
 
     t.test('with 500', async t => {
       UNALLOWED_RAW_PROJECTIONS.forEach(projection => {
-        t.test('Should not allow raw projection', async assert => {
+        t.test('Should not allow raw projection', async t => {
           const { statusCode } = await fastify.inject({
             method: 'GET',
             url: `${prefix}/?_rawp=${JSON.stringify(projection)}`,
             headers: {},
           })
 
-          assert.strictSame(statusCode, 400)
-          assert.end()
+          t.assert.deepStrictEqual(statusCode, 400)
         })
       })
 
-      t.test('Should raise error if raw projection tries to override acls', async assert => {
+      t.test('Should raise error if raw projection tries to override acls', async t => {
         const expectedPayload = {
           statusCode: 400,
           error: 'Bad Request',
@@ -1035,15 +1000,12 @@ tap.test('HTTP GET / ', async t => {
           },
         })
 
-        assert.strictSame(statusCode, 400)
-        assert.strictSame(JSON.parse(payload), expectedPayload)
-        assert.end()
+        t.assert.deepStrictEqual(statusCode, 400)
+        t.assert.deepStrictEqual(JSON.parse(payload), expectedPayload)
       })
-
-      t.end()
     })
 
-    t.test('with 500 without exit if collection contains invalid data', async assert => {
+    t.test('with 500 without exit if collection contains invalid data', async t => {
       const DOC = {
         ...fixtures[0],
         price: 'thisIsAstring',
@@ -1068,16 +1030,15 @@ tap.test('HTTP GET / ', async t => {
           method: 'GET',
           url: `${prefix}/`,
         })
-        assert.fail('It should throw output validation error')
+        t.assert.fail('It should throw output validation error')
       } catch (error) {
-        assert.strictSame(error, jsonError)
+        t.assert.deepStrictEqual(error, jsonError)
       }
-      assert.end()
     })
 
     t.test('with 400 for mixed _rawp and _p', async t => {
       UNALLOWED_RAW_PROJECTIONS.forEach(projection => {
-        t.test('Should not allow raw projection with projection', async assert => {
+        t.test('Should not allow raw projection with projection', async t => {
           const expectedPayload = {
             statusCode: 400,
             error: 'Bad Request',
@@ -1089,18 +1050,15 @@ tap.test('HTTP GET / ', async t => {
             headers: {},
           })
 
-          assert.strictSame(statusCode, 400)
-          assert.strictSame(JSON.parse(payload), expectedPayload)
-          assert.end()
+          t.assert.deepStrictEqual(statusCode, 400)
+          t.assert.deepStrictEqual(JSON.parse(payload), expectedPayload)
         })
       })
-
-      t.end()
     })
 
     t.test('with 400 due to usage of forbidden operators', async t => {
       BAD_RAW_PROJECTIONS_USAGE.forEach(projection => {
-        t.test('Should not allow specified raw projection', async assert => {
+        t.test('Should not allow specified raw projection', async t => {
           const expectedPayload = {
             statusCode: 400,
             error: 'Bad Request',
@@ -1112,22 +1070,15 @@ tap.test('HTTP GET / ', async t => {
             headers: {},
           })
 
-          assert.strictSame(statusCode, 400)
-          assert.strictSame(JSON.parse(payload), expectedPayload)
-          assert.end()
+          t.assert.deepStrictEqual(statusCode, 400)
+          t.assert.deepStrictEqual(JSON.parse(payload), expectedPayload)
         })
       })
-
-      t.end()
     })
-
-    t.end()
   })
-
-  t.end()
 })
 
-tap.test('HTTP GET / with _id in querystring', async t => {
+test('HTTP GET / with _id in querystring', async t => {
   const tests = [
     {
       name: 'without filters',
@@ -1151,34 +1102,26 @@ tap.test('HTTP GET / with _id in querystring', async t => {
       })
 
       t.test('should return 200', t => {
-        t.strictSame(response.statusCode, 200)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 200)
       })
 
       t.test('should return "application/json"', t => {
-        t.strictSame(response.headers['content-type'], 'application/json')
-        t.end()
+        t.assert.deepStrictEqual(response.headers['content-type'], 'application/json')
       })
 
       t.test('should return the document', t => {
-        t.strictSame(JSON.parse(response.payload), found)
-        t.end()
+        t.assert.deepStrictEqual(JSON.parse(response.payload), found)
       })
       t.test('should keep the document as is in database', async t => {
         const documents = await collection.find().toArray()
-        t.strictSame(documents, stationFixtures)
-        t.end()
+        t.assert.deepStrictEqual(documents, stationFixtures)
       })
-
-      t.end()
     })
   })
-
-  t.end()
 })
 
 if (process.env.MONGO_VERSION === '4.0') {
-  tap.test('unsupported _rawp in MongoDB v4.0', async t => {
+  test('unsupported _rawp in MongoDB v4.0', async t => {
     const { fastify } = await setUpTest(t)
 
     const conf = {
@@ -1195,24 +1138,19 @@ if (process.env.MONGO_VERSION === '4.0') {
     })
 
     t.test('should return 200', t => {
-      t.strictSame(response.statusCode, 400)
-      t.end()
+      t.assert.deepStrictEqual(response.statusCode, 400)
     })
 
     t.test('should return "application/json"', t => {
-      t.end()
-      t.strictSame(response.headers['content-type'], 'application/json; charset=utf-8')
+      t.assert.deepStrictEqual(response.headers['content-type'], 'application/json; charset=utf-8')
     })
 
     t.test('should return the error message', t => {
-      t.end()
-      t.strictSame(JSON.parse(response.payload), {
+      t.assert.deepStrictEqual(JSON.parse(response.payload), {
         message: 'Unsupported projection option: attachments: { $filter: { input: "$attachments", as: "item", cond: { $in: [ "$$item.name", [ "note" ] ] } } }',
         error: 'Bad Request',
         statusCode: 400,
       })
     })
-
-    t.end()
   })
 }

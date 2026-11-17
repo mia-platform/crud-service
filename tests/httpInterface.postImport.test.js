@@ -16,7 +16,7 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const path = require('path')
 const { createReadStream } = require('fs')
 
@@ -27,7 +27,7 @@ const FormData = require('form-data')
 const { __STATE__, STATES, CREATORID, UPDATEDAT, UPDATERID, CREATEDAT } = require('../lib/consts')
 const { omit: lomit } = require('lodash')
 
-tap.test('HTTP POST /import', async t => {
+test('HTTP POST /import', async t => {
   const jsonFileReader = () => createReadStream(path.join(__dirname, 'filesFixtures/books.json'))
   const ndjsonFileReader = () => createReadStream(path.join(__dirname, 'filesFixtures/books.ndjson'))
   const CSVFileReader = () => createReadStream(path.join(__dirname, 'filesFixtures/books.csv'))
@@ -103,35 +103,33 @@ tap.test('HTTP POST /import', async t => {
         })
 
         t.test('and return 201', t => {
-          t.strictSame(response.statusCode, 201, response.payload)
-          t.end()
+          t.assert.deepStrictEqual(response.statusCode, 201, response.payload)
         })
 
         t.test('and return application/json', t => {
-          t.ok(/application\/json/.test(response.headers['content-type']))
-          t.end()
+          t.assert.ok(/application\/json/.test(response.headers['content-type']))
         })
 
         t.test('and return the right message', t => {
           const body = JSON.parse(response.payload)
-          t.strictSame(body, { message: 'File uploaded successfully' })
-          t.end()
+          t.assert.deepStrictEqual(body, { message: 'File uploaded successfully' })
         })
 
         t.test('and documents are really into collection', async t => {
           const documents = await collection.find().toArray()
 
           for (const document of documents) {
-            t.strictSame(document[CREATORID], newUpdaterId)
-            t.strictSame(document[UPDATERID], newUpdaterId)
-            t.ok(Date.now() - document[CREATEDAT] < 5000, '`createdAt` should be set')
-            t.ok(Date.now() - document[UPDATEDAT] < 5000, '`updatedAt` should be set')
-            t.strictSame(document[__STATE__], STATES.PUBLIC)
+            t.assert.deepStrictEqual(document[CREATORID], newUpdaterId)
+            t.assert.deepStrictEqual(document[UPDATERID], newUpdaterId)
+            t.assert.ok(Date.now() - document[CREATEDAT] < 5000, '`createdAt` should be set')
+            t.assert.ok(Date.now() - document[UPDATEDAT] < 5000, '`updatedAt` should be set')
+            t.assert.deepStrictEqual(document[__STATE__], STATES.PUBLIC)
           }
 
-          t.strictSame(documents.map(doc => lomit(doc, [CREATORID, UPDATERID, CREATEDAT, UPDATEDAT])), expectedBooks)
-
-          t.end()
+          t.assert.deepStrictEqual(
+            documents.map(doc => lomit(doc, [CREATORID, UPDATERID, CREATEDAT, UPDATEDAT])),
+            expectedBooks
+          )
         })
       })
     }
@@ -177,23 +175,20 @@ tap.test('HTTP POST /import', async t => {
         })
 
         t.test('and return 400', t => {
-          t.strictSame(response.statusCode, 400, response.payload)
-          t.end()
+          t.assert.deepStrictEqual(response.statusCode, 400, response.payload)
         })
 
         t.test('and return application/json', t => {
-          t.ok(/application\/json/.test(response.headers['content-type']))
-          t.end()
+          t.assert.ok(/application\/json/.test(response.headers['content-type']))
         })
 
         t.test('and return the right message', t => {
           const body = JSON.parse(response.payload)
-          t.strictSame(body, {
+          t.assert.deepStrictEqual(body, {
             'statusCode': 400,
             'error': 'Bad Request',
             'message': 'Invalid options',
           })
-          t.end()
         })
       })
     }
@@ -211,13 +206,12 @@ tap.test('HTTP POST /import', async t => {
       headers: form.getHeaders(),
     })
 
-    t.strictSame(response.statusCode, 409, response.payload)
-    t.ok(/application\/json/.test(response.headers['content-type']))
+    t.assert.deepStrictEqual(response.statusCode, 409, response.payload)
+    t.assert.ok(/application\/json/.test(response.headers['content-type']))
     const body = JSON.parse(response.payload)
-    t.strictSame(body.statusCode, 409)
-    t.strictSame(body.error, 'Conflict')
-    t.match(body.message, 'E11000 duplicate key error collection')
-    t.end()
+    t.assert.deepStrictEqual(body.statusCode, 409)
+    t.assert.deepStrictEqual(body.error, 'Conflict')
+    t.assert.ok(body.message.includes('E11000 duplicate key error collection'))
   })
 
   t.test('should return the correct error if a row is invalid', async t => {
@@ -230,12 +224,11 @@ tap.test('HTTP POST /import', async t => {
       headers: form.getHeaders(),
     })
 
-    t.strictSame(response.statusCode, 400, response.payload)
-    t.ok(/application\/json/.test(response.headers['content-type']))
+    t.assert.deepStrictEqual(response.statusCode, 400, response.payload)
+    t.assert.ok(/application\/json/.test(response.headers['content-type']))
     const body = JSON.parse(response.payload)
-    t.strictSame(body.statusCode, 400)
-    t.strictSame(body.error, 'Bad Request')
-    t.match(body.message, '(index: 0, /publishDate) must match pattern "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$"')
-    t.end()
+    t.assert.deepStrictEqual(body.statusCode, 400)
+    t.assert.deepStrictEqual(body.error, 'Bad Request')
+    t.assert.ok(body.message.includes('(index: 0, /publishDate) must match pattern "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$"'))
   })
 })

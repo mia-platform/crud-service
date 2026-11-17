@@ -16,13 +16,13 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 
 const { STATES, __STATE__ } = require('../lib/consts')
 const { publicFixtures, fixtures } = require('./utils')
 const { setUpTest, prefix, getHeaders } = require('./httpInterface.utils')
 
-tap.test('HTTP GET /count', async t => {
+test('HTTP GET /count', async t => {
   const tests = [
     {
       name: 'without query',
@@ -155,32 +155,26 @@ tap.test('HTTP GET /count', async t => {
       })
 
       t.test('should return 200', t => {
-        t.strictSame(response.statusCode, 200, response.payload)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 200, response.payload)
       })
 
       t.test('should return JSON', t => {
-        t.ok(/application\/json/.test(response.headers['content-type']))
-        t.end()
+        t.assert.ok(/application\/json/.test(response.headers['content-type']))
       })
 
       t.test('should return the expected body', t => {
-        t.strictSame(JSON.parse(response.payload), conf.count)
-        t.end()
+        t.assert.deepStrictEqual(JSON.parse(response.payload), conf.count)
       })
 
       t.test('should keep the document as is in database', async t => {
         const documents = await collection.find().toArray()
-        t.strictSame(documents, fixtures)
-        t.end()
+        t.assert.deepStrictEqual(documents, fixtures)
       })
-
-      t.end()
     })
   })
 })
 
-tap.test('HTTP GET /count with with text query (_q) with not fields not included in JSON Schema returns 400', async t => {
+test('HTTP GET /count with with text query (_q) with not fields not included in JSON Schema returns 400', async t => {
   const { fastify, collection } = await setUpTest(t)
 
   const response = await fastify.inject({
@@ -195,12 +189,10 @@ tap.test('HTTP GET /count with with text query (_q) with not fields not included
     message: 'Unknown field: not_a_field',
   }
 
-  t.strictSame(response.statusCode, 400)
-  t.ok(/application\/json/.test(response.headers['content-type']))
-  t.strictSame(JSON.parse(response.payload), expectedResponse)
+  t.assert.deepStrictEqual(response.statusCode, 400)
+  t.assert.ok(/application\/json/.test(response.headers['content-type']))
+  t.assert.deepStrictEqual(JSON.parse(response.payload), expectedResponse)
 
   const documents = await collection.find().toArray()
-  t.strictSame(documents, fixtures)
-
-  t.end()
+  t.assert.deepStrictEqual(documents, fixtures)
 })

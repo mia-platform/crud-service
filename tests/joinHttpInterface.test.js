@@ -16,7 +16,7 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 
 const { setUpTest } = require('./httpInterface.utils')
 
@@ -25,7 +25,7 @@ const filmsData = require('./fixtures/films')
 const addressesData = require('./fixtures/addresses')
 const addressStatisticsData = require('./fixtures/address_statistics')
 
-tap.test('HTTP POST /join', async t => {
+test('HTTP POST /join', async t => {
   const { fastify, database } = await setUpTest(t)
 
   const peopleCollection = database.collection('people')
@@ -64,11 +64,11 @@ tap.test('HTTP POST /join', async t => {
 
       t.test('should return 200', t => {
         t.plan(1)
-        t.strictSame(response.statusCode, 200)
+        t.assert.deepStrictEqual(response.statusCode, 200)
       })
       t.test('should return "application/x-ndjson"', t => {
         t.plan(1)
-        t.ok(/application\/x-ndjson/.test(response.headers['content-type']))
+        t.assert.ok(/application\/x-ndjson/.test(response.headers['content-type']))
       })
       t.test('should return the expected body', t => {
         t.plan(1)
@@ -76,7 +76,7 @@ tap.test('HTTP POST /join', async t => {
         const lines = response.payload.split('\n')
           .filter(s => s !== '')
           .map(JSON.parse)
-        t.strictSame(lines, [
+        t.assert.deepStrictEqual(lines, [
           {
             _id: '111111111111111111111111',
             filmObjects: [
@@ -167,17 +167,16 @@ tap.test('HTTP POST /join', async t => {
         },
       })
 
-      t.strictSame(response.statusCode, 400, response.payload)
-      t.ok(/application\/json/.test(response.headers['content-type']))
+      t.assert.deepStrictEqual(response.statusCode, 400, response.payload)
+      t.assert.ok(/application\/json/.test(response.headers['content-type']))
 
       const actualBody = JSON.parse(response.payload)
-      t.strictSame(actualBody, {
+      t.assert.deepStrictEqual(actualBody, {
         error: 'Bad Request',
         statusCode: 400,
         message: 'CRUD endpoint "people_endpoint" does not exist',
       })
     })
-    t.end()
   })
 
   t.test('one-to-many', t => {
@@ -195,11 +194,11 @@ tap.test('HTTP POST /join', async t => {
 
       t.test('should return 200', t => {
         t.plan(1)
-        t.strictSame(response.statusCode, 200)
+        t.assert.deepStrictEqual(response.statusCode, 200)
       })
       t.test('should return "application/x-ndjson"', t => {
         t.plan(1)
-        t.ok(/application\/x-ndjson/.test(response.headers['content-type']))
+        t.assert.ok(/application\/x-ndjson/.test(response.headers['content-type']))
       })
       t.test('should return the expected body', t => {
         t.plan(1)
@@ -207,7 +206,7 @@ tap.test('HTTP POST /join', async t => {
         const lines = response.payload.split('\n')
           .filter(s => s !== '')
           .map(JSON.parse)
-        t.strictSame(lines, [
+        t.assert.deepStrictEqual(lines, [
           {
             _id: '111111111111111111111111',
             displayName: 'via Calatafimi, 11',
@@ -287,11 +286,11 @@ tap.test('HTTP POST /join', async t => {
 
       t.test('should return 200', t => {
         t.plan(1)
-        t.strictSame(response.statusCode, 200)
+        t.assert.deepStrictEqual(response.statusCode, 200)
       })
       t.test('should return "application/x-ndjson"', t => {
         t.plan(1)
-        t.ok(/application\/x-ndjson/.test(response.headers['content-type']))
+        t.assert.ok(/application\/x-ndjson/.test(response.headers['content-type']))
       })
       t.test('should return the expected body', t => {
         t.plan(1)
@@ -299,7 +298,7 @@ tap.test('HTTP POST /join', async t => {
         const lines = response.payload.split('\n')
           .filter(s => s !== '')
           .map(JSON.parse)
-        t.strictSame(lines, [
+        t.assert.deepStrictEqual(lines, [
           {
             _id: '111111111111111111111111',
             displayName: 'via Calatafimi, 11',
@@ -339,11 +338,11 @@ tap.test('HTTP POST /join', async t => {
 
       t.test('should return 200', t => {
         t.plan(1)
-        t.strictSame(response.statusCode, 200)
+        t.assert.deepStrictEqual(response.statusCode, 200)
       })
       t.test('should return "application/x-ndjson"', t => {
         t.plan(1)
-        t.ok(/application\/x-ndjson/.test(response.headers['content-type']))
+        t.assert.ok(/application\/x-ndjson/.test(response.headers['content-type']))
       })
       t.test('should return the expected body', t => {
         t.plan(1)
@@ -351,7 +350,7 @@ tap.test('HTTP POST /join', async t => {
         const lines = response.payload.split('\n')
           .filter(s => s !== '')
           .map(JSON.parse)
-        t.strictSame(lines, [
+        t.assert.deepStrictEqual(lines, [
           {
             _id: '111111111111111111111111',
             displayName: 'via Calatafimi, 11',
@@ -399,18 +398,16 @@ tap.test('HTTP POST /join', async t => {
         },
       })
 
-      t.strictSame(response.statusCode, 400, response.payload)
-      t.ok(/application\/json/.test(response.headers['content-type']))
+      t.assert.deepStrictEqual(response.statusCode, 400, response.payload)
+      t.assert.ok(/application\/json/.test(response.headers['content-type']))
 
       const actualBody = JSON.parse(response.payload)
-      t.strictSame(actualBody, {
+      t.assert.deepStrictEqual(actualBody, {
         error: 'Bad Request',
         statusCode: 400,
         message: 'CRUD endpoint "address_statistics_endpoint" does not exist',
       })
     })
-
-    t.end()
   })
 
   t.test('one-to-one', t => {
@@ -429,11 +426,11 @@ tap.test('HTTP POST /join', async t => {
 
       t.test('should return 200', t => {
         t.plan(1)
-        t.strictSame(response.statusCode, 200)
+        t.assert.deepStrictEqual(response.statusCode, 200)
       })
       t.test('should return "application/x-ndjson"', t => {
         t.plan(1)
-        t.ok(/application\/x-ndjson/.test(response.headers['content-type']))
+        t.assert.ok(/application\/x-ndjson/.test(response.headers['content-type']))
       })
       t.test('should return the expected body', t => {
         t.plan(1)
@@ -441,7 +438,7 @@ tap.test('HTTP POST /join', async t => {
         const lines = response.payload.split('\n')
           .filter(s => s !== '')
           .map(JSON.parse)
-        t.strictSame(lines, [
+        t.assert.deepStrictEqual(lines, [
           {
             _id: '111111111111111111111111',
             addressId: '111111111111111111111111',
@@ -489,11 +486,11 @@ tap.test('HTTP POST /join', async t => {
 
       t.test('should return 200', t => {
         t.plan(1)
-        t.strictSame(response.statusCode, 200)
+        t.assert.deepStrictEqual(response.statusCode, 200)
       })
       t.test('should return "application/x-ndjson"', t => {
         t.plan(1)
-        t.ok(/application\/x-ndjson/.test(response.headers['content-type']))
+        t.assert.ok(/application\/x-ndjson/.test(response.headers['content-type']))
       })
       t.test('should return the expected body', t => {
         t.plan(1)
@@ -501,7 +498,7 @@ tap.test('HTTP POST /join', async t => {
         const lines = response.payload.split('\n')
           .filter(s => s !== '')
           .map(JSON.parse)
-        t.strictSame(lines, [
+        t.assert.deepStrictEqual(lines, [
           {
             _id: '111111111111111111111111',
             addressId: '111111111111111111111111',
@@ -531,11 +528,11 @@ tap.test('HTTP POST /join', async t => {
 
       t.test('should return 200', t => {
         t.plan(1)
-        t.strictSame(response.statusCode, 200)
+        t.assert.deepStrictEqual(response.statusCode, 200)
       })
       t.test('should return "application/x-ndjson"', t => {
         t.plan(1)
-        t.ok(/application\/x-ndjson/.test(response.headers['content-type']))
+        t.assert.ok(/application\/x-ndjson/.test(response.headers['content-type']))
       })
       t.test('should return the expected body', t => {
         t.plan(1)
@@ -543,7 +540,7 @@ tap.test('HTTP POST /join', async t => {
         const lines = response.payload.split('\n')
           .filter(s => s !== '')
           .map(JSON.parse)
-        t.strictSame(lines, [
+        t.assert.deepStrictEqual(lines, [
           {
             _id: '111111111111111111111111',
             addressId: '111111111111111111111111',
@@ -585,11 +582,11 @@ tap.test('HTTP POST /join', async t => {
 
       t.test('should return 200', t => {
         t.plan(1)
-        t.strictSame(response.statusCode, 200)
+        t.assert.deepStrictEqual(response.statusCode, 200)
       })
       t.test('should return "application/x-ndjson"', t => {
         t.plan(1)
-        t.ok(/application\/x-ndjson/.test(response.headers['content-type']))
+        t.assert.ok(/application\/x-ndjson/.test(response.headers['content-type']))
       })
       t.test('should return the expected body', t => {
         t.plan(1)
@@ -597,7 +594,7 @@ tap.test('HTTP POST /join', async t => {
         const lines = response.payload.split('\n')
           .filter(s => s !== '')
           .map(JSON.parse)
-        t.strictSame(lines, [
+        t.assert.deepStrictEqual(lines, [
           {
             _id: '111111111111111111111111',
             displayName: 'via Calatafimi, 11',
@@ -644,11 +641,11 @@ tap.test('HTTP POST /join', async t => {
 
       t.test('should return 200', t => {
         t.plan(1)
-        t.strictSame(response.statusCode, 200)
+        t.assert.deepStrictEqual(response.statusCode, 200)
       })
       t.test('should return "application/x-ndjson"', t => {
         t.plan(1)
-        t.ok(/application\/x-ndjson/.test(response.headers['content-type']))
+        t.assert.ok(/application\/x-ndjson/.test(response.headers['content-type']))
       })
       t.test('should return the expected body', t => {
         t.plan(1)
@@ -656,7 +653,7 @@ tap.test('HTTP POST /join', async t => {
         const lines = response.payload.split('\n')
           .filter(s => s !== '')
           .map(JSON.parse)
-        t.strictSame(lines, [
+        t.assert.deepStrictEqual(lines, [
           {
             _id: '111111111111111111111111',
             addressId: '111111111111111111111111',
@@ -686,11 +683,11 @@ tap.test('HTTP POST /join', async t => {
 
       t.test('should return 200', t => {
         t.plan(1)
-        t.strictSame(response.statusCode, 200)
+        t.assert.deepStrictEqual(response.statusCode, 200)
       })
       t.test('should return "application/x-ndjson"', t => {
         t.plan(1)
-        t.ok(/application\/x-ndjson/.test(response.headers['content-type']))
+        t.assert.ok(/application\/x-ndjson/.test(response.headers['content-type']))
       })
       t.test('should return the expected body', t => {
         t.plan(1)
@@ -698,7 +695,7 @@ tap.test('HTTP POST /join', async t => {
         const lines = response.payload.split('\n')
           .filter(s => s !== '')
           .map(JSON.parse)
-        t.strictSame(lines, [
+        t.assert.deepStrictEqual(lines, [
           {
             _id: '111111111111111111111111',
             addressId: '111111111111111111111111',
@@ -738,11 +735,11 @@ tap.test('HTTP POST /join', async t => {
         },
       })
 
-      t.strictSame(response.statusCode, 400, response.payload)
-      t.ok(/application\/json/.test(response.headers['content-type']))
+      t.assert.deepStrictEqual(response.statusCode, 400, response.payload)
+      t.assert.ok(/application\/json/.test(response.headers['content-type']))
 
       const actualBody = JSON.parse(response.payload)
-      t.strictSame(actualBody, {
+      t.assert.deepStrictEqual(actualBody, {
         error: 'Bad Request',
         statusCode: 400,
         message: 'CRUD endpoint "addresses_endpoint" does not exist',
@@ -765,17 +762,17 @@ tap.test('HTTP POST /join', async t => {
 
       t.test('should return 200', t => {
         t.plan(1)
-        t.strictSame(response.statusCode, 200)
+        t.assert.deepStrictEqual(response.statusCode, 200)
       })
       t.test('should return "application/json"', t => {
         t.plan(1)
-        t.ok(/application\/json/.test(response.headers['content-type']))
+        t.assert.ok(/application\/json/.test(response.headers['content-type']))
       })
       t.test('should return the expected body', t => {
         t.plan(1)
 
         const lines = JSON.parse(response.payload)
-        t.strictSame(lines, [
+        t.assert.deepStrictEqual(lines, [
           {
             _id: '111111111111111111111111',
             addressId: '111111111111111111111111',
@@ -815,17 +812,15 @@ tap.test('HTTP POST /join', async t => {
         },
       })
 
-      t.strictSame(response.statusCode, 400, response.payload)
-      t.ok(/application\/json/.test(response.headers['content-type']))
+      t.assert.deepStrictEqual(response.statusCode, 400, response.payload)
+      t.assert.ok(/application\/json/.test(response.headers['content-type']))
 
       const actualBody = JSON.parse(response.payload)
-      t.strictSame(actualBody, {
+      t.assert.deepStrictEqual(actualBody, {
         error: 'Bad Request',
         statusCode: 400,
         message: 'CRUD endpoint "addresses_endpoint" does not exist',
       })
     })
-
-    t.end()
   })
 })

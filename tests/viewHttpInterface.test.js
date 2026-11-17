@@ -16,7 +16,7 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const path = require('path')
 const lc39 = require('@mia-platform/lc39')
 const { ObjectId, MongoClient } = require('mongodb')
@@ -41,7 +41,7 @@ const HTTP_PUBLIC_FIXTURES = JSON.parse(JSON.stringify(expectedOrderDetailsViewD
 const COLLECTION_DEFINITION_FOLDER = path.join(__dirname, 'collectionDefinitions')
 const VIEWS_DEFINITION_FOLDER = path.join(__dirname, 'viewsDefinitionsLookup')
 
-tap.test('Writable views (enableLookups: true)', async t => {
+test('Writable views (enableLookups: true)', async t => {
   if (process.env.MONGO_VERSION <= '4.4') {
     t.test('Writable views not supported on Mongo version <= 4.4')
     return
@@ -65,7 +65,7 @@ tap.test('Writable views (enableLookups: true)', async t => {
 
   const fastify = await lc39('./index', { logLevel, envVariables })
 
-  t.teardown(async() => {
+  t.after(async() => {
     await fastify.close()
     await database.dropDatabase()
     await client.close()
@@ -130,28 +130,22 @@ tap.test('Writable views (enableLookups: true)', async t => {
         })
 
         t.test('should return 200', t => {
-          t.strictSame(response.statusCode, 200, response.payload)
-          t.end()
+          t.assert.deepStrictEqual(response.statusCode, 200, response.payload)
         })
 
         t.test('should return "application/json"', t => {
-          t.strictSame(response.headers['content-type'], 'application/json')
-          t.end()
+          t.assert.deepStrictEqual(response.headers['content-type'], 'application/json')
         })
 
         t.test('should return the document', t => {
-          t.strictSame(JSON.parse(response.payload), found)
-          t.end()
+          t.assert.deepStrictEqual(JSON.parse(response.payload), found)
         })
-
-        t.end()
       })
     })
 
     t.test('should keep the document as is in database', async t => {
       const documents = await orderDetailsCollection.find().toArray()
-      t.strictSame(documents, expectedOrderDetailsViewDocsPublic)
-      t.end()
+      t.assert.deepStrictEqual(documents, expectedOrderDetailsViewDocsPublic)
     })
   })
 
@@ -165,23 +159,21 @@ tap.test('Writable views (enableLookups: true)', async t => {
         },
       })
 
-      t.strictSame(response.statusCode, 200)
+      t.assert.deepStrictEqual(response.statusCode, 200)
 
       const body = JSON.parse(response.payload)
       const viewDoc = await orderDetailsCollection.findOne({ _id: new ObjectId(body._id) })
-      t.strictSame(viewDoc.rider, {
+      t.assert.deepStrictEqual(viewDoc.rider, {
         value: newRider.value,
         label: newRider.label,
       })
-      t.strictSame(viewDoc.items, ['888888888888888888888888'])
-      t.notHas(viewDoc, 'id_rider')
+      t.assert.deepStrictEqual(viewDoc.items, ['888888888888888888888888'])
+      t.assert.ok(!Object.hasOwn(viewDoc, 'id_rider'))
 
       const orderDoc = await ordersCollection.findOne({ _id: new ObjectId(body._id) })
-      t.strictSame(orderDoc.id_rider, newRider.value)
-      t.strictSame(orderDoc.items, ['888888888888888888888888'])
-      t.notHas(orderDoc, 'rider')
-
-      t.end()
+      t.assert.deepStrictEqual(orderDoc.id_rider, newRider.value)
+      t.assert.deepStrictEqual(orderDoc.items, ['888888888888888888888888'])
+      t.assert.ok(!Object.hasOwn(orderDoc, 'rider'))
     })
   })
 
@@ -195,27 +187,25 @@ tap.test('Writable views (enableLookups: true)', async t => {
         ],
       })
 
-      t.strictSame(response.statusCode, 200)
-      t.ok(/application\/json/.test(response.headers['content-type']))
+      t.assert.deepStrictEqual(response.statusCode, 200)
+      t.assert.ok(/application\/json/.test(response.headers['content-type']))
       const body = JSON.parse(response.payload)
-      t.strictSame(body.length, 1)
-      body.forEach(el => t.ok(el._id))
+      t.assert.deepStrictEqual(body.length, 1)
+      body.forEach(el => t.assert.ok(el._id))
 
       const docId = body[0]._id
       const viewDoc = await orderDetailsCollection.findOne({ _id: new ObjectId(docId) })
-      t.strictSame(viewDoc.rider, {
+      t.assert.deepStrictEqual(viewDoc.rider, {
         value: newRider.value,
         label: newRider.label,
       })
-      t.strictSame(viewDoc.items, ['888888888888888888888888'])
-      t.notHas(viewDoc, 'id_rider')
+      t.assert.deepStrictEqual(viewDoc.items, ['888888888888888888888888'])
+      t.assert.ok(!Object.hasOwn(viewDoc, 'id_rider'))
 
       const orderDoc = await ordersCollection.findOne({ _id: new ObjectId(docId) })
-      t.strictSame(orderDoc.id_rider, newRider.value)
-      t.strictSame(orderDoc.items, ['888888888888888888888888'])
-      t.notHas(orderDoc, 'rider')
-
-      t.end()
+      t.assert.deepStrictEqual(orderDoc.id_rider, newRider.value)
+      t.assert.deepStrictEqual(orderDoc.items, ['888888888888888888888888'])
+      t.assert.ok(!Object.hasOwn(orderDoc, 'rider'))
     })
   })
 
@@ -233,29 +223,27 @@ tap.test('Writable views (enableLookups: true)', async t => {
         },
       })
 
-      t.strictSame(response.statusCode, 200)
+      t.assert.deepStrictEqual(response.statusCode, 200)
 
       const body = JSON.parse(response.payload)
-      t.strictSame(body.rider, {
+      t.assert.deepStrictEqual(body.rider, {
         value: newRider.value.toString(),
         label: newRider.label,
       })
-      t.strictSame(body.items, items.map(it => it.toHexString()))
+      t.assert.deepStrictEqual(body.items, items.map(it => it.toHexString()))
 
       const viewDoc = await orderDetailsCollection.findOne({ _id })
-      t.strictSame(viewDoc.rider, {
+      t.assert.deepStrictEqual(viewDoc.rider, {
         value: newRider.value,
         label: newRider.label,
       })
-      t.strictSame(viewDoc.items, items)
-      t.notHas(viewDoc, 'id_rider')
+      t.assert.deepStrictEqual(viewDoc.items, items)
+      t.assert.ok(!Object.hasOwn(viewDoc, 'id_rider'))
 
       const orderDoc = await ordersCollection.findOne({ _id })
-      t.strictSame(orderDoc.id_rider, newRider.value)
-      t.strictSame(orderDoc.items, items)
-      t.notHas(orderDoc, 'rider')
-
-      t.end()
+      t.assert.deepStrictEqual(orderDoc.id_rider, newRider.value)
+      t.assert.deepStrictEqual(orderDoc.items, items)
+      t.assert.ok(!Object.hasOwn(orderDoc, 'rider'))
     })
   })
 
@@ -268,15 +256,13 @@ tap.test('Writable views (enableLookups: true)', async t => {
         url: `${viewPrefix}/${_id.toHexString()}`,
       })
 
-      t.strictSame(response.statusCode, 204)
+      t.assert.deepStrictEqual(response.statusCode, 204)
 
       const viewDoc = await orderDetailsCollection.findOne({ _id })
-      t.strictSame(viewDoc, null)
+      t.assert.deepStrictEqual(viewDoc, null)
 
       const orderDoc = await ordersCollection.findOne({ _id })
-      t.strictSame(orderDoc, null)
-
-      t.end()
+      t.assert.deepStrictEqual(orderDoc, null)
     })
 
     t.test('delete each order throught view', async t => {
@@ -285,22 +271,20 @@ tap.test('Writable views (enableLookups: true)', async t => {
         url: `${viewPrefix}/`,
       })
 
-      t.strictSame(response.statusCode, 200)
-      t.strictSame(response.payload, '3')
+      t.assert.deepStrictEqual(response.statusCode, 200)
+      t.assert.deepStrictEqual(response.payload, '3')
 
       const viewDoc = await orderDetailsCollection.find().toArray()
-      t.strictSame(viewDoc, [])
+      t.assert.deepStrictEqual(viewDoc, [])
 
       const orderDoc = await ordersCollection.find().toArray()
-      t.strictSame(orderDoc, [])
-
-      t.end()
+      t.assert.deepStrictEqual(orderDoc, [])
     })
   })
 })
 
 
-tap.test('Writable views - list of lookup references', async t => {
+test('Writable views - list of lookup references', async t => {
   if (process.env.MONGO_VERSION <= '4.4') {
     t.test('Writable views not supported on Mongo version <= 4.4')
     return
@@ -324,7 +308,7 @@ tap.test('Writable views - list of lookup references', async t => {
 
   const fastify = await lc39('./index', { logLevel, envVariables })
 
-  t.teardown(async() => {
+  t.after(async() => {
     await fastify.close()
     await database.dropDatabase()
     await client.close()
@@ -372,28 +356,22 @@ tap.test('Writable views - list of lookup references', async t => {
         })
 
         t.test('should return 200', t => {
-          t.strictSame(response.statusCode, 200)
-          t.end()
+          t.assert.deepStrictEqual(response.statusCode, 200)
         })
 
         t.test('should return "application/json"', t => {
-          t.strictSame(response.headers['content-type'], 'application/json')
-          t.end()
+          t.assert.deepStrictEqual(response.headers['content-type'], 'application/json')
         })
 
         t.test('should return the document', t => {
-          t.strictSame(JSON.parse(response.payload), found)
-          t.end()
+          t.assert.deepStrictEqual(JSON.parse(response.payload), found)
         })
-
-        t.end()
       })
     })
 
     t.test('should keep the document as is in database', async t => {
       const documents = await orderItemsCollection.find().toArray()
-      t.strictSame(documents, orderItemsFixtures.documents)
-      t.end()
+      t.assert.deepStrictEqual(documents, orderItemsFixtures.documents)
     })
   })
 
@@ -411,24 +389,22 @@ tap.test('Writable views - list of lookup references', async t => {
         },
       })
 
-      t.strictSame(response.statusCode, 200)
+      t.assert.deepStrictEqual(response.statusCode, 200)
 
       const body = JSON.parse(response.payload)
       const viewDoc = await orderItemsCollection.findOne({ _id: new ObjectId(body._id) })
-      t.strictSame(viewDoc.items, [
+      t.assert.deepStrictEqual(viewDoc.items, [
         {
           value: ObjectId.createFromHexString('888888888888888888888888'),
           label: 'piadina',
         }]
       )
-      t.strictSame(viewDoc.paid, false)
+      t.assert.deepStrictEqual(viewDoc.paid, false)
 
       const orderDoc = await ordersCollection.findOne({ _id: new ObjectId(body._id) })
-      t.notHas(orderDoc, 'id_rider')
-      t.strictSame(orderDoc.items, [ObjectId.createFromHexString('888888888888888888888888')])
-      t.strictSame(orderDoc.paid, false)
-
-      t.end()
+      t.assert.ok(!Object.hasOwn(orderDoc, 'id_rider'))
+      t.assert.deepStrictEqual(orderDoc.items, [ObjectId.createFromHexString('888888888888888888888888')])
+      t.assert.deepStrictEqual(orderDoc.paid, false)
     })
   })
 
@@ -449,10 +425,10 @@ tap.test('Writable views - list of lookup references', async t => {
         },
       })
 
-      t.strictSame(response.statusCode, 200)
+      t.assert.deepStrictEqual(response.statusCode, 200)
 
       const body = JSON.parse(response.payload)
-      t.strictSame(
+      t.assert.deepStrictEqual(
         body.items,
         [
           { value: '555555555555555555555555', label: 'spatzle' },
@@ -462,7 +438,7 @@ tap.test('Writable views - list of lookup references', async t => {
       )
 
       const viewDoc = await orderItemsCollection.findOne({ _id: new ObjectId(orderItems._id) })
-      t.strictSame(
+      t.assert.deepStrictEqual(
         viewDoc.items,
         [
           { value: ObjectId.createFromHexString('555555555555555555555555'), label: 'spatzle' },
@@ -470,17 +446,15 @@ tap.test('Writable views - list of lookup references', async t => {
           { value: ObjectId.createFromHexString('888888888888888888888888'), label: 'piadina' },
         ]
       )
-      t.strictSame(viewDoc.paid, true)
+      t.assert.deepStrictEqual(viewDoc.paid, true)
 
       const orderDoc = await ordersCollection.findOne({ _id: new ObjectId(orderItems._id) })
-      t.strictSame(orderDoc.items, [
+      t.assert.deepStrictEqual(orderDoc.items, [
         ObjectId.createFromHexString('555555555555555555555555'),
         ObjectId.createFromHexString('666666666666666666666666'),
         ObjectId.createFromHexString('888888888888888888888888'),
       ])
-      t.strictSame(orderDoc.paid, true)
-
-      t.end()
+      t.assert.deepStrictEqual(orderDoc.paid, true)
     })
   })
 })

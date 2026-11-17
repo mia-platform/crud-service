@@ -16,7 +16,7 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const { MongoClient } = require('mongodb')
 
 const createIndexes = require('../lib/createIndexes')
@@ -37,7 +37,7 @@ const {
   BOOKS_COLLECTION_NAME,
 } = require('./utils')
 
-tap.test('createIndexes', async t => {
+test('createIndexes', async t => {
   const databaseName = getMongoDatabaseName()
   const mongoURL = getMongoURL(databaseName)
 
@@ -46,7 +46,7 @@ tap.test('createIndexes', async t => {
   const collection = database.collection(BOOKS_COLLECTION_NAME)
   await clearCollectionAndInsertFixtures(collection)
 
-  t.teardown(async() => {
+  t.after(async() => {
     await database.dropDatabase()
     await client.close()
   })
@@ -1224,12 +1224,12 @@ tap.test('createIndexes', async t => {
         retIndexes.forEach(index => delete index.ns)
         // sort by name because the return order is not deterministic with background indexes
         // skip the first returned index as it is always the _id one
-        t.strictSame(retIndexes.slice(1).sort(by('name')), expectedIndexes.sort(by('name')))
+        t.assert.deepStrictEqual(retIndexes.slice(1).sort(by('name')), expectedIndexes.sort(by('name')))
         retIndexes.slice(1).forEach(retIndex => {
           const index = expectedIndexes.find(expectedIndex => expectedIndex.name === retIndex.name)
-          t.ok(JSON.stringify(index.key) === JSON.stringify(retIndex.key))
+          t.assert.ok(JSON.stringify(index.key) === JSON.stringify(retIndex.key))
         })
-        t.equal(createdIndexNames.length, expectedIndexCreatedCount)
+        t.assert.strictEqual(createdIndexNames.length, expectedIndexCreatedCount)
       })
     }
   })

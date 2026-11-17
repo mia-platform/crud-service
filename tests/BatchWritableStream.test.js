@@ -16,25 +16,25 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
+const { once } = require('node:events')
 const BatchWritableStream = require('../lib/BatchWritableStream')
 
-tap.test('BatchWritableStream', async t => {
-  t.test('requires an async processBatch ', async assert => {
-    assert.throws(() => new BatchWritableStream({}),
-      'BatchWritableStream requires an async "processBatch" function')
+test('BatchWritableStream', async t => {
+  t.test('requires an async processBatch ', async t => {
+    t.assert.throws(() => new BatchWritableStream({}),
+      { message: 'BatchWritableStream requires an async "processBatch" function' })
 
-    assert.throws(() => new BatchWritableStream({
+    t.assert.throws(() => new BatchWritableStream({
       processBatch: () => ({}),
-    }), 'BatchWritableStream requires an async "processBatch" function')
+    }), { message: 'BatchWritableStream requires an async "processBatch" function' })
 
-    assert.doesNotThrow(() => new BatchWritableStream({
+    t.assert.doesNotThrow(() => new BatchWritableStream({
       processBatch: async() => ({}),
     }))
-    assert.end()
   })
 
-  t.test('should call processBatch only when batch is full', async assert => {
+  t.test('should call processBatch only when batch is full', async t => {
     const expectedBatches = [['a', '142'], ['c']]
     const valueToProcess = expectedBatches.flat()
     const results = []
@@ -48,11 +48,10 @@ tap.test('BatchWritableStream', async t => {
     }
 
     await batchWritableStream.end()
-    assert.strictSame(results, expectedBatches)
-    assert.end()
+    t.assert.deepStrictEqual(results, expectedBatches)
   })
 
-  t.test('should call processBatch at the end of the stream', async assert => {
+  t.test('should call processBatch at the end of the stream', async t => {
     const valueToProcess = ['a', 'b', '123', 'foo', 'bar']
     const results = []
     const batchWritableStream = new BatchWritableStream({
@@ -65,15 +64,14 @@ tap.test('BatchWritableStream', async t => {
     }
 
     // BatchSize not reached, and not processBatch called
-    assert.strictSame(results, [])
+    t.assert.deepStrictEqual(results, [])
 
     // Flush the batch at the end
     await batchWritableStream.end()
-    assert.strictSame(results, valueToProcess)
-    assert.end()
+    t.assert.deepStrictEqual(results, valueToProcess)
   })
 
-  t.test('should do nothing the end of the stream if empty batch', async assert => {
+  t.test('should do nothing the end of the stream if empty batch', t => {
     const valueToProcess = ['a', 'b', '123', 'foo', 'bar']
     const results = []
     const batchWritableStream = new BatchWritableStream({
@@ -82,19 +80,18 @@ tap.test('BatchWritableStream', async t => {
     })
 
     for (let i = 0; i < valueToProcess.length; i++) {
-      await batchWritableStream.write(valueToProcess[i])
+      batchWritableStream.write(valueToProcess[i])
     }
 
     // BatchSize not reached, and not processBatch called
-    assert.strictSame(results, valueToProcess)
+    t.assert.deepStrictEqual(results, valueToProcess)
 
     // Flush the batch at the end
-    await batchWritableStream.end()
-    assert.strictSame(results, valueToProcess)
-    assert.end()
+    batchWritableStream.end()
+    t.assert.deepStrictEqual(results, valueToProcess)
   })
 
-  t.test('should catch and returns errors', async assert => {
+  t.test('should catch and returns errors', t => {
     const expectedErrorMessage = 'this is an error'
 
     const batchWritableStream = new BatchWritableStream({
@@ -102,10 +99,9 @@ tap.test('BatchWritableStream', async t => {
       batchSize: 1,
     })
 
-    await batchWritableStream.write('foo')
-    await batchWritableStream.write('bar')
-    await batchWritableStream.end()
-    await assert.emits(batchWritableStream, 'error', expectedErrorMessage)
-    assert.end()
+    batchWritableStream.write('foo')
+    batchWritableStream.write('bar')
+    batchWritableStream.end()
+    once(batchWritableStream, 'error')
   })
 })

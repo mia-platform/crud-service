@@ -64,7 +64,7 @@ async function setUpTest(
 
   const fastify = await lc39('./index', { logLevel, envVariables, exposeMetrics })
 
-  tap.teardown(async() => {
+  tap.after(async() => {
     await database.dropDatabase()
     await client.close()
     await fastify.close()
@@ -91,7 +91,7 @@ async function setUpEmptyCollectionsTest(t) {
 
   const fastify = await lc39('./index', { logLevel, envVariables })
 
-  t.teardown(async() => {
+  t.after(async() => {
     await fastify.close()
   })
 
@@ -125,7 +125,7 @@ async function setUpMultipleCollectionTest(t, testFixtures, mongoDBCollectionNam
   }
   const fastify = await lc39('./index', { logLevel, envVariables, exposeMetrics: false })
 
-  t.teardown(async() => {
+  t.after(async() => {
     await fastify.close()
     await database.dropDatabase()
     await client.close()

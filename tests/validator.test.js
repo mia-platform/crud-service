@@ -17,13 +17,13 @@
 'use strict'
 
 const Ajv = require('ajv')
-const tap = require('tap')
+const { test } = require('node:test')
 const { STATES } = require('../lib/consts')
 
 const { modelJsonSchema, compatibilityModelJsonSchema } = require('../lib/model.jsonschema')
 
 
-tap.test('validate schema', async t => {
+test('validate schema', async t => {
   await t.test('should throw if partial Index has wrong filter', t => {
     const ajv = new Ajv({ useDefaults: true, coerceTypes: true })
     const validate = ajv.compile(compatibilityModelJsonSchema)
@@ -103,8 +103,7 @@ tap.test('validate schema', async t => {
       ],
     }
 
-    t.strictSame(validate(jsonFile), false)
-    t.end()
+    t.assert.deepStrictEqual(validate(jsonFile), false)
   })
 
   await t.test('should throw if defaultSorting has wrong order', t => {
@@ -176,8 +175,7 @@ tap.test('validate schema', async t => {
       indexes: [],
     }
 
-    t.strictSame(validate(jsonFile), false)
-    t.end()
+    t.assert.deepStrictEqual(validate(jsonFile), false)
   })
 
   await t.test('should validate old schema', t => {
@@ -259,8 +257,7 @@ tap.test('validate schema', async t => {
       tags: ['tag', 'example'],
     }
 
-    t.strictSame(validate(jsonFile), true)
-    t.end()
+    t.assert.deepStrictEqual(validate(jsonFile), true)
   })
 
   await t.test('should validate new schema', t => {
@@ -330,8 +327,7 @@ tap.test('validate schema', async t => {
       tags: ['tag', 'example'],
     }
 
-    t.strictSame(validate(jsonFile), true)
-    t.end()
+    t.assert.deepStrictEqual(validate(jsonFile), true)
   })
 
   await t.test('should validate new schema with compatibility', t => {
@@ -731,8 +727,7 @@ tap.test('validate schema', async t => {
       tags: ['tag', 'example'],
     }
 
-    t.strictSame(validate(jsonFile), true)
-    t.end()
+    t.assert.deepStrictEqual(validate(jsonFile), true)
   })
 
   await t.test('should validate with additional property in __mia_configuration schema', t => {
@@ -803,9 +798,6 @@ tap.test('validate schema', async t => {
       tags: ['tag', 'example'],
     }
 
-    t.strictSame(validate(jsonFile), true)
-    t.end()
+    t.assert.deepStrictEqual(validate(jsonFile), true)
   })
-
-  t.end()
 })
