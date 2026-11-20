@@ -33,10 +33,13 @@ jobs:
           curl -fsSL https://downloads.mongodb.com/linux/mongo_crypt_shared_v1-linux-x86_64-enterprise-ubuntu2204-7.0.14.tgz -o crypt_shared.tar.gz
           tar -xz --one-top-level=crypt_shared -f crypt_shared.tar.gz
 
-      - name: install MongoDB encryption libraries
+      # mongocryptd 5.0 requires libssl1.1, not available on recent runners: run it inside the mongo:5.0 image
+      - name: start mongocryptd
         run: |
-          curl https://repo.mongodb.com/apt/debian/dists/bullseye/mongodb-enterprise/5.0/main/binary-amd64/mongodb-enterprise-cryptd_5.0.14_amd64.deb -o mongocryptd.deb && curl https://libmongocrypt.s3.amazonaws.com/apt/debian/dists/buster/libmongocrypt/1.6/main/binary-amd64/libmongocrypt-dev_1.6.2-0_amd64.deb -o libmongocrypt-dev.deb && curl https://libmongocrypt.s3.amazonaws.com/apt/debian/dists/buster/libmongocrypt/1.6/main/binary-amd64/libmongocrypt0_1.6.2-0_amd64.deb -o libmongocrypt0.deb;
-          sudo apt-get install -f ./mongocryptd.deb ./libmongocrypt0.deb ./libmongocrypt-dev.deb -y
+          curl -fsSL https://repo.mongodb.com/apt/debian/dists/bullseye/mongodb-enterprise/5.0/main/binary-amd64/mongodb-enterprise-cryptd_5.0.14_amd64.deb -o mongocryptd.deb
+          dpkg-deb -x mongocryptd.deb mongocryptd
+          docker run -d --name mongocryptd --network host -v ${{ github.workspace }}/mongocryptd/usr/bin/mongocryptd:/usr/bin/mongocryptd:ro --entrypoint /usr/bin/mongocryptd mongo:5.0 --port 27020 --idleShutdownTimeoutSecs 3600
+          timeout 60 sh -c 'until docker logs mongocryptd 2>&1 | grep -q "Waiting for connections"; do sleep 2; done'
 
       - name: start MongoDB instance
         uses: supercharge/mongodb-github-action@5a87bd81f88e2a8b195f8b7b656f5cda1350815a # v1.11.0
