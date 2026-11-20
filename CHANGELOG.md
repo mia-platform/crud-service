@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## 6.10.6 - 2026-11-20
+
 ### Fixed
 
 - use the MongoDB crypt_shared library set in `CRYPT_SHARED_LIB_PATH` and create views without auto-encryption, to allow service start with CSFLE enabled
