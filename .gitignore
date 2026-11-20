@@ -2,6 +2,7 @@
 
 .tap
 .local
+coverage
 
 # End of Custom ignores
 
