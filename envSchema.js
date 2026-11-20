@@ -74,6 +74,7 @@ const properties = {
   // Encryption properties
   KEY_VAULT_NAMESPACE: { type: 'string', pattern: DATABASE_DOT_COLLECTION },
   LOCAL_MASTER_KEY_PATH: { type: 'string', description: 'Path for the local Master key', minLength: 1 },
+  CRYPT_SHARED_LIB_PATH: { type: 'string', description: 'Path to the MongoDB crypt_shared library used for automatic encryption' },
   // Google Cloud Platform encryption properties
   KMS_GCP_EMAIL: { type: 'string', description: 'GCP email of the kms' },
   KMS_GCP_PROJECT_ID: { type: 'string', description: 'GCP project id for kms' },
