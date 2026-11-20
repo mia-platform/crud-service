@@ -50,7 +50,7 @@
         "attachments": [
             {
                 "name": "attachment-2",
-                "neastedArr": [
+                "nestedArr": [
                     4,
                     5,
                     6

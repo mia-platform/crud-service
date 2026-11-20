@@ -16,13 +16,13 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const { getMongoDatabaseName, getMongoURL } = require('./utils')
 const path = require('path')
 const lc39 = require('@mia-platform/lc39')
 const { prefix } = require('./httpInterface.utils')
 
-tap.test('getSchemas', async t => {
+test('getSchemas', async t => {
   const databaseName = getMongoDatabaseName()
   const mongoURL = getMongoURL(databaseName)
 
@@ -35,7 +35,7 @@ tap.test('getSchemas', async t => {
     logLevel: 'silent',
   })
 
-  t.teardown(async() => {
+  t.after(async() => {
     await fastify.close()
   })
 
@@ -44,6 +44,6 @@ tap.test('getSchemas', async t => {
     url: `${prefix}/schema`,
   })
 
-  t.strictSame(response.statusCode, 200)
-  t.matchSnapshot(JSON.parse(response.payload))
+  t.assert.deepStrictEqual(response.statusCode, 200)
+  t.assert.snapshot(JSON.parse(response.payload))
 })

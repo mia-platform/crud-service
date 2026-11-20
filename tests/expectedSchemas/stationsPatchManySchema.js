@@ -263,7 +263,104 @@ module.exports = {
         'type': 'object',
         'properties': {
           'Direttrici': {
-            'type': 'string',
+            'anyOf': [
+              {
+                'type': 'string',
+              },
+              {
+                'type': 'object',
+                'properties': {
+                  '$': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
+                    ],
+                  },
+                  '$each': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$position': {
+                    'type': 'number',
+                  },
+                  '$slice': {
+                    'type': 'number',
+                  },
+                  '$sort': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                    ],
+                  },
+                  '$in': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
+                'additionalProperties': false,
+              },
+            ],
           },
         },
         'additionalProperties': false,
@@ -272,15 +369,102 @@ module.exports = {
         'type': 'object',
         'properties': {
           'Direttrici': {
-            'oneOf': [
+            'anyOf': [
               {
                 'type': 'string',
               },
               {
                 'type': 'object',
-                'patternProperties': {
-                  '^$': {},
+                'properties': {
+                  '$': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
+                    ],
+                  },
+                  '$each': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$position': {
+                    'type': 'number',
+                  },
+                  '$slice': {
+                    'type': 'number',
+                  },
+                  '$sort': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                    ],
+                  },
+                  '$in': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
+                'additionalProperties': false,
               },
             ],
           },
@@ -291,15 +475,102 @@ module.exports = {
         'type': 'object',
         'properties': {
           'Direttrici': {
-            'oneOf': [
+            'anyOf': [
               {
                 'type': 'string',
               },
               {
                 'type': 'object',
-                'patternProperties': {
-                  '^$': {},
+                'properties': {
+                  '$': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
+                    ],
+                  },
+                  '$each': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$position': {
+                    'type': 'number',
+                  },
+                  '$slice': {
+                    'type': 'number',
+                  },
+                  '$sort': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                    ],
+                  },
+                  '$in': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
+                'additionalProperties': false,
               },
             ],
           },

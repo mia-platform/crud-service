@@ -16,7 +16,7 @@
 
 'use strict'
 
-const t = require('tap')
+const { test } = require('node:test')
 const abstractLogger = require('abstract-logging')
 const { MongoClient, ObjectId } = require('mongodb')
 
@@ -51,7 +51,7 @@ const context = {
   now: new Date('2018-02-08'),
 }
 
-t.test('insertOneWithId', async t => {
+test('insertOneWithId', async t => {
   const databaseName = getMongoDatabaseName()
   const mongoURL = getMongoURL(databaseName)
 
@@ -61,7 +61,7 @@ t.test('insertOneWithId', async t => {
 
   await clearCollectionAndInsertFixtures(collection)
 
-  t.teardown(async() => {
+  t.after(async() => {
     await database.dropDatabase()
     await client.close()
   })
@@ -75,12 +75,12 @@ t.test('insertOneWithId', async t => {
 
     const doc = await crudService.insertOneWithId(context, myChosenId, { ...DOC })
     const docId = doc._id
-    t.equal(docId, myChosenId)
+    t.assert.strictEqual(docId, myChosenId)
 
     t.test('should return the document', async t => {
       t.plan(1)
 
-      t.strictSame(doc, {
+      t.assert.deepStrictEqual(doc, {
         ...DOC,
         _id: myChosenId,
         [UPDATEDAT]: context.now,
@@ -96,7 +96,7 @@ t.test('insertOneWithId', async t => {
 
       const savedDoc = await collection.findOne({ _id: myChosenId })
 
-      t.strictSame(doc, savedDoc)
+      t.assert.deepStrictEqual(doc, savedDoc)
     })
   })
 
@@ -105,9 +105,9 @@ t.test('insertOneWithId', async t => {
 
     try {
       await crudService.insertOneWithId(context, myChosenId, { ...DOC, _id: myChosenId })
-      t.fail()
+      t.assert.fail()
     } catch (error) {
-      t.equal(error.message, 'doc._id already exists')
+      t.assert.strictEqual(error.message, 'doc._id already exists')
     }
   })
 
@@ -116,10 +116,11 @@ t.test('insertOneWithId', async t => {
       t.plan(1)
 
       try {
-        await crudService.insertMany(context, [{ ...DOC, [standardField]: 'some truly value' }])
-        t.fail()
+        // eslint-disable-next-line no-empty-function
+        await crudService.insertMany(context, [{ ...DOC, [standardField]: 'some truly value' }], { parseAndCastBody: () => {} })
+        t.assert.fail()
       } catch (error) {
-        t.equal(error.message, `${standardField} cannot be specified`)
+        t.assert.strictEqual(error.message, `${standardField} cannot be specified`)
       }
     })
   })

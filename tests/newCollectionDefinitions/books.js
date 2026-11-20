@@ -120,6 +120,16 @@ module.exports = {
         },
         description: 'Tag identification numbers',
       },
+      tagObjectIds: {
+        type: 'array',
+        items: {
+          type: 'string',
+          __mia_configuration: {
+            type: 'ObjectId',
+          },
+        },
+        description: 'Tag object ids',
+      },
       additionalInfo: {
         type: 'object',
         nullable: true,
@@ -144,6 +154,7 @@ module.exports = {
               properties: {
                 arrayItemObjectChildNumber: { type: 'number' },
                 anotherNumber: { type: 'number' },
+                integerNum: { type: 'integer' },
                 anotherObject: { type: 'object', nullable: true },
               },
               additionalProperties: true,
@@ -181,7 +192,7 @@ module.exports = {
                 size: { type: 'number' },
               },
             },
-            neastedArr: {
+            nestedArr: {
               type: 'array',
               items: { type: 'number' },
             },

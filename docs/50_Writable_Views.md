@@ -385,7 +385,7 @@ When a lookup field is an _array_ of references, the `$push`, `$addToSet` and `$
 
 ## One-to-many Relationship
 
-This configuration example behaves similarly to the previous one, where a single rider is returned per order. In this case, however, it is allowed to have multiple riders associated to a single order (let's assume this is logical just within the scope of this example). To achieve this different behaviour it is sufficient to remove the `$unwind` operator from the view aggregation pipeline, so that multiple records would be returned.
+This configuration example behaves similarly to the previous one, where a single rider is returned per order. In this case, however, it is allowed to have multiple riders associated to a single order (let's assume this is logical just within the scope of this example). To achieve this different behavior it is sufficient to remove the `$unwind` operator from the view aggregation pipeline, so that multiple records would be returned.
 
 Below are provided the collection and view definition:
 

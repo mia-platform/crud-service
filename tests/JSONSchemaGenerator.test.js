@@ -17,12 +17,11 @@
 /* eslint-disable global-require */
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const logger = require('pino')({ level: 'silent' })
-const { mockObjectId, mockUuidV4 } = require('./utils')
+const { mockObjectId } = require('./utils')
 
 mockObjectId()
-mockUuidV4()
 
 const collectionDefinitions = {
   books: require('./collectionDefinitions/books'),
@@ -71,7 +70,7 @@ const expectedSchemas = operations.reduce((acc, operation) => {
   })
 }, {})
 
-tap.test('generate JSON Schemas', t => {
+test('generate JSON Schemas', t => {
   t.plan(collections.length * operations.length)
 
   collections.forEach(collection => {
@@ -82,29 +81,29 @@ tap.test('generate JSON Schemas', t => {
         t.plan(2)
         const method = operationToMethod[operation]
         const schema = generator[method]()
-        t.strictSame(schema, expectedSchemas[operation][collection])
-        t.ok(ajv.validateSchema(schema))
+        t.assert.deepStrictEqual(schema, expectedSchemas[operation][collection])
+        t.assert.ok(ajv.validateSchema(schema))
       })
     })
   })
 })
 
-tap.test('check date-time format', t => {
+test('check date-time format', t => {
   const generator = getJsonSchemaGenerator(collectionDefinitions.books)
   const schema = generator.generateCountJSONSchema()
   t.plan(7)
   const dateSchema = schema.querystring.properties.publishDate
   const validate = ajv.compile(dateSchema)
-  t.ok(validate('2018-03-13T10:28:09.098Z'))
-  t.ok(validate('2018-03-13T10:28:09.098+01:00'))
-  t.ok(validate('2018-03-13T11:34:43+01:00'))
-  t.ok(validate('2018-03-13'))
-  t.notOk(validate('37849238748934'))
-  t.notOk(validate('AAAAA2018-03-13'))
-  t.notOk(validate('2018-03-13AAAAAA'))
+  t.assert.ok(validate('2018-03-13T10:28:09.098Z'))
+  t.assert.ok(validate('2018-03-13T10:28:09.098+01:00'))
+  t.assert.ok(validate('2018-03-13T11:34:43+01:00'))
+  t.assert.ok(validate('2018-03-13'))
+  t.assert.ok(!(validate('37849238748934')))
+  t.assert.ok(!(validate('AAAAA2018-03-13')))
+  t.assert.ok(!(validate('2018-03-13AAAAAA')))
 })
 
-tap.test('update bulk body validation - valid', t => {
+test('update bulk body validation - valid', t => {
   t.plan(1)
 
   const collection = 'books'
@@ -123,10 +122,10 @@ tap.test('update bulk body validation - valid', t => {
   ]
   const schema = generator.generatePatchBulkJSONSchema()
   const validate = ajv.compile(schema.body)
-  t.ok(validate(validPayload))
+  t.assert.ok(validate(validPayload))
 })
 
-tap.test('update bulk body validation - not valid - updates in filter', t => {
+test('update bulk body validation - not valid - updates in filter', t => {
   t.plan(1)
 
   const collection = 'books'
@@ -146,10 +145,10 @@ tap.test('update bulk body validation - not valid - updates in filter', t => {
   ]
   const schema = generator.generatePatchBulkJSONSchema()
   const validate = ajv.compile(schema.body)
-  t.notOk(validate(validPayload))
+  t.assert.ok(!(validate(validPayload)))
 })
 
-tap.test('update bulk body validation - not valid', t => {
+test('update bulk body validation - not valid', t => {
   t.plan(1)
 
   const collection = 'books'
@@ -163,10 +162,10 @@ tap.test('update bulk body validation - not valid', t => {
   ]
   const schema = generator.generatePatchBulkJSONSchema()
   const validate = ajv.compile(schema.body)
-  t.notOk(validate(invalidPayload))
+  t.assert.ok(!(validate(invalidPayload)))
 })
 
-tap.test('count querystring validaton - valid', t => {
+test('count querystring validaton - valid', t => {
   t.plan(1)
 
   const collection = 'books'
@@ -177,10 +176,10 @@ tap.test('count querystring validaton - valid', t => {
   }
   const schema = generator.generateCountJSONSchema()
   const validate = ajv.compile(schema.querystring)
-  t.ok(validate(validQuery))
+  t.assert.ok(validate(validQuery))
 })
 
-tap.test('count querystring validaton - not valid', t => {
+test('count querystring validaton - not valid', t => {
   t.plan(1)
 
   const collection = 'books'
@@ -190,10 +189,10 @@ tap.test('count querystring validaton - not valid', t => {
   }
   const schema = generator.generateCountJSONSchema()
   const validate = ajv.compile(schema.querystring)
-  t.notOk(validate(invalidQuery))
+  t.assert.ok(!(validate(invalidQuery)))
 })
 
-tap.test('get item _id string - valid', t => {
+test('get item _id string - valid', t => {
   t.plan(1)
 
   const collection = 'stations'
@@ -203,10 +202,10 @@ tap.test('get item _id string - valid', t => {
   }
   const schema = generator.generateCountJSONSchema()
   const validate = ajv.compile(schema.querystring)
-  t.ok(validate(validQuery))
+  t.assert.ok(validate(validQuery))
 })
 
-tap.test('get item _id string - not valid', t => {
+test('get item _id string - not valid', t => {
   t.plan(1)
 
   const collection = 'stations'
@@ -216,10 +215,10 @@ tap.test('get item _id string - not valid', t => {
   }
   const schema = generator.generateCountJSONSchema()
   const validate = ajv.compile(schema.querystring)
-  t.notOk(validate(invalidQuery))
+  t.assert.ok(!(validate(invalidQuery)))
 })
 
-tap.test('getlist response validation - valid', t => {
+test('getlist response validation - valid', t => {
   t.plan(1)
 
   const collection = 'books'
@@ -230,10 +229,10 @@ tap.test('getlist response validation - valid', t => {
   }]
   const schema = generator.generateGetListJSONSchema()
   const validate = ajv.compile(schema.response['200'])
-  t.ok(validate(validResponse))
+  t.assert.ok(validate(validResponse))
 })
 
-tap.test('getlist response validation - not valid', t => {
+test('getlist response validation - not valid', t => {
   t.plan(1)
 
   const collection = 'books'
@@ -244,10 +243,28 @@ tap.test('getlist response validation - not valid', t => {
   }
   const schema = generator.generateGetListJSONSchema()
   const validate = ajv.compile(schema.response['200'])
-  t.notOk(validate(invalidResponse))
+  t.assert.ok(!(validate(invalidResponse)))
 })
 
-tap.test('RawObject - valid', t => {
+test('getitem response validation - generateRequired flag', t => {
+  t.plan(2)
+
+  const collection = 'books'
+  const generator = getJsonSchemaGenerator(collectionDefinitions[collection])
+  const response = {
+    name: 'Ulysses',
+    publishDate: '2018-02-06T00:00:00.000Z',
+  }
+  const schemaWithoutRequired = generator.generateGetItemJSONSchema()
+  const validateWithoutRequired = ajv.compile(schemaWithoutRequired.response['200'])
+  t.assert.ok(validateWithoutRequired(response), 'without required response is ok')
+
+  const schemaWithRequired = generator.generateGetItemJSONSchema(true)
+  const validateWithRequired = ajv.compile(schemaWithRequired.response['200'])
+  t.assert.ok(!(validateWithRequired(response)), 'with required response is not ok cause isbn is missing')
+})
+
+test('RawObject - valid', t => {
   t.plan(1)
 
   const collection = 'cars'
@@ -263,10 +280,10 @@ tap.test('RawObject - valid', t => {
   }
   const schema = generator.generatePostJSONSchema()
   const validate = ajv.compile(schema.body)
-  t.ok(validate(validBody))
+  t.assert.ok(validate(validBody))
 })
 
-tap.test('RawObjectArray - valid', t => {
+test('RawObjectArray - valid', t => {
   t.plan(1)
 
   const collection = 'books'
@@ -288,10 +305,10 @@ tap.test('RawObjectArray - valid', t => {
   }
   const schema = generator.generatePostJSONSchema()
   const validate = ajv.compile(schema.body)
-  t.ok(validate(validBody))
+  t.assert.ok(validate(validBody))
 })
 
-tap.test('RawObjectArray - invalid', t => {
+test('RawObjectArray - invalid', t => {
   t.plan(1)
 
   const collection = 'books'
@@ -313,10 +330,10 @@ tap.test('RawObjectArray - invalid', t => {
   }
   const schema = generator.generatePostJSONSchema()
   const validate = ajv.compile(schema.body)
-  t.notOk(validate(invalidBody))
+  t.assert.ok(!(validate(invalidBody)))
 })
 
-tap.test('required fields - invalid', t => {
+test('required fields - invalid', t => {
   t.plan(1)
 
   const collection = 'books'
@@ -337,10 +354,10 @@ tap.test('required fields - invalid', t => {
   }
   const schema = generator.generatePostJSONSchema()
   const validate = ajv.compile(schema.body)
-  t.notOk(validate(invalidBody))
+  t.assert.ok(!(validate(invalidBody)))
 })
 
-tap.test('GeoPoint validation', t => {
+test('GeoPoint validation', t => {
   const tests = [
     {
       name: '0 coordinates',
@@ -423,9 +440,9 @@ tap.test('GeoPoint validation', t => {
       t.plan(1)
       const foundValid = validate(position)
       if (valid) {
-        t.ok(foundValid)
+        t.assert.ok(foundValid)
       } else {
-        t.notOk(foundValid)
+        t.assert.ok(!(foundValid))
       }
     })
   }

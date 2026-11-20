@@ -16,7 +16,7 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const abstractLogger = require('abstract-logging')
 const { MongoClient } = require('mongodb')
 
@@ -39,7 +39,7 @@ const context = {
   now: new Date('2018-02-08'),
 }
 
-tap.test('changeStateMany', async t => {
+test('changeStateMany', async t => {
   const databaseName = getMongoDatabaseName()
   const mongoURL = getMongoURL(databaseName)
 
@@ -47,7 +47,7 @@ tap.test('changeStateMany', async t => {
   const database = client.db(databaseName)
   const collection = database.collection(BOOKS_COLLECTION_NAME)
 
-  t.teardown(async() => {
+  t.after(async() => {
     await database.dropDatabase()
     await client.close()
   })
@@ -86,7 +86,6 @@ tap.test('changeStateMany', async t => {
     },
   ]
 
-  // TODO: Broken in parallel
   testConf.forEach(conf => {
     const { filterUpdateCommands } = conf
     t.test(conf.name, async t => {
@@ -95,8 +94,7 @@ tap.test('changeStateMany', async t => {
       const ret = await crudService.changeStateMany(context, filterUpdateCommands)
 
       t.test('should return the document count', t => {
-        t.strictSame(ret, conf.count)
-        t.end()
+        t.assert.deepStrictEqual(ret, conf.count)
       })
 
       checkDocumentsInDatabase(
@@ -105,7 +103,6 @@ tap.test('changeStateMany', async t => {
         filterUpdateCommands.map(f => f.query._id),
         fixtures.filter(d => !filterUpdateCommands.some(f => f.query._id === d._id))
       )
-      t.end()
     })
   })
 })

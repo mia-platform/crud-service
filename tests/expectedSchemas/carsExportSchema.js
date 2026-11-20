@@ -113,6 +113,9 @@ module.exports = {
         ],
         'description': 'Sort by the specified property/properties (Start with a "-" to invert the sort order)',
       },
+      '_exportOpts': {
+        'type': 'string',
+      },
     },
     'additionalProperties': false,
   },

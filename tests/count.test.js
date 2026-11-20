@@ -16,7 +16,7 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const abstractLogger = require('abstract-logging')
 const { MongoClient } = require('mongodb')
 
@@ -38,7 +38,7 @@ const context = {
   now: new Date('2018-02-08'),
 }
 
-tap.test('count', async t => {
+test('count', async t => {
   const databaseName = getMongoDatabaseName()
   const mongoURL = getMongoURL(databaseName)
 
@@ -46,7 +46,7 @@ tap.test('count', async t => {
   const database = client.db(databaseName)
   const collection = database.collection(BOOKS_COLLECTION_NAME)
 
-  t.teardown(async() => {
+  t.after(async() => {
     await database.dropDatabase()
     await client.close()
   })
@@ -60,7 +60,7 @@ tap.test('count', async t => {
 
     const count = await crudService.count(context)
 
-    t.equal(count, publicFixtures.length)
+    t.assert.strictEqual(count, publicFixtures.length)
   })
 
   t.test('should return the number of the documents that matched the given query', async t => {
@@ -68,7 +68,7 @@ tap.test('count', async t => {
 
     const count = await crudService.count(context, { price: { $gt: 20 } })
 
-    t.equal(count, publicFixtures.filter(d => d.price > 20).length)
+    t.assert.strictEqual(count, publicFixtures.filter(d => d.price > 20).length)
   })
 
   t.test('should return the number of the documents that is in draft', async t => {
@@ -76,7 +76,7 @@ tap.test('count', async t => {
 
     const count = await crudService.count(context, {}, [STATES.DRAFT])
 
-    t.equal(count, fixtures.filter(d => d[__STATE__] === STATES.DRAFT).length)
+    t.assert.strictEqual(count, fixtures.filter(d => d[__STATE__] === STATES.DRAFT).length)
   })
 
   t.test('should return the number of the documents that is in trash or in draft', async t => {
@@ -84,7 +84,7 @@ tap.test('count', async t => {
 
     const count = await crudService.count(context, {}, [STATES.DRAFT, STATES.TRASH])
 
-    t.equal(count, fixtures.filter(d => {
+    t.assert.strictEqual(count, fixtures.filter(d => {
       return (
         d[__STATE__] === STATES.DRAFT
         || d[__STATE__] === STATES.TRASH
@@ -97,13 +97,11 @@ tap.test('count', async t => {
 
     const count = await crudService.count(context, { price: { $gt: 50 } }, [STATES.DRAFT, STATES.TRASH])
 
-    t.equal(count, fixtures.filter(d => {
+    t.assert.strictEqual(count, fixtures.filter(d => {
       return (
         d[__STATE__] === STATES.DRAFT
         || d[__STATE__] === STATES.TRASH
       ) && d.price > 50
     }).length)
   })
-
-  t.end()
 })

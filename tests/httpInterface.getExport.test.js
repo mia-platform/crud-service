@@ -16,7 +16,7 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const { STATES, __STATE__ } = require('../lib/consts')
 const {
   publicFixtures,
@@ -37,6 +37,7 @@ const { setUpTest, prefix, stationsPrefix, getHeaders } = require('./httpInterfa
 const booksCollectionDefinition = require('./collectionDefinitions/books')
 const csvStringify = require('csv-stringify/sync')
 const xlsx = require('node-xlsx')
+const { formatDataForColumnExport } = require('../lib/transformers/utils')
 
 const [STATION_DOC] = stationFixtures
 const HTTP_STATION_DOC = JSON.parse(JSON.stringify(STATION_DOC))
@@ -79,8 +80,39 @@ const EXPECTED_PUBLIC_DOCS_FOR_INCLUSIVE_RAW_PROJECTION = publicFixtures.map((do
     }
 })
 
-tap.test('HTTP GET /export', async t => {
+const DEFAULT_EXPECTED_COLUMNS = ['_id', '__STATE__', 'creatorId', 'createdAt', 'updaterId', 'updatedAt', 'name', 'isbn', 'price', 'author', 'authorAddressId', 'isPromoted', 'publishDate', 'position', 'tags', 'tagIds', 'tagObjectIds', 'additionalInfo', 'signature', 'metadata', 'attachments', 'editionsDates']
+
+test('HTTP GET /export', async t => {
   const tests = [
+    {
+      name: 'with sorting',
+      url: '/export?_s=price',
+      acl_rows: undefined,
+      found: HTTP_PUBLIC_FIXTURES.concat([])
+        .sort((a, b) => sortByPrice(a, b, 1)),
+      expectedColumns: DEFAULT_EXPECTED_COLUMNS,
+    },
+    {
+      name: 'with invert sorting',
+      url: '/export?_s=-price',
+      acl_rows: undefined,
+      found: HTTP_PUBLIC_FIXTURES.concat([])
+        .sort((a, b) => sortByPrice(a, b, -1)),
+      expectedColumns: DEFAULT_EXPECTED_COLUMNS,
+    },
+    {
+      name: 'with delimiter specifier',
+      url: `/export?_exportOpts=${JSON.stringify({ delimiter: ';' })}`,
+      acl_rows: undefined,
+      delimiter: ';',
+      found: HTTP_PUBLIC_FIXTURES.concat([]).sort((a, b) => {
+        if (a._id === b._id) {
+          return 0
+        }
+        return a._id >= b._id ? 1 : -1
+      }),
+      expectedColumns: DEFAULT_EXPECTED_COLUMNS,
+    },
     {
       name: 'without filters',
       url: '/export',
@@ -91,20 +123,7 @@ tap.test('HTTP GET /export', async t => {
         }
         return a._id >= b._id ? 1 : -1
       }),
-    },
-    {
-      name: 'with sorting',
-      url: '/export?_s=price',
-      acl_rows: undefined,
-      found: HTTP_PUBLIC_FIXTURES.concat([])
-        .sort((a, b) => sortByPrice(a, b, 1)),
-    },
-    {
-      name: 'with invert sorting',
-      url: '/export?_s=-price',
-      acl_rows: undefined,
-      found: HTTP_PUBLIC_FIXTURES.concat([])
-        .sort((a, b) => sortByPrice(a, b, -1)),
+      expectedColumns: DEFAULT_EXPECTED_COLUMNS,
     },
     {
       name: 'with multiple sorting COMMA',
@@ -113,6 +132,7 @@ tap.test('HTTP GET /export', async t => {
       found: HTTP_PUBLIC_FIXTURES.concat([])
         .sort((a, b) => sortByName(a, b, 1))
         .sort((a, b) => sortByPrice(a, b, 1)),
+      expectedColumns: DEFAULT_EXPECTED_COLUMNS,
     },
     {
       name: 'with multiple invert sorting COMMA',
@@ -121,6 +141,7 @@ tap.test('HTTP GET /export', async t => {
       found: HTTP_PUBLIC_FIXTURES.concat([])
         .sort((a, b) => sortByName(a, b, -1))
         .sort((a, b) => sortByPrice(a, b, -1)),
+      expectedColumns: DEFAULT_EXPECTED_COLUMNS,
     },
     {
       name: 'with multiple: normal sorting for first, invert second MULTIPLE QUERYSTRING',
@@ -129,6 +150,7 @@ tap.test('HTTP GET /export', async t => {
       found: HTTP_PUBLIC_FIXTURES.concat([])
         .sort((a, b) => sortByName(a, b, -1))
         .sort((a, b) => sortByPrice(a, b, 1)),
+      expectedColumns: DEFAULT_EXPECTED_COLUMNS,
     },
     {
       name: 'with multiple: normal sorting for first, invert for second with subfield, normal for third COMMA',
@@ -138,6 +160,7 @@ tap.test('HTTP GET /export', async t => {
         .sort((a, b) => sortByDate(a, b, 1))
         .sort((a, b) => sortByAttachmentsName(a, b, -1))
         .sort((a, b) => sortByPrice(a, b, 1)),
+      expectedColumns: DEFAULT_EXPECTED_COLUMNS,
     },
     {
       name: 'with multiple: normal sorting for first and second (nested array) MULTIPLE QUERYSTRING',
@@ -146,6 +169,7 @@ tap.test('HTTP GET /export', async t => {
       found: HTTP_PUBLIC_FIXTURES.concat([])
         .sort((a, b) => sortByAttachmentsName(a, b, 1))
         .sort((a, b) => sortByPrice(a, b, 1)),
+      expectedColumns: DEFAULT_EXPECTED_COLUMNS,
     },
     {
       name: 'with multiple sorting, first RawObject and second normal field',
@@ -154,6 +178,7 @@ tap.test('HTTP GET /export', async t => {
       found: HTTP_PUBLIC_FIXTURES.concat([])
         .sort((a, b) => sortByAdditionalInfo(a, b, 1))
         .sort((a, b) => sortByPrice(a, b, 1)),
+      expectedColumns: DEFAULT_EXPECTED_COLUMNS,
     },
     {
       name: 'with skip and limit',
@@ -165,42 +190,49 @@ tap.test('HTTP GET /export', async t => {
         return a._id >= b._id ? 1 : -1
       })
         .slice(1, 3),
+      expectedColumns: DEFAULT_EXPECTED_COLUMNS,
     },
     {
       name: 'with projection',
       url: '/export?_p=price,name,author',
       acl_rows: undefined,
       found: HTTP_PUBLIC_FIXTURES.map(f => ({ _id: f._id, name: f.name, author: f.author, price: f.price })),
+      expectedColumns: ['_id', 'price', 'name', 'author'],
     },
     {
       name: 'with query filter',
       url: `/export?price=${publicFixtures[0].price}`,
       acl_rows: undefined,
       found: HTTP_PUBLIC_FIXTURES.filter(f => f.price === publicFixtures[0].price),
+      expectedColumns: DEFAULT_EXPECTED_COLUMNS,
     },
     {
       name: 'with filter',
       url: `/export?_q=${JSON.stringify({ price: { $gt: 20 } })}`,
       acl_rows: undefined,
       found: HTTP_PUBLIC_FIXTURES.filter(f => f.price > 20),
+      expectedColumns: DEFAULT_EXPECTED_COLUMNS,
     },
     {
       name: 'with filter regex',
       url: `/export?_q=${JSON.stringify({ name: { $regex: 'ulysses', $options: 'si' } })}`,
       acl_rows: undefined,
       found: HTTP_PUBLIC_FIXTURES.filter(f => /ulysses/i.test(f.name)),
+      expectedColumns: DEFAULT_EXPECTED_COLUMNS,
     },
     {
       name: 'with non-matching filter',
       url: `/export?_q=${JSON.stringify({ price: { $gt: 20000000 } })}`,
       acl_rows: undefined,
       found: [],
+      expectedColumns: DEFAULT_EXPECTED_COLUMNS,
     },
     {
       name: 'with filter with null values',
       url: `/export?_q=${JSON.stringify({ price: { $gt: 20 }, additionalInfo: null })}`,
       acl_rows: undefined,
       found: HTTP_PUBLIC_FIXTURES.filter(f => f.price > 20 && !f.additionalInfo),
+      expectedColumns: DEFAULT_EXPECTED_COLUMNS,
     },
     {
       name: 'with filter by additionalInfo nested with dot notation',
@@ -209,6 +241,7 @@ tap.test('HTTP GET /export', async t => {
       found: HTTP_PUBLIC_FIXTURES.filter(
         f => f.additionalInfo && f.additionalInfo.notes && f.additionalInfo.notes.mynote === 'good'
       ),
+      expectedColumns: DEFAULT_EXPECTED_COLUMNS,
     },
     {
       name: 'with filter by additionalInfo nested with dot notation with a command',
@@ -217,6 +250,7 @@ tap.test('HTTP GET /export', async t => {
       found: HTTP_PUBLIC_FIXTURES.filter(
         f => !f.additionalInfo || !f.additionalInfo.notes || f.additionalInfo.notes.mynote !== 'good'
       ),
+      expectedColumns: DEFAULT_EXPECTED_COLUMNS,
     },
     {
       name: '$exists: false',
@@ -225,12 +259,14 @@ tap.test('HTTP GET /export', async t => {
       found: HTTP_PUBLIC_FIXTURES.filter(
         f => !f.additionalInfo || !{}.hasOwnProperty.call(f.additionalInfo, 'gg')
       ),
+      expectedColumns: DEFAULT_EXPECTED_COLUMNS,
     },
     {
       name: 'with filter by additionalInfo nested without dot notation (only one level)',
       url: `/export?_q=${JSON.stringify({ additionalInfo: { note: 'good' } })}`,
       acl_rows: undefined,
       found: HTTP_PUBLIC_FIXTURES.filter(f => f.additionalInfo && f.additionalInfo.note === 'good'),
+      expectedColumns: DEFAULT_EXPECTED_COLUMNS,
     },
     {
       name: 'with filter with geo search',
@@ -238,10 +274,11 @@ tap.test('HTTP GET /export', async t => {
       acl_rows: undefined,
       found: [
         { _id: '111111111111111111111111' },
-        { _id: '444444444444444444444444' },
         { _id: '222222222222222222222222' },
         { _id: '333333333333333333333333' },
+        { _id: '444444444444444444444444' },
       ],
+      expectedColumns: ['_id'],
     },
     {
       name: 'with filter with geo search with altitude',
@@ -249,36 +286,49 @@ tap.test('HTTP GET /export', async t => {
       acl_rows: undefined,
       found: [
         { _id: '111111111111111111111111' },
-        { _id: '444444444444444444444444' },
         { _id: '222222222222222222222222' },
         { _id: '333333333333333333333333' },
+        { _id: '444444444444444444444444' },
       ],
+      expectedColumns: ['_id'],
     },
     {
       name: 'with filter with geo search with min and max',
-      url: `/export?_q=${JSON.stringify({ position: { $nearSphere: { from: [0, 0], minDistance: 0, maxDistance: 10 } } })}&_p=_id`,
+      url: `/export?_q=${JSON.stringify({
+        position: {
+          $nearSphere: {
+            from: [0, 0],
+            minDistance: 0,
+            maxDistance: 10,
+          },
+        },
+      })}&_p=_id`,
       acl_rows: undefined,
       found: [
         { _id: '111111111111111111111111' },
       ],
+      expectedColumns: ['_id'],
     },
     {
       name: 'with acl_rows',
       url: '/export',
       acl_rows: [{ price: { $gt: 20 } }],
       found: HTTP_PUBLIC_FIXTURES.filter(f => f.price > 20),
+      expectedColumns: DEFAULT_EXPECTED_COLUMNS,
     },
     {
       name: 'with acl_rows and query filter',
       url: '/export?isPromoted=true',
       acl_rows: [{ price: { $gt: 20 } }],
       found: HTTP_PUBLIC_FIXTURES.filter(f => f.price > 20 && f.isPromoted === true),
+      expectedColumns: DEFAULT_EXPECTED_COLUMNS,
     },
     {
       name: 'with acl_rows and filter',
       url: `/export?_q=${JSON.stringify({ isPromoted: true })}`,
       acl_rows: [{ price: { $gt: 20 } }],
       found: HTTP_PUBLIC_FIXTURES.filter(f => f.price > 20 && f.isPromoted === true),
+      expectedColumns: DEFAULT_EXPECTED_COLUMNS,
     },
     {
       name: 'with acl_read_columns',
@@ -286,6 +336,7 @@ tap.test('HTTP GET /export', async t => {
       acl_rows: undefined,
       acl_read_columns: ['price', 'author'],
       found: HTTP_PUBLIC_FIXTURES.map(f => ({ _id: f._id, author: f.author, price: f.price })),
+      expectedColumns: ['_id', 'price', 'author'],
     },
     {
       name: 'with acl_read_columns > projection',
@@ -293,6 +344,7 @@ tap.test('HTTP GET /export', async t => {
       acl_rows: undefined,
       acl_read_columns: ['price', 'author'],
       found: HTTP_PUBLIC_FIXTURES.map(f => ({ _id: f._id, price: f.price })),
+      expectedColumns: ['_id', 'price'],
     },
     {
       name: 'with acl_read_columns < projection',
@@ -300,6 +352,7 @@ tap.test('HTTP GET /export', async t => {
       acl_rows: undefined,
       acl_read_columns: ['price', 'author'],
       found: HTTP_PUBLIC_FIXTURES.map(f => ({ _id: f._id, author: f.author, price: f.price })),
+      expectedColumns: ['_id', 'price', 'author'],
     },
     {
       name: 'with acl_read_columns intersect projection',
@@ -307,6 +360,7 @@ tap.test('HTTP GET /export', async t => {
       acl_rows: undefined,
       acl_read_columns: ['price', 'author', 'name'],
       found: HTTP_PUBLIC_FIXTURES.map(f => ({ _id: f._id, author: f.author, price: f.price })),
+      expectedColumns: ['_id', 'price', 'author'],
     },
     {
       name: 'with acl_read_columns not intersect projection',
@@ -314,6 +368,7 @@ tap.test('HTTP GET /export', async t => {
       acl_rows: undefined,
       acl_read_columns: ['author', 'name'],
       found: HTTP_PUBLIC_FIXTURES.map(f => ({ _id: f._id })),
+      expectedColumns: ['_id'],
     },
     {
       name: 'with state',
@@ -321,6 +376,7 @@ tap.test('HTTP GET /export', async t => {
       acl_rows: undefined,
       acl_read_columns: undefined,
       found: HTTP_PUBLIC_FIXTURES.concat([]),
+      expectedColumns: DEFAULT_EXPECTED_COLUMNS,
     },
     {
       name: 'with state DRAFT',
@@ -329,6 +385,7 @@ tap.test('HTTP GET /export', async t => {
       acl_read_columns: undefined,
       found: fixtures.concat([]).filter(f => f[__STATE__] === STATES.DRAFT)
         .map(f => ({ _id: f._id.toString(), name: f.name })),
+      expectedColumns: ['_id', 'name'],
     },
     {
       name: 'with state DRAFT,PUBLIC',
@@ -337,18 +394,20 @@ tap.test('HTTP GET /export', async t => {
       acl_read_columns: undefined,
       found: fixtures.concat([]).filter(f => f[__STATE__] === STATES.DRAFT || f[__STATE__] === STATES.PUBLIC)
         .map(f => ({ _id: f._id.toString(), name: f.name })),
+      expectedColumns: ['_id', 'name'],
     },
     {
       name: '$elemMatch array rawobject array',
-      url: `/export?_p=_id&_q=${JSON.stringify({ attachments: { $elemMatch: { neastedArr: { $in: [3] } } } })}`,
+      url: `/export?_p=_id&_q=${JSON.stringify({ attachments: { $elemMatch: { nestedArr: { $in: [3] } } } })}`,
       acl_rows: undefined,
       acl_read_columns: undefined,
       found: fixtures.filter(f => {
         return f.attachments
           && f.attachments.some(a => {
-            return a.neastedArr && a.neastedArr.some(fp => fp === 3)
+            return a.nestedArr && a.nestedArr.some(fp => fp === 3)
           })
       }).map(f => ({ _id: f._id.toString() })),
+      expectedColumns: ['_id'],
     },
     {
       name: '$elemMatch array rawobject string',
@@ -361,6 +420,7 @@ tap.test('HTTP GET /export', async t => {
             return a.name === 'my-name'
           })
       }).map(f => ({ _id: f._id.toString() })),
+      expectedColumns: ['_id'],
     },
     {
       name: 'filter on nested object with dot notation',
@@ -386,7 +446,7 @@ tap.test('HTTP GET /export', async t => {
         attachments: [
           {
             name: 'note',
-            neastedArr: [1, 2, 3],
+            nestedArr: [1, 2, 3],
             detail: {
               size: 9,
             },
@@ -397,6 +457,7 @@ tap.test('HTTP GET /export', async t => {
           },
         ],
       }],
+      expectedColumns: ['_id', 'isbn', 'metadata', 'attachments'],
     },
     {
       name: 'filter on nested object with aclRows',
@@ -415,6 +476,7 @@ tap.test('HTTP GET /export', async t => {
           somethingArrayOfNumbers: [5],
         },
       }],
+      expectedColumns: ['_id', 'isbn', 'metadata'],
     },
     {
       name: 'correct project on nested object and nested array of object with _p',
@@ -436,6 +498,7 @@ tap.test('HTTP GET /export', async t => {
           },
         ],
       }],
+      expectedColumns: ['_id', 'isbn', 'additionalInfo.foo', 'attachments.name'],
     },
     {
       name: 'correct project on inexistent field with _p',
@@ -447,6 +510,7 @@ tap.test('HTTP GET /export', async t => {
         isbn: fixtures[0].isbn,
         additionalInfo: {},
       }],
+      expectedColumns: ['_id', 'isbn', 'additionalInfo.inexistentField'],
     },
     {
       name: 'use of $ operator for array element condition into _p',
@@ -460,6 +524,7 @@ tap.test('HTTP GET /export', async t => {
           other: 'stuff',
         }],
       }],
+      expectedColumns: ['_id', 'attachments.$'],
     },
     {
       name: 'wrong project with _p returns only the _id',
@@ -469,6 +534,7 @@ tap.test('HTTP GET /export', async t => {
       found: [{
         _id: fixtures[0]._id.toString(),
       }],
+      expectedColumns: ['_id', 'a wrong projection'],
     },
     {
       name: 'use of raw projection in url',
@@ -476,6 +542,7 @@ tap.test('HTTP GET /export', async t => {
       acl_rows: undefined,
       acl_read_columns: undefined,
       found: EXPECTED_DOCS_FOR_INCLUSIVE_RAW_PROJECTION,
+      expectedColumns: ['_id', 'attachments', 'price', 'isbn'],
     },
     {
       name: 'use of raw projection in url with only PUBLIC documents',
@@ -483,6 +550,7 @@ tap.test('HTTP GET /export', async t => {
       acl_rows: undefined,
       acl_read_columns: undefined,
       found: EXPECTED_PUBLIC_DOCS_FOR_INCLUSIVE_RAW_PROJECTION,
+      expectedColumns: ['_id', 'attachments', 'price', 'isbn'],
     },
     {
       name: 'use of raw projection in url with _q',
@@ -490,6 +558,7 @@ tap.test('HTTP GET /export', async t => {
       acl_rows: undefined,
       acl_read_columns: undefined,
       found: [EXPECTED_DOCS_FOR_INCLUSIVE_RAW_PROJECTION[0]],
+      expectedColumns: ['_id', 'attachments', 'price', 'isbn'],
     },
     {
       name: 'use of raw projection in url with _q with acl_columns',
@@ -502,6 +571,7 @@ tap.test('HTTP GET /export', async t => {
           price: fixtures[0].price,
         },
       ],
+      expectedColumns: ['_id', 'price'],
     },
     {
       name: 'use of raw projection exclusive which do not intersect acls',
@@ -513,6 +583,7 @@ tap.test('HTTP GET /export', async t => {
           _id: doc._id.toString(),
         }
       }),
+      expectedColumns: ['_id'],
     },
   ]
 
@@ -534,6 +605,19 @@ tap.test('HTTP GET /export', async t => {
             attachments: doc.attachments ? doc.attachments.filter((attachment) => attachment.name === 'note') : null,
           }
         }),
+        expectedColumns: ['_id', 'attachments'],
+      },
+      {
+        name: 'use of raw projection in url, excluding _id',
+        url: `/export?_rawp=${JSON.stringify({ _id: 0, ...RAW_PROJECTION })}&_st=${STATES.DELETED},${STATES.PUBLIC},${STATES.TRASH},${STATES.DRAFT}`,
+        acl_rows: undefined,
+        acl_read_columns: undefined,
+        found: fixtures.map((doc) => {
+          return {
+            attachments: doc.attachments ? doc.attachments.filter((attachment) => attachment.name === 'note') : null,
+          }
+        }),
+        expectedColumns: ['attachments'],
       },
       {
         name: '[only in mongo 4.4+] use of raw projection in url with only PUBLIC documents',
@@ -546,6 +630,7 @@ tap.test('HTTP GET /export', async t => {
             attachments: doc.attachments ? doc.attachments.filter((attachment) => attachment.name === 'note') : null,
           }
         }),
+        expectedColumns: ['_id', 'attachments'],
       },
       {
         name: '[only in mongo 4.4+] use of raw projection in url with _q',
@@ -556,6 +641,7 @@ tap.test('HTTP GET /export', async t => {
           _id: fixtures[0]._id.toString(),
           attachments: fixtures[0].attachments.filter((attachment) => attachment.name === 'note'),
         }],
+        expectedColumns: ['_id', 'attachments'],
       },
       {
         name: '[only in mongo 4.4+] use of raw projection with $first operator',
@@ -566,6 +652,7 @@ tap.test('HTTP GET /export', async t => {
           _id: fixtures[0]._id.toString(),
           attachments: fixtures[0].attachments[0],
         }],
+        expectedColumns: ['_id', 'attachments'],
       },
       {
         name: '[only in mongo 4.4+] use of raw projection with $dateToString operator',
@@ -586,6 +673,7 @@ tap.test('HTTP GET /export', async t => {
           // same as timezone above (+10:00)
           createdAt: `${fixtures[0].createdAt.getUTCHours() + 10}`,
         }],
+        expectedColumns: ['_id', 'createdAt'],
       },
     ]
 
@@ -609,30 +697,24 @@ tap.test('HTTP GET /export', async t => {
       })
 
       t.test('should return 200', t => {
-        t.strictSame(response.statusCode, 200)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 200)
       })
 
       t.test('should return "application/x-ndjson"', t => {
-        t.ok(/application\/x-ndjson/.test(response.headers['content-type']))
-        t.end()
+        t.assert.ok(/application\/x-ndjson/.test(response.headers['content-type']))
       })
 
       t.test('should return the document', t => {
         const documents = response.payload.split('\n')
           .filter(s => s !== '')
           .map(JSON.parse)
-        t.strictSame(documents, found, response.payload)
-        t.end()
+        t.assert.deepStrictEqual(documents, found, response.payload)
       })
 
       t.test('should keep the document as is in database', async t => {
         const documents = await collection.find().toArray()
-        t.strictSame(documents, fixtures)
-        t.end()
+        t.assert.deepStrictEqual(documents, fixtures)
       })
-
-      t.end()
     })
 
     t.test(`EXPORT json ${name}`, async t => {
@@ -647,28 +729,22 @@ tap.test('HTTP GET /export', async t => {
       })
 
       t.test('should return 200', t => {
-        t.strictSame(response.statusCode, 200)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 200)
       })
 
       t.test('should return "application/json"', t => {
-        t.ok(/application\/json/.test(response.headers['content-type']))
-        t.end()
+        t.assert.ok(/application\/json/.test(response.headers['content-type']))
       })
 
       t.test('should return the document', t => {
         const documents = JSON.parse(response.payload)
-        t.strictSame(documents, found)
-        t.end()
+        t.assert.deepStrictEqual(documents, found)
       })
 
       t.test('should keep the document as is in database', async t => {
         const documents = await collection.find().toArray()
-        t.strictSame(documents, fixtures)
-        t.end()
+        t.assert.deepStrictEqual(documents, fixtures)
       })
-
-      t.end()
     })
 
     t.test(`EXPORT csv ${name}`, async t => {
@@ -683,22 +759,21 @@ tap.test('HTTP GET /export', async t => {
       })
 
       t.test('should return 200', t => {
-        t.strictSame(response.statusCode, 200)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 200)
       })
 
       t.test('should return "text/csv"', t => {
-        t.ok(/text\/csv/.test(response.headers['content-type']))
-        t.end()
+        t.assert.ok(/text\/csv/.test(response.headers['content-type']))
       })
 
       t.test('should return the document', t => {
         const foundCsv = csvStringify.stringify(found, {
           encoding: 'utf8',
-          delimiter: ',',
-          escape: '\\',
+          delimiter: conf.delimiter || ',',
+          escape: '"',
           header: true,
-          quote: false,
+          quoted_string: true,
+          columns: conf.expectedColumns,
           cast: {
             object: (value) => {
               try {
@@ -709,17 +784,13 @@ tap.test('HTTP GET /export', async t => {
             },
           },
         })
-        t.strictSame(response.payload, foundCsv)
-        t.end()
+        t.assert.deepStrictEqual(response.payload, foundCsv)
       })
 
       t.test('should keep the document as is in database', async t => {
         const documents = await collection.find().toArray()
-        t.strictSame(documents, fixtures)
-        t.end()
+        t.assert.deepStrictEqual(documents, fixtures)
       })
-
-      t.end()
     })
 
     t.test(`EXPORT x-ndjson ${name} - use multiple weighted accepts`, async t => {
@@ -731,30 +802,62 @@ tap.test('HTTP GET /export', async t => {
       })
 
       t.test('should return 200', t => {
-        t.strictSame(response.statusCode, 200)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 200)
       })
 
       t.test('should return "application/x-ndjson"', t => {
-        t.ok(/application\/x-ndjson/.test(response.headers['content-type']))
-        t.end()
+        t.assert.ok(/application\/x-ndjson/.test(response.headers['content-type']))
       })
 
       t.test('should return the document', t => {
         const documents = response.payload.split('\n')
           .filter(s => s !== '')
           .map(JSON.parse)
-        t.strictSame(documents, found, response.payload)
-        t.end()
+        t.assert.deepStrictEqual(documents, found, response.payload)
       })
 
       t.test('should keep the document as is in database', async t => {
         const documents = await collection.find().toArray()
-        t.strictSame(documents, fixtures)
-        t.end()
+        t.assert.deepStrictEqual(documents, fixtures)
+      })
+    })
+
+    t.test(`EXPORT xlsx ${name}`, async t => {
+      const accept = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      const response = await fastify.inject({
+        method: 'GET',
+        url: prefix + conf.url,
+        headers: {
+          ...getHeaders(conf),
+          accept,
+        },
       })
 
-      t.end()
+      t.test('should return 200', t => {
+        t.assert.deepStrictEqual(response.statusCode, 200)
+      })
+
+      t.test('should return "application/vnd.ms-excel"', t => {
+        t.assert.ok(/application\/vnd.openxmlformats-officedocument.spreadsheetml.sheet/.test(response.headers['content-type']))
+      })
+
+      t.test('file has proper content', t => {
+        const [{ data }] = xlsx.parse(response.rawPayload)
+        if (found.length === 0) {
+          t.assert.deepStrictEqual(data, [])
+        } else {
+          const keys = conf.expectedColumns
+          const rows = found.map(row => {
+            const values = []
+            keys.forEach(key => {
+              const formattedValue = formatDataForColumnExport(row[key])
+              values.push(typeof formattedValue === 'boolean' ? `${formattedValue}` : formattedValue)
+            })
+            return values
+          })
+          t.assert.deepStrictEqual(data, [keys, ...rows])
+        }
+      })
     })
 
     t.test(`EXPORT unexpected accept type ${name}`, async t => {
@@ -766,43 +869,57 @@ tap.test('HTTP GET /export', async t => {
       })
 
       t.test('should return 406 HTTP error', t => {
-        t.strictSame(response.statusCode, 406)
-        t.strictSame(
+        t.assert.deepStrictEqual(response.statusCode, 406)
+        t.assert.deepStrictEqual(
           JSON.parse(response.payload),
           { statusCode: 406, error: 'Not Acceptable', message: 'unsupported file type image/jpeg' }
         )
-        t.end()
       })
-
-      t.end()
     })
   })
-  t.end()
 })
 
-tap.test('HTTP GET /export - $text search', async t => {
+test('HTTP GET /export - $text search', async t => {
+  const DEFAULT_COLUMNS_WITH_SCORE = [...DEFAULT_EXPECTED_COLUMNS, 'score']
   const textTests = [
     {
       name: 'with filter with $text search',
       url: `/export?_q=${JSON.stringify({ $text: { $search: 'Ulyss', $caseSensitive: true } })}`,
       acl_rows: undefined,
       found: HTTP_PUBLIC_FIXTURES.filter(f => f.name === 'Ulysses'),
+      expectedColumns: DEFAULT_COLUMNS_WITH_SCORE,
       textIndex: true,
       scores: { 'fake isbn 1': 1 },
     },
     {
       name: 'with filter with $text search with $or clause and indexed fields',
-      url: `/export?_q=${JSON.stringify({ $or: [{ $text: { $search: 'Ulyss', $caseSensitive: true } }, { isbn: 'fake isbn 2' }] })}`,
+      url: `/export?_q=${JSON.stringify({
+        $or: [{
+          $text: {
+            $search: 'Ulyss',
+            $caseSensitive: true,
+          },
+        }, { isbn: 'fake isbn 2' }],
+      })}`,
       acl_rows: undefined,
       found: HTTP_PUBLIC_FIXTURES.filter(f => f.name === 'Ulysses' || f.isbn === 'fake isbn 2'),
+      expectedColumns: DEFAULT_COLUMNS_WITH_SCORE,
       textIndex: true,
-      scores: removeZeroScoresBasedOnMongoVersion({ 'fake isbn 1': 1, 'fake isbn 2': 0 }, process.env.MONGO_VERSION),
+      scores: { 'fake isbn 1': 1 },
     },
     {
       name: 'with filter with $text search with all options',
-      url: `/export?_q=${JSON.stringify({ $text: { $search: 'Ulyss', $caseSensitive: true, $language: 'en', $diacriticSensitive: false } })}`,
+      url: `/export?_q=${JSON.stringify({
+        $text: {
+          $search: 'Ulyss',
+          $caseSensitive: true,
+          $language: 'en',
+          $diacriticSensitive: false,
+        },
+      })}`,
       acl_rows: undefined,
       found: HTTP_PUBLIC_FIXTURES.filter(f => f.name === 'Ulysses'),
+      expectedColumns: DEFAULT_COLUMNS_WITH_SCORE,
       textIndex: true,
       scores: { 'fake isbn 1': 1 },
     },
@@ -811,6 +928,7 @@ tap.test('HTTP GET /export - $text search', async t => {
       url: `/export?_q=${JSON.stringify({ $text: { $search: 'Ulyss' } })}`,
       acl_rows: [{ price: { $gt: 20 } }],
       found: HTTP_PUBLIC_FIXTURES.filter(f => f.price > 20 && f.name === 'Ulysses'),
+      expectedColumns: DEFAULT_COLUMNS_WITH_SCORE,
       textIndex: true,
       scores: { 'fake isbn 1': 1 },
     },
@@ -819,8 +937,9 @@ tap.test('HTTP GET /export - $text search', async t => {
       url: `/export?_q=${JSON.stringify({ $text: { $search: 'Ulyss' } })}`,
       acl_rows: [{ price: { $gt: 50 } }],
       found: HTTP_PUBLIC_FIXTURES.filter(f => f.price > 50 && f.name === 'Ulysses'),
+      expectedColumns: DEFAULT_COLUMNS_WITH_SCORE,
       textIndex: true,
-      scores: { },
+      scores: {},
     },
     {
       name: 'with acl_read_columns and $text search filter',
@@ -828,6 +947,7 @@ tap.test('HTTP GET /export - $text search', async t => {
       acl_rows: undefined,
       acl_read_columns: ['isbn', 'name'],
       found: HTTP_PUBLIC_FIXTURES.filter(f => f.name === 'Ulysses').map(f => ({ _id: f._id, isbn: f.isbn })),
+      expectedColumns: ['_id', 'isbn', 'score'],
       textIndex: true,
       scores: { 'fake isbn 1': 1 },
     },
@@ -853,13 +973,11 @@ tap.test('HTTP GET /export - $text search', async t => {
       })
 
       t.test('should return 200', t => {
-        t.strictSame(response.statusCode, 200)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 200)
       })
 
       t.test('should return "application/x-ndjson"', t => {
-        t.ok(/application\/x-ndjson/.test(response.headers['content-type']))
-        t.end()
+        t.assert.ok(/application\/x-ndjson/.test(response.headers['content-type']))
       })
 
       t.test('should return the document', t => {
@@ -867,16 +985,12 @@ tap.test('HTTP GET /export - $text search', async t => {
           .filter(s => s !== '')
           .map(JSON.parse)
 
-        t.strictSame(documents, foundWithScores)
-        t.end()
+        t.assert.deepStrictEqual(documents, foundWithScores)
       })
       t.test('should keep the document as is in database', async t => {
         const documents = await collection.find().toArray()
-        t.strictSame(documents, fixtures)
-        t.end()
+        t.assert.deepStrictEqual(documents, fixtures)
       })
-
-      t.end()
     })
 
     t.test(`EXPORT json ${name}`, async t => {
@@ -891,28 +1005,22 @@ tap.test('HTTP GET /export - $text search', async t => {
       })
 
       t.test('should return 200', t => {
-        t.strictSame(response.statusCode, 200)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 200)
       })
 
       t.test('should return "application/json"', t => {
-        t.ok(/application\/json/.test(response.headers['content-type']))
-        t.end()
+        t.assert.ok(/application\/json/.test(response.headers['content-type']))
       })
 
       t.test('should return the document', t => {
         const documents = JSON.parse(response.payload)
-        t.strictSame(documents, foundWithScores)
-        t.end()
+        t.assert.deepStrictEqual(documents, foundWithScores)
       })
 
       t.test('should keep the document as is in database', async t => {
         const documents = await collection.find().toArray()
-        t.strictSame(documents, fixtures)
-        t.end()
+        t.assert.deepStrictEqual(documents, fixtures)
       })
-
-      t.end()
     })
 
     t.test(`EXPORT csv ${name}`, async t => {
@@ -927,22 +1035,21 @@ tap.test('HTTP GET /export - $text search', async t => {
       })
 
       t.test('should return 200', t => {
-        t.strictSame(response.statusCode, 200)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 200)
       })
 
       t.test('should return "text/csv"', t => {
-        t.ok(/text\/csv/.test(response.headers['content-type']))
-        t.end()
+        t.assert.ok(/text\/csv/.test(response.headers['content-type']))
       })
 
       t.test('should return the document', t => {
         const foundCsv = csvStringify.stringify(foundWithScores, {
           encoding: 'utf8',
           delimiter: ',',
-          escape: '\\',
+          escape: '"',
           header: true,
-          quote: false,
+          quoted_string: true,
+          columns: conf.expectedColumns,
           cast: {
             object: (value) => {
               try {
@@ -953,29 +1060,25 @@ tap.test('HTTP GET /export - $text search', async t => {
             },
           },
         })
-        t.strictSame(response.payload, foundCsv)
-        t.end()
+        t.assert.deepStrictEqual(response.payload, foundCsv)
       })
 
       t.test('should keep the document as is in database', async t => {
         const documents = await collection.find().toArray()
-        t.strictSame(documents, fixtures)
-        t.end()
+        t.assert.deepStrictEqual(documents, fixtures)
       })
-
-      t.end()
     })
   })
-  t.end()
 })
 
-tap.test('HTTP GET /export with _id in querystring', async t => {
+test('HTTP GET /export with _id in querystring', async t => {
   const tests = [
     {
       name: 'without filters',
       url: `/export?_id=${STATION_ID}`,
       acl_rows: undefined,
       found: [HTTP_STATION_DOC],
+      expectedColumns: ['_id', 'updaterId', 'updatedAt', 'creatorId', 'createdAt', '__STATE__', 'Cap', 'CodiceMIR', 'Comune', 'Direttrici', 'Indirizzo', 'country', 'nonNullableDate'],
     },
   ]
 
@@ -992,29 +1095,23 @@ tap.test('HTTP GET /export with _id in querystring', async t => {
       })
 
       t.test('should return 200', t => {
-        t.strictSame(response.statusCode, 200)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 200)
       })
 
-      t.test('should return "application/x-ndjson"', assert => {
-        assert.ok(/application\/x-ndjson/.test(response.headers['content-type']))
-        assert.end()
+      t.test('should return "application/x-ndjson"', t => {
+        t.assert.ok(/application\/x-ndjson/.test(response.headers['content-type']))
       })
 
-      t.test('should return the document', assert => {
+      t.test('should return the document', t => {
         const documents = response.payload.split('\n')
           .filter(s => s !== '')
           .map(JSON.parse)
-        assert.strictSame(documents, found)
-        assert.end()
+        t.assert.deepStrictEqual(documents, found)
       })
-      t.test('should keep the document as is in database', async assert => {
+      t.test('should keep the document as is in database', async t => {
         const documents = await collection.find().toArray()
-        assert.strictSame(documents, stationFixtures)
-        assert.end()
+        t.assert.deepStrictEqual(documents, stationFixtures)
       })
-
-      t.end()
     })
 
     t.test(`EXPORT json ${name}`, async t => {
@@ -1029,28 +1126,22 @@ tap.test('HTTP GET /export with _id in querystring', async t => {
       })
 
       t.test('should return 200', t => {
-        t.strictSame(response.statusCode, 200, response.payload)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 200, response.payload)
       })
 
       t.test('should return "application/json"', t => {
-        t.ok(/application\/json/.test(response.headers['content-type']))
-        t.end()
+        t.assert.ok(/application\/json/.test(response.headers['content-type']))
       })
 
       t.test('should return the document', t => {
         const documents = JSON.parse(response.payload)
-        t.strictSame(documents, found)
-        t.end()
+        t.assert.deepStrictEqual(documents, found)
       })
 
       t.test('should keep the document as is in database', async t => {
         const documents = await collection.find().toArray()
-        t.strictSame(documents, stationFixtures)
-        t.end()
+        t.assert.deepStrictEqual(documents, stationFixtures)
       })
-
-      t.end()
     })
 
     t.test(`EXPORT csv ${name}`, async t => {
@@ -1065,22 +1156,21 @@ tap.test('HTTP GET /export with _id in querystring', async t => {
       })
 
       t.test('should return 200', t => {
-        t.strictSame(response.statusCode, 200)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 200)
       })
 
       t.test('should return "text/csv"', t => {
-        t.ok(/text\/csv/.test(response.headers['content-type']))
-        t.end()
+        t.assert.ok(/text\/csv/.test(response.headers['content-type']))
       })
 
       t.test('should return the document', t => {
         const foundCsv = csvStringify.stringify(found, {
           encoding: 'utf8',
           delimiter: ',',
-          escape: '\\',
+          escape: '"',
           header: true,
-          quote: false,
+          quoted_string: true,
+          columns: conf.expectedColumns,
           cast: {
             object: (value) => {
               try {
@@ -1091,17 +1181,13 @@ tap.test('HTTP GET /export with _id in querystring', async t => {
             },
           },
         })
-        t.strictSame(response.payload, foundCsv)
-        t.end()
+        t.assert.deepStrictEqual(response.payload, foundCsv)
       })
 
       t.test('should keep the document as is in database', async t => {
         const documents = await collection.find().toArray()
-        t.strictSame(documents, stationFixtures)
-        t.end()
+        t.assert.deepStrictEqual(documents, stationFixtures)
       })
-
-      t.end()
     })
 
     t.test(`EXPORT xls ${name}`, async t => {
@@ -1116,20 +1202,18 @@ tap.test('HTTP GET /export with _id in querystring', async t => {
       })
 
       t.test('should return 200', t => {
-        t.strictSame(response.statusCode, 200)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 200)
       })
 
       t.test('should return "application/vnd.ms-excel"', t => {
-        t.ok(/application\/vnd.ms-excel/.test(response.headers['content-type']))
-        t.end()
+        t.assert.ok(/application\/vnd.ms-excel/.test(response.headers['content-type']))
       })
 
       t.test('file has proper content', t => {
         const [{ data }] = xlsx.parse(response.rawPayload)
-        t.strictSame(data.length, 2)
+        t.assert.deepStrictEqual(data.length, 2)
         const [row1, row2] = data
-        t.strictSame(row1, [
+        t.assert.deepStrictEqual(row1, [
           '_id',
           'updaterId',
           'updatedAt',
@@ -1144,7 +1228,7 @@ tap.test('HTTP GET /export with _id in querystring', async t => {
           'country',
           'nonNullableDate',
         ])
-        t.strictSame(row2, [
+        t.assert.deepStrictEqual(row2, [
           '002415b0-8d6d-427c-b654-9857183e57a7',
           'my-updated-id',
           '2017-11-11T00:00:00.000Z',
@@ -1154,17 +1238,12 @@ tap.test('HTTP GET /export with _id in querystring', async t => {
           25040,
           'S01788',
           'Borgonato',
-          // NOTE: array and objects are stringified in the generated document
           '["D028"]',
           'Via Stazione, 24',
           'it',
-          // Missing column data
           '',
         ])
-        t.end()
       })
-
-      t.end()
     })
 
     t.test(`EXPORT xlsx ${name}`, async t => {
@@ -1179,21 +1258,19 @@ tap.test('HTTP GET /export with _id in querystring', async t => {
       })
 
       t.test('should return 200', t => {
-        t.strictSame(response.statusCode, 200)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 200)
       })
 
       t.test('should return "application/vnd.ms-excel"', t => {
-        t.ok(/application\/vnd.openxmlformats-officedocument.spreadsheetml.sheet/.test(response.headers['content-type']))
-        t.end()
+        t.assert.ok(/application\/vnd.openxmlformats-officedocument.spreadsheetml.sheet/.test(response.headers['content-type']))
       })
 
 
       t.test('file has proper content', t => {
         const [{ data }] = xlsx.parse(response.rawPayload)
-        t.strictSame(data.length, 2)
+        t.assert.deepStrictEqual(data.length, 2)
         const [row1, row2] = data
-        t.strictSame(row1, [
+        t.assert.deepStrictEqual(row1, [
           '_id',
           'updaterId',
           'updatedAt',
@@ -1208,7 +1285,7 @@ tap.test('HTTP GET /export with _id in querystring', async t => {
           'country',
           'nonNullableDate',
         ])
-        t.strictSame(row2, [
+        t.assert.deepStrictEqual(row2, [
           '002415b0-8d6d-427c-b654-9857183e57a7',
           'my-updated-id',
           '2017-11-11T00:00:00.000Z',
@@ -1218,24 +1295,17 @@ tap.test('HTTP GET /export with _id in querystring', async t => {
           25040,
           'S01788',
           'Borgonato',
-          // NOTE: array and objects are stringified in the generated document
           '["D028"]',
           'Via Stazione, 24',
           'it',
-          // Missing column data
           '',
         ])
-        t.end()
       })
-
-      t.end()
     })
   })
-
-  t.end()
 })
 
-tap.test('HTTP GET /export', async t => {
+test('HTTP GET /export', async t => {
   const mongoDbCollectionName = booksCollectionDefinition.name
   const { fastify } = await setUpTest(t, lotOfBooksFixtures, mongoDbCollectionName)
 
@@ -1247,10 +1317,8 @@ tap.test('HTTP GET /export', async t => {
     const parseBodyResponse = response.body.split('\n').filter(item => item)
       .map(item => JSON.parse(item))
 
-    t.strictSame(response.statusCode, 200)
-    t.equal(parseBodyResponse.length, lotOfBooksFixtures.length)
-
-    t.end()
+    t.assert.deepStrictEqual(response.statusCode, 200)
+    t.assert.strictEqual(parseBodyResponse.length, lotOfBooksFixtures.length)
   })
 
   t.test('should return only 3 documents', async(t) => {
@@ -1261,10 +1329,8 @@ tap.test('HTTP GET /export', async t => {
     const parseBodyResponse = response.body.split('\n').filter(item => item)
       .map(item => JSON.parse(item))
 
-    t.strictSame(response.statusCode, 200)
-    t.equal(parseBodyResponse.length, 3)
-
-    t.end()
+    t.assert.deepStrictEqual(response.statusCode, 200)
+    t.assert.strictEqual(parseBodyResponse.length, 3)
   })
 
   t.test('should return greater than previous maximum default (200 documents)', async(t) => {
@@ -1275,22 +1341,7 @@ tap.test('HTTP GET /export', async t => {
     const parseBodyResponse = response.body.split('\n').filter(item => item)
       .map(item => JSON.parse(item))
 
-    t.strictSame(response.statusCode, 200)
-    t.equal(parseBodyResponse.length, 201)
-
-    t.end()
+    t.assert.deepStrictEqual(response.statusCode, 200)
+    t.assert.strictEqual(parseBodyResponse.length, 201)
   })
-
-  t.end()
 })
-
-function removeZeroScoresBasedOnMongoVersion(scores, mongoVersion) {
-  // Update code to handle MongoDB version 4.4 change.
-  // Previous versions accepted "score: 0" field in response on $text search,
-  // but it is now removed
-  if (mongoVersion >= '4.4') {
-    return Object.fromEntries(Object.entries(scores).filter((_, value) => value === 0))
-  }
-
-  return scores
-}

@@ -16,32 +16,28 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 
 const { transformSchemaForSwagger } = require('../')
 const booksExample = require('./expectedSchemas/booksPatchSchema')
 const { SCHEMA_CUSTOM_KEYWORDS } = require('../lib/consts')
 
-tap.test('transformSchemaForSwagger', t => {
+test('transformSchemaForSwagger', t => {
   t.test('remove unique id from schema', t => {
     const url = 'the-url'
     const { schema: output, url: outputUrl } = transformSchemaForSwagger({ schema: getSchemaInput(), url })
-    t.matchSnapshot(JSON.stringify(output, null, 2))
-    t.strictSame(url, outputUrl)
-    t.end()
+    t.assert.snapshot(JSON.stringify(output, null, 2), { serializers: [value => value] })
+    t.assert.deepStrictEqual(url, outputUrl)
   })
 
   t.test('books example - remove unique id field', t => {
     const regex = new RegExp(`"${SCHEMA_CUSTOM_KEYWORDS.UNIQUE_OPERATION_ID}"`, 'g')
-    t.ok(JSON.stringify(booksExample).match(regex))
+    t.assert.ok(JSON.stringify(booksExample).match(regex))
     const url = 'the-url'
     const { schema: transformed, url: outputUrl } = transformSchemaForSwagger({ schema: booksExample, url })
-    t.notOk(JSON.stringify(transformed).match(regex))
-    t.strictSame(url, outputUrl)
-
-    t.end()
+    t.assert.ok(!(JSON.stringify(transformed).match(regex)))
+    t.assert.deepStrictEqual(url, outputUrl)
   })
-  t.end()
 })
 
 function getSchemaInput() {

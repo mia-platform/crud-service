@@ -1,6 +1,6 @@
 {
   "name": "@mia-platform/crud-service",
-  "version": "6.10.5",
+  "version": "7.4.0",
   "description": "HTTP interface to perform CRUD operations on MongoDB collections defined in the API Console",
   "homepage": "https://www.mia-platform.eu/",
   "bugs": {
@@ -14,91 +14,63 @@
     "url": "https://github.com/mia-platform/crud-service"
   },
   "scripts": {
-    "bench": "node bench/queryParser.bench.js",
+    "bench:queryParser": "node bench/queryParser.bench.js",
+    "bench:init": "docker compose -f bench/docker-compose.yml up -d --force-recreate && node bench/utils/generate-customer-data.js",
     "checkonly": "! grep -r '\\.only' tests/",
-    "coverage": "npm run unit -- --jobs=4",
-    "postcoverage": "tap report --coverage-report=text-summary",
-    "lint": "eslint . --ignore-path=.gitignore",
+    "coverage": "mkdir -p coverage && MONGO_HOST=${MONGO_HOST_CI:-127.0.0.1} MONGO_VERSION=${MONGO_VERSION:-6.0.2} CRYPT_SHARED_LIB_PATH=${CRYPT_SHARED_LIB_PATH:-.local/lib/mongo_crypt_v1.so} node --test --test-timeout=240000 --test-concurrency=${TEST_CONCURRENCY:-4} --experimental-test-coverage --test-coverage-include='lib/**/*.js' --test-coverage-include='*.js' --test-reporter=spec --test-reporter-destination=stdout --test-reporter=lcov --test-reporter-destination=coverage/lcov.info 'tests/**/*.test.js'",
+    "lint": "eslint .",
     "start": "lc39 index.js",
-    "start:local": "npm start -- --env-path ./local.env",
+    "start:local": "set -a && . ./local.env && lc39 index.js",
     "pretest": "node tests/generatedJSONSchemasToFiles.js && eslint --fix tests/expectedSchemas/*.js",
-    "test": "npm run lint && npm run unit -- --disable-coverage && npm run checkonly",
-    "unit": "MONGO_HOST=${MONGO_HOST_CI:-127.0.0.1} MONGO_VERSION=${MONGO_VERSION:-6.0.2} tap -b --allow-incomplete-coverage 'tests/**/*.test.js'",
+    "test": "npm run lint && npm run unit && npm run checkonly",
+    "unit": "MONGO_HOST=${MONGO_HOST_CI:-127.0.0.1} MONGO_VERSION=${MONGO_VERSION:-6.0.2} CRYPT_SHARED_LIB_PATH=${CRYPT_SHARED_LIB_PATH:-.local/lib/mongo_crypt_v1.so} node --test --test-timeout=240000 'tests/**/*.test.js'",
     "update-changelog": "node ./scripts/update-changelog.js ${npm_package_version}",
     "version": "npm run update-changelog && git add CHANGELOG.md"
   },
   "dependencies": {
-    "@fastify/env": "4.4",
-    "@fastify/mongodb": "^6.2.0",
-    "@fastify/multipart": "^7.7.3",
-    "@mia-platform/lc39": "^8.0.2",
+    "@fastify/env": "^7.0.1",
+    "@fastify/mongodb": "^9.0.2",
+    "@fastify/multipart": "^10.1.5",
+    "@mia-platform/lc39": "^9.1.3",
     "@mia-platform/mongodb-healthchecker": "^1.0.1",
-    "ajv-formats": "^2.1.1",
+    "ajv-formats": "^3.0.1",
     "ajv-keywords": "^5.1.0",
-    "csv-parse": "^5.6.0",
-    "csv-stringify": "^6.5.2",
-    "fastify-plugin": "^4.5.1",
-    "jsonpath-plus": "^9.0.0",
+    "csv-parse": "^7.0.3",
+    "csv-stringify": "^6.9.0",
+    "fastify-plugin": "^6.0.1",
+    "jsonpath-plus": "^10.4.0",
     "JSONStream": "^1.3.5",
-    "lodash": "^4.17.21",
-    "mongodb-client-encryption": "^2.9.0",
+    "lodash": "^4.18.1",
+    "mongodb-client-encryption": "^6.5.0",
     "ndjson": "^2.0.0",
-    "p-limit": "^3.1.0",
-    "pino": "^9.5.0",
+    "p-limit": "^7.3.3",
+    "pino": "^9.14.0",
     "through2": "^4.0.2",
-    "uuid": "^11.0.3",
-    "xlsx-write-stream": "^1.0.3"
+    "xlsx-write-stream": "^1.0.4"
   },
   "peerDependencies": {
-    "ajv": "^8.17.1"
+    "ajv": "^8.20.0",
+    "fast-json-stringify": "^6.4.0",
+    "fastify": "^5.12.7",
+    "mongodb": "^6.21.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "@faker-js/faker": "^10.6.0",
     "@mia-platform/eslint-config-mia": "^3.0.0",
     "abstract-logging": "^2.0.1",
-    "eslint": "^8.57.1",
+    "commander": "^14.0.3",
+    "eslint": "^9.39.5",
+    "eslint-plugin-n": "^17.24.0",
     "fastbench": "^1.0.1",
-    "form-data": "^4.0.1",
+    "form-data": "^4.0.4",
+    "globals": "^16.5.0",
     "mock-require": "^3.0.3",
-    "mongodb": "^4.17.2",
     "node-xlsx": "^0.24.0",
-    "swagger-parser": "^10.0.3",
-    "tap": "^18.8.0",
     "uuid-validate": "0.0.3"
   },
   "engines": {
-    "node": ">=v22.23.4"
+    "node": ">=v26"
   },
-  "private": true,
-  "tap": {
-    "timeout": 240,
-    "allow-incomplete-coverage": true,
-    "allow-empty-coverage": true
-  },
-  "eslintConfig": {
-    "extends": "@mia-platform/eslint-config-mia",
-    "parserOptions": {
-      "ecmaVersion": 2022,
-      "ecmaFeatures": {
-        "jsx": true
-      }
-    },
-    "overrides": [
-      {
-        "files": [
-          "tests/**/*.js",
-          "tests/expectedSchemas/*.js"
-        ],
-        "rules": {
-          "id-length": "off",
-          "max-lines": "off"
-        }
-      }
-    ]
-  },
-  "nyc": {
-    "include": [
-      "lib/**/*.js",
-      "*.js"
-    ]
-  }
+  "private": true
 }

@@ -16,27 +16,23 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 
 const keyringFactory = require('../../../lib/mongo/mongo-keyring-factory')
 
 const buildFastifyInstance = (config) => ({ config })
 
-tap.test('empty keyring configuration for undefined provider', t => {
+test('empty keyring configuration for undefined provider', t => {
   const fastify = buildFastifyInstance({ KMS_PROVIDER: undefined })
-  t.match(keyringFactory(fastify), {})
-
-  t.end()
+  t.assert.deepStrictEqual(keyringFactory(fastify), {})
 })
 
-tap.test('right crypt configuration for non gcp kms provider', t => {
+test('right crypt configuration for non gcp kms provider', t => {
   const fastify = buildFastifyInstance({ KMS_PROVIDER: 'local' })
-  t.match(keyringFactory(fastify), {})
-
-  t.end()
+  t.assert.deepStrictEqual(keyringFactory(fastify), {})
 })
 
-tap.test('right crypt configuration for gcp kms provider', t => {
+test('right crypt configuration for gcp kms provider', t => {
   const fastify = buildFastifyInstance({
     KMS_PROVIDER: 'gcp',
     KMS_GCP_PROJECT_ID: 'projectId',
@@ -52,7 +48,5 @@ tap.test('right crypt configuration for gcp kms provider', t => {
       keyName: 'keyName',
     },
   }
-  t.match(keyringFactory(fastify), expectedKeyring)
-
-  t.end()
+  t.assert.deepStrictEqual(keyringFactory(fastify), expectedKeyring)
 })

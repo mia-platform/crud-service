@@ -7,11 +7,86 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-## 6.10.5 - 2026-11-20
+## 7.4.0 - 2026-11-17
 
-## 6.10.4 - 2024-12-13
+### Changed
 
-## 6.10.4-rc.5 - 2024-12-13
+- updated NodeJS to v26, `.nvmrc`, devcontainer and `engines` field now require Node.js `>=24`
+- unit tests now runs with `node:test`, replacing `tap`
+
+### Dependencies
+
+- updated libraries to run GitHub workflows for code quality, tests, release
+
+## 7.3.0 - 2026-11-17
+
+### Changed
+
+- updated NodeJS to v24: Docker images, `.nvmrc`, devcontainer and `engines` field now require Node.js `>=24`
+- updated the suggested MongoDB version in the README to `mongo:8.2`
+
+### Dependencies
+
+- updated `@mia-platform/lc39` to `v9.1.3`
+- updated `fastify` to `v5.12.7`, `@fastify/env` to `v7.0.1`, `@fastify/mongodb` to `v9.0.2`, `@fastify/multipart` to `v10.1.5` and `fastify-plugin` to `v6.0.1`
+- updated `curlimages/curl` to `8.23.0` in Docker image
+- updated `tap` to `v21.8.0`
+- updated `@fastify/busboy` to `v3.2.3`
+- updated `proxy-addr` to `v2.0.8`
+- updated `js-yaml` to `v4.1.1`
+- updated `actions/setup-node` to `v6.0.0`, `github/codeql-action` to `v4.31.2` and `sigstore/cosign-installer` to `v4.0.0` in GitHub workflows
+- updated `csv-parse` to `v7.0.3`
+- updated `@faker-js/faker` to `v10.6.0`
+- updated `csv-stringify` to `v6.9.0`, `jsonpath-plus` to `v10.4.0`, `p-limit` to `v7.3.3`, `pino` to `v9.14.0` and `xlsx-write-stream` to `v1.0.4`
+- updated `fast-json-stringify` peer dependency to `v6.4.0` and `mongodb` peer dependency to `v6.21.0`
+- updated dev dependencies `@eslint/js` to `v9.39.5`, `commander` to `v14.0.3`, `eslint` to `v9.39.5`, `eslint-plugin-n` to `v17.24.0` and `globals` to `v16.5.0`
+- updated transitive dependencies within their existing semver ranges, including the OpenTelemetry packages pulled in by `@mia-platform/lc39`
+
+## 7.2.7 - 2026-11-16
+
+## 7.2.6 - 2026-11-16
+
+### Fixed
+
+- Updated internal libraries to fix vulnerabilities
+
+## 7.2.5 - 2025-10-01
+
+### Fixed
+
+- introduce environment variable `FASTIFY_PLUGIN_TIMEOUT_MS` to allow users customizing
+  the startup timeout of a fastify plugin
+
+### Dependencies
+
+- updated NodeJS version in Docker image to v20.20.0
+
+## 7.2.4 - 2025-08-06
+
+### Fixed
+
+- bug that prevented partial index to be updated at startup
+- improved `_rawp` filtering logic to extend support for variable fields containing numbers
+- update `jsonpath-plus` to `v10.3.0` to fix a vulnerability
+- update `form-data` to `v4.0.4` to fix a vulnerability
+
+### Changed
+
+- updated `node` and `curl` image version
+
+## 7.2.3 - 2025-03-10
+
+### Changed
+
+- overhauled Mongo view update logic to avoid requesting [`dropCollection`](https://www.mongodb.com/docs/manual/reference/privilege-actions/#mongodb-authaction-dropCollection) privilege action
+- introduce abort controller to NodeJS stream pipeline to ensure the pipeline object is cleaned up when the response stream is destroyed
+
+### Fixed
+
+- prevent a memory leak the service was experiencing when it was not able to fulfill incoming requests
+- corrected a typo in option `maxIdleTimeMS` within Mongo client configuration, which prevented the environment variable `MONGODB_MAX_IDLE_TIME_MS` to take effect
+
+## 7.2.2 - 2024-12-13
 
 ### Changed
 
@@ -20,10 +95,139 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### CI
 
-- added step for generating SBOM
+- added step for generating SBOM (Software Bill of Materials)
+- added step for scanning the built image
+
+## 7.2.1 - 2024-10-08
+
+### Fixed
+
+- improve how query parser discriminates update _operator modifiers_ (e.g. `$each`) from actual record value
+- introduce support for `$eq` operator also for integer fields (the ones defined in nested array and objects)
+
+## 7.2.0 - 2024-09-23
+
+### Added
+
+- introduce support for Array of ObjectIds at document root level
+- introduce support for `$size` operator in `_q` for fields of type `array`
+
+### Fixed
+
+- resolved a regression introduced starting from v7, where the pod would remain running despite index creation errors; now, the service does not start in case it encounters an error creating an index, providing a log describing the issue
+- enable bom stripping when importing CSV files
+- change CSV _escape_ character to align it with CSV field _quote_ character, as recommended by [RFC 4180](https://datatracker.ietf.org/doc/html/rfc4180)
+
+## 7.1.1 - 2024-08-29
+
+### Changed
+
+- extend to `/bulk` endpoint the requests preprocessing performed on exposed routes of View with lookup feature enabled
+
+## 7.1.0 - 2024-08-26
+
+### Added
+
+- new optional environment variable `CRYPT_SHARED_LIB_PATH` that specify
+where `crypt_shared` MongoDB dynamic library is located. This variable
+is already set within the Docker image and it points to the correct location, so that it is not necessary to customize it.
+
+### Changed
+
+- replace `mongocryptd` libraries with Mongo `crypt_shared`
+- upgrade NodeJS version in Docker image to v20.17.0
+- enforce quoting all strings in CSV export to prevent issues with delimiter character
+
+### Fixed
+
+- when the service was configured to run with the (CSFLE)[https://www.mongodb.com/docs/manual/core/csfle/] feature enabled and a Mongo View was defined alongside the collections models, the service crashed at startup due to an incompatibility between Mongo Views and the auto-encryption feature.
+This issue has been resolved and the service can now properly start, creating the Mongo Views even in such situation.
+
+## 7.0.4 - 2024-06-28
+
+### Fixed
+
+- bug that made compilers collide with collections having the same prefix.
+
+## 7.0.3 - 2024-06-20
+
+### Changed
+
+- hooks and serializer compiler are not registered anymore on every `httpInterface.js`, but only once in `index.js`, to avoid multiple registers for collections;
+- validator compiler is still applied to each HTTP interface to avoid OOM, but it has been moved to `compilers.js`;
+- `AdditionalCaster` class does not need to compute the fields that are either `ObjectId`, `Date`, or `Geopoint`: in the new `castItem` method, field types are inferred with the `instanceof` keyword;
+- upgrade NodeJS version in Docker image to v20.14.0
+- added `await` keyword when registering Fastify plugins
+
+### Fixed
+
+- fixed projection example in json schema generator
+- `serializerCompiler` has been added to use explicitly [`fastifiy-fast-json`](https://github.com/fastify/fast-json-stringify), along with `AdditionalCaster`
+- `$eq` operator can now be used also for array fields
+- [#286](https://github.com/mia-platform/crud-service/issues/286): `/-/schemas` accept header defaults to `application/json`
+- [#326](https://github.com/mia-platform/crud-service/issues/326): `/schemas` and `/-/schemas` endpoints now return also `required` property
+
+## 7.0.2 - 2024-05-06
+
+### Added
+
+- added `_exportOpts` query parameter for `GET /export` calls
+
+### Fixed
+
+- fixed `GET /export` with `csv` format: `csv` files contain all the requested fields as columns without omissions
+- fixed `GET /export` with `excel` format: `excel` files contain all the requested fields as columns instead of containing always all the collection fields
+- allow running raw queries with `_q` over fields containing a digit in their name
+
+## 7.0.1 - 2024-04-08
+
+### Added
+
+- `OPEN_API_SPECIFICATION` env to choose specification used for exposing Swagger
+
+### Changed
+
+- improve internal logic bulk `POST` and `PATCH` operations
+
+## 7.0.0 - 2024-02-01
+
+### BREAKING CHANGES
+
+- [#189](https://github.com/mia-platform/crud-service/pull/189) introduce support to MongoDB v7.0 and remove support to MongoDB v4.2
+- [#140](https://github.com/mia-platform/crud-service/pull/140) changed response code on unique constraint violation with respect to [mia-platform/#175](https://github.com/mia-platform/community/discussions/175)
+- [#53](https://github.com/mia-platform/crud-service/issues/53) request to transition to a disallowed state now returns HTTP error 400 instead of 404
+- [#55](https://github.com/mia-platform/crud-service/issues/55) additional query \_q now return _400 Bad Request_ in case a field is not included in the collection definition schema
+- [#144](https://github.com/mia-platform/crud-service/pull/144) method `GET /:id` returns document containing only fields defined in the JSON Schema of the collection
+
+### Added
+
+- [#236](https://github.com/mia-platform/crud-service/issues/236) added `defaultSorting` field to collection definition: the field applies a sorting object document to find queries, if no explicit `_s` parameter is set on request
+
+### Changed
+
+- remove `additionalProperties` constraints from collection definition schema to allow greater flexibility in adding further config entries
+- updated NodeJS version in Dockerfile to v20.11.0
+- updated `@fastify/mongodb` to v8.0.0
+- updated `@fastify/multipart` to v8.0.0
+
+## 6.10.5 - 2026-11-20
+
+### Fixed
+
+- Docker image built using node v22.24.3, and as well the package-lock.json has been regenerated. This to fix vulnerability CVE-2026-111497. **NOTE**: this is an hotfix, and it will realigned to the 7.4.1 and above.
+
+## 6.10.4 - 2024-12-13
+
+### CI
+
+- added step for generating SBOM (Software Bill of Materials)
 - added step for scanning the built image
 
 ## 6.10.3 - 2024-06-06
+
+### Changed
+
+- downgrade debian image to bullseye, aligning the behavior of the service with that prior to v6.10.1.
 
 ## 6.10.2 - 2024-06-06
 
@@ -32,6 +236,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - upgrade NodeJS version in Docker image to v20.14.0
 
 ## 6.10.1 - 2024-05-17
+
+### Fixed
 
 - fixed projection example in json schema generator
 
@@ -70,7 +276,7 @@ method of MongoDB, returning the number of documents from the collection metadat
 
 - [#225](https://github.com/mia-platform/crud-service/pull/225): `MONGODB_MAX_IDLE_TIME_MS` env to control MongoDB `maxIdleTimeMs` connection option (default set to 0 for backward compatibility, meaning the opened connection remain opened indefinitely)
 
-### Fixed
+### Fixed
 
 - [#227](https://github.com/mia-platform/crud-service/pull/227): create indexes limiting promises concurrency to prevent connection creation spikes at boot
 
@@ -195,7 +401,7 @@ values and select the one with the highest weight
 ### Added
 
 - Collections configuration files can now accept a new field `schema` which allows to define the collection data model by means of a JSON Schema.
-  The property `schema` in the configuration files is an _opt-in_ feature and when defined it takes precedence over the `fields` property.  
+  The property `schema` in the configuration files is an _opt-in_ feature and when defined it takes precedence over the `fields` property.
   Though the latter property is still supported, it is recommended to convert your collections to adopt a JSON schema definition to access the new functionality offered by JSON schema.
 - `$pull` operator support
 - `$addToSet` supports mongo operators

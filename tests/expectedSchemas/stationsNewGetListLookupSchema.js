@@ -69,9 +69,8 @@ module.exports = {
         'nullable': true,
       },
       'nonNullableDate': {
-        'type': 'string',
         'example': '1997-04-24T07:00:00.000Z',
-        'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
+        'type': 'string',
         'nullable': false,
         'anyOf': [
           {
@@ -84,6 +83,7 @@ module.exports = {
             'format': 'time',
           },
         ],
+        'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
       },
       '_q': {
         'type': 'string',
@@ -147,8 +147,8 @@ module.exports = {
             'description': 'User id that has requested the last change successfully',
           },
           'updatedAt': {
-            'type': 'string',
             'example': '1997-04-24T07:00:00.000Z',
+            'type': 'string',
             'nullable': false,
             'description': 'Date of the request that has performed the last change',
           },
@@ -157,8 +157,8 @@ module.exports = {
             'description': 'User id that has created this object',
           },
           'createdAt': {
-            'type': 'string',
             'example': '1997-04-24T07:00:00.000Z',
+            'type': 'string',
             'nullable': false,
             'description': 'Date of the request that has performed the object creation',
           },
@@ -209,8 +209,8 @@ module.exports = {
             'nullable': true,
           },
           'nonNullableDate': {
-            'type': 'string',
             'example': '1997-04-24T07:00:00.000Z',
+            'type': 'string',
             'nullable': false,
           },
         },

@@ -106,9 +106,8 @@ module.exports = {
         'nullable': true,
       },
       'nonNullableDate': {
-        'type': 'string',
         'example': '1997-04-24T07:00:00.000Z',
-        'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
+        'type': 'string',
         'nullable': false,
         'anyOf': [
           {
@@ -121,6 +120,7 @@ module.exports = {
             'format': 'time',
           },
         ],
+        'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
       },
       '_q': {
         'type': 'string',
@@ -189,9 +189,8 @@ module.exports = {
             'nullable': true,
           },
           'nonNullableDate': {
-            'type': 'string',
             'example': '1997-04-24T07:00:00.000Z',
-            'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
+            'type': 'string',
             'nullable': false,
             'anyOf': [
               {
@@ -204,6 +203,7 @@ module.exports = {
                 'format': 'time',
               },
             ],
+            'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
           },
           'Direttrici.$.replace': {
             'type': 'string',
@@ -297,7 +297,104 @@ module.exports = {
         'type': 'object',
         'properties': {
           'Direttrici': {
-            'type': 'string',
+            'anyOf': [
+              {
+                'type': 'string',
+              },
+              {
+                'type': 'object',
+                'properties': {
+                  '$': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
+                    ],
+                  },
+                  '$each': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$position': {
+                    'type': 'number',
+                  },
+                  '$slice': {
+                    'type': 'number',
+                  },
+                  '$sort': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                    ],
+                  },
+                  '$in': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
+                'additionalProperties': false,
+              },
+            ],
           },
         },
         'additionalProperties': false,
@@ -306,15 +403,102 @@ module.exports = {
         'type': 'object',
         'properties': {
           'Direttrici': {
-            'oneOf': [
+            'anyOf': [
               {
                 'type': 'string',
               },
               {
                 'type': 'object',
-                'patternProperties': {
-                  '^$': {},
+                'properties': {
+                  '$': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
+                    ],
+                  },
+                  '$each': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$position': {
+                    'type': 'number',
+                  },
+                  '$slice': {
+                    'type': 'number',
+                  },
+                  '$sort': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                    ],
+                  },
+                  '$in': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
+                'additionalProperties': false,
               },
             ],
           },
@@ -325,15 +509,102 @@ module.exports = {
         'type': 'object',
         'properties': {
           'Direttrici': {
-            'oneOf': [
+            'anyOf': [
               {
                 'type': 'string',
               },
               {
                 'type': 'object',
-                'patternProperties': {
-                  '^$': {},
+                'properties': {
+                  '$': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
+                    ],
+                  },
+                  '$each': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$position': {
+                    'type': 'number',
+                  },
+                  '$slice': {
+                    'type': 'number',
+                  },
+                  '$sort': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                    ],
+                  },
+                  '$in': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
+                'additionalProperties': false,
               },
             ],
           },
@@ -386,9 +657,8 @@ module.exports = {
             'nullable': true,
           },
           'nonNullableDate': {
-            'type': 'string',
             'example': '1997-04-24T07:00:00.000Z',
-            'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
+            'type': 'string',
             'nullable': false,
             'anyOf': [
               {
@@ -401,6 +671,7 @@ module.exports = {
                 'format': 'time',
               },
             ],
+            'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
           },
         },
         'additionalProperties': false,
@@ -422,8 +693,8 @@ module.exports = {
           'description': 'User id that has requested the last change successfully',
         },
         'updatedAt': {
-          'type': 'string',
           'example': '1997-04-24T07:00:00.000Z',
+          'type': 'string',
           'nullable': false,
           'description': 'Date of the request that has performed the last change',
         },
@@ -432,8 +703,8 @@ module.exports = {
           'description': 'User id that has created this object',
         },
         'createdAt': {
-          'type': 'string',
           'example': '1997-04-24T07:00:00.000Z',
+          'type': 'string',
           'nullable': false,
           'description': 'Date of the request that has performed the object creation',
         },
@@ -484,8 +755,8 @@ module.exports = {
           'nullable': true,
         },
         'nonNullableDate': {
-          'type': 'string',
           'example': '1997-04-24T07:00:00.000Z',
+          'type': 'string',
           'nullable': false,
         },
       },

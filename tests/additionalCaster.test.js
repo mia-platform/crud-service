@@ -16,16 +16,12 @@
 
 'use strict'
 
-const tap = require('tap')
-const collectionDefinition = require('./collectionDefinitions/books')
-const newCollectionDefinition = require('./newCollectionDefinitions/books')
-const AdditionalCaster = require('../lib/AdditionalCaster')
+const { test } = require('node:test')
+const { castItem, castCollectionId } = require('../lib/AdditionalCaster')
 const { ObjectId } = require('mongodb')
 
-tap.test('AdditionalCaster', test => {
-  test.test('old configuration', assert => {
-    const additionalCaster = new AdditionalCaster(collectionDefinition)
-
+test('AdditionalCaster', test => {
+  test.test('old configuration', async t => {
     const testCases = [
       {
         name: 'should return document as it is',
@@ -55,6 +51,7 @@ tap.test('AdditionalCaster', test => {
           name: 'Node cookbook',
           author: 'David Mark Clements, Mathias Buss, Matteo Collina, Peter Elger',
           position: {
+            type: 'Point',
             coordinates: [45.46, 9.19],
           },
         },
@@ -65,22 +62,65 @@ tap.test('AdditionalCaster', test => {
           position: [45.46, 9.19],
         },
       },
+      {
+        name: 'should work on nested documents',
+        document: {
+          _id: new ObjectId('111111111111111111111111'),
+          name: 'Cracking the code interview',
+          author: 'Gayle Laakmann',
+          price: 29.99,
+          isPromoted: false,
+          tags: ['Programming', 'Computer Science', 'New'],
+          publishDate: new Date('2015-01-01T00:00:00.000Z'),
+          positions: [
+            {
+              type: 'Point',
+              coordinates: [45.46, 9.19],
+            },
+            {
+              type: 'Point',
+              coordinates: [45.00, 9.19],
+            },
+          ],
+          library: {
+            name: 'TheBookLibrary',
+            coordinates: {
+              type: 'Point',
+              coordinates: [35.46, 9.19],
+            },
+            openingDate: new Date('1997-01-01T00:00:00.000Z'),
+          },
+        },
+        expectedResult: {
+          _id: '111111111111111111111111',
+          name: 'Cracking the code interview',
+          author: 'Gayle Laakmann',
+          price: 29.99,
+          isPromoted: false,
+          tags: ['Programming', 'Computer Science', 'New'],
+          publishDate: '2015-01-01T00:00:00.000Z',
+          positions: [
+            [45.46, 9.19],
+            [45.00, 9.19],
+          ],
+          library: {
+            name: 'TheBookLibrary',
+            coordinates: [35.46, 9.19],
+            openingDate: '1997-01-01T00:00:00.000Z',
+          },
+        },
+      },
     ]
 
     for (const { name, document, expectedResult } of testCases) {
-      assert.test(name, test => {
-        test.plan(1)
-        const result = additionalCaster.castItem(document)
-        test.strictSame(result, expectedResult)
-        test.end()
+      t.test(name, async test => {
+        const result = castItem(document)
+        test.assert.deepStrictEqual(result, expectedResult)
       })
     }
-    assert.end()
   })
 
-  test.test('new configuration', assert => {
-    const additionalCaster = new AdditionalCaster(newCollectionDefinition)
-
+  test.test('new configuration', async t => {
     const testCases = [
       {
         name: 'should return document as it is',
@@ -110,6 +150,7 @@ tap.test('AdditionalCaster', test => {
           name: 'Node cookbook',
           author: 'David Mark Clements, Mathias Buss, Matteo Collina, Peter Elger',
           position: {
+            type: 'Point',
             coordinates: [45.46, 9.19],
           },
         },
@@ -123,15 +164,26 @@ tap.test('AdditionalCaster', test => {
     ]
 
     for (const { name, document, expectedResult } of testCases) {
-      assert.test(name, test => {
-        test.plan(1)
-        const result = additionalCaster.castItem(document)
-        test.strictSame(result, expectedResult)
-        test.end()
+      t.test(name, test => {
+        const result = castItem(document)
+        test.assert.deepStrictEqual(result, expectedResult)
       })
     }
-    assert.end()
   })
+})
 
-  test.end()
+test('castCollectionId', async t => {
+  const objectId = '111111111111111111111111'
+  const stringId = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+
+  t.test('works for both types of input', t => {
+    const castedObjectId = castCollectionId(objectId)
+    const castedStringId = castCollectionId(stringId)
+
+    t.assert.ok(castedObjectId)
+    t.assert.strictEqual(typeof castedObjectId, 'object')
+
+    t.assert.ok(castedStringId)
+    t.assert.strictEqual(typeof castedStringId, 'string')
+  })
 })
