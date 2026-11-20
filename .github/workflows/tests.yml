@@ -36,6 +36,12 @@ jobs:
           curl -fsSL https://downloads.mongodb.com/linux/mongo_crypt_shared_v1-linux-x86_64-enterprise-ubuntu2204-7.0.14.tgz -o crypt_shared.tar.gz
           tar -xz --one-top-level=crypt_shared -f crypt_shared.tar.gz
 
+      - name: download mongocryptd (spawned by the driver when testing encryption features)
+        run: |
+          curl -fsSL https://downloads.mongodb.com/linux/mongodb-cryptd-linux-x86_64-enterprise-ubuntu2204-7.0.14.tgz -o mongocryptd.tar.gz
+          tar -xz --one-top-level=mongocryptd --strip-components=1 -f mongocryptd.tar.gz
+          echo "${{ github.workspace }}/mongocryptd/bin" >> "$GITHUB_PATH"
+
       - name: start MongoDB instance
         uses: supercharge/mongodb-github-action@5a87bd81f88e2a8b195f8b7b656f5cda1350815a # v1.11.0
         with:
