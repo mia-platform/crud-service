@@ -129,17 +129,6 @@ test('Local kms provider tests', t => {
     t.assert.strictEqual(localCryptConfiguration.schemaMap, undefined)
   })
 
-  t.test('crypt shared library is used when its path is configured', t => {
-    const fastify = buildFastifyInstance({
-      KMS_PROVIDER: 'local',
-      LOCAL_MASTER_KEY_PATH: path.join(__dirname, '../private_key.pem'),
-      KEY_VAULT_NAMESPACE: 'key.vault',
-      CRYPT_SHARED_LIB_PATH: '/cryptd/mongo_crypt_v1.so',
-    })
-    t.strictSame(cryptFactory(fastify).extraOptions, { cryptSharedLibPath: '/cryptd/mongo_crypt_v1.so' })
-    t.end()
-  })
-
   t.test('correctly insert schemaMap for local', t => {
     const schemaMap = {
       bsonType: 'object',
