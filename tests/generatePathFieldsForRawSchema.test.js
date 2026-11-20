@@ -16,13 +16,13 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const pino = require('pino')
 const { pick: lpick } = require('lodash')
 
 const generatePathFieldsForRawSchema = require('../lib/generatePathFieldsForRawSchema')
 
-tap.test('generatePathFieldsForRawSchema', t => {
+test('generatePathFieldsForRawSchema', t => {
   t.test('ok', t => {
     const logger = pino({ level: 'silent' })
     const collectionDefinition = {
@@ -50,7 +50,7 @@ tap.test('generatePathFieldsForRawSchema', t => {
       }],
     }
 
-    t.strictSame(generatePathFieldsForRawSchema(logger, collectionDefinition), {
+    t.assert.deepStrictEqual(generatePathFieldsForRawSchema(logger, collectionDefinition), {
       paths: {
         'field1.itemArray': {
           type: 'array',
@@ -99,8 +99,6 @@ tap.test('generatePathFieldsForRawSchema', t => {
       },
       patternPropertiesOperators: {},
     })
-
-    t.end()
   })
 
   t.test('throws error if some schemas contains invalid operator and log infos', t => {
@@ -132,19 +130,17 @@ tap.test('generatePathFieldsForRawSchema', t => {
     }
 
     const errorMsg = 'Unsupported operation in jsonSchema: oneOf'
-    t.throws(() => generatePathFieldsForRawSchema(logger, collectionDefinition), errorMsg)
+    t.assert.throws(() => generatePathFieldsForRawSchema(logger, collectionDefinition), { message: errorMsg })
 
     const errorLogs = loggerOutput.filter(log => log.level === 50)
-    t.equal(errorLogs.length, 1)
+    t.assert.strictEqual(errorLogs.length, 1)
 
     const EXPECTED_LOG = {
       collectionName: 'collection-name',
       field: 'the-invalid-field',
       msg: errorMsg,
     }
-    t.strictSame(lpick(errorLogs[0], ['collectionName', 'field', 'msg']), EXPECTED_LOG)
-
-    t.end()
+    t.assert.deepStrictEqual(lpick(errorLogs[0], ['collectionName', 'field', 'msg']), EXPECTED_LOG)
   })
 
   t.test('ok new', t => {
@@ -177,7 +173,7 @@ tap.test('generatePathFieldsForRawSchema', t => {
     }
 
 
-    t.strictSame(generatePathFieldsForRawSchema(logger, collectionDefinition), {
+    t.assert.deepStrictEqual(generatePathFieldsForRawSchema(logger, collectionDefinition), {
       paths: {
         'field1.itemArray': {
           type: 'array',
@@ -226,9 +222,5 @@ tap.test('generatePathFieldsForRawSchema', t => {
       },
       patternPropertiesOperators: {},
     })
-
-    t.end()
   })
-
-  t.end()
 })

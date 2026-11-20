@@ -1,0 +1,44 @@
+name: 'Performance Test'
+
+on:
+  workflow_call:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  k6_ci_test:
+      name: k6 CI Test run
+      runs-on: ubuntu-latest
+
+      steps:
+        - name: Checkout
+          uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+          with:
+            show-progress: false
+
+        - name: Setup Node.js
+          uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
+          with:
+            node-version-file: .nvmrc
+            check-latest: true
+            cache: npm
+
+        - name: start CRUD Service via docker file
+          working-directory: bench
+          run: docker compose --file docker-compose.yml up -d
+
+        - name: Populate "Customer" collection and "Registered Customer" View
+          run: npm i && node bench/utils/generate-customer-data.js -c mongodb://localhost:27017/bench-test -d bench-test -n 100000 -s 250
+
+        - name: Run k6 load test (collection Items)
+          working-directory: bench
+          run: docker compose -f dc-k6.yml up k6-load-test
+
+        - name: Run k6 spike test (collection Customers)
+          working-directory: bench
+          run: docker compose -f dc-k6.yml up k6-spike-test
+
+        - name: Run k6 stress test (view Registered Customers)
+          working-directory: bench
+          run: docker compose -f dc-k6.yml up k6-stress-test-on-view

@@ -70,7 +70,7 @@ const fixtures = [
     attachments: [
       {
         name: 'note',
-        neastedArr: [1, 2, 3],
+        nestedArr: [1, 2, 3],
         detail: {
           size: 9,
         },
@@ -213,7 +213,7 @@ const fixtures = [
     attachments: [
       {
         name: 'my-name',
-        neastedArr: [1, 2, 66],
+        nestedArr: [1, 2, 66],
       },
     ],
     [CREATEDAT]: createdAtDate,
@@ -223,6 +223,8 @@ const fixtures = [
     [__STATE__]: STATES.PUBLIC,
   },
 ]
+
+const defaultSorting = { name: 1 }
 
 const RAW_PROJECTION = {
   attachments: {
@@ -389,6 +391,22 @@ const stationFixtures = [
     [UPDATEDAT]: updatedAtDate,
     [__STATE__]: STATES.PUBLIC,
   },
+  {
+    _id: '3bb78876-c8bb-4e02-bad5-440f220e9f73',
+    Cap: 20831,
+    CodiceMIR: 'S09001',
+    Comune: 'Seregno',
+    Direttrici: [
+      'D042',
+    ],
+    Indirizzo: 'Via Montello',
+    country: 'it',
+    [CREATEDAT]: createdAtDate,
+    [CREATORID]: creatorId,
+    [UPDATERID]: updaterId,
+    [UPDATEDAT]: updatedAtDate,
+    // Note: this document has been intentionally left without __STATE__ field
+  },
 ]
 
 async function clearCollectionAndInsertFixtures(collection, testFixtures = fixtures) {
@@ -409,9 +427,8 @@ function checkDocumentsInDatabase(tap, collection, idsToExclude, documents) {
   tap.test('documents in database', async t => {
     const docs = await collection.find({ _id: { $nin: idsToExclude } }).toArray()
 
-    t.equal(docs.length, documents.length)
-    t.strictSame(docs, documents)
-    t.end()
+    t.assert.strictEqual(docs.length, documents.length)
+    t.assert.deepStrictEqual(docs, documents)
   })
 }
 
@@ -504,15 +521,15 @@ const CRUD_MAX_LIMIT = 200
 
 function mockObjectId() {
   mock('mongodb', {
-    // eslint-disable-next-line no-shadow
+
     ObjectId: function ObjectId() {
       this.toString = () => '000000000000000000000000'
     },
   })
 }
 
-function mockUuidV4() {
-  mock('uuid', { v4: () => '00000000-0000-4000-0000-000000000000' })
+function getProjectionFromObject(collectionObj) {
+  return Object.keys(collectionObj).reduce((acc, key) => { return { ...acc, [key]: 1 } }, {})
 }
 
 module.exports = {
@@ -533,6 +550,7 @@ module.exports = {
   newUpdaterId: userId,
   oldUpdaterId: updaterId,
   fixtures,
+  defaultSorting,
   stationFixtures,
   lotOfBooksFixtures,
   publicFixtures: fixtures.filter(f => f[__STATE__] === STATES.PUBLIC),
@@ -545,5 +563,5 @@ module.exports = {
   sortByAttachmentsName,
   sortByAdditionalInfo,
   mockObjectId,
-  mockUuidV4,
+  getProjectionFromObject,
 }

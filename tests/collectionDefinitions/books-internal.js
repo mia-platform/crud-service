@@ -153,7 +153,7 @@ module.exports = {
                 size: { type: 'number' },
               },
             },
-            neastedArr: {
+            nestedArr: {
               type: 'array',
               items: { type: 'number' },
             },

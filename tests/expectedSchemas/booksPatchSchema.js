@@ -124,6 +124,30 @@ module.exports = {
         ],
         'description': 'Tag identification numbers',
       },
+      'tagObjectIds': {
+        'type': [
+          'array',
+          'string',
+        ],
+        'anyOf': [
+          {
+            'type': 'array',
+            'items': {
+              'type': 'string',
+              'description': 'Hexadecimal identifier of the document in the collection',
+              'pattern': '^[a-fA-F\\d]{24}$',
+              'example': '000000000000000000000000',
+            },
+          },
+          {
+            'type': 'string',
+            'description': 'Hexadecimal identifier of the document in the collection',
+            'pattern': '^[a-fA-F\\d]{24}$',
+            'example': '000000000000000000000000',
+          },
+        ],
+        'description': 'Tag object ids',
+      },
       'attachments': {
         'type': [
           'array',
@@ -148,7 +172,7 @@ module.exports = {
                     },
                   },
                 },
-                'neastedArr': {
+                'nestedArr': {
                   'type': 'array',
                   'items': {
                     'type': 'number',
@@ -196,7 +220,7 @@ module.exports = {
                   },
                 },
               },
-              'neastedArr': {
+              'nestedArr': {
                 'type': 'array',
                 'items': {
                   'type': 'number',
@@ -310,6 +334,9 @@ module.exports = {
       'metadata\\.somethingArrayObject\\.\\d+\\.anotherNumber$': {
         'type': 'number',
       },
+      'metadata\\.somethingArrayObject\\.\\d+\\.integerNum$': {
+        'type': 'integer',
+      },
       'metadata\\.somethingObject\\..+$': true,
       'metadata\\.somethingArrayOfNumbers\\.\\d+$': {
         'type': 'number',
@@ -326,10 +353,10 @@ module.exports = {
       'attachments\\.\\d+\\.detail\\.size$': {
         'type': 'number',
       },
-      'attachments\\.\\d+\\.neastedArr$': {
+      'attachments\\.\\d+\\.nestedArr$': {
         'type': 'number',
       },
-      'attachments\\.\\d+\\.neastedArr\\.\\d+$': {
+      'attachments\\.\\d+\\.nestedArr\\.\\d+$': {
         'type': 'number',
       },
       'attachments\\.\\d+\\.additionalInfo\\..+$': true,
@@ -445,6 +472,30 @@ module.exports = {
             ],
             'description': 'Tag identification numbers',
           },
+          'tagObjectIds': {
+            'type': [
+              'array',
+              'string',
+            ],
+            'anyOf': [
+              {
+                'type': 'array',
+                'items': {
+                  'type': 'string',
+                  'description': 'Hexadecimal identifier of the document in the collection',
+                  'pattern': '^[a-fA-F\\d]{24}$',
+                  'example': '000000000000000000000000',
+                },
+              },
+              {
+                'type': 'string',
+                'description': 'Hexadecimal identifier of the document in the collection',
+                'pattern': '^[a-fA-F\\d]{24}$',
+                'example': '000000000000000000000000',
+              },
+            ],
+            'description': 'Tag object ids',
+          },
           'additionalInfo': {
             'type': 'object',
             'additionalProperties': true,
@@ -483,6 +534,9 @@ module.exports = {
                     },
                     'anotherNumber': {
                       'type': 'number',
+                    },
+                    'integerNum': {
+                      'type': 'integer',
                     },
                     'anotherObject': {
                       'type': 'object',
@@ -548,7 +602,7 @@ module.exports = {
                         },
                       },
                     },
-                    'neastedArr': {
+                    'nestedArr': {
                       'type': 'array',
                       'items': {
                         'type': 'number',
@@ -596,7 +650,7 @@ module.exports = {
                       },
                     },
                   },
-                  'neastedArr': {
+                  'nestedArr': {
                     'type': 'array',
                     'items': {
                       'type': 'number',
@@ -678,6 +732,9 @@ module.exports = {
           'tagIds.$.replace': {
             'type': 'number',
           },
+          'tagObjectIds.$.replace': {
+            'type': 'string',
+          },
           'attachments.$.replace': {
             'type': 'object',
             'additionalProperties': false,
@@ -693,7 +750,7 @@ module.exports = {
                   },
                 },
               },
-              'neastedArr': {
+              'nestedArr': {
                 'type': 'array',
                 'items': {
                   'type': 'number',
@@ -737,7 +794,7 @@ module.exports = {
                   },
                 },
               },
-              'neastedArr': {
+              'nestedArr': {
                 'type': 'array',
                 'items': {
                   'type': 'number',
@@ -811,6 +868,9 @@ module.exports = {
                 'anotherNumber': {
                   'type': 'number',
                 },
+                'integerNum': {
+                  'type': 'integer',
+                },
                 'anotherObject': {
                   'type': 'object',
                   'nullable': true,
@@ -858,6 +918,9 @@ module.exports = {
               'anotherNumber': {
                 'type': 'number',
               },
+              'integerNum': {
+                'type': 'integer',
+              },
               'anotherObject': {
                 'type': 'object',
                 'nullable': true,
@@ -876,6 +939,9 @@ module.exports = {
               },
               'anotherNumber': {
                 'type': 'number',
+              },
+              'integerNum': {
+                'type': 'integer',
               },
               'anotherObject': {
                 'type': 'object',
@@ -906,6 +972,9 @@ module.exports = {
               'anotherNumber': {
                 'type': 'number',
               },
+              'integerNum': {
+                'type': 'integer',
+              },
               'anotherObject': {
                 'type': 'object',
                 'nullable': true,
@@ -922,6 +991,9 @@ module.exports = {
           },
           'metadata\\.somethingArrayObject\\.\\d+\\.anotherNumber$': {
             'type': 'number',
+          },
+          'metadata\\.somethingArrayObject\\.\\d+\\.integerNum$': {
+            'type': 'integer',
           },
           'metadata\\.somethingArrayObject\\.\\d+\\.anotherObject$': {
             'type': 'object',
@@ -954,7 +1026,7 @@ module.exports = {
                   },
                 },
               },
-              'neastedArr': {
+              'nestedArr': {
                 'type': 'array',
                 'items': {
                   'type': 'number',
@@ -996,13 +1068,13 @@ module.exports = {
           'attachments\\.\\d+\\.detail\\.size$': {
             'type': 'number',
           },
-          'attachments\\.\\d+\\.neastedArr$': {
+          'attachments\\.\\d+\\.nestedArr$': {
             'type': 'array',
             'items': {
               'type': 'number',
             },
           },
-          'attachments\\.\\d+\\.neastedArr\\.\\d+$': {
+          'attachments\\.\\d+\\.nestedArr\\.\\d+$': {
             'type': 'number',
           },
           'attachments\\.\\d+\\.additionalInfo$': {
@@ -1052,7 +1124,7 @@ module.exports = {
           'metadata\\.exampleArrayOfArray\\.\\d+\\.\\$\\.replace$': {
             'type': 'string',
           },
-          'attachments\\.\\d+\\.neastedArr\\.\\$\\.replace$': {
+          'attachments\\.\\d+\\.nestedArr\\.\\$\\.replace$': {
             'type': 'number',
           },
           'attachments\\.\\d+\\.more\\.\\$\\.replace$': {
@@ -1106,6 +1178,12 @@ module.exports = {
             ],
           },
           'tagIds': {
+            'type': 'boolean',
+            'enum': [
+              true,
+            ],
+          },
+          'tagObjectIds': {
             'type': 'boolean',
             'enum': [
               true,
@@ -1199,7 +1277,7 @@ module.exports = {
           'attachments\\.\\d+\\.detail\\.size$': {
             'type': 'number',
           },
-          'attachments\\.\\d+\\.neastedArr\\.\\d+$': {
+          'attachments\\.\\d+\\.nestedArr\\.\\d+$': {
             'type': 'number',
           },
           'attachments\\.\\d+\\.size$': {
@@ -1241,7 +1319,7 @@ module.exports = {
           'attachments\\.\\d+\\.detail\\.size$': {
             'type': 'number',
           },
-          'attachments\\.\\d+\\.neastedArr\\.\\d+$': {
+          'attachments\\.\\d+\\.nestedArr\\.\\d+$': {
             'type': 'number',
           },
           'attachments\\.\\d+\\.size$': {
@@ -1271,68 +1349,556 @@ module.exports = {
         'type': 'object',
         'properties': {
           'tags': {
-            'type': 'string',
-          },
-          'tagIds': {
-            'type': 'number',
-          },
-          'attachments': {
-            'type': 'object',
-            'additionalProperties': false,
-            'properties': {
-              'name': {
+            'anyOf': [
+              {
                 'type': 'string',
               },
-              'detail': {
+              {
                 'type': 'object',
                 'properties': {
+                  '$': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
+                    ],
+                  },
+                  '$each': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$position': {
+                    'type': 'number',
+                  },
+                  '$slice': {
+                    'type': 'number',
+                  },
+                  '$sort': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                    ],
+                  },
+                  '$in': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
+                'additionalProperties': false,
+              },
+            ],
+          },
+          'tagIds': {
+            'anyOf': [
+              {
+                'type': 'number',
+              },
+              {
+                'type': 'object',
+                'properties': {
+                  '$': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
+                    ],
+                  },
+                  '$each': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$position': {
+                    'type': 'number',
+                  },
+                  '$slice': {
+                    'type': 'number',
+                  },
+                  '$sort': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                    ],
+                  },
+                  '$in': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
+                'additionalProperties': false,
+              },
+            ],
+          },
+          'tagObjectIds': {
+            'anyOf': [
+              {
+                'type': 'string',
+              },
+              {
+                'type': 'object',
+                'properties': {
+                  '$': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
+                    ],
+                  },
+                  '$each': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$position': {
+                    'type': 'number',
+                  },
+                  '$slice': {
+                    'type': 'number',
+                  },
+                  '$sort': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                    ],
+                  },
+                  '$in': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
+                'additionalProperties': false,
+              },
+            ],
+          },
+          'attachments': {
+            'anyOf': [
+              {
+                'type': 'object',
+                'additionalProperties': false,
+                'properties': {
+                  'name': {
+                    'type': 'string',
+                  },
+                  'detail': {
+                    'type': 'object',
+                    'properties': {
+                      'size': {
+                        'type': 'number',
+                      },
+                    },
+                  },
+                  'nestedArr': {
+                    'type': 'array',
+                    'items': {
+                      'type': 'number',
+                    },
+                  },
+                  'additionalInfo': {
+                    'type': 'object',
+                    'additionalProperties': true,
+                  },
+                  'other': {
+                    'type': 'string',
+                  },
                   'size': {
                     'type': 'number',
                   },
+                  'stuff': {
+                    'type': 'number',
+                  },
+                  'more': {
+                    'type': 'array',
+                    'items': {
+                      'type': 'string',
+                    },
+                  },
                 },
+                'required': [
+                  'name',
+                ],
               },
-              'neastedArr': {
-                'type': 'array',
-                'items': {
-                  'type': 'number',
-                },
-              },
-              'additionalInfo': {
+              {
                 'type': 'object',
-                'additionalProperties': true,
-              },
-              'other': {
-                'type': 'string',
-              },
-              'size': {
-                'type': 'number',
-              },
-              'stuff': {
-                'type': 'number',
-              },
-              'more': {
-                'type': 'array',
-                'items': {
-                  'type': 'string',
+                'properties': {
+                  '$': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
+                    ],
+                  },
+                  '$each': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$position': {
+                    'type': 'number',
+                  },
+                  '$slice': {
+                    'type': 'number',
+                  },
+                  '$sort': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                    ],
+                  },
+                  '$in': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
+                'additionalProperties': false,
               },
-            },
-            'required': [
-              'name',
             ],
           },
           'editionsDates': {
-            'type': 'object',
-            'additionalProperties': true,
-            'properties': {
-              'edition': {
-                'type': 'number',
+            'anyOf': [
+              {
+                'type': 'object',
+                'additionalProperties': true,
+                'properties': {
+                  'edition': {
+                    'type': 'number',
+                  },
+                  'date': {
+                    'type': 'string',
+                    'format': 'date-time',
+                  },
+                },
               },
-              'date': {
-                'type': 'string',
-                'format': 'date-time',
+              {
+                'type': 'object',
+                'properties': {
+                  '$': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
+                    ],
+                  },
+                  '$each': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$position': {
+                    'type': 'number',
+                  },
+                  '$slice': {
+                    'type': 'number',
+                  },
+                  '$sort': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                    ],
+                  },
+                  '$in': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
+                'additionalProperties': false,
               },
-            },
+            ],
           },
           'metadata.somethingArrayObject': {
             'type': 'object',
@@ -1342,6 +1908,9 @@ module.exports = {
               },
               'anotherNumber': {
                 'type': 'number',
+              },
+              'integerNum': {
+                'type': 'integer',
               },
               'anotherObject': {
                 'type': 'object',
@@ -1369,7 +1938,7 @@ module.exports = {
           'metadata\\.exampleArrayOfArray\\.\\d+$': {
             'type': 'string',
           },
-          'attachments\\.\\d+\\.neastedArr$': {
+          'attachments\\.\\d+\\.nestedArr$': {
             'type': 'number',
           },
           'attachments\\.\\d+\\.additionalInfo\\..+$': {},
@@ -1384,88 +1953,556 @@ module.exports = {
         'type': 'object',
         'properties': {
           'tags': {
-            'oneOf': [
+            'anyOf': [
               {
                 'type': 'string',
               },
               {
                 'type': 'object',
-                'patternProperties': {
-                  '^$': {},
+                'properties': {
+                  '$': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
+                    ],
+                  },
+                  '$each': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$position': {
+                    'type': 'number',
+                  },
+                  '$slice': {
+                    'type': 'number',
+                  },
+                  '$sort': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                    ],
+                  },
+                  '$in': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
+                'additionalProperties': false,
               },
             ],
           },
           'tagIds': {
-            'oneOf': [
+            'anyOf': [
               {
                 'type': 'number',
               },
               {
                 'type': 'object',
-                'patternProperties': {
-                  '^$': {},
+                'properties': {
+                  '$': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
+                    ],
+                  },
+                  '$each': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$position': {
+                    'type': 'number',
+                  },
+                  '$slice': {
+                    'type': 'number',
+                  },
+                  '$sort': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                    ],
+                  },
+                  '$in': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
+                'additionalProperties': false,
+              },
+            ],
+          },
+          'tagObjectIds': {
+            'anyOf': [
+              {
+                'type': 'string',
+              },
+              {
+                'type': 'object',
+                'properties': {
+                  '$': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
+                    ],
+                  },
+                  '$each': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$position': {
+                    'type': 'number',
+                  },
+                  '$slice': {
+                    'type': 'number',
+                  },
+                  '$sort': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                    ],
+                  },
+                  '$in': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
+                'additionalProperties': false,
               },
             ],
           },
           'attachments': {
-            'type': 'object',
-            'additionalProperties': false,
-            'properties': {
-              'name': {
-                'type': 'string',
-              },
-              'detail': {
+            'anyOf': [
+              {
                 'type': 'object',
+                'additionalProperties': false,
                 'properties': {
+                  'name': {
+                    'type': 'string',
+                  },
+                  'detail': {
+                    'type': 'object',
+                    'properties': {
+                      'size': {
+                        'type': 'number',
+                      },
+                    },
+                  },
+                  'nestedArr': {
+                    'type': 'array',
+                    'items': {
+                      'type': 'number',
+                    },
+                  },
+                  'additionalInfo': {
+                    'type': 'object',
+                    'additionalProperties': true,
+                  },
+                  'other': {
+                    'type': 'string',
+                  },
                   'size': {
                     'type': 'number',
                   },
+                  'stuff': {
+                    'type': 'number',
+                  },
+                  'more': {
+                    'type': 'array',
+                    'items': {
+                      'type': 'string',
+                    },
+                  },
                 },
+                'required': [
+                  'name',
+                ],
               },
-              'neastedArr': {
-                'type': 'array',
-                'items': {
-                  'type': 'number',
-                },
-              },
-              'additionalInfo': {
+              {
                 'type': 'object',
-                'additionalProperties': true,
-              },
-              'other': {
-                'type': 'string',
-              },
-              'size': {
-                'type': 'number',
-              },
-              'stuff': {
-                'type': 'number',
-              },
-              'more': {
-                'type': 'array',
-                'items': {
-                  'type': 'string',
+                'properties': {
+                  '$': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
+                    ],
+                  },
+                  '$each': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$position': {
+                    'type': 'number',
+                  },
+                  '$slice': {
+                    'type': 'number',
+                  },
+                  '$sort': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                    ],
+                  },
+                  '$in': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
+                'additionalProperties': false,
               },
-            },
-            'required': [
-              'name',
             ],
           },
           'editionsDates': {
-            'type': 'object',
-            'additionalProperties': true,
-            'properties': {
-              'edition': {
-                'type': 'number',
+            'anyOf': [
+              {
+                'type': 'object',
+                'additionalProperties': true,
+                'properties': {
+                  'edition': {
+                    'type': 'number',
+                  },
+                  'date': {
+                    'type': 'string',
+                    'format': 'date-time',
+                  },
+                },
               },
-              'date': {
-                'type': 'string',
-                'format': 'date-time',
+              {
+                'type': 'object',
+                'properties': {
+                  '$': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
+                    ],
+                  },
+                  '$each': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$position': {
+                    'type': 'number',
+                  },
+                  '$slice': {
+                    'type': 'number',
+                  },
+                  '$sort': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                    ],
+                  },
+                  '$in': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
+                'additionalProperties': false,
               },
-            },
+            ],
           },
           'metadata.somethingArrayObject': {
             'type': 'object',
@@ -1475,6 +2512,9 @@ module.exports = {
               },
               'anotherNumber': {
                 'type': 'number',
+              },
+              'integerNum': {
+                'type': 'integer',
               },
               'anotherObject': {
                 'type': 'object',
@@ -1502,9 +2542,96 @@ module.exports = {
               {},
               {
                 'type': 'object',
-                'patternProperties': {
-                  '^$': {},
+                'properties': {
+                  '$': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
+                    ],
+                  },
+                  '$each': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$position': {
+                    'type': 'number',
+                  },
+                  '$slice': {
+                    'type': 'number',
+                  },
+                  '$sort': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                    ],
+                  },
+                  '$in': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
+                'additionalProperties': false,
               },
             ],
           },
@@ -1513,9 +2640,96 @@ module.exports = {
               {},
               {
                 'type': 'object',
-                'patternProperties': {
-                  '^$': {},
+                'properties': {
+                  '$': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
+                    ],
+                  },
+                  '$each': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$position': {
+                    'type': 'number',
+                  },
+                  '$slice': {
+                    'type': 'number',
+                  },
+                  '$sort': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                    ],
+                  },
+                  '$in': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
+                'additionalProperties': false,
               },
             ],
           },
@@ -1526,22 +2740,196 @@ module.exports = {
               },
               {
                 'type': 'object',
-                'patternProperties': {
-                  '^$': {},
+                'properties': {
+                  '$': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
+                    ],
+                  },
+                  '$each': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$position': {
+                    'type': 'number',
+                  },
+                  '$slice': {
+                    'type': 'number',
+                  },
+                  '$sort': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                    ],
+                  },
+                  '$in': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
+                'additionalProperties': false,
               },
             ],
           },
-          'attachments\\.\\d+\\.neastedArr$': {
+          'attachments\\.\\d+\\.nestedArr$': {
             'oneOf': [
               {
                 'type': 'number',
               },
               {
                 'type': 'object',
-                'patternProperties': {
-                  '^$': {},
+                'properties': {
+                  '$': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
+                    ],
+                  },
+                  '$each': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$position': {
+                    'type': 'number',
+                  },
+                  '$slice': {
+                    'type': 'number',
+                  },
+                  '$sort': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                    ],
+                  },
+                  '$in': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
+                'additionalProperties': false,
               },
             ],
           },
@@ -1550,9 +2938,96 @@ module.exports = {
               {},
               {
                 'type': 'object',
-                'patternProperties': {
-                  '^$': {},
+                'properties': {
+                  '$': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
+                    ],
+                  },
+                  '$each': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$position': {
+                    'type': 'number',
+                  },
+                  '$slice': {
+                    'type': 'number',
+                  },
+                  '$sort': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                    ],
+                  },
+                  '$in': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
+                'additionalProperties': false,
               },
             ],
           },
@@ -1563,9 +3038,96 @@ module.exports = {
               },
               {
                 'type': 'object',
-                'patternProperties': {
-                  '^$': {},
+                'properties': {
+                  '$': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
+                    ],
+                  },
+                  '$each': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$position': {
+                    'type': 'number',
+                  },
+                  '$slice': {
+                    'type': 'number',
+                  },
+                  '$sort': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                    ],
+                  },
+                  '$in': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
+                'additionalProperties': false,
               },
             ],
           },
@@ -1574,9 +3136,96 @@ module.exports = {
               {},
               {
                 'type': 'object',
-                'patternProperties': {
-                  '^$': {},
+                'properties': {
+                  '$': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
+                    ],
+                  },
+                  '$each': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$position': {
+                    'type': 'number',
+                  },
+                  '$slice': {
+                    'type': 'number',
+                  },
+                  '$sort': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                    ],
+                  },
+                  '$in': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
+                'additionalProperties': false,
               },
             ],
           },
@@ -1587,88 +3236,556 @@ module.exports = {
         'type': 'object',
         'properties': {
           'tags': {
-            'oneOf': [
+            'anyOf': [
               {
                 'type': 'string',
               },
               {
                 'type': 'object',
-                'patternProperties': {
-                  '^$': {},
+                'properties': {
+                  '$': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
+                    ],
+                  },
+                  '$each': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$position': {
+                    'type': 'number',
+                  },
+                  '$slice': {
+                    'type': 'number',
+                  },
+                  '$sort': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                    ],
+                  },
+                  '$in': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
+                'additionalProperties': false,
               },
             ],
           },
           'tagIds': {
-            'oneOf': [
+            'anyOf': [
               {
                 'type': 'number',
               },
               {
                 'type': 'object',
-                'patternProperties': {
-                  '^$': {},
+                'properties': {
+                  '$': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
+                    ],
+                  },
+                  '$each': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$position': {
+                    'type': 'number',
+                  },
+                  '$slice': {
+                    'type': 'number',
+                  },
+                  '$sort': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                    ],
+                  },
+                  '$in': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
+                'additionalProperties': false,
+              },
+            ],
+          },
+          'tagObjectIds': {
+            'anyOf': [
+              {
+                'type': 'string',
+              },
+              {
+                'type': 'object',
+                'properties': {
+                  '$': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
+                    ],
+                  },
+                  '$each': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$position': {
+                    'type': 'number',
+                  },
+                  '$slice': {
+                    'type': 'number',
+                  },
+                  '$sort': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                    ],
+                  },
+                  '$in': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
+                'additionalProperties': false,
               },
             ],
           },
           'attachments': {
-            'type': 'object',
-            'additionalProperties': false,
-            'properties': {
-              'name': {
-                'type': 'string',
-              },
-              'detail': {
+            'anyOf': [
+              {
                 'type': 'object',
+                'additionalProperties': false,
                 'properties': {
+                  'name': {
+                    'type': 'string',
+                  },
+                  'detail': {
+                    'type': 'object',
+                    'properties': {
+                      'size': {
+                        'type': 'number',
+                      },
+                    },
+                  },
+                  'nestedArr': {
+                    'type': 'array',
+                    'items': {
+                      'type': 'number',
+                    },
+                  },
+                  'additionalInfo': {
+                    'type': 'object',
+                    'additionalProperties': true,
+                  },
+                  'other': {
+                    'type': 'string',
+                  },
                   'size': {
                     'type': 'number',
                   },
+                  'stuff': {
+                    'type': 'number',
+                  },
+                  'more': {
+                    'type': 'array',
+                    'items': {
+                      'type': 'string',
+                    },
+                  },
                 },
+                'required': [
+                  'name',
+                ],
               },
-              'neastedArr': {
-                'type': 'array',
-                'items': {
-                  'type': 'number',
-                },
-              },
-              'additionalInfo': {
+              {
                 'type': 'object',
-                'additionalProperties': true,
-              },
-              'other': {
-                'type': 'string',
-              },
-              'size': {
-                'type': 'number',
-              },
-              'stuff': {
-                'type': 'number',
-              },
-              'more': {
-                'type': 'array',
-                'items': {
-                  'type': 'string',
+                'properties': {
+                  '$': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
+                    ],
+                  },
+                  '$each': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$position': {
+                    'type': 'number',
+                  },
+                  '$slice': {
+                    'type': 'number',
+                  },
+                  '$sort': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                    ],
+                  },
+                  '$in': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
+                'additionalProperties': false,
               },
-            },
-            'required': [
-              'name',
             ],
           },
           'editionsDates': {
-            'type': 'object',
-            'additionalProperties': true,
-            'properties': {
-              'edition': {
-                'type': 'number',
+            'anyOf': [
+              {
+                'type': 'object',
+                'additionalProperties': true,
+                'properties': {
+                  'edition': {
+                    'type': 'number',
+                  },
+                  'date': {
+                    'type': 'string',
+                    'format': 'date-time',
+                  },
+                },
               },
-              'date': {
-                'type': 'string',
-                'format': 'date-time',
+              {
+                'type': 'object',
+                'properties': {
+                  '$': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
+                    ],
+                  },
+                  '$each': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$position': {
+                    'type': 'number',
+                  },
+                  '$slice': {
+                    'type': 'number',
+                  },
+                  '$sort': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                    ],
+                  },
+                  '$in': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
+                'additionalProperties': false,
               },
-            },
+            ],
           },
           'metadata.somethingArrayObject': {
             'type': 'object',
@@ -1678,6 +3795,9 @@ module.exports = {
               },
               'anotherNumber': {
                 'type': 'number',
+              },
+              'integerNum': {
+                'type': 'integer',
               },
               'anotherObject': {
                 'type': 'object',
@@ -1705,9 +3825,96 @@ module.exports = {
               {},
               {
                 'type': 'object',
-                'patternProperties': {
-                  '^$': {},
+                'properties': {
+                  '$': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
+                    ],
+                  },
+                  '$each': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$position': {
+                    'type': 'number',
+                  },
+                  '$slice': {
+                    'type': 'number',
+                  },
+                  '$sort': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                    ],
+                  },
+                  '$in': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
+                'additionalProperties': false,
               },
             ],
           },
@@ -1716,9 +3923,96 @@ module.exports = {
               {},
               {
                 'type': 'object',
-                'patternProperties': {
-                  '^$': {},
+                'properties': {
+                  '$': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
+                    ],
+                  },
+                  '$each': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$position': {
+                    'type': 'number',
+                  },
+                  '$slice': {
+                    'type': 'number',
+                  },
+                  '$sort': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                    ],
+                  },
+                  '$in': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
+                'additionalProperties': false,
               },
             ],
           },
@@ -1729,22 +4023,196 @@ module.exports = {
               },
               {
                 'type': 'object',
-                'patternProperties': {
-                  '^$': {},
+                'properties': {
+                  '$': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
+                    ],
+                  },
+                  '$each': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$position': {
+                    'type': 'number',
+                  },
+                  '$slice': {
+                    'type': 'number',
+                  },
+                  '$sort': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                    ],
+                  },
+                  '$in': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
+                'additionalProperties': false,
               },
             ],
           },
-          'attachments\\.\\d+\\.neastedArr$': {
+          'attachments\\.\\d+\\.nestedArr$': {
             'oneOf': [
               {
                 'type': 'number',
               },
               {
                 'type': 'object',
-                'patternProperties': {
-                  '^$': {},
+                'properties': {
+                  '$': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
+                    ],
+                  },
+                  '$each': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$position': {
+                    'type': 'number',
+                  },
+                  '$slice': {
+                    'type': 'number',
+                  },
+                  '$sort': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                    ],
+                  },
+                  '$in': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
+                'additionalProperties': false,
               },
             ],
           },
@@ -1753,9 +4221,96 @@ module.exports = {
               {},
               {
                 'type': 'object',
-                'patternProperties': {
-                  '^$': {},
+                'properties': {
+                  '$': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
+                    ],
+                  },
+                  '$each': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$position': {
+                    'type': 'number',
+                  },
+                  '$slice': {
+                    'type': 'number',
+                  },
+                  '$sort': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                    ],
+                  },
+                  '$in': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
+                'additionalProperties': false,
               },
             ],
           },
@@ -1766,9 +4321,96 @@ module.exports = {
               },
               {
                 'type': 'object',
-                'patternProperties': {
-                  '^$': {},
+                'properties': {
+                  '$': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
+                    ],
+                  },
+                  '$each': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$position': {
+                    'type': 'number',
+                  },
+                  '$slice': {
+                    'type': 'number',
+                  },
+                  '$sort': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                    ],
+                  },
+                  '$in': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
+                'additionalProperties': false,
               },
             ],
           },
@@ -1777,9 +4419,96 @@ module.exports = {
               {},
               {
                 'type': 'object',
-                'patternProperties': {
-                  '^$': {},
+                'properties': {
+                  '$': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                      {
+                        'type': 'string',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                      {
+                        'type': 'boolean',
+                      },
+                    ],
+                  },
+                  '$each': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
+                  '$position': {
+                    'type': 'number',
+                  },
+                  '$slice': {
+                    'type': 'number',
+                  },
+                  '$sort': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'number',
+                      },
+                    ],
+                  },
+                  '$in': {
+                    'oneOf': [
+                      {
+                        'type': 'object',
+                      },
+                      {
+                        'type': 'array',
+                      },
+                    ],
+                  },
                 },
+                'anyOf': [
+                  {
+                    'required': [
+                      '$',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$sort',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$in',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$position',
+                    ],
+                  },
+                  {
+                    'required': [
+                      '$each',
+                    ],
+                  },
+                ],
+                'additionalProperties': false,
               },
             ],
           },
@@ -1900,6 +4629,30 @@ module.exports = {
           ],
           'description': 'Tag identification numbers',
         },
+        'tagObjectIds': {
+          'type': [
+            'array',
+            'string',
+          ],
+          'anyOf': [
+            {
+              'type': 'array',
+              'items': {
+                'type': 'string',
+                'description': 'Hexadecimal identifier of the document in the collection',
+                'pattern': '^[a-fA-F\\d]{24}$',
+                'example': '000000000000000000000000',
+              },
+            },
+            {
+              'type': 'string',
+              'description': 'Hexadecimal identifier of the document in the collection',
+              'pattern': '^[a-fA-F\\d]{24}$',
+              'example': '000000000000000000000000',
+            },
+          ],
+          'description': 'Tag object ids',
+        },
         'additionalInfo': {
           'type': 'object',
           'additionalProperties': true,
@@ -1938,6 +4691,9 @@ module.exports = {
                   },
                   'anotherNumber': {
                     'type': 'number',
+                  },
+                  'integerNum': {
+                    'type': 'integer',
                   },
                   'anotherObject': {
                     'type': 'object',
@@ -2003,7 +4759,7 @@ module.exports = {
                       },
                     },
                   },
-                  'neastedArr': {
+                  'nestedArr': {
                     'type': 'array',
                     'items': {
                       'type': 'number',
@@ -2051,7 +4807,7 @@ module.exports = {
                     },
                   },
                 },
-                'neastedArr': {
+                'nestedArr': {
                   'type': 'array',
                   'items': {
                     'type': 'number',

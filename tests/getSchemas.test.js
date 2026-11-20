@@ -16,12 +16,12 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const { getMongoDatabaseName, getMongoURL } = require('./utils')
 const path = require('path')
 const lc39 = require('@mia-platform/lc39')
 
-tap.test('getSchemas', async t => {
+test('getSchemas', async t => {
   t.test('return json', async t => {
     const fastify = await startFastify(t)
     const response = await fastify.inject({
@@ -29,8 +29,8 @@ tap.test('getSchemas', async t => {
       url: '/-/schemas',
     })
 
-    t.strictSame(response.statusCode, 200)
-    t.matchSnapshot(response.payload)
+    t.assert.deepStrictEqual(response.statusCode, 200)
+    t.assert.snapshot(response.payload, { serializers: [value => value] })
   })
 
   t.test('return ndjson', async t => {
@@ -43,8 +43,8 @@ tap.test('getSchemas', async t => {
       },
     })
 
-    t.strictSame(response.statusCode, 200)
-    t.matchSnapshot(response.payload)
+    t.assert.deepStrictEqual(response.statusCode, 200)
+    t.assert.snapshot(response.payload, { serializers: [value => value] })
   })
 
   t.test('HELPERS_PREFIX', async t => {
@@ -56,13 +56,13 @@ tap.test('getSchemas', async t => {
       method: 'GET',
       url: '/-/schemas',
     })
-    t.strictSame(wrongUrlResponse.statusCode, 404)
+    t.assert.deepStrictEqual(wrongUrlResponse.statusCode, 404)
 
     const rightUrlResponse = await fastify.inject({
       method: 'GET',
       url: '/_/schemas',
     })
-    t.strictSame(rightUrlResponse.statusCode, 200)
+    t.assert.deepStrictEqual(rightUrlResponse.statusCode, 200)
   })
 })
 
@@ -80,7 +80,7 @@ async function startFastify(t, envs = {}) {
     logLevel: 'silent',
   })
 
-  t.teardown(async() => {
+  t.after(async() => {
     await fastify.close()
   })
 

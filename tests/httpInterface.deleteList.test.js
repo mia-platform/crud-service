@@ -16,7 +16,7 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const { ObjectId } = require('mongodb')
 
 const { STATES } = require('../lib/consts')
@@ -27,7 +27,7 @@ const [DOC] = fixtures
 const MATCHING_PRICE = DOC.price - 1
 const NON_MATCHING_PRICE = DOC.price + 1
 
-tap.test('HTTP DELETE /', async t => {
+test('HTTP DELETE /', async t => {
   const tests = [
     {
       name: 'without filter',
@@ -114,32 +114,24 @@ tap.test('HTTP DELETE /', async t => {
       })
 
       t.test('should return 200', t => {
-        t.strictSame(response.statusCode, 200)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 200)
       })
 
       t.test('should return the right content-type', t => {
-        t.ok(/application\/json/.test(response.headers['content-type']))
-        t.end()
+        t.assert.ok(/application\/json/.test(response.headers['content-type']))
       })
 
       t.test('should return the deleted document count', t => {
-        t.strictSame(JSON.parse(response.payload), fixtures.length - databaseDocuments.length)
-        t.end()
+        t.assert.deepStrictEqual(JSON.parse(response.payload), fixtures.length - databaseDocuments.length)
       })
 
       t.test('on database', async t => {
         const documents = await collection.find().toArray()
 
         t.test('should be there', t => {
-          t.strictSame(documents, databaseDocuments)
-          t.end()
+          t.assert.deepStrictEqual(documents, databaseDocuments)
         })
-
-        t.end()
       })
-
-      t.end()
     })
   })
 
@@ -188,7 +180,7 @@ tap.test('HTTP DELETE /', async t => {
 
     let docsOnDb = await collection.findOne({ _id: DOC._id })
 
-    t.ok(docsOnDb)
+    t.assert.ok(docsOnDb)
 
     const failingDelete = await fastify.inject({
       method: 'DELETE',
@@ -202,11 +194,11 @@ tap.test('HTTP DELETE /', async t => {
       headers: {},
     })
 
-    t.strictSame(failingDelete.statusCode, 200)
-    t.strictSame(JSON.parse(failingDelete.payload), 0)
+    t.assert.deepStrictEqual(failingDelete.statusCode, 200)
+    t.assert.deepStrictEqual(JSON.parse(failingDelete.payload), 0)
 
     docsOnDb = await collection.find({}).toArray()
-    t.equal(docsOnDb.length, 3)
+    t.assert.strictEqual(docsOnDb.length, 3)
 
     const response = await fastify.inject({
       method: 'DELETE',
@@ -220,15 +212,11 @@ tap.test('HTTP DELETE /', async t => {
       headers: {},
     })
 
-    t.strictSame(response.statusCode, 200)
-    t.strictSame(JSON.parse(response.payload), 2)
+    t.assert.deepStrictEqual(response.statusCode, 200)
+    t.assert.deepStrictEqual(JSON.parse(response.payload), 2)
 
     docsOnDb = await collection.find({}).toArray()
-    t.equal(docsOnDb.length, 1)
-    t.strictSame(docsOnDb[0]._id, DOC_NOT_TO_DELETE._id)
-
-    t.end()
+    t.assert.strictEqual(docsOnDb.length, 1)
+    t.assert.deepStrictEqual(docsOnDb[0]._id, DOC_NOT_TO_DELETE._id)
   })
-
-  t.end()
 })

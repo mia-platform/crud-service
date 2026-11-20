@@ -16,7 +16,7 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const abstractLogger = require('abstract-logging')
 const { MongoClient } = require('mongodb')
 
@@ -73,7 +73,12 @@ const context = {
   now: new Date('2018-02-08'),
 }
 
-tap.test('insertMany', async t => {
+const mockQueryParser = {
+  // eslint-disable-next-line no-empty-function
+  parseAndCastBody: () => {},
+}
+
+test('insertMany', async t => {
   const databaseName = getMongoDatabaseName()
   const mongoURL = getMongoURL(databaseName)
 
@@ -83,7 +88,7 @@ tap.test('insertMany', async t => {
 
   await clearCollectionAndInsertFixtures(collection)
 
-  t.teardown(async() => {
+  t.after(async() => {
     await database.dropDatabase()
     await client.close()
   })
@@ -98,15 +103,15 @@ tap.test('insertMany', async t => {
       await collection.drop()
     } catch (error) { /* ignore errors raised while removing records from collection */ }
 
-    const docs = await crudService.insertMany(context, [{ ...DOCS[0] }])
+    const docs = await crudService.insertMany(context, [{ ...DOCS[0] }], mockQueryParser)
     const docIds = docs.map(doc => doc._id)
-    t.strictSame(docIds.length, 1)
-    t.ok(docIds[0])
+    t.assert.deepStrictEqual(docIds.length, 1)
+    t.assert.ok(docIds[0])
 
     t.test('should return the document', async t => {
       t.plan(1)
 
-      t.strictSame(docs[0], {
+      t.assert.deepStrictEqual(docs[0], {
         ...DOCS[0],
         _id: docIds[0],
         [UPDATEDAT]: context.now,
@@ -122,7 +127,7 @@ tap.test('insertMany', async t => {
 
       const savedDoc = await collection.findOne({ _id: docIds[0] })
 
-      t.strictSame(docs[0], savedDoc)
+      t.assert.deepStrictEqual(docs[0], savedDoc)
     })
   })
 
@@ -133,14 +138,14 @@ tap.test('insertMany', async t => {
       await collection.drop()
     } catch (error) { /* ignore errors raised while removing records from collection */ }
 
-    const docs = await crudService.insertMany(context, DOCS.map(d => ({ ...d })))
+    const docs = await crudService.insertMany(context, DOCS.map(d => ({ ...d })), mockQueryParser)
     const docIds = docs.map(d => d._id)
-    t.strictSame(docIds.length, DOCS.length)
+    t.assert.deepStrictEqual(docIds.length, DOCS.length)
 
     t.test('should return the document', async t => {
       t.plan(1)
 
-      t.strictSame(docs, DOCS.map((D, i) => ({
+      t.assert.deepStrictEqual(docs, DOCS.map((D, i) => ({
         ...D,
         _id: docIds[i],
         [UPDATEDAT]: context.now,
@@ -156,7 +161,7 @@ tap.test('insertMany', async t => {
 
       const savedDocs = await collection.find({ _id: { $in: docIds } }).toArray()
 
-      t.strictSame(savedDocs, docs)
+      t.assert.deepStrictEqual(savedDocs, docs)
     })
   })
 
@@ -167,14 +172,18 @@ tap.test('insertMany', async t => {
       await collection.drop()
     } catch (error) { /* ignore errors raised while removing records from collection */ }
 
-    const docs = await crudService.insertMany(context, DOCS.map(d => ({ ...d, __STATE__: STATES.PUBLIC })))
+    const docs = await crudService.insertMany(
+      context,
+      DOCS.map(d => ({ ...d, __STATE__: STATES.PUBLIC })),
+      mockQueryParser
+    )
     const docIds = docs.map(d => d._id)
-    t.strictSame(docIds.length, DOCS.length)
+    t.assert.deepStrictEqual(docIds.length, DOCS.length)
 
     t.test('should return the documents with the specified state', async t => {
       t.plan(1)
 
-      t.strictSame(docs, DOCS.map((D, i) => ({
+      t.assert.deepStrictEqual(docs, DOCS.map((D, i) => ({
         ...D,
         _id: docIds[i],
         [UPDATEDAT]: context.now,
@@ -190,7 +199,7 @@ tap.test('insertMany', async t => {
 
       const savedDocs = await collection.find({ _id: { $in: docIds } }).toArray()
 
-      t.strictSame(savedDocs, docs)
+      t.assert.deepStrictEqual(savedDocs, docs)
     })
   })
 
@@ -201,7 +210,17 @@ tap.test('insertMany', async t => {
       await collection.drop()
     } catch (error) { /* ignore errors raised while removing records from collection */ }
 
-    t.rejects(crudService.insertMany(context, []), 'should throw an AssertionError')
+    await t.assert.rejects(crudService.insertMany(context, [], mockQueryParser), 'should throw an AssertionError')
+  })
+
+  t.test('with no query parser', async t => {
+    t.plan(1)
+
+    try {
+      await collection.drop()
+    } catch (error) { /* ignore errors raised while removing records from collection */ }
+
+    await t.assert.rejects(crudService.insertMany(context, [{/** some element */}]), 'should throw an error')
   })
 
   CrudService.STANDARD_FIELDS.forEach((standardField) => {
@@ -209,10 +228,10 @@ tap.test('insertMany', async t => {
       t.plan(1)
 
       try {
-        await crudService.insertMany(context, [{ ...DOCS[0], [standardField]: 'some truly value' }])
-        t.fail()
+        await crudService.insertMany(context, [{ ...DOCS[0], [standardField]: 'some truly value' }], mockQueryParser)
+        t.assert.fail()
       } catch (error) {
-        t.equal(error.message, `${standardField} cannot be specified`)
+        t.assert.strictEqual(error.message, `${standardField} cannot be specified`)
       }
     })
   })

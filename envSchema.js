@@ -22,14 +22,27 @@ const gcpCryptSchema = {
   properties: {
     KMS_PROVIDER: { type: 'string', enum: ['gcp'], description: 'Master key is managed by GCP' },
   },
-  required: ['KMS_GCP_EMAIL', 'KMS_GCP_PROJECT_ID', 'KMS_GCP_LOCATION', 'KMS_GCP_KEY_RING', 'KMS_GCP_KEY_NAME', 'KMS_GCP_PRIVATE_KEY_PATH', 'KEY_VAULT_NAMESPACE'],
+  required: [
+    'KMS_GCP_EMAIL',
+    'KMS_GCP_PROJECT_ID',
+    'KMS_GCP_LOCATION',
+    'KMS_GCP_KEY_RING',
+    'KMS_GCP_KEY_NAME',
+    'KMS_GCP_PRIVATE_KEY_PATH',
+    'KEY_VAULT_NAMESPACE',
+    'CRYPT_SHARED_LIB_PATH',
+  ],
 }
 
 const localCryptSchema = {
   properties: {
     KMS_PROVIDER: { type: 'string', enum: ['local'], description: 'Master key is managed locally' },
   },
-  required: ['LOCAL_MASTER_KEY_PATH', 'KEY_VAULT_NAMESPACE'],
+  required: [
+    'LOCAL_MASTER_KEY_PATH',
+    'KEY_VAULT_NAMESPACE',
+    'CRYPT_SHARED_LIB_PATH',
+  ],
 }
 
 const noCryptSchema = {
@@ -40,7 +53,11 @@ const noCryptSchema = {
 
 const properties = {
   MONGODB_URL: { type: 'string', description: 'the mongodb connection string' },
-  MONGODB_MAX_IDLE_TIME_MS: { type: 'number', description: 'idle time (in ms) to control the MongoDB maxIdleTimeMs connection option (default: 0, meaning there is no max idle time and connection remain open indefinitely)', default: 0 },
+  MONGODB_MAX_IDLE_TIME_MS: {
+    type: 'number',
+    description: 'idle time (in ms) to control the MongoDB maxIdleTimeMs connection option (default: 0, meaning there is no max idle time and connection remain open indefinitely)',
+    default: 0,
+  },
   COLLECTION_DEFINITION_FOLDER: { type: 'string', description: 'a path where all collections are defined' },
   VIEWS_DEFINITION_FOLDER: { type: 'string', description: 'a path where all views are defined' },
   USER_ID_HEADER_KEY: { type: 'string', description: 'Header key used to know which user makes the request' },
@@ -66,7 +83,12 @@ const properties = {
     minimum: 1,
   },
   TRUSTED_PROXIES: { type: 'string', default: '10.0.0.0/8,172.16.0.0/12,192.168.0.0/16' },
-  KMS_PROVIDER: { type: 'string', enum: ['gcp', 'local', 'none'], description: 'Master key manager', default: 'none' },
+  OPEN_API_SPECIFICATION: {
+    type: 'string',
+    enum: ['swagger', 'openapi'],
+    description: 'OpenAPI specification used to expose Swagger',
+    default: 'swagger',
+  },
   ALLOW_DISK_USE_IN_QUERIES: {
     type: 'boolean',
     description: 'Allow disk use in queries to mongo. It works with Mongo 4.4 or above. WARNING: using this variable set to true with MongoDB version below 4.4 will break all the GETs.',
@@ -74,8 +96,12 @@ const properties = {
   // Encryption properties
   KEY_VAULT_NAMESPACE: { type: 'string', pattern: DATABASE_DOT_COLLECTION },
   LOCAL_MASTER_KEY_PATH: { type: 'string', description: 'Path for the local Master key', minLength: 1 },
-  CRYPT_SHARED_LIB_PATH: { type: 'string', description: 'Path to the MongoDB crypt_shared library used for automatic encryption' },
+  CRYPT_SHARED_LIB_PATH: {
+    type: 'string',
+    description: 'path to the folder containing Mongo shared library to support automatic encryption',
+  },
   // Google Cloud Platform encryption properties
+  KMS_PROVIDER: { type: 'string', enum: ['gcp', 'local', 'none'], description: 'Master key manager', default: 'none' },
   KMS_GCP_EMAIL: { type: 'string', description: 'GCP email of the kms' },
   KMS_GCP_PROJECT_ID: { type: 'string', description: 'GCP project id for kms' },
   KMS_GCP_LOCATION: { type: 'string', description: 'GCP location' },
@@ -86,6 +112,16 @@ const properties = {
     type: 'string',
     description: 'prefix string to assign to the helpers plugin, which exposes additional routes, such as /schemas',
     default: '/-/',
+  },
+  DISABLE_INDEX_MANAGEMENT: {
+    type: 'boolean',
+    description: 'When this option is activated, the service does manage the indexes of defined collections',
+    default: false,
+  },
+  FASTIFY_PLUGIN_TIMEOUT_MS: {
+    type: 'number',
+    description: 'customize how many milliseconds are allowed to elapse to load a fastify plugin',
+    default: 20000,
   },
 }
 

@@ -165,8 +165,8 @@ module.exports = {
             'description': 'User id that has requested the last change successfully',
           },
           'updatedAt': {
-            'type': 'string',
             'example': '1997-04-24T07:00:00.000Z',
+            'type': 'string',
             'nullable': false,
             'description': 'Date of the request that has performed the last change',
           },
@@ -175,8 +175,8 @@ module.exports = {
             'description': 'User id that has created this object',
           },
           'createdAt': {
-            'type': 'string',
             'example': '1997-04-24T07:00:00.000Z',
+            'type': 'string',
             'nullable': false,
             'description': 'Date of the request that has performed the object creation',
           },

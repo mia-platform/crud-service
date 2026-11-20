@@ -16,7 +16,7 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const abstractLogger = require('abstract-logging')
 const { MongoClient } = require('mongodb')
 
@@ -40,7 +40,7 @@ const context = {
   now: new Date('2018-02-08'),
 }
 
-tap.test('deleteAll', async t => {
+test('deleteAll', async t => {
   const databaseName = getMongoDatabaseName()
   const mongoURL = getMongoURL(databaseName)
 
@@ -50,7 +50,7 @@ tap.test('deleteAll', async t => {
 
   const crudService = new CrudService(collection, STATES.PUBLIC)
 
-  t.teardown(async() => {
+  t.after(async() => {
     await database.dropDatabase()
     await client.close()
   })
@@ -64,13 +64,13 @@ tap.test('deleteAll', async t => {
     t.test('should return the deleted document count', t => {
       // TODO: Broken in parallel
       t.plan(1)
-      t.strictSame(ret, publicFixtures.length)
+      t.assert.deepStrictEqual(ret, publicFixtures.length)
     })
 
     t.test('should remove the doc from the database', async t => {
       t.plan(1)
       const number = await collection.countDocuments(context)
-      t.strictSame(number, 0)
+      t.assert.deepStrictEqual(number, 0)
     })
 
     checkDocumentsInDatabase(t, collection, [], fixtures.filter(d => d.__STATE__ !== 'PUBLIC'))
@@ -85,13 +85,13 @@ tap.test('deleteAll', async t => {
 
     t.test('should return the deleted document count', t => {
       t.plan(1)
-      t.strictSame(ret, publicFixtures.filter(pf => pf.price > publicFixtures[1].price - 1).length)
+      t.assert.deepStrictEqual(ret, publicFixtures.filter(pf => pf.price > publicFixtures[1].price - 1).length)
     })
 
     t.test('should remove the docs from the database', async t => {
       t.plan(1)
       const number = await collection.countDocuments({ ...matchingQuery, __STATE__: 'PUBLIC' })
-      t.strictSame(number, 0)
+      t.assert.deepStrictEqual(number, 0)
     })
 
     checkDocumentsInDatabase(t, collection, [], fixtures.filter(pf => !(pf.price > publicFixtures[1].price - 1 && pf.__STATE__ === 'PUBLIC')))
@@ -105,7 +105,7 @@ tap.test('deleteAll', async t => {
 
     t.test('should return the deleted document count', async t => {
       t.plan(1)
-      t.strictSame(ret, 1)
+      t.assert.deepStrictEqual(ret, 1)
     })
 
     checkDocumentsInDatabase(t, collection, [], fixtures.filter(d => d._id !== draftFixture._id))
@@ -120,7 +120,7 @@ tap.test('deleteAll', async t => {
 
     t.test('should return the deleted document count', async t => {
       t.plan(1)
-      t.strictSame(
+      t.assert.deepStrictEqual(
         ret,
         fixtures.filter(
           d => (d.__STATE__ === STATES.DRAFT || d.__STATE__ !== STATES.TRASH) && d.price > (draftFixture.price - 1)

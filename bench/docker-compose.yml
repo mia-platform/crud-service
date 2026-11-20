@@ -1,0 +1,60 @@
+services:
+  database:
+    image: mongo:6.0
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo:/data/db
+    networks:
+      - k6-net
+    deploy:
+      resources:
+        limits:
+          memory: 4GB
+          cpus: "2"
+    healthcheck:
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  crud-service:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+    depends_on:
+      database:
+        condition: service_healthy
+    networks:
+      - k6-net
+    deploy:
+      resources:
+        limits:
+          memory: 500Mb
+          cpus: "2"
+    environment:
+      LOG_LEVEL: info
+      COLLECTION_DEFINITION_FOLDER: /home/node/app/definitions/collections
+      VIEWS_DEFINITION_FOLDER: /home/node/app/definitions/views
+      USER_ID_HEADER_KEY: userid
+      CRUD_LIMIT_CONSTRAINT_ENABLED: "true"
+      CRUD_MAX_LIMIT: 200
+      MONGODB_URL: "mongodb://database:27017/bench-test"
+    volumes:
+      - ./definitions:/home/node/app/definitions
+      - ./utils/healthcheck.js:/home/node/app/healthcheck/healthcheck.js
+    healthcheck:
+      test: [ "CMD-SHELL", "node /home/node/app/healthcheck/healthcheck.js" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+networks:
+  k6-net:
+
+volumes:
+  mongo:

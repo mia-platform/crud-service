@@ -16,12 +16,12 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 
 const { name, version } = require('../package.json')
 const { setUpTest, setUpEmptyCollectionsTest } = require('./httpInterface.utils')
 
-tap.test('status ok', async mainTest => {
+test('status ok', async mainTest => {
   const { fastify } = await setUpTest(mainTest)
 
   mainTest.test('/-/ready', async test => {
@@ -30,13 +30,12 @@ tap.test('status ok', async mainTest => {
       url: '/-/ready',
     })
 
-    test.strictSame(response.statusCode, 200)
-    test.strictSame(JSON.parse(response.payload), {
+    test.assert.deepStrictEqual(response.statusCode, 200)
+    test.assert.deepStrictEqual(JSON.parse(response.payload), {
       name,
       version,
       status: 'OK',
     })
-    test.end()
   })
 
   mainTest.test('/-/check-up', async test => {
@@ -45,19 +44,16 @@ tap.test('status ok', async mainTest => {
       url: '/-/check-up',
     })
 
-    test.strictSame(response.statusCode, 200)
-    test.strictSame(JSON.parse(response.payload), {
+    test.assert.deepStrictEqual(response.statusCode, 200)
+    test.assert.deepStrictEqual(JSON.parse(response.payload), {
       name,
       version,
       status: 'OK',
     })
-    test.end()
   })
-
-  mainTest.end()
 })
 
-tap.test('status ko', async mainTest => {
+test('status ko', async mainTest => {
   const { fastify } = await setUpTest(mainTest)
   await fastify.mongo.client.close()
   mainTest.test('/-/ready', async test => {
@@ -66,13 +62,12 @@ tap.test('status ko', async mainTest => {
       url: '/-/ready',
     })
 
-    test.strictSame(response.statusCode, 503)
-    test.strictSame(JSON.parse(response.payload), {
+    test.assert.deepStrictEqual(response.statusCode, 503)
+    test.assert.deepStrictEqual(JSON.parse(response.payload), {
       name,
       version,
       status: 'KO',
     })
-    test.end()
   })
 
   mainTest.test('/-/check-up', async test => {
@@ -81,19 +76,17 @@ tap.test('status ko', async mainTest => {
       url: '/-/check-up',
     })
 
-    test.strictSame(response.statusCode, 503)
-    test.strictSame(JSON.parse(response.payload), {
+    test.assert.deepStrictEqual(response.statusCode, 503)
+    test.assert.deepStrictEqual(JSON.parse(response.payload), {
       name,
       version,
       status: 'KO',
       message: 'MongoDB status is unhealthy',
     })
-    test.end()
   })
-  mainTest.end()
 })
 
-tap.test('without collection', async mainTest => {
+test('without collection', async mainTest => {
   const { fastify } = await setUpEmptyCollectionsTest(mainTest)
 
   mainTest.test('/-/ready', async test => {
@@ -102,13 +95,12 @@ tap.test('without collection', async mainTest => {
       url: '/-/ready',
     })
 
-    test.strictSame(response.statusCode, 200)
-    test.strictSame(JSON.parse(response.payload), {
+    test.assert.deepStrictEqual(response.statusCode, 200)
+    test.assert.deepStrictEqual(JSON.parse(response.payload), {
       name,
       version,
       status: 'OK',
     })
-    test.end()
   })
 
   mainTest.test('/-/check-up', async test => {
@@ -117,14 +109,11 @@ tap.test('without collection', async mainTest => {
       url: '/-/check-up',
     })
 
-    test.strictSame(response.statusCode, 200)
-    test.strictSame(JSON.parse(response.payload), {
+    test.assert.deepStrictEqual(response.statusCode, 200)
+    test.assert.deepStrictEqual(JSON.parse(response.payload), {
       name,
       version,
       status: 'OK',
     })
-    test.end()
   })
-
-  mainTest.end()
 })

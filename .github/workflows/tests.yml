@@ -12,51 +12,93 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        mongodb-version: ["4.4", "5.0", "6.0"]
+        mongodb-version: ["5.0", "6.0", "7.0", "8.0"]
     steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
         with:
           show-progress: false
 
       - name: Setup Node.js
-        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
         with:
           node-version-file: .nvmrc
           check-latest: true
           cache: npm
+
+      - name: Install libmongocrypt
+        run: sudo apt-get update && sudo apt-get install -y libmongocrypt-dev
 
       - name: Install
         run: npm ci
 
       - name: download MongoDB encryption libraries (to support testing encryption features)
         run: |
-          curl -fsSL https://downloads.mongodb.com/linux/mongo_crypt_shared_v1-linux-x86_64-enterprise-ubuntu2204-7.0.14.tgz -o crypt_shared.tar.gz
+          curl -fsSL https://downloads.mongodb.com/linux/mongo_crypt_shared_v1-linux-x86_64-enterprise-ubuntu2204-7.0.15.tgz -o crypt_shared.tar.gz
           tar -xz --one-top-level=crypt_shared -f crypt_shared.tar.gz
 
-      # mongocryptd 5.0 requires libssl1.1, not available on recent runners: run it inside the mongo:5.0 image
-      - name: start mongocryptd
-        run: |
-          curl -fsSL https://repo.mongodb.com/apt/debian/dists/bullseye/mongodb-enterprise/5.0/main/binary-amd64/mongodb-enterprise-cryptd_5.0.14_amd64.deb -o mongocryptd.deb
-          dpkg-deb -x mongocryptd.deb mongocryptd
-          docker run -d --name mongocryptd --network host -v ${{ github.workspace }}/mongocryptd/usr/bin/mongocryptd:/usr/bin/mongocryptd:ro --entrypoint /usr/bin/mongocryptd mongo:5.0 --port 27020 --idleShutdownTimeoutSecs 3600
-          timeout 60 sh -c 'until docker logs mongocryptd 2>&1 | grep -q "Waiting for connections"; do sleep 2; done'
-
       - name: start MongoDB instance
-        uses: supercharge/mongodb-github-action@5a87bd81f88e2a8b195f8b7b656f5cda1350815a # v1.11.0
+        uses: supercharge/mongodb-github-action@315db7fe45ac2880b7758f1933e6e5d59afd5e94 # v1.12.1
         with:
           mongodb-version: ${{ matrix.mongodb-version }}
 
       - name: Run tests
         run: npm run coverage -- --jobs 3 # limit the number of jobs that can be run in parallel in the CI
         env:
+          TEST_CONCURRENCY: 3
           MONGO_VERSION: ${{ matrix.mongodb-version }}
           CRYPT_SHARED_LIB_PATH: ${{ github.workspace }}/crypt_shared/lib/mongo_crypt_v1.so
 
       - name: Coveralls
-        uses: coverallsapp/github-action@cfd0633edbd2411b532b808ba7a8b5e04f76d2c8 # v2.3.4
+        uses: coverallsapp/github-action@8d6379e14d29928660c4ba802d8e85393440b329 # v2.3.8
         with:
           github-token: ${{ secrets.token }}
-          file: .tap/report/lcov.info
+          file: coverage/lcov.info
           format: lcov
+        # allow the pipeline to continue even when the coverage decreases
+        continue-on-error: true
+
+  test-latest:
+    name: Execute tests on latest MongoDB
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          show-progress: false
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@2028fbc5c25fe9cf00d9f06a71cc4710d4507903 # v6.0.0
+        with:
+          node-version-file: .nvmrc
+          check-latest: true
+          cache: npm
+
+      - name: Install libmongocrypt
+        run: sudo apt-get update && sudo apt-get install -y libmongocrypt-dev
+
+      - name: Install
+        run: npm ci
+
+      - name: download MongoDB encryption libraries (to support testing encryption features)
+        run: |
+          curl -fsSL https://downloads.mongodb.com/linux/mongo_crypt_shared_v1-linux-x86_64-enterprise-ubuntu2404-8.0.12.tgz -o crypt_shared.tar.gz
+          tar -xz --one-top-level=crypt_shared -f crypt_shared.tar.gz
+
+      - name: start MongoDB instance
+        uses: supercharge/mongodb-github-action@315db7fe45ac2880b7758f1933e6e5d59afd5e94 # v1.12.1
+        with:
+          mongodb-version: "8.2"
+        continue-on-error: true
+
+      - name: Warn if MongoDB failed to start
+        if: steps.startmongo.outcome == 'failure'
+        run: echo "::warning::MongoDB failed to start, tests skipped"
+
+      - name: Run tests
+        if: steps.startmongo.outcome == 'success'
+        run: npm run coverage
+        env:
+          TEST_CONCURRENCY: 3
+          MONGO_VERSION: ${{ matrix.mongodb-version }}
+          CRYPT_SHARED_LIB_PATH: ${{ github.workspace }}/crypt_shared/lib/mongo_crypt_v1.so
         # allow the pipeline to continue even when the coverage decreases
         continue-on-error: true

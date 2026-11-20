@@ -90,9 +90,8 @@ module.exports = {
               'type': 'string',
             },
             'nonNullableDate': {
-              'type': 'string',
               'example': '1997-04-24T07:00:00.000Z',
-              'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
+              'type': 'string',
               'nullable': false,
               'anyOf': [
                 {
@@ -105,6 +104,7 @@ module.exports = {
                   'format': 'time',
                 },
               ],
+              'description': '"date-time" according with https://tools.ietf.org/html/rfc3339#section-5.6',
             },
           },
         },

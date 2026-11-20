@@ -31,35 +31,35 @@ jobs:
       id-token: write
     steps:
     - name: Checkout code
-      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       with:
         show-progress: false
     - name: Docker Login to GitHub Repository
-      uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3.3.0
+      uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
       with:
         registry: ghcr.io
         username: ${{ github.actor }}
         password: ${{ secrets.github_cr_token }}
     - name: Docker Login to DockerHub
-      uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3.3.0
+      uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
       with:
         username: ${{ secrets.docker_username }}
         password: ${{ secrets.docker_token }}
     - name: Login to Mia registry
-      uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3.3.0
+      uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
       with:
         registry: nexus.mia-platform.eu
         username: ${{ secrets.nexus_username }}
         password: ${{ secrets.nexus_token }}
     - name: Install Cosign
-      uses: sigstore/cosign-installer@dc72c7d5c4d10cd6bcb8cf6e3fd625a9e5e537da # v3.7.0
+      uses: sigstore/cosign-installer@756fe2d284c7292c4e9b62c8a28f1e5629c59532 # v4.1.3
     - name: Set up QEMU
-      uses: docker/setup-qemu-action@49b3bc8e6bdd4a60e6116a5414239cba5943d3cf # v3.2.0
+      uses: docker/setup-qemu-action@29109295f81e9208d7d86ff1c6c12d2833863392 # v3.6.0
       with:
         platforms: amd64,arm64
     - name: Configure docker metadata
       id: meta
-      uses: docker/metadata-action@369eb591f429131d6889c46b94e711f089e6ca96 # v5.6.1
+      uses: docker/metadata-action@c1e51972afc2121e065aed6d45c65596fe445f3f # v5.8.0
       env:
         DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest # add 'index' when we will support a multiarch image
       with:
@@ -81,32 +81,32 @@ jobs:
           org.opencontainers.image.documentation=https://docs.mia-platform.eu/docs/marketplace/handbooks/crud-oss-usage
           org.opencontainers.image.vendor=Mia s.r.l.
     - name: Setup Buildx Context
-      uses: docker/setup-buildx-action@c47758b77c9736f4b2ef4073d4d51994fabfe349 # v3.7.1
+      uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3.11.1
       id: buildx
       with:
         platforms: linux/amd64,linux/arm64
     - name: Build and push
       id: docker-build
-      uses: docker/build-push-action@48aba3b46d1b1fec4febb7c5d0c644b249a11355 # v6.10.0
+      uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
       with:
         context: .
         push: true
         tags: ${{ steps.meta.outputs.tags }}
         labels: ${{ steps.meta.outputs.labels }}
-        annotations: ${{ steps.meta.output.annotations }}
+        annotations: ${{ steps.meta.outputs.annotations }}
         platforms: linux/amd64 # ${{ steps.buildx.outputs.platforms }} use this for multiarch images
         cache-from: type=gha
         cache-to: type=gha,mode=max
     - name: Generate SBOM
-      uses: anchore/sbom-action@55dc4ee22412511ee8c3142cbea40418e6cec693 # v0.17.8
+      uses: anchore/sbom-action@66cbf4bc1f1c0d2edc94016e65bc221b6bb0ad6c # v0.24.3
       if: github.ref_type == 'tag'
       with:
         artifact-name: crud-service-sbom.spdx.json
         output-file: ./crud-service-sbom.spdx.json
-        image: nexus.mia-platform.eu/core/crud-service:${{ steps.meta.output.version.main }}
+        image: nexus.mia-platform.eu/core/crud-service:${{ steps.meta.outputs.version }}
         upload-release-assets: true
     - name: GCP Auth
-      uses: google-github-actions/auth@6fc4af4b145ae7821d527454aa9bd537d1f2dc5f # v2.1.7
+      uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
       if: github.ref_type == 'tag'
       with:
         project_id: ${{ secrets.kms_gcp_poject }}
@@ -118,12 +118,12 @@ jobs:
         for tag in ${TAGS}; do
           image="${tag}@${DIGEST}"
           cosign sign --recursive --yes --key "${COSIGN_PRIVATE_KEY}" "${image}"
-          cosign attest --recursive --yes --key "${COSIGN_PRIVATE_KEY}" --predicate "crud-service-sbom.spdx.json" --type="spdxjson" "${image}"
+          cosign attest --yes --key "${COSIGN_PRIVATE_KEY}" --predicate "crud-service-sbom.spdx.json" --type="spdxjson" "${image}"
         done
       env:
         TAGS: |
-          ghcr.io/mia-platform/crud-service:${{ steps.meta.output.version.main }}
-          docker.io/miaplatform/crud-service:${{ steps.meta.output.version.main }}
-          nexus.mia-platform.eu/core/crud-service:${{ steps.meta.output.version.main }}
+          ghcr.io/mia-platform/crud-service:${{ steps.meta.outputs.version }}
+          docker.io/miaplatform/crud-service:${{ steps.meta.outputs.version }}
+          nexus.mia-platform.eu/core/crud-service:${{ steps.meta.outputs.version }}
         DIGEST: ${{ steps.docker-build.outputs.digest }}
         COSIGN_PRIVATE_KEY: ${{ secrets.cosign_key }}

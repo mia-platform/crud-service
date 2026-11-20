@@ -1,6 +1,5 @@
 # Custom ignores
 
-.tap
 .local
 
 # End of Custom ignores
@@ -79,7 +78,7 @@ pids
 lib-cov
 
 # Coverage directory used by tools like istanbul
-
+coverage
 *.lcov
 
 # nyc test coverage
@@ -129,6 +128,7 @@ web_modules/
 *.tgz
 
 # Yarn Integrity file
+.yarn-integrity
 
 # dotenv environment variable files
 .env
@@ -211,6 +211,7 @@ dist
 
 ### VisualStudioCode Patch ###
 # Ignore all local history of files
+.history
 .ionide
 
 ### WebStorm+all ###
@@ -302,3 +303,4 @@ fabric.properties
 !.idea/runConfigurations
 
 # End of https://www.toptal.com/developers/gitignore/api/node,linux,macos,visualstudiocode,webstorm+all
+/.clinic/

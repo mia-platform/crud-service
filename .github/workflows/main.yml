@@ -5,7 +5,6 @@ on:
   pull_request:
     branches:
       - main
-      - v6.x
     paths:
       - ".github/workflows/**"
       - "lib/**"
@@ -18,7 +17,6 @@ on:
   push:
     branches:
       - main
-      - ci/pipelines-v6-3
     paths:
       - ".github/workflows/**"
       - "lib/**"
@@ -52,11 +50,9 @@ jobs:
       nexus_username: ${{ secrets.NEXUS_USER }}
       nexus_token: ${{ secrets.NEXUS_TOKEN }}
 
-  security-checks:
+  perf-test:
     needs:
-      - tests
+      - checks
       - release-docker
-    if: ${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
-    uses: ./.github/workflows/security-checks.yml
-    with:
-      version: main
+      - tests
+    uses: ./.github/workflows/perf-test.yml

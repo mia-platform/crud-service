@@ -16,16 +16,27 @@
 
 'use strict'
 
-const tap = require('tap')
-const collectionDefinition = require('./collectionDefinitions/books')
-const newCollectionDefinition = require('./newCollectionDefinitions/books')
-const { fieldsToSchema } = require('../lib/AdditionalCaster.utils')
-
-tap.test('fieldsToSchema', test => {
-  test.test('should correctly convert', assert => {
-    const convertedSchema = fieldsToSchema(collectionDefinition.fields)
-    assert.strictSame(convertedSchema, newCollectionDefinition.schema)
-    assert.end()
-  })
-  test.end()
-})
+module.exports = {
+  name: 'registered-customers',
+  source: 'customers',
+  type: 'view',
+  pipeline: [
+    {
+      $project: {
+        _id: 1,
+        name: 1,
+        updaterId: 1,
+        updatedAt: 1,
+        creatorId: 1,
+        createdAt: 1,
+        customerId: 1,
+        firstName: 1,
+        lastName: 1,
+        shopID: 1,
+        canBeContacted: 1,
+        purchasesCount: 1,
+        __STATE__: 1,
+      },
+    },
+  ],
+}

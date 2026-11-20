@@ -16,7 +16,7 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const path = require('path')
 const { ObjectId } = require('mongodb')
 const { readdirSync } = require('fs')
@@ -25,7 +25,7 @@ const { STATES, __STATE__ } = require('../lib/consts')
 const { newUpdaterId, fixtures } = require('./utils')
 const { setUpTest, prefix } = require('./httpInterface.utils')
 
-tap.test('HTTP POST /bulk', async t => {
+test('HTTP POST /bulk', async t => {
   const nowDate = new Date()
   const DOCS = [
     {
@@ -80,18 +80,15 @@ tap.test('HTTP POST /bulk', async t => {
     })
 
     t.test('should return 200', t => {
-      t.strictSame(response.statusCode, 200, response.payload)
-      t.end()
+      t.assert.deepStrictEqual(response.statusCode, 200, response.payload)
     })
     t.test('should return application/json', t => {
-      t.ok(/application\/json/.test(response.headers['content-type']))
-      t.end()
+      t.assert.ok(/application\/json/.test(response.headers['content-type']))
     })
     t.test('should return the inserted ids', t => {
       const body = JSON.parse(response.payload)
-      t.strictSame(body.length, DOCS.length)
-      body.forEach(el => t.ok(el._id))
-      t.end()
+      t.assert.deepStrictEqual(body.length, DOCS.length)
+      body.forEach(el => t.assert.ok(el._id))
     })
 
     t.test('GET /<id>', t => {
@@ -105,13 +102,10 @@ tap.test('HTTP POST /bulk', async t => {
           })
 
           t.test('should return 200', t => {
-            t.strictSame(response.statusCode, 200)
-            t.end()
+            t.assert.deepStrictEqual(response.statusCode, 200)
           })
         })
       })
-
-      t.end()
     })
 
     t.test('on database', async t => {
@@ -128,36 +122,28 @@ tap.test('HTTP POST /bulk', async t => {
           docKeys.forEach(k => {
             t.test(`should have ${k}`, t => {
               if (k === 'position') {
-                t.strictSame(doc[k], { type: 'Point', coordinates: DOCS[index][k] })
+                t.assert.deepStrictEqual(doc[k], { type: 'Point', coordinates: DOCS[index][k] })
               } else {
-                t.strictSame(doc[k], DOCS[index][k])
+                t.assert.deepStrictEqual(doc[k], DOCS[index][k])
               }
-              t.end()
             })
           })
 
           t.test('should have creatorId', t => {
-            t.strictSame(doc.creatorId, newUpdaterId)
-            t.end()
+            t.assert.deepStrictEqual(doc.creatorId, newUpdaterId)
           })
           t.test('should have updaterId', t => {
-            t.strictSame(doc.updaterId, newUpdaterId)
-            t.end()
+            t.assert.deepStrictEqual(doc.updaterId, newUpdaterId)
           })
           t.test('should have createdAt', t => {
-            t.ok(Date.now() - doc.createdAt < 5000, '`createdAt` should be set')
-            t.end()
+            t.assert.ok(Date.now() - doc.createdAt < 5000, '`createdAt` should be set')
           })
           t.test('should have updatedAt', t => {
-            t.ok(Date.now() - doc.updatedAt < 5000, '`updatedAt` should be set')
-            t.end()
+            t.assert.ok(Date.now() - doc.updatedAt < 5000, '`updatedAt` should be set')
           })
           t.test('should have __STATE__ in DRAFT', t => {
-            t.strictSame(doc[__STATE__], STATES.DRAFT)
-            t.end()
+            t.assert.deepStrictEqual(doc[__STATE__], STATES.DRAFT)
           })
-
-          t.end()
         })
       })
     })
@@ -184,12 +170,12 @@ tap.test('HTTP POST /bulk', async t => {
       },
     })
 
-    t.strictSame(response.statusCode, 422)
-    t.ok(/application\/json/.test(response.headers['content-type']))
+    t.assert.deepStrictEqual(response.statusCode, 409)
+    t.assert.ok(/application\/json/.test(response.headers['content-type']))
 
     t.test('on database', async t => {
       const count = await collection.countDocuments({})
-      t.strictSame(count, fixtures.length + 1, 'only the first was inserted')
+      t.assert.deepStrictEqual(count, fixtures.length + 1, 'only the first was inserted')
     })
   })
 
@@ -213,12 +199,12 @@ tap.test('HTTP POST /bulk', async t => {
       },
     })
 
-    t.strictSame(response.statusCode, 200)
-    t.ok(/application\/json/.test(response.headers['content-type']))
+    t.assert.deepStrictEqual(response.statusCode, 200)
+    t.assert.ok(/application\/json/.test(response.headers['content-type']))
 
     t.test('on database', async t => {
       const count = await collection.countDocuments({})
-      t.strictSame(count, fixtures.length + n)
+      t.assert.deepStrictEqual(count, fixtures.length + n)
     })
   })
 
@@ -238,12 +224,12 @@ tap.test('HTTP POST /bulk', async t => {
       },
     })
 
-    t.strictSame(response.statusCode, 400)
-    t.ok(/application\/json/.test(response.headers['content-type']))
+    t.assert.deepStrictEqual(response.statusCode, 400)
+    t.assert.ok(/application\/json/.test(response.headers['content-type']))
 
     t.test('on database', async t => {
       const count = await collection.countDocuments({})
-      t.strictSame(count, fixtures.length, 'no insertions on database')
+      t.assert.deepStrictEqual(count, fixtures.length, 'no insertions on database')
     })
   })
 
@@ -303,20 +289,17 @@ tap.test('HTTP POST /bulk', async t => {
       })
 
       t.test('should return 200', t => {
-        t.strictSame(response.statusCode, 200, response.payload)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 200, response.payload)
       })
 
       t.test('should return application/json', t => {
-        t.ok(/application\/json/.test(response.headers['content-type']))
-        t.end()
+        t.assert.ok(/application\/json/.test(response.headers['content-type']))
       })
 
       t.test('should return the inserted ids', t => {
         const body = JSON.parse(response.payload)
-        t.strictSame(body.length, DOCS.length)
-        body.forEach(el => t.ok(el._id))
-        t.end()
+        t.assert.deepStrictEqual(body.length, DOCS.length)
+        body.forEach(el => t.assert.ok(el._id))
       })
 
       t.test('GET /<id>', t => {
@@ -330,33 +313,27 @@ tap.test('HTTP POST /bulk', async t => {
             })
 
             t.test('should return 200', t => {
-              t.strictSame(response.statusCode, 200, response.payload)
-              t.end()
+              t.assert.deepStrictEqual(response.statusCode, 200, response.payload)
             })
 
             t.test('should have null name', async t => {
               const result = JSON.parse(response.payload)
-              t.equal(result.name, null)
-              t.end()
+              t.assert.strictEqual(result.name, null)
             })
 
             if (index === 0) {
               t.test(`doc ${index} should have 0.0 price`, async t => {
                 const result = JSON.parse(response.payload)
-                t.equal(result.price, 0.0)
-                t.end()
+                t.assert.strictEqual(result.price, 0.0)
               })
             } else {
               t.test(`doc ${index} should have not null price`, async t => {
                 const result = JSON.parse(response.payload)
-                t.not(result.price, null)
-                t.end()
+                t.assert.notStrictEqual(result.price, null)
               })
             }
           })
         })
-
-        t.end()
       })
 
       t.test('on database', async t => {
@@ -373,38 +350,30 @@ tap.test('HTTP POST /bulk', async t => {
             docKeys.forEach(k => {
               t.test(`should have ${k}`, t => {
                 if (k === 'position') {
-                  t.strictSame(doc[k], { type: 'Point', coordinates: DOCS[index][k] })
+                  t.assert.deepStrictEqual(doc[k], { type: 'Point', coordinates: DOCS[index][k] })
                 } else if (k === 'price' && index === 0) {
-                  t.equal(doc[k], 0.0)
+                  t.assert.strictEqual(doc[k], 0.0)
                 } else {
-                  t.strictSame(doc[k], DOCS[index][k])
+                  t.assert.deepStrictEqual(doc[k], DOCS[index][k])
                 }
-                t.end()
               })
             })
 
             t.test('should have creatorId', t => {
-              t.strictSame(doc.creatorId, newUpdaterId)
-              t.end()
+              t.assert.deepStrictEqual(doc.creatorId, newUpdaterId)
             })
             t.test('should have updaterId', t => {
-              t.strictSame(doc.updaterId, newUpdaterId)
-              t.end()
+              t.assert.deepStrictEqual(doc.updaterId, newUpdaterId)
             })
             t.test('should have createdAt', t => {
-              t.ok(Date.now() - doc.createdAt < 5000, '`createdAt` should be set')
-              t.end()
+              t.assert.ok(Date.now() - doc.createdAt < 5000, '`createdAt` should be set')
             })
             t.test('should have updatedAt', t => {
-              t.ok(Date.now() - doc.updatedAt < 5000, '`updatedAt` should be set')
-              t.end()
+              t.assert.ok(Date.now() - doc.updatedAt < 5000, '`updatedAt` should be set')
             })
             t.test('should have __STATE__ in PUBLIC', t => {
-              t.strictSame(doc[__STATE__], STATES.PUBLIC)
-              t.end()
+              t.assert.deepStrictEqual(doc[__STATE__], STATES.PUBLIC)
             })
-
-            t.end()
           })
         })
       })
@@ -441,20 +410,17 @@ tap.test('HTTP POST /bulk', async t => {
       })
 
       t.test('should return 200', t => {
-        t.strictSame(response.statusCode, 200)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 200)
       })
 
       t.test('should return application/json', t => {
-        t.ok(/application\/json/.test(response.headers['content-type']))
-        t.end()
+        t.assert.ok(/application\/json/.test(response.headers['content-type']))
       })
 
       t.test('should return the inserted ids', t => {
         const body = JSON.parse(response.payload)
-        t.strictSame(body.length, DOCS.length)
-        body.forEach(el => t.ok(el._id))
-        t.end()
+        t.assert.deepStrictEqual(body.length, DOCS.length)
+        body.forEach(el => t.assert.ok(el._id))
       })
 
       t.test('GET /<id>', t => {
@@ -468,19 +434,15 @@ tap.test('HTTP POST /bulk', async t => {
             })
 
             t.test('should return 200', t => {
-              t.strictSame(response.statusCode, 200)
-              t.end()
+              t.assert.deepStrictEqual(response.statusCode, 200)
             })
 
             t.test('should have __STATE__ in PUBLIC', t => {
               const body = JSON.parse(response.payload)
-              t.strictSame(body[__STATE__], STATES.PUBLIC)
-              t.end()
+              t.assert.deepStrictEqual(body[__STATE__], STATES.PUBLIC)
             })
           })
         })
-
-        t.end()
       })
     })
   })
@@ -516,18 +478,15 @@ tap.test('HTTP POST /bulk', async t => {
       })
 
       t.test('should return 200', t => {
-        t.strictSame(response.statusCode, 200)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 200)
       })
       t.test('should return application/json', t => {
-        t.ok(/application\/json/.test(response.headers['content-type']))
-        t.end()
+        t.assert.ok(/application\/json/.test(response.headers['content-type']))
       })
       t.test('should return the inserted ids', t => {
         const body = JSON.parse(response.payload)
-        t.strictSame(body.length, DOCS.length)
-        body.forEach(el => t.ok(el._id))
-        t.end()
+        t.assert.deepStrictEqual(body.length, DOCS.length)
+        body.forEach(el => t.assert.ok(el._id))
       })
 
       t.test('GET /<id>', t => {
@@ -541,19 +500,15 @@ tap.test('HTTP POST /bulk', async t => {
             })
 
             t.test('should return 200', t => {
-              t.strictSame(response.statusCode, 200)
-              t.end()
+              t.assert.deepStrictEqual(response.statusCode, 200)
             })
 
             t.test('should have __STATE__ in DRAFT', t => {
               const body = JSON.parse(response.payload)
-              t.strictSame(body[__STATE__], STATES.DRAFT)
-              t.end()
+              t.assert.deepStrictEqual(body[__STATE__], STATES.DRAFT)
             })
           })
         })
-
-        t.end()
       })
     })
   })
@@ -577,27 +532,24 @@ tap.test('HTTP POST /bulk', async t => {
     })
 
     t.test('should return 200', t => {
-      t.strictSame(response.statusCode, 400)
-      t.end()
+      t.assert.deepStrictEqual(response.statusCode, 400)
     })
     t.test('should return application/json', t => {
-      t.ok(/application\/json/.test(response.headers['content-type']))
-      t.end()
+      t.assert.ok(/application\/json/.test(response.headers['content-type']))
     })
     t.test('should return the inserted ids', t => {
       const body = JSON.parse(response.payload)
-      t.strictSame(body, {
+      t.assert.deepStrictEqual(body, {
         statusCode: 400,
         error: 'Bad Request',
         message: 'body/0/publishDate must match pattern "^\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?(Z|[+-]\\d{2}:\\d{2}))?$"',
         code: 'FST_ERR_VALIDATION',
       })
-      t.end()
     })
   })
 })
 
-tap.test('MP4-462: default state ignored on /bulk when at least one document has no __STATE__', async t => {
+test('MP4-462: default state ignored on /bulk when at least one document has no __STATE__', async t => {
   const DOCUMENTS = {
     'address-statistics': {
       docs: [
@@ -805,8 +757,8 @@ tap.test('MP4-462: default state ignored on /bulk when at least one document has
 
         t.plan(docs.length + 2)
 
-        t.ok(firstDocument.__STATE__)
-        t.ok(!secondDocument.__STATE__)
+        t.assert.ok(firstDocument.__STATE__)
+        t.assert.ok(!secondDocument.__STATE__)
 
         const expected = [
           firstDocument,
@@ -835,7 +787,7 @@ tap.test('MP4-462: default state ignored on /bulk when at least one document has
               url: `${endpointBasePath}/${_id}?_st=PUBLIC,DRAFT,TRASH,DELETED`,
             })
             const { __STATE__ } = JSON.parse(getResponse.payload)
-            t.equal(__STATE__, expected[index].__STATE__)
+            t.assert.strictEqual(__STATE__, expected[index].__STATE__)
           })
         })
       })

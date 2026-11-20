@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 /*
  * Copyright 2023 Mia s.r.l.
  *
@@ -19,130 +20,88 @@
 const fp = require('fastify-plugin')
 const fastifyEnv = require('@fastify/env')
 const fastifyMultipart = require('@fastify/multipart')
+
 const ajvFormats = require('ajv-formats')
+
 const { unset: lunset } = require('lodash')
 const { readdirSync } = require('fs')
 const { join } = require('path')
-const { ObjectId } = require('mongodb')
 const { JSONPath } = require('jsonpath-plus')
+
 
 const myPackage = require('./package')
 const fastifyEnvSchema = require('./envSchema')
 
 const httpInterface = require('./lib/httpInterface')
-const { castCollectionId } = require('./lib/pkFactories')
+const loadModels = require('./lib/loadModels')
+const joinPlugin = require('./lib/joinPlugin')
+
 const {
   SCHEMA_CUSTOM_KEYWORDS,
-  SETCMD,
-  PUSHCMD,
-  PULLCMD,
-  UNSETCMD,
-  ADDTOSETCMD,
 } = require('./lib/consts')
-const joinPlugin = require('./lib/joinPlugin')
 const { registerMongoInstances } = require('./lib/mongo/mongo-plugin')
-const { getAjvResponseValidationFunction } = require('./lib/validatorGetters')
+const { ajvSerializer } = require('./lib/validatorGetters')
 const { pointerSeparator } = require('./lib/JSONPath.utils')
-const loadModels = require('./lib/loadModels')
 const { registerHelperRoutes } = require('./lib/helpersRoutes')
+const { addSerializerCompiler } = require('./lib/compilers')
+const {
+  addAclHook,
+  addHealthHooks,
+  addPreHandlerHooks,
+  addLookupHook,
+  addPatchViewHook,
+  addModelNameHook,
+} = require('./lib/hooks')
+
+function decorateCrud(fastify, model, modelName) {
+  fastify.decorate('crudService', model.crudService)
+  fastify.decorate('queryParser', model.queryParser)
+  fastify.decorate('allFieldNames', model.allFieldNames)
+  fastify.decorate('jsonSchemaGenerator', model.jsonSchemaGenerator)
+  fastify.decorate('jsonSchemaGeneratorWithNested', model.jsonSchemaGenerator)
+  fastify.decorate('modelName', modelName)
+  addModelNameHook(fastify, modelName)
+}
 
 async function registerCrud(fastify, { modelName, isView }) {
-  if (!fastify.mongo) { throw new Error('`fastify.mongo` is undefined!') }
-  if (!modelName) { throw new Error('`modelName` is undefined!') }
+  if (!fastify.mongo) {
+    throw new Error('`fastify.mongo` is undefined!')
+  }
+  if (!modelName) {
+    throw new Error('`modelName` is undefined!')
+  }
 
   fastify.log.trace({ modelName }, 'Registering CRUD')
 
   const model = fastify.models[modelName]
   const prefix = model.definition.endpointBasePath
 
-  fastify.decorate('crudService', model.crudService)
-  fastify.decorate('queryParser', model.queryParser)
-  fastify.decorate('castResultsAsStream', model.castResultsAsStream)
-  fastify.decorate('castItem', model.castItem)
-  fastify.decorate('allFieldNames', model.allFieldNames)
-  fastify.decorate('jsonSchemaGenerator', model.jsonSchemaGenerator)
-  fastify.decorate('jsonSchemaGeneratorWithNested', model.jsonSchemaGeneratorWithNested)
-  fastify.decorate('modelName', modelName)
-  fastify.register(httpInterface, { prefix, registerGetters: true, registerSetters: !isView })
+  decorateCrud(fastify, model, modelName)
+
+  await fastify.register(httpInterface, { prefix, registerGetters: true, registerSetters: !isView })
 }
 
-async function registerViewCrud(fastify, { modelName, lookups }) {
-  if (!fastify.mongo) { throw new Error('`fastify.mongo` is undefined!') }
-  if (!modelName) { throw new Error('`modelName` is undefined!') }
+async function registerViewCrud(fastify, { modelName }) {
+  if (!fastify.mongo) {
+    throw new Error('`fastify.mongo` is undefined!')
+  }
+  if (!modelName) {
+    throw new Error('`modelName` is undefined!')
+  }
 
   fastify.log.trace({ modelName }, 'Registering View CRUD')
 
-  const { definition, viewDependencies, crudService } = fastify.models[modelName]
+  const { definition, viewDependencies } = fastify.models[modelName]
   const prefix = definition.endpointBasePath
 
-  fastify.decorate('crudService', viewDependencies.crudService)
-  fastify.decorate('queryParser', viewDependencies.queryParser)
-  fastify.decorate('castResultsAsStream', viewDependencies.castResultsAsStream)
-  fastify.decorate('castItem', viewDependencies.castItem)
-  fastify.decorate('allFieldNames', viewDependencies.allFieldNames)
-  fastify.decorate('jsonSchemaGenerator', viewDependencies.jsonSchemaGenerator)
-  fastify.decorate('jsonSchemaGeneratorWithNested', viewDependencies.jsonSchemaGenerator)
-  fastify.decorate('modelName', modelName)
-
-  // To allow writing views without having to rewrite all the logic of the HttpInterface,
-  // it was decided to adapt the fields of the calls towards the view by converting them
-  // to the fields of the underlying collection, thus hiding the complexity on the client
-  // side while maintaining consistent interfaces.
-  // This assumes that the key of the value is in the field "value" and should be made configurable.
-  fastify.addHook('preHandler', (request, _reply, done) => {
-    for (const { as, localField } of lookups) {
-      if (request?.body?.[as]) {
-        const lookupReference = request.body[as]
-        delete request.body[as]
-
-        request.body[localField] = mapLookupToObjectId(lookupReference)
-      }
-
-      for (const command of [SETCMD, UNSETCMD, PUSHCMD, PULLCMD, ADDTOSETCMD]) {
-        if (request?.body?.[command]?.[as]) {
-          const lookupReference = request.body[command][as]
-          delete request.body[command][as]
-
-          request.body[command][localField] = mapLookupToObjectId(lookupReference)
-        }
-      }
-    }
-
-    done()
-  })
-
-  // To obtain the updated object with a consistent interface after a patch,
-  // it is necessary to retrieve the view object again before returning it to the client.
-  fastify.addHook('preSerialization', async function preSerializer(request, _reply, payload) {
-    const { _id } = payload
-    if (request.method === 'PATCH' && _id) {
-      const docId = this.castCollectionId(_id)
-      // eslint-disable-next-line no-underscore-dangle
-      const doc = await crudService._mongoCollection.findOne({ _id: docId })
-      const response = this.castItem(doc)
-      const validatePatch = getAjvResponseValidationFunction(request.routeSchema.response['200'])
-      validatePatch(response)
-      return response
-    }
-    return payload
-  })
-
-  fastify.register(httpInterface, { prefix, registerGetters: false, registerSetters: true })
-}
-
-function mapLookupToObjectId(reference) {
-  // consider both one-to-one and one-to-many relationships
-  if (Array.isArray(reference)) {
-    return reference
-      .map(ref => (ref?.value ? new ObjectId(ref.value) : undefined))
-      .filter(Boolean)
-  }
-
-  return reference?.value ? new ObjectId(reference.value) : undefined
+  decorateCrud(fastify, viewDependencies, modelName)
+  await fastify.register(httpInterface, { prefix, registerGetters: false, registerSetters: true })
 }
 
 async function registerViewCrudLookup(fastify, { modelName, lookupModel }) {
-  if (!fastify.mongo) { throw new Error('`fastify.mongo` is undefined!') }
+  if (!fastify.mongo) {
+    throw new Error('`fastify.mongo` is undefined!')
+  }
 
   fastify.log.trace({ modelName }, 'Registering ViewLookup CRUD')
 
@@ -154,17 +113,11 @@ async function registerViewCrudLookup(fastify, { modelName, lookupModel }) {
   const prefix = definition.endpointBasePath
   const lookupPrefix = join(prefix, 'lookup', modelField)
 
+  decorateCrud(fastify, lookupModel, modelName)
 
-  fastify.decorate('crudService', lookupModel.crudService)
-  fastify.decorate('queryParser', lookupModel.queryParser)
-  fastify.decorate('castResultsAsStream', lookupModel.castResultsAsStream)
-  fastify.decorate('castItem', lookupModel.castItem)
-  fastify.decorate('allFieldNames', lookupModel.allFieldNames)
-  fastify.decorate('jsonSchemaGenerator', lookupModel.jsonSchemaGenerator)
-  fastify.decorate('jsonSchemaGeneratorWithNested', lookupModel.jsonSchemaGenerator)
-  fastify.decorate('modelName', modelName)
   fastify.decorate('lookupProjection', lookupModel.parsedLookupProjection)
-  fastify.register(httpInterface, {
+
+  await fastify.register(httpInterface, {
     prefix: lookupPrefix,
     registerGetters: false,
     registerSetters: false,
@@ -175,44 +128,67 @@ async function registerViewCrudLookup(fastify, { modelName, lookupModel }) {
 const registerDatabase = fp(registerMongoInstances, { decorators: { fastify: ['config'] } })
 
 async function iterateOverCollectionDefinitionAndRegisterCruds(fastify) {
-  fastify.decorate('castCollectionId', castCollectionId(fastify))
   fastify.decorate('userIdHeaderKey', fastify.config.USER_ID_HEADER_KEY.toLowerCase())
-  fastify.decorate('validateOutput', fastify.config.ENABLE_STRICT_OUTPUT_VALIDATION)
 
   for (const [modelName, model] of Object.entries(fastify.models)) {
     const { isView, viewLookupsEnabled, viewDependencies } = model
     if (viewLookupsEnabled) {
-      const lookups = viewDependencies.lookupsModels.map(({ lookup }) => lookup)
-      fastify.register(registerViewCrud, {
+      await fastify.register(registerViewCrud, {
         modelName,
-        lookups,
       })
 
       for (const lookupModel of viewDependencies.lookupsModels) {
-        fastify.register(registerViewCrudLookup, {
+        await fastify.register(registerViewCrudLookup, {
           modelName,
           lookupModel,
         })
       }
     }
 
-    fastify.register(registerCrud, {
+    await fastify.register(registerCrud, {
       modelName,
       isView,
     })
   }
 }
 
-
 const validCrudFolder = path => !['.', '..'].includes(path) && /\.js(on)?$/.test(path)
+
+async function customErrorHandler(error, request, reply) {
+  if (error.statusCode === 404) {
+    return notFoundHandler(request, reply)
+  }
+
+  request.log.error({ cause: error?.validation ?? error }, 'invalid request received')
+
+  if (error.validation?.[0]?.message === 'must NOT have additional properties') {
+    reply.code(error.statusCode)
+    throw new Error(`${error.message}. Property "${error.validation[0].params.additionalProperty}" is not defined in validation schema`)
+  }
+
+  throw error
+}
+
+async function notFoundHandler(_, reply) {
+  reply
+    .code(404)
+    .send({
+      error: 'not found',
+    })
+}
+
 
 async function setupCruds(fastify) {
   const {
     COLLECTION_DEFINITION_FOLDER,
     VIEWS_DEFINITION_FOLDER,
     HELPERS_PREFIX,
+    ENABLE_STRICT_OUTPUT_VALIDATION,
   } = fastify.config
 
+  fastify.decorate('validateOutput', ENABLE_STRICT_OUTPUT_VALIDATION)
+  fastify.setNotFoundHandler(notFoundHandler)
+  fastify.setErrorHandler(customErrorHandler)
   const collections = readdirSync(COLLECTION_DEFINITION_FOLDER)
     .filter(validCrudFolder)
     .map(path => join(COLLECTION_DEFINITION_FOLDER, path))
@@ -231,21 +207,32 @@ async function setupCruds(fastify) {
   }
 
   if (collections.length > 0) {
-    fastify
-      .register(registerDatabase)
-      .register(fp(loadModels))
-      .register(iterateOverCollectionDefinitionAndRegisterCruds)
-      .register(joinPlugin, { prefix: '/join' })
-      .register(registerHelperRoutes, { prefix: HELPERS_PREFIX })
+    addSerializerCompiler(fastify, ajvSerializer, ENABLE_STRICT_OUTPUT_VALIDATION)
+
+    await fastify.register(registerDatabase)
+    await fastify.register(fp(loadModels))
+
+    await fastify.register(iterateOverCollectionDefinitionAndRegisterCruds)
+    await fastify.register(joinPlugin, { prefix: '/join' })
+    await fastify.register(registerHelperRoutes, { prefix: HELPERS_PREFIX })
+  } else {
+    fastify.log.warn('no collection definition provided')
   }
+
+  /** ===============================  HOOKS  ===============================  */
+  addLookupHook(fastify)
+  addPatchViewHook(fastify)
 }
 
 /* =============================================================================== */
 
 module.exports = async function plugin(fastify, opts) {
-  await fastify
-    .register(fastifyEnv, { schema: fastifyEnvSchema, data: opts })
-  fastify.register(fastifyMultipart, {
+  addHealthHooks(fastify)
+  addAclHook(fastify)
+  addPreHandlerHooks(fastify)
+
+  await fastify.register(fastifyEnv, { schema: fastifyEnvSchema, data: opts })
+  await fastify.register(fastifyMultipart, {
     limits: {
       fields: 5,
       // Conversion Byte to Mb
@@ -253,7 +240,12 @@ module.exports = async function plugin(fastify, opts) {
       files: 1,
     },
   })
-    .register(fp(setupCruds, { decorators: { fastify: ['config'] } }))
+
+  try {
+    await fastify.register(fp(setupCruds, { decorators: { fastify: ['config'] } }))
+  } catch (error) {
+    fastify.log.fatal({ cause: error }, 'failed to setup CRUD Service components')
+  }
 }
 
 module.exports.options = {
@@ -266,10 +258,11 @@ module.exports.options = {
     },
     plugins: [ajvFormats],
   },
+  pluginTimeout: process.env.FASTIFY_PLUGIN_TIMEOUT_MS ?? 20000,
 }
 
 module.exports.swaggerDefinition = {
-  openApiSpecification: 'swagger',
+  openApiSpecification: process.env.OPEN_API_SPECIFICATION ?? 'swagger',
   info: {
     title: 'Crud Service',
     description: myPackage.description,
@@ -297,9 +290,15 @@ module.exports.transformSchemaForSwagger = ({ schema, url } = {}) => {
   } = schema
   const transformed = { ...others }
 
-  if (params) { transformed.params = getTransformedSchema(params) }
-  if (body) { transformed.body = getTransformedSchema(body) }
-  if (querystring) { transformed.querystring = getTransformedSchema(querystring) }
+  if (params) {
+    transformed.params = getTransformedSchema(params)
+  }
+  if (body) {
+    transformed.body = getTransformedSchema(body)
+  }
+  if (querystring) {
+    transformed.querystring = getTransformedSchema(querystring)
+  }
   if (response) {
     transformed.response = {
       ...response,
@@ -311,13 +310,18 @@ module.exports.transformSchemaForSwagger = ({ schema, url } = {}) => {
 }
 
 function getTransformedSchema(httpPartSchema) {
-  if (!httpPartSchema) { return }
+  if (!httpPartSchema) {
+    return
+  }
   const KEYS_TO_UNSET = [
     SCHEMA_CUSTOM_KEYWORDS.UNIQUE_OPERATION_ID,
     ...JSONPath({
       json: httpPartSchema,
       resultType: 'pointer',
       path: '$..[?(@ && @.type && Array.isArray(@.type))]',
+      sandbox: {
+        Array,
+      },
     })
       .map(pointer => [
         `${pointer

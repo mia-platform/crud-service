@@ -16,7 +16,7 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const path = require('path')
 const lc39 = require('@mia-platform/lc39')
 const { MongoClient } = require('mongodb')
@@ -42,7 +42,7 @@ const HTTP_PUBLIC_FIXTURES = JSON.parse(JSON.stringify(expectedRidersLookup))
 const COLLECTION_DEFINITION_FOLDER = path.join(__dirname, 'collectionDefinitions')
 const VIEWS_DEFINITION_FOLDER = path.join(__dirname, 'viewsDefinitionsLookup')
 
-tap.test('HTTP GET /orders-details-endpoint/lookup/rider', async t => {
+test('HTTP GET /orders-details-endpoint/lookup/rider', async t => {
   if (process.env.MONGO_VERSION <= '4.4') {
     t.skip('Lookup view not supported on Mongo version <= 4.4')
     return
@@ -63,7 +63,7 @@ tap.test('HTTP GET /orders-details-endpoint/lookup/rider', async t => {
 
   const fastify = await lc39('./index', { logLevel, envVariables })
 
-  t.teardown(async() => {
+  t.after(async() => {
     await database.dropDatabase()
     await client.close()
     await fastify.close()
@@ -227,27 +227,21 @@ tap.test('HTTP GET /orders-details-endpoint/lookup/rider', async t => {
       })
 
       t.test('should return 200', t => {
-        t.strictSame(response.statusCode, 200, response.payload)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 200, response.payload)
       })
 
       t.test('should return "application/json"', t => {
-        t.strictSame(response.headers['content-type'], 'application/json')
-        t.end()
+        t.assert.deepStrictEqual(response.headers['content-type'], 'application/json')
       })
 
       t.test('should return the document', t => {
-        t.strictSame(JSON.parse(response.payload), found)
-        t.end()
+        t.assert.deepStrictEqual(JSON.parse(response.payload), found)
       })
 
       t.test('should keep the document as is in database', async t => {
         const documents = (await ridersCollection.find().toArray()).map(riderObjectToLookup)
-        t.strictSame(documents, expectedRidersLookup)
-        t.end()
+        t.assert.deepStrictEqual(documents, expectedRidersLookup)
       })
-
-      t.end()
     })
   })
 
@@ -262,18 +256,15 @@ tap.test('HTTP GET /orders-details-endpoint/lookup/rider', async t => {
     })
 
     t.test('should return 400', t => {
-      t.strictSame(response.statusCode, 400, response.payload)
-      t.end()
+      t.assert.deepStrictEqual(response.statusCode, 400, response.payload)
     })
 
     t.test('should return "application/json"', t => {
-      t.strictSame(JSON.parse(response.payload), {
+      t.assert.deepStrictEqual(JSON.parse(response.payload), {
         statusCode: 400,
         error: 'Bad Request',
         message: 'No allowed colums',
       })
-      t.end()
     })
-    t.end()
   })
 })

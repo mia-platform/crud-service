@@ -1,10 +1,10 @@
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 
-const getAccept = require('../lib/acceptHeaderParser')
+const { getAccept, getReplyTypeCallback } = require('../lib/acceptHeaderParser')
 
-tap.test('test HTTP Accept getter', t => {
+test('test HTTP Accept getter', t => {
   const testCases = [
     {
       input: '',
@@ -65,11 +65,38 @@ tap.test('test HTTP Accept getter', t => {
   ]
 
   testCases.forEach(({ input, output }) => {
-    t.test(`- header: ${input}`, assert => {
-      assert.strictSame(getAccept(input), output)
-      assert.end()
+    t.test(`- header: ${input}`, t => {
+      t.assert.deepStrictEqual(getAccept(input), output)
     })
   })
+})
 
-  t.end()
+test('getReplyTypeCallback', t => {
+  const defaultAccept = 'application/json'
+  const replyTypeCallback = getReplyTypeCallback(defaultAccept)
+
+  t.test('should return defaultAccept when acceptHeader is empty', t => {
+    const result = replyTypeCallback('')
+    t.assert.strictEqual(result, defaultAccept, 'Expected to return the defaultAccept')
+  })
+
+  t.test('should return defaultAccept when acceptHeader is undefined', t => {
+    const result = replyTypeCallback()
+    t.assert.strictEqual(result, defaultAccept, 'Expected to return the defaultAccept')
+  })
+
+  t.test('should return defaultAccept when acceptHeader is */*', t => {
+    const result = replyTypeCallback('*/*')
+    t.assert.strictEqual(result, defaultAccept, 'Expected to return the defaultAccept')
+  })
+
+  t.test('should return the first part of acceptHeader when it is not */* or empty', t => {
+    const result = replyTypeCallback('text/html')
+    t.assert.strictEqual(result, 'text/html', 'Expected to return the first part of acceptHeader')
+  })
+
+  t.test('should return the first part of acceptHeader when it has multiple types', t => {
+    const result = replyTypeCallback('text/html, application/xhtml+xml, application/xml;q=0.9, */*;q=0.8')
+    t.assert.strictEqual(result, 'text/html', 'Expected to return the first part of acceptHeader')
+  })
 })

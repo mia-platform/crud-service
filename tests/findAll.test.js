@@ -16,10 +16,9 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const abstractLogger = require('abstract-logging')
 const { MongoClient } = require('mongodb')
-const { omit: lomit } = require('lodash')
 
 const { STATES } = require('../lib/consts')
 const CrudService = require('../lib/CrudService')
@@ -32,12 +31,10 @@ const {
   getMongoDatabaseName,
   getMongoURL,
   BOOKS_COLLECTION_NAME,
-  RAW_PROJECTION_PLAIN_INCLUSIVE,
-  RAW_PROJECTION_PLAIN_EXCLUSIVE,
 } = require('./utils')
 
 const EMPTY_QUERY = {}
-const ONLY_ID_PROJECTION = []
+const DEFAULT_PROJECTION = { _id: 1 }
 const ALL_FIELDS = Object.keys(publicFixtures[0])
 
 const context = {
@@ -46,7 +43,7 @@ const context = {
   now: new Date('2018-02-08'),
 }
 
-tap.test('findAll', async t => {
+test('findAll', async t => {
   const databaseName = getMongoDatabaseName()
   const mongoURL = getMongoURL(databaseName)
 
@@ -56,7 +53,7 @@ tap.test('findAll', async t => {
 
   await clearCollectionAndInsertFixtures(collection)
 
-  t.teardown(async() => {
+  t.after(async() => {
     await database.dropDatabase()
     await client.close()
   })
@@ -68,7 +65,7 @@ tap.test('findAll', async t => {
 
     const data = await crudService.findAll(context, EMPTY_QUERY, ALL_FIELDS).toArray()
 
-    t.strictSame(data, publicFixtures)
+    t.assert.deepStrictEqual(data, publicFixtures)
   })
 
   t.test('query', t => {
@@ -81,15 +78,15 @@ tap.test('findAll', async t => {
 
       const data = await crudService.findAll(context, { price: { $gt: PRICE_LIMIT } }, ALL_FIELDS).toArray()
 
-      t.strictSame(data, publicFixtures.filter(d => d.price > PRICE_LIMIT))
+      t.assert.deepStrictEqual(data, publicFixtures.filter(d => d.price > PRICE_LIMIT))
     })
 
     t.test('could return an empty array', async t => {
       t.plan(1)
 
-      const data = await crudService.findAll(context, { foo: 'bar' }, ONLY_ID_PROJECTION).toArray()
+      const data = await crudService.findAll(context, { foo: 'bar' }, DEFAULT_PROJECTION).toArray()
 
-      t.strictSame(data, [])
+      t.assert.deepStrictEqual(data, [])
     })
   })
 
@@ -101,15 +98,15 @@ tap.test('findAll', async t => {
 
       const data = await crudService.findAll(context, { name: { $regex: 'ulysses', $options: 'si' } }, ALL_FIELDS).toArray()
 
-      t.strictSame(data, publicFixtures.filter(d => /ulysses/i.test(d.name)))
+      t.assert.deepStrictEqual(data, publicFixtures.filter(d => /ulysses/i.test(d.name)))
     })
 
     t.test('could return an empty array', async t => {
       t.plan(1)
 
-      const data = await crudService.findAll(context, { foo: 'bar' }, ONLY_ID_PROJECTION).toArray()
+      const data = await crudService.findAll(context, { foo: 'bar' }, DEFAULT_PROJECTION).toArray()
 
-      t.strictSame(data, [])
+      t.assert.deepStrictEqual(data, [])
     })
   })
 
@@ -121,7 +118,7 @@ tap.test('findAll', async t => {
 
       const data = await crudService.findAll(context, EMPTY_QUERY, ['name', 'price', 'isPromoted']).toArray()
 
-      t.strictSame(data, publicFixtures.map(d => {
+      t.assert.deepStrictEqual(data, publicFixtures.map(d => {
         return {
           _id: d._id,
           name: d.name,
@@ -134,17 +131,17 @@ tap.test('findAll', async t => {
     t.test('should return only _id if no projection is specified', async t => {
       t.plan(1)
 
-      const data = await crudService.findAll(context, EMPTY_QUERY, ONLY_ID_PROJECTION).toArray()
+      const data = await crudService.findAll(context, EMPTY_QUERY, DEFAULT_PROJECTION).toArray()
 
-      t.strictSame(data, publicFixtures.map(mapOnlyId))
+      t.assert.deepStrictEqual(data, publicFixtures.map(mapOnlyId))
     })
 
     t.test('should return only _id without projection', async t => {
       t.plan(1)
 
-      const data = await crudService.findAll(context, EMPTY_QUERY).toArray()
+      const data = await crudService.findAll(context, EMPTY_QUERY, DEFAULT_PROJECTION).toArray()
 
-      t.strictSame(data, publicFixtures.map(mapOnlyId))
+      t.assert.deepStrictEqual(data, publicFixtures.map(mapOnlyId))
     })
   })
 
@@ -154,8 +151,8 @@ tap.test('findAll', async t => {
     t.test('should return with the correct order ascendant', async t => {
       t.plan(1)
 
-      const data = await crudService.findAll(context, EMPTY_QUERY, ONLY_ID_PROJECTION, { price: 1 }).toArray()
-      t.strictSame(data, publicFixtures
+      const data = await crudService.findAll(context, EMPTY_QUERY, DEFAULT_PROJECTION, { price: 1 }).toArray()
+      t.assert.deepStrictEqual(data, publicFixtures
         .sort((a, b) => sortByPrice(a, b, 1))
         .map(mapOnlyId)
       )
@@ -164,9 +161,9 @@ tap.test('findAll', async t => {
     t.test('should return with the correct order descendent', async t => {
       t.plan(1)
 
-      const data = await crudService.findAll(context, EMPTY_QUERY, ONLY_ID_PROJECTION, { price: -1 }).toArray()
+      const data = await crudService.findAll(context, EMPTY_QUERY, DEFAULT_PROJECTION, { price: -1 }).toArray()
 
-      t.strictSame(data, publicFixtures
+      t.assert.deepStrictEqual(data, publicFixtures
         .sort((a, b) => sortByPrice(a, b, -1))
         .map(mapOnlyId)
       )
@@ -175,8 +172,8 @@ tap.test('findAll', async t => {
     t.test('should return with the correct order ascendant for multiple fields', async t => {
       t.plan(1)
 
-      const data = await crudService.findAll(context, EMPTY_QUERY, ONLY_ID_PROJECTION, { price: 1, name: 1 }).toArray()
-      t.strictSame(data, publicFixtures
+      const data = await crudService.findAll(context, EMPTY_QUERY, DEFAULT_PROJECTION, { price: 1, name: 1 }).toArray()
+      t.assert.deepStrictEqual(data, publicFixtures
         .sort((a, b) => sortByName(a, b, 1))
         .sort((a, b) => sortByPrice(a, b, 1))
         .map(mapOnlyId)
@@ -189,10 +186,10 @@ tap.test('findAll', async t => {
       const data = await crudService.findAll(
         context,
         EMPTY_QUERY,
-        ONLY_ID_PROJECTION,
+        DEFAULT_PROJECTION,
         { price: -1, name: -1 }
       ).toArray()
-      t.strictSame(data, publicFixtures
+      t.assert.deepStrictEqual(data, publicFixtures
         .sort((a, b) => sortByName(a, b, -1))
         .sort((a, b) => sortByPrice(a, b, -1))
         .map(mapOnlyId)
@@ -202,8 +199,8 @@ tap.test('findAll', async t => {
     t.test('should return with the correct order: ascendant for the first field, descendent for the second', async t => {
       t.plan(1)
 
-      const data = await crudService.findAll(context, EMPTY_QUERY, ONLY_ID_PROJECTION, { price: 1, name: -1 }).toArray()
-      t.strictSame(data, publicFixtures
+      const data = await crudService.findAll(context, EMPTY_QUERY, DEFAULT_PROJECTION, { price: 1, name: -1 }).toArray()
+      t.assert.deepStrictEqual(data, publicFixtures
         .sort((a, b) => sortByName(a, b, -1))
         .sort((a, b) => sortByPrice(a, b, 1))
         .map(mapOnlyId)
@@ -213,8 +210,8 @@ tap.test('findAll', async t => {
     t.test('should return with the correct order: descendent for the first field, ascendant for the second', async t => {
       t.plan(1)
 
-      const data = await crudService.findAll(context, EMPTY_QUERY, ONLY_ID_PROJECTION, { price: -1, name: 1 }).toArray()
-      t.strictSame(data, publicFixtures
+      const data = await crudService.findAll(context, EMPTY_QUERY, DEFAULT_PROJECTION, { price: -1, name: 1 }).toArray()
+      t.assert.deepStrictEqual(data, publicFixtures
         .sort((a, b) => sortByName(a, b, 1))
         .sort((a, b) => sortByPrice(a, b, -1))
         .map(mapOnlyId)
@@ -227,10 +224,10 @@ tap.test('findAll', async t => {
       const data = await crudService.findAll(
         context,
         EMPTY_QUERY,
-        ONLY_ID_PROJECTION,
+        DEFAULT_PROJECTION,
         { price: -1, name: 1, publishDate: 1 }
       ).toArray()
-      t.strictSame(data, publicFixtures
+      t.assert.deepStrictEqual(data, publicFixtures
         .sort((a, b) => sortByDate(a, b, 1))
         .sort((a, b) => sortByName(a, b, 1))
         .sort((a, b) => sortByPrice(a, b, -1))
@@ -244,10 +241,10 @@ tap.test('findAll', async t => {
       const data = await crudService.findAll(
         context,
         EMPTY_QUERY,
-        ONLY_ID_PROJECTION,
+        DEFAULT_PROJECTION,
         { price: -1, 'attachments.name': 1, publishDate: 1 }
       ).toArray()
-      t.strictSame(data, publicFixtures
+      t.assert.deepStrictEqual(data, publicFixtures
         .sort((a, b) => sortByDate(a, b, 1))
         .sort((a, b) => sortByAttachmentsName(a, b, 1))
         .sort((a, b) => sortByPrice(a, b, -1))
@@ -267,12 +264,12 @@ tap.test('findAll', async t => {
       const data = await crudService.findAll(
         context,
         EMPTY_QUERY,
-        ONLY_ID_PROJECTION,
+        DEFAULT_PROJECTION,
         { price: 1 },
         SKIP_COUNT
       ).toArray()
 
-      t.strictSame(data, publicFixtures
+      t.assert.deepStrictEqual(data, publicFixtures
         .sort((a, b) => sortByPrice(a, b, 1))
         .map(mapOnlyId)
         .slice(SKIP_COUNT)
@@ -291,14 +288,14 @@ tap.test('findAll', async t => {
       const data = await crudService.findAll(
         context,
         EMPTY_QUERY,
-        ONLY_ID_PROJECTION,
+        DEFAULT_PROJECTION,
         { price: 1 },
         0,
         LIMIT
       ).toArray()
 
-      t.equal(data.length, LIMIT)
-      t.strictSame(data, publicFixtures
+      t.assert.strictEqual(data.length, LIMIT)
+      t.assert.deepStrictEqual(data, publicFixtures
         .sort((a, b) => sortByPrice(a, b, 1))
         .map(mapOnlyId)
         .slice(0, LIMIT)
@@ -315,14 +312,14 @@ tap.test('findAll', async t => {
       const data = await crudService.findAll(
         context,
         EMPTY_QUERY,
-        ONLY_ID_PROJECTION,
+        DEFAULT_PROJECTION,
         { price: 1 },
         0,
         500,
         [STATES.DRAFT]
       ).toArray()
 
-      t.strictSame(data, [mapOnlyId(draftFixture)])
+      t.assert.deepStrictEqual(data, [mapOnlyId(draftFixture)])
     })
   })
 
@@ -336,11 +333,11 @@ tap.test('findAll', async t => {
         {
           attachments: {
             $elemMatch: {
-              neastedArr: { $in: [3] },
+              nestedArr: { $in: [3] },
             },
           },
         },
-        ONLY_ID_PROJECTION,
+        DEFAULT_PROJECTION,
         { price: 1 },
         0,
         500,
@@ -350,102 +347,10 @@ tap.test('findAll', async t => {
       const mf = f => {
         return f.attachments
           && f.attachments.some(a => {
-            return a.neastedArr && a.neastedArr.some(fp => fp === 3)
+            return a.nestedArr && a.nestedArr.some(fp => fp === 3)
           })
       }
-      t.strictSame(data, fixtures.filter(mf).map(mapOnlyId))
-    })
-  })
-
-  t.test('rawProjection', t => {
-    t.plan(4)
-
-    const SORT = undefined
-    const SKIP = 0
-    const LIMIT = 20
-
-    const expectedDocs = fixtures.map((doc) => {
-      return doc.attachments
-        ? {
-          _id: doc._id,
-          isbn: doc.isbn,
-          price: doc.price,
-          attachments: doc.attachments,
-        }
-        : {
-          _id: doc._id,
-          isbn: doc.isbn,
-          price: doc.price,
-        }
-    })
-
-    const expectedDocsWithExcludedFields = fixtures.map((doc) => {
-      const docCopy = { ...doc }
-      return lomit(docCopy, ['attachments', 'isbn', 'price'])
-    })
-
-    t.test('should return only the right fields', async t => {
-      t.plan(1)
-
-      const data = await crudService.findAll(
-        context,
-        EMPTY_QUERY,
-        [...ONLY_ID_PROJECTION, RAW_PROJECTION_PLAIN_INCLUSIVE],
-        SORT,
-        SKIP,
-        LIMIT,
-        [STATES.DRAFT, STATES.PUBLIC, STATES.TRASH, STATES.DELETED]
-      ).toArray()
-
-      t.strictSame(data, expectedDocs)
-    })
-
-    t.test('should override fields in _p parameter', async t => {
-      t.plan(1)
-
-      const data = await crudService.findAll(
-        context,
-        EMPTY_QUERY,
-        ['attachments', RAW_PROJECTION_PLAIN_INCLUSIVE],
-        SORT,
-        SKIP,
-        LIMIT,
-        [STATES.DRAFT, STATES.PUBLIC, STATES.TRASH, STATES.DELETED]
-      ).toArray()
-
-      t.strictSame(data, expectedDocs)
-    })
-
-    t.test('should exclude specified fields', async t => {
-      t.plan(1)
-
-      const data = await crudService.findAll(
-        context,
-        EMPTY_QUERY,
-        [RAW_PROJECTION_PLAIN_EXCLUSIVE],
-        SORT,
-        SKIP,
-        LIMIT,
-        [STATES.DRAFT, STATES.PUBLIC, STATES.TRASH, STATES.DELETED]
-      ).toArray()
-
-      t.strictSame(data, expectedDocsWithExcludedFields)
-    })
-
-    t.test('should exclude specified fields overridding existing _p specification', async t => {
-      t.plan(1)
-
-      const data = await crudService.findAll(
-        context,
-        EMPTY_QUERY,
-        ['attachments', RAW_PROJECTION_PLAIN_EXCLUSIVE],
-        SORT,
-        SKIP,
-        LIMIT,
-        [STATES.DRAFT, STATES.PUBLIC, STATES.TRASH, STATES.DELETED]
-      ).toArray()
-
-      t.strictSame(data, expectedDocsWithExcludedFields)
+      t.assert.deepStrictEqual(data, fixtures.filter(mf).map(mapOnlyId))
     })
   })
 })

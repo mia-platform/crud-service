@@ -16,7 +16,7 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 
 const { STATES, __STATE__ } = require('../lib/consts')
 const {
@@ -36,7 +36,7 @@ const MATCHING_PRICE = DOC.price - 1
 
 const MATCHING_QUERY = { price: { $gt: MATCHING_PRICE } }
 
-tap.test('HTTP POST /state', async t => {
+test('HTTP POST /state', async t => {
   const tests = [
     {
       name: 'filter by _id',
@@ -280,7 +280,7 @@ tap.test('HTTP POST /state', async t => {
             attachments: [
               {
                 name: 'unmatching',
-                neastedArr: [1, 2, 3],
+                nestedArr: [1, 2, 3],
                 detail: {
                   size: 9,
                 },
@@ -311,7 +311,7 @@ tap.test('HTTP POST /state', async t => {
             attachments: [
               {
                 name: 'note',
-                neastedArr: ['1', '2', '3'],
+                nestedArr: ['1', '2', '3'],
                 detail: {
                   size: '9',
                 },
@@ -432,16 +432,13 @@ tap.test('HTTP POST /state', async t => {
       })
 
       t.test('should return 200', t => {
-        t.strictSame(response.statusCode, 200)
-        t.end()
+        t.assert.deepStrictEqual(response.statusCode, 200)
       })
       t.test('should return application/json', t => {
-        t.ok(/application\/json/.test(response.headers['content-type']))
-        t.end()
+        t.assert.ok(/application\/json/.test(response.headers['content-type']))
       })
       t.test('should return the right count', t => {
-        t.strictSame(JSON.parse(response.payload), count)
-        t.end()
+        t.assert.deepStrictEqual(JSON.parse(response.payload), count)
       })
 
       t.test('on database', t => {
@@ -450,28 +447,20 @@ tap.test('HTTP POST /state', async t => {
 
           docs.forEach((doc, index) => {
             t.test(`doc${index}`, t => {
-              t.strictSame(doc[__STATE__], editedDocumentIds[index].state)
-              t.strictSame(doc.updaterId, editedDocumentIds[index].updaterId)
+              t.assert.deepStrictEqual(doc[__STATE__], editedDocumentIds[index].state)
+              t.assert.deepStrictEqual(doc.updaterId, editedDocumentIds[index].updaterId)
               if (editedDocumentIds[index].updaterId !== oldUpdaterId) {
-                t.ok(Math.abs(Date.now() - doc.updatedAt.getTime()) < 5000, '`updatedAt` should be updated')
+                t.assert.ok(Math.abs(Date.now() - doc.updatedAt.getTime()) < 5000, '`updatedAt` should be updated')
               }
-              t.end()
             })
           })
-
-          t.end()
         })
 
         t.test('should keep the other documents as is', async t => {
           const documents = await collection.find({ _id: { $nin: editedDocumentIds.map(d => d._id) } }).toArray()
-          t.strictSame(documents, fixtures.filter(f => !editedDocumentIds.some(d => d._id === f._id)))
-          t.end()
+          t.assert.deepStrictEqual(documents, fixtures.filter(f => !editedDocumentIds.some(d => d._id === f._id)))
         })
-
-        t.end()
       })
-
-      t.end()
     })
   })
 
@@ -497,15 +486,13 @@ tap.test('HTTP POST /state', async t => {
         },
       })
 
-      t.equal(response.statusCode, 400)
-      t.strictSame(JSON.parse(response.payload), {
+      t.assert.strictEqual(response.statusCode, 400)
+      t.assert.deepStrictEqual(JSON.parse(response.payload), {
         statusCode: 400,
         error: 'Bad Request',
         message: "body/0/filter/metadata must have required property 'somethingNumber'",
         code: 'FST_ERR_VALIDATION',
       })
-
-      t.end()
     })
 
     t.test('should have additionalProperties false if set', async t => {
@@ -529,16 +516,12 @@ tap.test('HTTP POST /state', async t => {
         },
       })
 
-      t.equal(response.statusCode, 400)
-      t.strictSame(JSON.parse(response.payload), {
+      t.assert.strictEqual(response.statusCode, 400)
+      t.assert.deepStrictEqual(JSON.parse(response.payload), {
         statusCode: 400,
         error: 'Bad Request',
         message: 'body/0/filter/metadata must NOT have additional properties. Property "unknownField" is not defined in validation schema',
       })
-
-      t.end()
     })
-
-    t.end()
   })
 })

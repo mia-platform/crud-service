@@ -17,13 +17,13 @@
 'use strict'
 
 const Ajv = require('ajv')
-const tap = require('tap')
+const { test } = require('node:test')
 const { STATES } = require('../lib/consts')
 
 const { modelJsonSchema, compatibilityModelJsonSchema } = require('../lib/model.jsonschema')
 
 
-tap.test('validate schema', async t => {
+test('validate schema', async t => {
   await t.test('should throw if partial Index has wrong filter', t => {
     const ajv = new Ajv({ useDefaults: true, coerceTypes: true })
     const validate = ajv.compile(compatibilityModelJsonSchema)
@@ -103,8 +103,79 @@ tap.test('validate schema', async t => {
       ],
     }
 
-    t.strictSame(validate(jsonFile), false)
-    t.end()
+    t.assert.deepStrictEqual(validate(jsonFile), false)
+  })
+
+  await t.test('should throw if defaultSorting has wrong order', t => {
+    const ajv = new Ajv({ useDefaults: true, coerceTypes: true })
+    const validate = ajv.compile(compatibilityModelJsonSchema)
+
+    const jsonFile = {
+      name: 'addresses',
+      endpointBasePath: '/addresses-endpoint',
+      defaultState: 'DRAFT',
+      defaultSorting: {
+        _id: 2,
+      },
+      fields: [
+        {
+          name: '_id',
+          type: 'ObjectId',
+          required: true,
+        },
+        {
+          name: 'displayName',
+          type: 'string',
+          description: 'The display name',
+          required: true,
+        },
+        {
+          name: 'street',
+          type: 'string',
+          description: 'The street of the house',
+          required: true,
+        },
+        {
+          name: 'house_number',
+          type: 'string',
+          description: 'The number of the house',
+          required: true,
+        },
+        {
+          name: 'updaterId',
+          type: 'string',
+          description: 'User id that has requested the last change successfully',
+          required: true,
+        },
+        {
+          name: 'updatedAt',
+          type: 'Date',
+          description: 'Date of the request that has performed the last change',
+          required: true,
+        },
+        {
+          name: 'creatorId',
+          type: 'string',
+          description: 'User id that has created this object',
+          required: true,
+        },
+        {
+          name: 'createdAt',
+          type: 'Date',
+          description: 'Date of the request that has performed the object creation',
+          required: true,
+        },
+        {
+          name: '__STATE__',
+          type: 'string',
+          description: 'The state of the document',
+          required: true,
+        },
+      ],
+      indexes: [],
+    }
+
+    t.assert.deepStrictEqual(validate(jsonFile), false)
   })
 
   await t.test('should validate old schema', t => {
@@ -186,8 +257,7 @@ tap.test('validate schema', async t => {
       tags: ['tag', 'example'],
     }
 
-    t.strictSame(validate(jsonFile), true)
-    t.end()
+    t.assert.deepStrictEqual(validate(jsonFile), true)
   })
 
   await t.test('should validate new schema', t => {
@@ -257,8 +327,7 @@ tap.test('validate schema', async t => {
       tags: ['tag', 'example'],
     }
 
-    t.strictSame(validate(jsonFile), true)
-    t.end()
+    t.assert.deepStrictEqual(validate(jsonFile), true)
   })
 
   await t.test('should validate new schema with compatibility', t => {
@@ -447,7 +516,7 @@ tap.test('validate schema', async t => {
                     size: { type: 'number' },
                   },
                 },
-                neastedArr: {
+                nestedArr: {
                   type: 'array',
                   items: { type: 'number' },
                 },
@@ -631,7 +700,7 @@ tap.test('validate schema', async t => {
                     size: { type: 'number' },
                   },
                 },
-                neastedArr: {
+                nestedArr: {
                   type: 'array',
                   items: { type: 'number' },
                 },
@@ -658,8 +727,7 @@ tap.test('validate schema', async t => {
       tags: ['tag', 'example'],
     }
 
-    t.strictSame(validate(jsonFile), true)
-    t.end()
+    t.assert.deepStrictEqual(validate(jsonFile), true)
   })
 
   await t.test('should validate with additional property in __mia_configuration schema', t => {
@@ -730,9 +798,6 @@ tap.test('validate schema', async t => {
       tags: ['tag', 'example'],
     }
 
-    t.strictSame(validate(jsonFile), true)
-    t.end()
+    t.assert.deepStrictEqual(validate(jsonFile), true)
   })
-
-  t.end()
 })

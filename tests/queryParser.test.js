@@ -16,7 +16,7 @@
 
 'use strict'
 
-const tap = require('tap')
+const { test } = require('node:test')
 const { ObjectId } = require('mongodb')
 const logger = require('pino')({ level: 'silent' })
 
@@ -25,7 +25,7 @@ const collectionDefinition = require('./newCollectionDefinitions/books')
 const projectsCollectionDefinition = require('./collectionDefinitions/projects')
 const generatePathFieldsForRawSchema = require('../lib/generatePathFieldsForRawSchema')
 
-tap.test('queryParser', t => {
+test('queryParser', t => {
   const nowDate = new Date()
   const nowString = nowDate.toISOString()
   const nowInteger = nowDate.getTime()
@@ -39,7 +39,7 @@ tap.test('queryParser', t => {
     const tests = []
       .concat([
         {
-          name: 'shoud keep the empty query as is',
+          name: 'should keep the empty query as is',
           query: {},
           expected: {},
         },
@@ -103,14 +103,14 @@ tap.test('queryParser', t => {
       ])
       .concat([
         {
-          name: 'should cast 24-lenght string to ObjectId',
+          name: 'should cast 24-length string to ObjectId',
           query: { _id: 'aaaaaaaaaaaaaaaaaaaaaaaa' },
           expected: { _id: new ObjectId('aaaaaaaaaaaaaaaaaaaaaaaa') },
         },
         {
-          name: 'should cast 12-lenght string to ObjectId',
-          query: { _id: 'bbbbbbbbbbbb' },
-          expected: { _id: new ObjectId('bbbbbbbbbbbb') },
+          name: 'should cast 12-length string to ObjectId',
+          query: { _id: 'bbbbbbbbbbbbbbbbbbbbbbbb' },
+          expected: { _id: new ObjectId('bbbbbbbbbbbbbbbbbbbbbbbb') },
         },
         {
           name: 'should not cast null to ObjectId',
@@ -128,22 +128,22 @@ tap.test('queryParser', t => {
           throw: 'Invalid objectId',
         },
         {
-          name: 'should cast 24-lenght string to ObjectId $in',
+          name: 'should cast 24-length string to ObjectId $in',
           query: { _id: { $in: ['aaaaaaaaaaaaaaaaaaaaaaaa', 'aaaaaaaaaaaaaaaaaaaaaaaa'] } },
           expected: { _id: { $in: [new ObjectId('aaaaaaaaaaaaaaaaaaaaaaaa'), new ObjectId('aaaaaaaaaaaaaaaaaaaaaaaa')] } },
         },
         {
-          name: 'should cast 24-lenght string to ObjectId $in empty',
+          name: 'should cast 24-length string to ObjectId $in empty',
           query: { _id: { $in: [] } },
           expected: { _id: { $in: [] } },
         },
         {
-          name: 'should cast 24-lenght string to ObjectId $nin',
+          name: 'should cast 24-length string to ObjectId $nin',
           query: { _id: { $nin: ['aaaaaaaaaaaaaaaaaaaaaaaa', 'aaaaaaaaaaaaaaaaaaaaaaaa'] } },
           expected: { _id: { $nin: [new ObjectId('aaaaaaaaaaaaaaaaaaaaaaaa'), new ObjectId('aaaaaaaaaaaaaaaaaaaaaaaa')] } },
         },
         {
-          name: 'should cast 24-lenght string to ObjectId $nin empty',
+          name: 'should cast 24-length string to ObjectId $nin empty',
           query: { _id: { $nin: [] } },
           expected: { _id: { $nin: [] } },
         },
@@ -182,7 +182,15 @@ tap.test('queryParser', t => {
         {
           name: 'should cast on $nearSphere with minDistance and maxDistance',
           query: { position: { $nearSphere: { from: [0, 0], minDistance: 200, maxDistance: 20000 } } },
-          expected: { position: { $nearSphere: { $geometry: { type: 'Point', coordinates: [0, 0] }, $minDistance: 200, $maxDistance: 20000 } } },
+          expected: {
+            position: {
+              $nearSphere: {
+                $geometry: { type: 'Point', coordinates: [0, 0] },
+                $minDistance: 200,
+                $maxDistance: 20000,
+              },
+            },
+          },
         },
         {
           name: 'should cast on $nearSphere with altitude',
@@ -192,17 +200,39 @@ tap.test('queryParser', t => {
         {
           name: 'should cast on $nearSphere with minDistance with altitude',
           query: { position: { $nearSphere: { from: [0, 0, -20], minDistance: 200 } } },
-          expected: { position: { $nearSphere: { $geometry: { type: 'Point', coordinates: [0, 0, -20] }, $minDistance: 200 } } },
+          expected: {
+            position: {
+              $nearSphere: {
+                $geometry: { type: 'Point', coordinates: [0, 0, -20] },
+                $minDistance: 200,
+              },
+            },
+          },
         },
         {
           name: 'should cast on $nearSphere with maxDistance',
           query: { position: { $nearSphere: { from: [0, 0, 4], maxDistance: 20000 } } },
-          expected: { position: { $nearSphere: { $geometry: { type: 'Point', coordinates: [0, 0, 4] }, $maxDistance: 20000 } } },
+          expected: {
+            position: {
+              $nearSphere: {
+                $geometry: { type: 'Point', coordinates: [0, 0, 4] },
+                $maxDistance: 20000,
+              },
+            },
+          },
         },
         {
           name: 'should cast on $nearSphere with minDistance and maxDistance',
           query: { position: { $nearSphere: { from: [0, 0, 5], minDistance: 200, maxDistance: 20000 } } },
-          expected: { position: { $nearSphere: { $geometry: { type: 'Point', coordinates: [0, 0, 5] }, $minDistance: 200, $maxDistance: 20000 } } },
+          expected: {
+            position: {
+              $nearSphere: {
+                $geometry: { type: 'Point', coordinates: [0, 0, 5] },
+                $minDistance: 200,
+                $maxDistance: 20000,
+              },
+            },
+          },
         },
       ])
       .concat([
@@ -220,6 +250,13 @@ tap.test('queryParser', t => {
           name: 'array of integer $all',
           query: { tagIds: { $all: ['1'] } },
           expected: { tagIds: { $all: ['1'] } },
+        },
+      ])
+      .concat([
+        {
+          name: 'equality on integer',
+          query: { 'metadata.somethingArrayObject.integerNum': { $eq: 7 } },
+          expected: { 'metadata.somethingArrayObject.integerNum': { $eq: 7 } },
         },
       ])
       .concat([
@@ -274,6 +311,33 @@ tap.test('queryParser', t => {
           name: '$elemMatch - Object Array RawObject',
           query: { attachments: { $elemMatch: { innerField: { $in: ['0', '0', '666'] } } } },
           expected: { attachments: { $elemMatch: { innerField: { $in: ['0', '0', '666'] } } } },
+        },
+      ])
+      .concat([
+        {
+          name: '$size - Array string',
+          query: { tags: { $size: 1 } },
+          expected: { tags: { $size: 1 } },
+        },
+        {
+          name: '$size - Array number',
+          query: { tagIds: { $size: 3 } },
+          expected: { tagIds: { $size: 3 } },
+        },
+        {
+          name: '$size - Array ObjectId',
+          query: { tagObjectIds: { $size: 7 } },
+          expected: { tagObjectIds: { $size: 7 } },
+        },
+        {
+          name: '$size - Array RawObject',
+          query: { attachments: { $size: 2 } },
+          expected: { attachments: { $size: 2 } },
+        },
+        {
+          name: '$size - Array RawObject',
+          query: { attachments: { $size: 2 } },
+          expected: { attachments: { $size: 2 } },
         },
       ])
       .concat([
@@ -357,16 +421,16 @@ tap.test('queryParser', t => {
           t.plan(1)
           try {
             queryParser.parseAndCast(testDef.query)
-            t.fail('This test should fail')
+            t.assert.fail('This test should fail')
           } catch (error) {
-            t.strictSame(error.message, testDef.throw)
+            t.assert.deepStrictEqual(error.message, testDef.throw)
           }
         })
       } else {
         t.test(testDef.name, t => {
           t.plan(1)
           queryParser.parseAndCast(testDef.query)
-          t.strictSame(testDef.query, testDef.expected)
+          t.assert.deepStrictEqual(testDef.query, testDef.expected)
         })
       }
     })
@@ -395,16 +459,16 @@ tap.test('queryParser', t => {
           t.plan(1)
           try {
             queryParser.parseAndCastTextSearchQuery(testDef.query)
-            t.fail('This test should fail')
+            t.assert.fail('This test should fail')
           } catch (error) {
-            t.strictSame(error.message, testDef.throw)
+            t.assert.deepStrictEqual(error.message, testDef.throw)
           }
         })
       } else {
         t.test(testDef.name, t => {
           t.plan(1)
           queryParser.parseAndCastTextSearchQuery(testDef.query)
-          t.strictSame(testDef.query, testDef.expected)
+          t.assert.deepStrictEqual(testDef.query, testDef.expected)
         })
       }
     })
@@ -414,8 +478,8 @@ tap.test('queryParser', t => {
     const tests = [
       {
         name: 'empty',
-        body: { },
-        expected: { },
+        body: {},
+        expected: {},
       },
       {
         name: 'number should not be converted',
@@ -467,16 +531,16 @@ tap.test('queryParser', t => {
           t.plan(1)
           try {
             queryParser.parseAndCastBody(testDef.body)
-            t.fail()
+            t.assert.fail()
           } catch (error) {
-            t.strictSame(error.message, testDef.throw)
+            t.assert.deepStrictEqual(error.message, testDef.throw)
           }
         })
       } else {
         t.test(testDef.name, t => {
           t.plan(1)
           queryParser.parseAndCastBody(testDef.body)
-          t.strictSame(testDef.body, testDef.expected)
+          t.assert.deepStrictEqual(testDef.body, testDef.expected)
         })
       }
     })
@@ -487,8 +551,8 @@ tap.test('queryParser', t => {
     const tests = [
       {
         name: 'empty',
-        commands: { },
-        expected: { },
+        commands: {},
+        expected: {},
         editableFields: ALL_FIELDS,
       },
       {
@@ -576,9 +640,21 @@ tap.test('queryParser', t => {
         editableFields: ALL_FIELDS,
       },
       {
+        name: '$push - Array ObjectId',
+        commands: { $push: { tagObjectIds: '66cc45df4e7a7561637b8e8a' } },
+        expected: { $push: { tagObjectIds: new ObjectId('66cc45df4e7a7561637b8e8a') } },
+        editableFields: ALL_FIELDS,
+      },
+      {
         name: '$pull - Array integer',
         commands: { $pull: { tagIds: 33 } },
         expected: { $pull: { tagIds: 33 } },
+        editableFields: ALL_FIELDS,
+      },
+      {
+        name: '$pull - Array ObjectId',
+        commands: { $push: { tagObjectIds: '66cc45df4e7a7561637b8e8a' } },
+        expected: { $push: { tagObjectIds: new ObjectId('66cc45df4e7a7561637b8e8a') } },
         editableFields: ALL_FIELDS,
       },
       {
@@ -606,22 +682,22 @@ tap.test('queryParser', t => {
           commands: { $set: { 'attachments.$.merge': { name: 'rename' } } },
           expected: {
             $set:
-            {
-              'attachments.$.name': 'rename',
-            },
+              {
+                'attachments.$.name': 'rename',
+              },
           },
           editableFields: ALL_FIELDS,
         },
         {
           name: '$set - Array of objects merge multiple fields',
-          commands: { $set: { 'attachments.$.merge': { name: 'rename', other: 'stuff', neastedArr: [1, 2] } } },
+          commands: { $set: { 'attachments.$.merge': { name: 'rename', other: 'stuff', nestedArr: [1, 2] } } },
           expected: {
             $set:
-            {
-              'attachments.$.name': 'rename',
-              'attachments.$.other': 'stuff',
-              'attachments.$.neastedArr': [1, 2],
-            },
+              {
+                'attachments.$.name': 'rename',
+                'attachments.$.other': 'stuff',
+                'attachments.$.nestedArr': [1, 2],
+              },
           },
           editableFields: ALL_FIELDS,
         },
@@ -673,18 +749,18 @@ tap.test('queryParser', t => {
       .concat([
         {
           name: '$push - raw schema - on nested fields is allowed',
-          commands: { $push: { 'attachments.0.neastedArr': 55 } },
-          expected: { $push: { 'attachments.0.neastedArr': 55 } },
+          commands: { $push: { 'attachments.0.nestedArr': 55 } },
+          expected: { $push: { 'attachments.0.nestedArr': 55 } },
         },
         {
           name: '$pull - raw schema - on nested fields is allowed',
-          commands: { $pull: { 'attachments.0.neastedArr': 55 } },
-          expected: { $pull: { 'attachments.0.neastedArr': 55 } },
+          commands: { $pull: { 'attachments.0.nestedArr': 55 } },
+          expected: { $pull: { 'attachments.0.nestedArr': 55 } },
         },
         {
           name: '$addToSet - raw schema - on nested fields is allowed',
-          commands: { $addToSet: { 'attachments.0.neastedArr': 55 } },
-          expected: { $addToSet: { 'attachments.0.neastedArr': 55 } },
+          commands: { $addToSet: { 'attachments.0.nestedArr': 55 } },
+          expected: { $addToSet: { 'attachments.0.nestedArr': 55 } },
         },
       ])
       .concat([
@@ -695,13 +771,13 @@ tap.test('queryParser', t => {
         },
         {
           name: '$push - raw schema - array inside another array',
-          commands: { $push: { 'attachments.0.neastedArr': 55 } },
-          expected: { $push: { 'attachments.0.neastedArr': 55 } },
+          commands: { $push: { 'attachments.0.nestedArr': 55 } },
+          expected: { $push: { 'attachments.0.nestedArr': 55 } },
         },
         {
           name: '$pull - raw schema - array inside another array',
-          commands: { $pull: { 'attachments.0.neastedArr': 55 } },
-          expected: { $pull: { 'attachments.0.neastedArr': 55 } },
+          commands: { $pull: { 'attachments.0.nestedArr': 55 } },
+          expected: { $pull: { 'attachments.0.nestedArr': 55 } },
         },
         {
           name: '$addToSet - raw schema - on nested object',
@@ -710,8 +786,8 @@ tap.test('queryParser', t => {
         },
         {
           name: '$addToSet - raw schema - array inside another array',
-          commands: { $addToSet: { 'attachments.0.neastedArr': 55 } },
-          expected: { $addToSet: { 'attachments.0.neastedArr': 55 } },
+          commands: { $addToSet: { 'attachments.0.nestedArr': 55 } },
+          expected: { $addToSet: { 'attachments.0.nestedArr': 55 } },
         },
         {
           name: '$.replace simple array',
@@ -759,16 +835,16 @@ tap.test('queryParser', t => {
           t.plan(1)
           try {
             testQueryParser.parseAndCastCommands(testDef.commands, testDef.editableFields)
-            t.fail()
+            t.assert.fail()
           } catch (error) {
-            t.strictSame(error.message, testDef.throw)
+            t.assert.deepStrictEqual(error.message, testDef.throw)
           }
         })
       } else {
         t.test(testDef.name, t => {
           t.plan(1)
           testQueryParser.parseAndCastCommands(testDef.commands, testDef.editableFields)
-          t.strictSame(testDef.commands, testDef.expected)
+          t.assert.deepStrictEqual(testDef.commands, testDef.expected)
         })
       }
     })
@@ -778,7 +854,7 @@ tap.test('queryParser', t => {
     const tests = [
       {
         name: 'empty',
-        query: { },
+        query: {},
         expected: false,
       },
       {
@@ -816,24 +892,23 @@ tap.test('queryParser', t => {
           t.plan(1)
           try {
             queryParser.isTextSearchQuery(testDef.query)
-            t.fail()
+            t.assert.fail()
           } catch (error) {
-            t.strictSame(error.message, testDef.throw)
+            t.assert.deepStrictEqual(error.message, testDef.throw)
           }
         })
       } else {
         t.test(testDef.name, t => {
           t.plan(1)
           const result = queryParser.isTextSearchQuery(testDef.query)
-          t.strictSame(result, testDef.expected)
+          t.assert.deepStrictEqual(result, testDef.expected)
         })
       }
     })
   })
-  t.end()
 })
 
-tap.test('queryParser $in filter', t => {
+test('queryParser $in filter', t => {
   const queries = {
     objectId: {
       fieldObjectId: { $in: [null] },
@@ -859,23 +934,21 @@ tap.test('queryParser $in filter', t => {
         type: 'Date',
       },
     ],
-    indexes: [
-    ],
+    indexes: [],
   })
   t.test('test different cases of a ObjectId', t => {
     t.plan(2)
     queryParser.parseAndCast(queries.objectId)
-    t.strictSame({ fieldObjectId: { $in: [null] } }, queries.objectId)
+    t.assert.deepStrictEqual({ fieldObjectId: { $in: [null] } }, queries.objectId)
 
     queryParser.parseAndCast(queries.objectIdWithValue)
-    t.strictSame({ fieldObjectId: new ObjectId('aaaaaaaaaaaaaaaaaaaaaaaa') }, queries.objectIdWithValue)
+    t.assert.deepStrictEqual({ fieldObjectId: new ObjectId('aaaaaaaaaaaaaaaaaaaaaaaa') }, queries.objectIdWithValue)
   })
   t.test('test different cases of a Date', t => {
     t.plan(1)
     queryParser.parseAndCast(queries.date)
-    t.strictSame({ fieldDate: { $in: [null] } }, queries.date)
+    t.assert.deepStrictEqual({ fieldDate: { $in: [null] } }, queries.date)
   })
-  t.end()
 })
 
 function generateTestForValues(type, key) {
@@ -901,7 +974,7 @@ function generateTestForAllOperators(type, key, value) {
 }
 
 function generateTestForArrayOperators(type, key, value) {
-  const operators = ['$in', '$nin']
+  const operators = ['$in', '$nin', '$eq']
   return operators.map(op => {
     return {
       name: `should not cast ${type} / ${op}`,
