@@ -44,7 +44,7 @@
     "mongodb-client-encryption": "^6.5.0",
     "ndjson": "^2.0.0",
     "p-limit": "^7.3.3",
-    "pino": "^9.14.0",
+    "pino": "^10.4.0",
     "through2": "^4.0.2",
     "xlsx-write-stream": "^1.0.4"
   },
