@@ -210,6 +210,19 @@ This issue has been resolved and the service can now properly start, creating th
 - updated `@fastify/mongodb` to v8.0.0
 - updated `@fastify/multipart` to v8.0.0
 
+## 6.10.6 - 2026-11-20
+
+### Fixed
+
+- use the MongoDB crypt_shared library set in `CRYPT_SHARED_LIB_PATH` and create views without auto-encryption, to allow service start with CSFLE enabled
+
+## 6.10.5 - 2026-11-20
+
+### Fixed
+
+- upgrade NodeJS version in Docker image to v22.23.4 to fix CVE-2026-111497
+- upgrade `prebuild-install` to v7.1.3 to fix `mongodb-client-encryption` installation on Node.js with N-API v10
+
 ## 6.10.4 - 2024-12-13
 
 ### CI
