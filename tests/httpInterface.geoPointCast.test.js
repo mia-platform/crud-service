@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Mia s.r.l.
+ * Copyright 2026 Mia s.r.l.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 'use strict'
 
 const tap = require('tap')
+const { join } = require('path')
+const { ObjectId } = require('mongodb')
 
 const { fixtures } = require('./utils')
 const { setUpTest, prefix } = require('./httpInterface.utils')
@@ -41,6 +43,19 @@ tap.test('HTTP GeoJSON Point casting', async t => {
     {
       name: 'with CAST_ONLY_DECLARED_GEOPOINT_FIELDS only GeoPoint fields are cast',
       additionalEnvVariables: { CAST_ONLY_DECLARED_GEOPOINT_FIELDS: true },
+      expectedRawLocation: RAW_POINT,
+    },
+    {
+      name: 'with CAST_ONLY_DECLARED_GEOPOINT_FIELDS and a schema collection definition',
+      additionalEnvVariables: {
+        CAST_ONLY_DECLARED_GEOPOINT_FIELDS: true,
+        COLLECTION_DEFINITION_FOLDER: join(__dirname, 'newCollectionDefinitions'),
+      },
+      expectedRawLocation: RAW_POINT,
+    },
+    {
+      name: 'with CAST_ONLY_DECLARED_GEOPOINT_FIELDS and ENABLE_STRICT_OUTPUT_VALIDATION',
+      additionalEnvVariables: { CAST_ONLY_DECLARED_GEOPOINT_FIELDS: true, ENABLE_STRICT_OUTPUT_VALIDATION: true },
       expectedRawLocation: RAW_POINT,
     },
   ]
@@ -69,4 +84,58 @@ tap.test('HTTP GeoJSON Point casting', async t => {
       }
     })
   }
+})
+
+const GEO_POINT_CAST_FOLDER = join(__dirname, 'geoPointCast')
+const point = (lon, lat) => ({ type: 'Point', coordinates: [lon, lat] })
+const OWNER = { _id: new ObjectId('222222222222222222222222'), name: 'Owner', __STATE__: 'PUBLIC' }
+const PLACE = {
+  _id: new ObjectId('111111111111111111111111'),
+  __STATE__: 'PUBLIC',
+  name: 'Place',
+  id_owner: OWNER._id,
+  position: point(1, 2),
+  info: { location: point(3, 4) },
+  branches: [{ position: point(5, 6), positions: [point(7, 8), point(9, 10)], location: point(11, 12) }],
+}
+
+tap.test('HTTP GeoJSON Point casting with CAST_ONLY_DECLARED_GEOPOINT_FIELDS', async t => {
+  if (process.env.MONGO_VERSION <= '4.4') {
+    t.test('Writable views not supported on Mongo version <= 4.4')
+    return
+  }
+
+  const { fastify, database } = await setUpTest(t, [PLACE], 'places', false, false, 'swagger', {
+    CAST_ONLY_DECLARED_GEOPOINT_FIELDS: true,
+    COLLECTION_DEFINITION_FOLDER: join(GEO_POINT_CAST_FOLDER, 'collections'),
+    VIEWS_DEFINITION_FOLDER: join(GEO_POINT_CAST_FOLDER, 'views'),
+  })
+  await database.collection('owners').insertOne(OWNER)
+
+  t.test('casts nested and array GeoPoint fields', async t => {
+    const response = await fastify.inject({ method: 'GET', url: '/places-endpoint/' })
+    t.equal(response.statusCode, 200, response.payload)
+
+    const [document] = JSON.parse(response.payload)
+    t.strictSame(document.position, [1, 2], 'GeoPoint field')
+    t.strictSame(document.info.location, point(3, 4), 'RawObject field')
+    t.strictSame(document.branches, [
+      { position: [5, 6], positions: [[7, 8], [9, 10]], location: point(11, 12) },
+    ], 'GeoPoint and array of GeoPoint inside an array of RawObject')
+  })
+
+  t.test('casts GeoPoint fields of the document returned by PATCH on a writable view', async t => {
+    const response = await fastify.inject({
+      method: 'PATCH',
+      url: `/places-details-endpoint/${PLACE._id}`,
+      payload: { $set: { name: 'Updated place' } },
+    })
+    t.equal(response.statusCode, 200, response.payload)
+
+    const document = JSON.parse(response.payload)
+    t.equal(document.name, 'Updated place')
+    t.strictSame(document.owner, { value: OWNER._id.toString(), label: OWNER.name })
+    t.strictSame(document.position, [1, 2], 'GeoPoint field')
+    t.strictSame(document.info.location, point(3, 4), 'RawObject field')
+  })
 })

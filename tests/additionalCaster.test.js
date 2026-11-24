@@ -214,8 +214,31 @@ tap.test('castItem with declared GeoPoint paths', async t => {
 })
 
 tap.test('getGeoPointPaths', async t => {
+  const geoPointSchema = { type: 'object', __mia_configuration: { type: 'GeoPoint' } }
+  const geoPointArraySchema = { type: 'array', items: geoPointSchema }
+
   t.strictSame(getGeoPointPaths(oldCollectionDefinition), new Set(['position']), 'fields definition')
   t.strictSame(getGeoPointPaths(newCollectionDefinition), new Set(['position']), 'schema definition')
+
+  t.strictSame(getGeoPointPaths({
+    fields: [
+      { name: 'position', type: 'GeoPoint', required: false },
+      { name: 'library', type: 'RawObject', required: false, schema: { properties: { positions: geoPointArraySchema } } },
+      { name: 'branches', type: 'Array', required: false, items: { type: 'RawObject', schema: { properties: { positions: geoPointArraySchema } } } },
+    ],
+  }), new Set(['position', 'library.positions.__items', 'branches.positions.__items']), 'fields definition with arrays of GeoPoint')
+
+  t.strictSame(getGeoPointPaths({
+    schema: {
+      type: 'object',
+      properties: {
+        position: geoPointSchema,
+        positions: geoPointArraySchema,
+        library: { type: 'object', properties: { position: geoPointSchema, positions: geoPointArraySchema } },
+        branches: { type: 'array', items: { type: 'object', properties: { position: geoPointSchema, positions: geoPointArraySchema } } },
+      },
+    },
+  }), new Set(['position', 'positions.__items', 'library.position', 'library.positions.__items', 'branches.position', 'branches.positions.__items']), 'schema definition with arrays of GeoPoint')
 })
 
 tap.test('castCollectionId', async t => {
