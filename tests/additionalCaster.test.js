@@ -17,8 +17,10 @@
 'use strict'
 
 const { test } = require('node:test')
-const { castItem, castCollectionId } = require('../lib/AdditionalCaster')
+const { castItem, castCollectionId, getGeoPointPaths } = require('../lib/AdditionalCaster')
 const { ObjectId } = require('mongodb')
+const oldCollectionDefinition = require('./collectionDefinitions/books')
+const newCollectionDefinition = require('./newCollectionDefinitions/books')
 
 test('AdditionalCaster', test => {
   test.test('old configuration', async t => {
@@ -170,6 +172,67 @@ test('AdditionalCaster', test => {
       })
     }
   })
+})
+
+test('castItem with declared GeoPoint paths', async t => {
+  const point = (lon, lat) => ({ type: 'Point', coordinates: [lon, lat] })
+  const geoPointPaths = new Set(['position', 'library.position', 'positions.__items', 'branches.position'])
+
+  const result = castItem({
+    _id: new ObjectId('111111111111111111111111'),
+    publishDate: new Date('2015-01-01T00:00:00.000Z'),
+    position: point(1, 2),
+    positions: [point(3, 4), point(5, 6)],
+    library: { position: point(7, 8), rawLocation: point(9, 10) },
+    branches: [{ position: point(11, 12), rawLocation: point(13, 14) }],
+    rawLocation: point(15, 16),
+    rawLocations: [point(17, 18)],
+  }, geoPointPaths)
+
+  t.assert.deepStrictEqual(result, {
+    _id: '111111111111111111111111',
+    publishDate: '2015-01-01T00:00:00.000Z',
+    position: [1, 2],
+    positions: [[3, 4], [5, 6]],
+    library: { position: [7, 8], rawLocation: point(9, 10) },
+    branches: [{ position: [11, 12], rawLocation: point(13, 14) }],
+    rawLocation: point(15, 16),
+    rawLocations: [point(17, 18)],
+  })
+
+  t.assert.deepStrictEqual(castItem([{ position: point(1, 2), rawLocation: point(3, 4) }], geoPointPaths), [
+    { position: [1, 2], rawLocation: point(3, 4) },
+  ], 'works on a list of documents')
+
+  t.assert.deepStrictEqual(castItem({ rawLocation: point(1, 2) }), { rawLocation: [1, 2] }, 'without paths every Point is cast')
+})
+
+test('getGeoPointPaths', async t => {
+  const geoPointSchema = { type: 'object', __mia_configuration: { type: 'GeoPoint' } }
+  const geoPointArraySchema = { type: 'array', items: geoPointSchema }
+
+  t.assert.deepStrictEqual(getGeoPointPaths(oldCollectionDefinition), new Set(['position']), 'fields definition')
+  t.assert.deepStrictEqual(getGeoPointPaths(newCollectionDefinition), new Set(['position']), 'schema definition')
+
+  t.assert.deepStrictEqual(getGeoPointPaths({
+    fields: [
+      { name: 'position', type: 'GeoPoint', required: false },
+      { name: 'library', type: 'RawObject', required: false, schema: { properties: { positions: geoPointArraySchema } } },
+      { name: 'branches', type: 'Array', required: false, items: { type: 'RawObject', schema: { properties: { positions: geoPointArraySchema } } } },
+    ],
+  }), new Set(['position', 'library.positions.__items', 'branches.positions.__items']), 'fields definition with arrays of GeoPoint')
+
+  t.assert.deepStrictEqual(getGeoPointPaths({
+    schema: {
+      type: 'object',
+      properties: {
+        position: geoPointSchema,
+        positions: geoPointArraySchema,
+        library: { type: 'object', properties: { position: geoPointSchema, positions: geoPointArraySchema } },
+        branches: { type: 'array', items: { type: 'object', properties: { position: geoPointSchema, positions: geoPointArraySchema } } },
+      },
+    },
+  }), new Set(['position', 'positions.__items', 'library.position', 'library.positions.__items', 'branches.position', 'branches.positions.__items']), 'schema definition with arrays of GeoPoint')
 })
 
 test('castCollectionId', async t => {
