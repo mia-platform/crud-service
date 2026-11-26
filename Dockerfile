@@ -50,6 +50,10 @@ RUN apt-get update && apt-get install --assume-yes --no-install-recommends \
     && apt-get autoremove --assume-yes \
     && rm -rf /var/lib/apt/lists/*
 
+# update the npm bundled with the Node.js image to fix CVEs of its bundled dependencies (undici, brace-expansion)
+RUN npm install --global npm@11.21.3 \
+    && npm cache clean --force
+
 ENV NODE_ENV=production
 ENV LOG_LEVEL=info
 ENV HTTP_PORT=3000
