@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+
+- Docker image base moved from Debian 12 (bookworm) to Debian 13 (trixie), `node:26.13.1-trixie-slim`, to close OS vulnerabilities without a fix on bookworm (among them CVE-2023-45853 on zlib)
+
 ## 7.4.0 - 2026-11-17
 
 ### Changed

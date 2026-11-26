@@ -6,6 +6,8 @@ ARG TARGETARCH
 WORKDIR /cryptd
 
 ARG CRYPTD_VERSION=8.0.12
+# MongoDB does not publish a debian13 build of the crypt_shared library yet: the debian12 build
+# is used, since it is compatible with the glibc shipped by Debian 13 (trixie)
 ARG CRYPTD_OS=debian12
 
 # debian doesn't suppport arm architecture for now, if we switch to ubuntu we can uncomment the arm bit
@@ -23,7 +25,7 @@ RUN case "${TARGETARCH}" in \
 
 ########################################################################################################################
 
-FROM docker.io/library/node:26.13.1-bookworm-slim@sha256:5df79989ed685e09f0a98019db4cebfb22fb9df1a53c0161664a011f7ff6b0f1 AS build
+FROM docker.io/library/node:26.13.1-trixie-slim@sha256:abe7e5a82b61a8ef67b315b85497c9e65173387ccf2f4a029248184b8e020be5 AS build
 
 ENV NODE_ENV=production
 
@@ -40,12 +42,13 @@ COPY . .
 
 # create a CRUD Service image that does not support automatic CSFLE
 # and therefore it can be employed by everybody in any MongoDB product
-FROM docker.io/library/node:26.13.1-bookworm-slim@sha256:5df79989ed685e09f0a98019db4cebfb22fb9df1a53c0161664a011f7ff6b0f1 AS crud-service-no-encryption
+FROM docker.io/library/node:26.13.1-trixie-slim@sha256:abe7e5a82b61a8ef67b315b85497c9e65173387ccf2f4a029248184b8e020be5 AS crud-service-no-encryption
 
 ARG COMMIT_SHA
 ARG DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update && apt-get install --assume-yes --no-install-recommends \
+RUN apt-get update && apt-get upgrade --assume-yes \
+    && apt-get install --assume-yes --no-install-recommends \
     tini \
     && apt-get autoremove --assume-yes \
     && rm -rf /var/lib/apt/lists/*
