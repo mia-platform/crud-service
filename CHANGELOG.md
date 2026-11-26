@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fixed
+
+- updated the npm bundled in the Docker image to `v11.21.3` to fix vulnerabilities of `undici` and `brace-expansion`
+
 ## 7.4.0 - 2026-11-17
 
 ### Changed
